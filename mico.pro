@@ -5,10 +5,12 @@ CONFIG -= qt
 
 SOURCES += main.cpp
 
-INCLUDEPATH += etool/include
-               catch
+INCLUDEPATH += etool/include \
+               catch         \
                include
 
 HEADERS += \
-    include/mico/tokens.h
+    include/mico/tokens.h \
+    include/mico/lexer.h \
+    include/mico/numeric.h
 
