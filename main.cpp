@@ -7,6 +7,9 @@
 
 int main( )
 {
-    auto tt = mico::lexer::make_trie( );
+    std::string input = "0x545, 2000, 0b0101010, 0123234"
+            ;
+
+    auto tt = mico::lexer::make_token_list(input);
     return 0;
 }

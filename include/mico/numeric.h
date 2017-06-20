@@ -2,7 +2,7 @@
 #define MICO_NUMERIC_H
 
 #include "etool/slices/container.h"
-#include "tokens.h"
+#include "mico/tokens.h"
 
 namespace mico {
 
@@ -41,10 +41,21 @@ namespace mico {
                  ;
         }
 
+        template <typename ItrT>
         static
-        bool isdigit( char c )
+        bool check_if_float( ItrT begin, ItrT end, bool oct )
         {
-            return valid_for_dec( c );
+            bool float_found = false;
+            while( begin != end && !float_found ) {
+                char c = *begin++;
+                if( (c == 'e') || (c == 'E') || (c == '.') ) {
+                    float_found = true;
+                } else if( !(oct ? valid_for_oct( c ) : valid_for_dec( c ) ) ) {
+                    return false;
+                }
+            }
+
+            return float_found;
         }
 
         static

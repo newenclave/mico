@@ -12,5 +12,6 @@ INCLUDEPATH += etool/include \
 HEADERS += \
     include/mico/tokens.h \
     include/mico/lexer.h \
-    include/mico/numeric.h
+    include/mico/numeric.h \
+    include/mico/idents.h
 

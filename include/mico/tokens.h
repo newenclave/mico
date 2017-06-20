@@ -25,6 +25,13 @@ namespace mico { namespace tokens {
 
         FIRST_VISIBLE = 100,
 
+        /// symbols
+
+        SEMICOLON,
+        COLON,
+        COMMA,
+        EQ,
+
         /// keywords
         LET,
         RETURN,
@@ -60,6 +67,17 @@ namespace mico { namespace tokens {
                 return "FLOAT";
 
             ////////// tokens that have names
+
+            case type::SEMICOLON:
+                 return ";";
+            case type::COLON:
+                 return ":";
+            case type::COMMA:
+                 return ",";
+
+            case type::EQ:
+                 return "=";
+
             case type::LET:
                 return "let";
             case type::RETURN:
@@ -84,27 +102,38 @@ namespace mico { namespace tokens {
     };
 
     template <typename Cont = std::string>
-    struct type_value {
+    struct type_ident {
+
         using value_type = Cont;
 
-        type_value( ) = default;
-        type_value( type_value & ) = default;
-        type_value& operator = ( type_value & ) = default;
+        type_ident( ) = default;
+        type_ident( const type_ident & ) = default;
+        type_ident& operator = ( const type_ident & ) = default;
 
-        type_value( type_value &&other )
-            :t(other.t)
-            ,value(std::move(other.value))
+        type_ident( type tt )
+            :name(tt)
+            ,literal(name::get(tt))
         { }
 
-        type_value& operator = ( type_value &&other )
+        type_ident( type tt, std::string val )
+            :name(tt)
+            ,literal(std::move(val))
+        { }
+
+        type_ident( type_ident &&other )
+            :name(other.name)
+            ,literal(std::move(other.literal))
+        { }
+
+        type_ident& operator = ( type_ident &&other )
         {
-            t     = other.t;
-            value = std::move(other.value);
+            name     = other.name;
+            literal = std::move(other.literal);
             return *this;
         }
 
-        type        t;
-        value_type  value;
+        type        name;
+        value_type  literal;
     };
 
     template <typename Cont = std::string>
@@ -113,26 +142,35 @@ namespace mico { namespace tokens {
         using value_type = Cont;
 
         info( ) = default;
-        info( info & ) = default;
-        info& operator = ( info & ) = default;
+        info( const info & ) = default;
+        info& operator = ( const info & ) = default;
+
+
+        info( type t )
+            :ident(t)
+        { }
+
+        info( type t, std::string value )
+            :ident(t, std::move(value))
+        { }
 
         info( info &&other )
             :line(other.line)
             ,pos(other.pos)
-            ,tv(std::move(other.tv))
+            ,ident(std::move(other.ident))
         { }
 
         info& operator = ( info &&other )
         {
             line = other.line;
             pos  = other.pos;
-            tv   = std::move(other.tv);
+            ident   = std::move(other.ident);
             return *this;
         }
 
         std::size_t line = 0;
         std::size_t pos  = 0;
-        type_value<value_type> tv;
+        type_ident<value_type> ident;
     };
 
 }}
