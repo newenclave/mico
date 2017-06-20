@@ -30,7 +30,11 @@ namespace mico { namespace tokens {
         SEMICOLON,
         COLON,
         COMMA,
+        BANG,
+        ASTERISK,
+        SLASH,
         EQ,
+        NOT_EQ,
 
         /// keywords
         LET,
@@ -75,8 +79,16 @@ namespace mico { namespace tokens {
             case type::COMMA:
                  return ",";
 
+            case type::BANG:
+                return "!";
+            case type::ASTERISK:
+                return "*";
+            case type::SLASH:
+                return "/";
             case type::EQ:
                  return "=";
+            case type::NOT_EQ:
+                 return "!=";
 
             case type::LET:
                 return "let";
@@ -172,6 +184,12 @@ namespace mico { namespace tokens {
         std::size_t pos  = 0;
         type_ident<value_type> ident;
     };
+
+    inline
+    std::ostream &operator << (std::ostream &o, tokens::type tt )
+    {
+        return o << name::get(tt);
+    }
 
 }}
 

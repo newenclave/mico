@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <sstream>
 
 #include "etool/trees/trie/base.h"
 #include "mico/tokens.h"
@@ -18,8 +19,19 @@ namespace mico {
         using token_ident = tokens::type_ident<std::string>;
         using token_info  = tokens::info<std::string>;
         using token_list  = std::vector<token_info>;
+        using error_list  = std::vector<std::string>;
 
-    //private:
+        struct state {
+            state( std::string::const_iterator b )
+                :line_itr(b)
+                ,begin_itr(b)
+            { }
+            std::size_t line = 1;
+            std::string::const_iterator line_itr;
+            std::string::const_iterator begin_itr;
+        };
+
+    private:
 
         static
         void add_token( token_trie &ttrie, std::string value, token_type tt )
@@ -65,15 +77,12 @@ namespace mico {
         }
 
         template <typename ItrT>
-        static ItrT skip_whitespaces( ItrT b, ItrT end,
-                                      ItrT &line_begin,
-                                      std::size_t *line  )
+        static ItrT skip_whitespaces( ItrT b, ItrT end, state *lstate  )
         {
             while( (b != end) ) {
                 if( idents::is_newline(*b) ) {
-                    ++(*line);
-                    ++b;
-                    line_begin = b;
+                    lstate->line++;
+                    lstate->line_itr = ++b;
                 } else if( !idents::is_whitespace(*b) ) {
                     break;
                 } else {
@@ -120,9 +129,8 @@ namespace mico {
         template <typename ItrT>
         static
         std::pair<token_ident, ItrT> next_noken( ItrT begin, ItrT end,
-                                                token_trie  &ttrie,
-                                                ItrT &line_begin,
-                                                std::size_t *line )
+                                                 token_trie  &ttrie,
+                                                 state *lstate )
         {
             using I = token_ident;
 
@@ -139,8 +147,8 @@ namespace mico {
 
                     switch( *next ) {
                     case token_type::END_OF_LINE:
-                        ++(*line);
-                        line_begin = next.iterator( );
+                        lstate->line++;
+                        lstate->line_itr = next.iterator( );
                         break;
                     case token_type::INT_BIN:
                     case token_type::INT_TRE:
@@ -165,55 +173,80 @@ namespace mico {
                     value.literal = parse_ident( bb, end  );
                     return std::make_pair( std::move(value), bb );
                 } else {
-                    // inval
                     return std::make_pair( I(token_type::NONE), begin );
                 }
-                begin = skip_whitespaces( begin, end, line_begin, line );
+                begin = skip_whitespaces( begin, end, lstate );
             }
 
             return std::make_pair( I(token_type::END_OF_FILE), end);
         }
 
+        template <typename ItrT>
+        void push_error( const state &st, ItrT cur )
+        {
+            std::ostringstream oss;
+            oss << "Unexpected symbol '" << *cur << "' at line "
+                << st.line << ":" << std::distance(st.line_itr, cur);
+
+            errors_.emplace_back( std::move(oss.str( ) ) );
+        }
+
     public:
 
         static
-        token_list make_token_list( const std::string &input )
+        lexer make( const std::string &input )
         {
             static auto ttrie = make_trie( );
 
-            std::size_t curren_line = 1;
-            auto        curren_line_itr = input.begin( );
-            token_list res;
+            state lex_state(input.begin( ));
+            lexer res;
 
             auto b = input.begin( );
 
-            b = skip_whitespaces( b, input.end( ), curren_line_itr,
-                                  &curren_line );
+            b = skip_whitespaces( b, input.end( ), &lex_state );
 
             while( b != input.end( ) ) {
                 auto bb = b;
-                auto nt = next_noken( b, input.end( ), ttrie,
-                                      curren_line_itr,
-                                      &curren_line );
+                token_info ti;
+                auto nt = next_noken( b, input.end( ), ttrie, &lex_state );
                 if( nt.first.name == token_type::END_OF_FILE ) {
-                    /// end
+                    ti.ident = token_ident(token_type::END_OF_FILE);
+                    ti.line  = lex_state.line;
+                    ti.pos   = input.size( );
+                    res.tokens_.emplace_back(std::move(ti));
                 } else if( nt.first.name == token_type::NONE ) {
-                    /// invalid
+                    res.push_error( lex_state, b );
                     break;
                 } else {
-                    token_info ti;
                     ti.ident = std::move(nt.first);
-                    ti.line  = curren_line;
-                    ti.pos   = std::distance(curren_line_itr, bb);
-                    res.emplace_back(std::move(ti));
+                    ti.line  = lex_state.line;
+                    ti.pos   = std::distance( lex_state.line_itr, bb );
+                    res.tokens_.emplace_back(std::move(ti));
                 }
-                b = skip_whitespaces( nt.second, input.end( ), curren_line_itr,
-                                     &curren_line );
+                b = skip_whitespaces( nt.second, input.end( ), &lex_state );
             }
 
             return res;
         }
 
+        token_list::const_iterator begin( ) const
+        {
+            return tokens_.begin( );
+        }
+
+        token_list::const_iterator end( ) const
+        {
+            return tokens_.end( );
+        }
+
+        const error_list &errors( ) const
+        {
+            return errors_;
+        }
+
+    private:
+        token_list  tokens_;
+        error_list  errors_;
     };
 
 }
