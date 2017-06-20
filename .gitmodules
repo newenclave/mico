@@ -1,0 +1,8 @@
+[submodule "catch"]
+	path = catch
+	url = https://github.com/newenclave/catch
+	branch = master
+[submodule "etool"]
+	path = etool
+	url = https://github.com/newenclave/etool
+	branch = master
