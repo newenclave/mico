@@ -199,22 +199,13 @@ namespace mico {
                     /// end
                 } else if( nt.first.name == token_type::NONE ) {
                     /// invalid
-                    std::cout << "Invalid token: @" << curren_line
-                              << " pos: " << std::distance(curren_line_itr, nt.second)
-                              << " val: '" << *nt.second << "'"
-                              << "\n";
                     break;
                 } else {
                     token_info ti;
                     ti.ident = std::move(nt.first);
                     ti.line  = curren_line;
                     ti.pos   = std::distance(curren_line_itr, bb);
-
-                    std::cout << "token: @" << ti.line
-                              << " pos: " << ti.pos
-                              << " val: '" << ti.ident.literal << "'"
-                              << " num: " << static_cast<int>(ti.ident.name)
-                              << "\n";
+                    res.emplace_back(std::move(ti));
                 }
                 b = skip_whitespaces( nt.second, input.end( ), curren_line_itr,
                                      &curren_line );
