@@ -32,11 +32,24 @@ namespace mico { namespace tokens {
         COLON,
         DOT,
         COMMA,
+
+        /// operators
+        MINUS,
+        PLUS,
         BANG,
         ASTERISK,
         SLASH,
         EQ,
         NOT_EQ,
+        LT,
+        GT,
+
+        LPAREN,
+        RPAREN,
+        LBRACE,
+        RBRACE,
+        LBRACKET,
+        RBRACKET,
 
         /// keywords
         LET,
@@ -44,10 +57,9 @@ namespace mico { namespace tokens {
         FUNCTION,
         BOOL_TRUE,
         BOOL_FALSE,
-
-        /// operators
-        MINUS,
-        PLUS,
+        IF,
+        ELIF,
+        ELSE,
 
         LAST_VISIBLE,
     };
@@ -58,65 +70,52 @@ namespace mico { namespace tokens {
         const char *get( type t )
         {
             switch( t ) {
-            case type::END_OF_FILE:
-                return "EOF";
-            case type::END_OF_LINE:
-                return "EOL";
-            case type::IDENT:
-                return "IDENT";
+            case type::END_OF_FILE: return "EOF";
+            case type::END_OF_LINE: return "EOL";
+            case type::IDENT:       return "IDENT";
 
-            case type::INT_BIN:
-                return "INT_2";
-            case type::INT_TER:
-                return "INT_3";
-            case type::INT_OCT:
-                return "INT_8";
-            case type::INT_DEC:
-                return "INT_10";
-            case type::INT_HEX:
-                return "INT_16";
-            case type::FLOAT:
-                return "FLOAT";
+            case type::INT_BIN:     return "INT_2";
+            case type::INT_TER:     return "INT_3";
+            case type::INT_OCT:     return "INT_8";
+            case type::INT_DEC:     return "INT_10";
+            case type::INT_HEX:     return "INT_16";
+            case type::FLOAT:       return "FLOAT";
 
-            ////////// tokens that have names
-            case type::SEMICOLON:
-                 return ";";
-            case type::COLON:
-                 return ":";
-            case type::DOT:
-                 return ".";
-            case type::COMMA:
-                 return ",";
-
-            case type::BANG:
-                return "!";
-            case type::ASTERISK:
-                return "*";
-            case type::SLASH:
-                return "/";
-            case type::EQ:
-                 return "=";
-            case type::NOT_EQ:
-                 return "!=";
-
-            case type::LET:
-                return "let";
-            case type::RETURN:
-                return "return";
-            case type::FUNCTION:
-                return "fn";
-            case type::BOOL_TRUE:
-                return "true";
-            case type::BOOL_FALSE:
-                return "false";
+            /// tokens that have names
+            case type::SEMICOLON:   return ";";
+            case type::COLON:       return ":";
+            case type::DOT:         return ".";
+            case type::COMMA:       return ",";
 
             /// operators
-            case type::MINUS:
-                return "-";
-            case type::PLUS:
-                return "+";
+            case type::MINUS:       return "-";
+            case type::PLUS:        return "+";
+            case type::BANG:        return "!";
+            case type::ASTERISK:    return "*";
+            case type::SLASH:       return "/";
+            case type::EQ:          return "=";
+            case type::NOT_EQ:      return "!=";
+            case type::LT:          return "<";
+            case type::GT:          return ">";
 
-            ////////// unnamed
+            case type::LPAREN:      return "(";
+            case type::RPAREN:      return ")";
+            case type::LBRACE:      return "{";
+            case type::RBRACE:      return "}";
+            case type::LBRACKET:    return "[";
+            case type::RBRACKET:    return "]";
+
+            /// keywords
+            case type::LET:         return "let";
+            case type::RETURN:      return "return";
+            case type::FUNCTION:    return "fn";
+            case type::BOOL_TRUE:   return "true";
+            case type::BOOL_FALSE:  return "false";
+            case type::IF:          return "if";
+            case type::ELIF:        return "elif";
+            case type::ELSE:        return "else";
+
+            /// unnamed
             case type::NONE:
             case type::FIRST_VISIBLE:
             case type::LAST_VISIBLE:
