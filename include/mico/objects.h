@@ -2,6 +2,7 @@
 #define MICO_OBJECTS_H
 
 #include <memory>
+#include <string>
 #include <sstream>
 
 namespace mico { namespace objects {
@@ -33,58 +34,30 @@ namespace mico { namespace objects {
     using object_sptr = std::shared_ptr<base>;
     using object_uptr = std::unique_ptr<base>;
 
-    class boolean: public base {
+    template <type TName>
+    struct type2object;
+
+
+    template <type TValue>
+    class primitive: public base  {
     public:
 
-        using value_type = bool;
+        static const type type_name = TValue;
+        using value_type = typename type2object<type_name>::native_type;
 
-        boolean( bool val )
-            :value_(val)
-        { }
-
-        bool value( ) const
-        {
-            return value_;
-        }
-
-        void set_value( bool val )
-        {
-            value_ = val;
-        }
-
-        std::string str( ) const override
-        {
-            return value( ) ? "true" : "false";
-        }
-
-        type get_type( ) const override
-        {
-            return type::BOOLEAN;
-        }
-
-    private:
-        bool value_;
-    };
-
-    template <typename IntT, type TValue>
-    class numeric: public base  {
-    public:
-
-        using value_type = IntT;
-
-        numeric(value_type val)
+        primitive(value_type val)
             :value_(val)
         { }
 
         type get_type( ) const override
         {
-            return TValue;
+            return type_name;
         }
 
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << value( );
+            oss << std::boolalpha << value( );
             return oss.str( );
         }
 
@@ -103,31 +76,79 @@ namespace mico { namespace objects {
         value_type value_;
     };
 
-    class signed_int: public numeric<std::int64_t, type::SIGNED_INT> {
-    public:
-        using super_type = numeric<std::int64_t, type::SIGNED_INT>;
-        using value_type = std::int64_t;
-        signed_int(value_type val )
-            :super_type(val)
-        { }
+    class string;
+
+    template <>
+    struct type2object<type::STRING> {
+        using object_type = string;
+        using native_type = std::string;
     };
 
-    class unsigned_int: public numeric<std::uint64_t, type::UNSIGNED_INT> {
+    class string: public base  {
     public:
-        using super_type = numeric<std::uint64_t, type::UNSIGNED_INT>;
-        using value_type = std::uint64_t;
-        unsigned_int(value_type val )
-            :super_type(val)
+
+        static const type type_name = type::STRING;
+        using value_type = type2object<type_name>::native_type;
+
+        string(value_type val)
+            :value_(std::move(val))
         { }
+
+        type get_type( ) const override
+        {
+            return type_name;
+        }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "\"" << value( ) << "\"";
+            return oss.str( );
+        }
+
+        const value_type &value( ) const
+        {
+            return value_;
+        }
+
+        void set_value( value_type val )
+        {
+            value_ = std::move(val);
+        }
+
+    private:
+
+        value_type value_;
+
     };
 
-    class floating: public numeric<double, type::FLOAT> {
-    public:
-        using super_type = numeric<double, type::FLOAT>;
-        using value_type = double;
-        floating(double val )
-            :super_type(val)
-        { }
+    using boolean      = primitive<type::BOOLEAN>;
+    using signed_int   = primitive<type::SIGNED_INT>;
+    using unsigned_int = primitive<type::UNSIGNED_INT>;
+    using floating     = primitive<type::FLOAT>;
+
+    template <>
+    struct type2object<type::BOOLEAN> {
+        using object_type = boolean;
+        using native_type = bool;
+    };
+
+    template <>
+    struct type2object<type::FLOAT> {
+        using object_type = floating;
+        using native_type = double;
+    };
+
+    template <>
+    struct type2object<type::UNSIGNED_INT> {
+        using object_type = unsigned_int;
+        using native_type = std::uint64_t;
+    };
+
+    template <>
+    struct type2object<type::SIGNED_INT> {
+        using object_type = signed_int;
+        using native_type = std::int64_t;
     };
 
 }}

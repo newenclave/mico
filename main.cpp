@@ -4,6 +4,7 @@
 
 #include "mico/tokens.h"
 #include "mico/lexer.h"
+#include "mico/objects.h"
 
 int main( )
 {
