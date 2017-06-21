@@ -30,6 +30,7 @@ namespace mico { namespace tokens {
 
         SEMICOLON,
         COLON,
+        DOT,
         COMMA,
         BANG,
         ASTERISK,
@@ -77,6 +78,8 @@ namespace mico { namespace tokens {
                  return ";";
             case type::COLON:
                  return ":";
+            case type::DOT:
+                 return ".";
             case type::COMMA:
                  return ",";
 

@@ -31,7 +31,7 @@ namespace mico {
             std::string::const_iterator begin_itr;
         };
 
-    private:
+    //private:
 
         static
         void add_token( token_trie &ttrie, std::string value, token_type tt )
@@ -94,7 +94,7 @@ namespace mico {
 
         template <typename ItrT>
         static
-        std::string parse_number( ItrT &begin, ItrT end, token_type t )
+        std::string read_number( ItrT &begin, ItrT end, token_type t )
         {
             std::string res;
 
@@ -111,7 +111,7 @@ namespace mico {
 
         template <typename ItrT>
         static
-        std::string parse_ident( ItrT &begin, ItrT end )
+        std::string read_ident( ItrT &begin, ItrT end )
         {
             std::string res;
 
@@ -120,6 +120,52 @@ namespace mico {
                     res.push_back( *begin );
                 } else {
                     break;
+                }
+            }
+
+            return res;
+        }
+
+        template <typename ItrT>
+        static
+        std::string read_float( ItrT &begin, ItrT end, int *found )
+        {
+            std::string res;
+            *found = 0;
+            auto chk = &idents::is_digit;
+
+            for( ;begin != end; ++begin ) {
+                if( chk( *begin ) ) {
+                    res.push_back( *begin );
+                } else if( *begin != '_' ) {
+                    break;
+                }
+            }
+
+            if( begin != end && *begin == '.' ) {
+                res.push_back( *begin++ );
+                *found = 1;
+                for( ;begin != end; ++begin ) {
+                    if( chk( *begin ) ) {
+                        res.push_back( *begin );
+                    } else if( *begin != '_' ) {
+                        break;
+                    }
+                }
+            }
+
+            if( begin != end && (*begin == 'e' || *begin == 'E') ) {
+                res.push_back( *begin++ );
+                *found = 1;
+                if( begin != end && (*begin == '+' || *begin == '-') ) {
+                    res.push_back( *begin++ );
+                }
+                for( ;begin != end; ++begin ) {
+                    if( chk( *begin ) ) {
+                        res.push_back( *begin );
+                    } else if( *begin != '_' ) {
+                        break;
+                    }
                 }
             }
 
@@ -141,6 +187,7 @@ namespace mico {
                 auto next = ttrie.get(begin, end, true);
 
                 value.name = token_type::NONE;
+                int ffound = 0;
 
                 if( next ) {
                     value = token_ident(*next);
@@ -152,11 +199,27 @@ namespace mico {
                         break;
                     case token_type::INT_BIN:
                     case token_type::INT_TRE:
-                    case token_type::INT_OCT:
                     case token_type::INT_HEX:
                         bb = next.iterator( );
-                        value.literal = parse_number( bb, end, *next );
+                        value.literal = read_number( bb, end, *next );
                         return std::make_pair( std::move(value), bb );
+                    case token_type::INT_OCT:
+                        bb = std::prev(next.iterator( ));
+                        value.literal = read_float(bb, end, &ffound);
+                        if( ffound != 0 ) {
+                            value.name = token_type::FLOAT;
+                        }
+                        return std::make_pair( std::move(value), bb );
+                    case token_type::DOT:
+                        bb = std::prev(next.iterator( ));
+                        if( idents::is_digit( *next.iterator( ) ) ) {
+                            value.name = token_type::FLOAT;
+                            value.literal = read_float(bb, end, &ffound );
+                            return std::make_pair( std::move(value), bb );
+                        } else {
+                            return std::make_pair( std::move(value),
+                                                   next.iterator( ) );
+                        }
                     default:
                         return std::make_pair( std::move(value),
                                                next.iterator( ) );
@@ -165,12 +228,15 @@ namespace mico {
                     begin = next.iterator( );
                 } else if( idents::is_digit( *bb ) ) {
                     value.name = token_type::INT_DEC;
-                    value.literal = parse_number( bb, end,
-                                                  token_type::INT_DEC );
+                    value.literal = read_float(bb, end, &ffound );
+                    if( ffound != 0 ) {
+                        value.name = token_type::FLOAT;
+                    }
                     return std::make_pair( std::move(value), bb );
+
                 } else if( idents::is_alfa(*bb) ) {
                     value.name     = token_type::IDENT;
-                    value.literal = parse_ident( bb, end  );
+                    value.literal = read_ident( bb, end  );
                     return std::make_pair( std::move(value), bb );
                 } else {
                     return std::make_pair( I(token_type::NONE), begin );
@@ -210,10 +276,7 @@ namespace mico {
                 token_info ti;
                 auto nt = next_noken( b, input.end( ), ttrie, &lex_state );
                 if( nt.first.name == token_type::END_OF_FILE ) {
-                    ti.ident = token_ident(token_type::END_OF_FILE);
-                    ti.line  = lex_state.line;
-                    ti.pos   = input.size( );
-                    res.tokens_.emplace_back(std::move(ti));
+                    break;
                 } else if( nt.first.name == token_type::NONE ) {
                     res.push_error( lex_state, b );
                     nt.second++;
@@ -225,6 +288,12 @@ namespace mico {
                 }
                 b = skip_whitespaces( nt.second, input.end( ), &lex_state );
             }
+
+            token_info ti;
+            ti.ident = token_ident(token_type::END_OF_FILE);
+            ti.line  = lex_state.line;
+            ti.pos   = std::distance( lex_state.line_itr, b );
+            res.tokens_.emplace_back(std::move(ti));
 
             return res;
         }

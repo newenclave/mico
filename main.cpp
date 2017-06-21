@@ -4,17 +4,17 @@
 
 #include "mico/tokens.h"
 #include "mico/lexer.h"
+#include <cmath>
 
 int main( )
 {
-    std::string input = "0t2121002102 = \"@; \n 0xFF445DD00"
-                        " : !\n0b0101010, 0123234\n"
-                        "let x = 543;\n"
-                        "false != true"
+
+    std::string input = "let x = 0.1\n"
+                        "let z = 0b12345\n"
+                        "let r = z * 0.05;\n"
             ;
 
     auto tt = mico::lexer::make(input);
-
 
     for( auto &l: tt ) {
         std::cout << l.line << "\t" << l.pos
