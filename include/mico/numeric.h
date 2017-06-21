@@ -8,38 +8,37 @@ namespace mico {
 
     struct numeric {
 
+        template <typename CharT>
         static
-        bool valid_for_bin( char c )
+        bool valid_for_bin( CharT c )
         {
             return ('0' == c) || (c == '1');
         }
 
+        template <typename CharT>
         static
-        bool valid_for_tre( char c )
+        bool valid_for_tre( CharT c )
         {
             return ('0' <= c) && (c <= '2');
         }
 
+        template <typename CharT>
         static
-        bool valid_for_oct( char c )
+        bool valid_for_oct( CharT c )
         {
             return ('0' <= c) && (c <= '7' );
         }
 
+        template <typename CharT>
         static
-        bool valid_for_dec( char c )
+        bool valid_for_dec( CharT c )
         {
             return ('0' <= c) && (c <= '9' );
         }
 
+        template <typename CharT>
         static
-        bool valid_for_dec_int( int c )
-        {
-            return ('0' <= c) && (c <= '9' );
-        }
-
-        static
-        bool valid_for_hex( char c )
+        bool valid_for_hex( CharT c )
         {
             return (('0' <= c) && (c <= '9' ))
                 || (('a' <= c) && (c <= 'f' ))
@@ -80,12 +79,12 @@ namespace mico {
             int    e = 0;
             int    c = 0;
 
-            while( (s != end) && valid_for_dec_int(c = *s++) ) {
+            while( (s != end) && valid_for_dec(c = *s++) ) {
                 a = a * 10.0 + (c - '0');
             }
 
             if( c == '.' ) {
-                while( (s != end) && valid_for_dec_int(c = *s++)) {
+                while( (s != end) && valid_for_dec(c = *s++)) {
                     a = a*10.0 + (c - '0');
                     e = e-1;
                 }
@@ -103,7 +102,7 @@ namespace mico {
                     sign = -1;
                 }
 
-                while( valid_for_dec_int( c ) ) {
+                while( valid_for_dec( c ) ) {
                     i = i * 10 + (c - '0');
                     if( s == end ) {
                         break;

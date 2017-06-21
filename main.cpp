@@ -11,6 +11,8 @@ int main( )
     std::string input = "let x = 0.1;             \n"
                         "let z = 0b01010;         \n"
                         "let r = z * (0.05 + 10); \n"
+                        "let test_str = \"hello, world!\"\n"
+                        "let t = 0"
             ;
 
     auto tt = mico::lexer::make(input);

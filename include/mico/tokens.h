@@ -19,10 +19,9 @@ namespace mico { namespace tokens {
         INT_OCT,
         INT_DEC,
         INT_HEX,
-
         FLOAT,
-
         IDENT,
+        STRING,
 
         FIRST_VISIBLE = 100,
 
@@ -80,6 +79,7 @@ namespace mico { namespace tokens {
             case type::INT_DEC:     return "INT_10";
             case type::INT_HEX:     return "INT_16";
             case type::FLOAT:       return "FLOAT";
+            case type::STRING:      return "STRING";
 
             /// tokens that have names
             case type::SEMICOLON:   return ";";

@@ -69,6 +69,8 @@ namespace mico {
 
             add_token( res, "0",    tokens::type::INT_OCT );
 
+            add_token( res, "\"",   tokens::type::STRING );
+
             add_token( res, "\n",   tokens::type::END_OF_LINE );
             add_token( res, "\r\n", tokens::type::END_OF_LINE );
             add_token( res, "\n\r", tokens::type::END_OF_LINE );
@@ -90,6 +92,55 @@ namespace mico {
                 }
             }
             return b;
+        }
+
+
+        template <typename ItrT>
+        static
+        std::string read_string( ItrT &begin, ItrT end, state *lstate )
+        {
+            std::string res;
+            for( ; (begin != end) && (*begin != '"'); ++begin ) {
+
+                auto next = std::next(begin);
+
+                if( *begin == '\\' && next != end ) {
+                    switch (*next) {
+                    case 'n':
+                        res.push_back('\n');
+                        break;
+                    case 'r':
+                        res.push_back('\r');
+                        break;
+                    case 't':
+                        res.push_back('\t');
+                        break;
+                    case '\\':
+                        res.push_back('\\');
+                        break;
+                    case '"':
+                        res.push_back('"');
+                        break;
+                    default:
+                        res.push_back('\\');
+                        res.push_back(*next);
+                        break;
+                    }
+                    begin = next;
+                } else {
+                    if( *begin == '\n') {
+                        lstate->line++;
+                        lstate->line_itr = next;
+                    }
+                    res.push_back( *begin );
+                }
+            }
+
+            if( begin != end ) {
+                ++begin;
+            }
+
+            return res;
         }
 
         template <typename ItrT>
@@ -220,6 +271,10 @@ namespace mico {
                             return std::make_pair( std::move(value),
                                                    next.iterator( ) );
                         }
+                    case token_type::STRING:
+                        bb = next.iterator( );
+                        value.literal = read_string( bb, end, lstate );
+                        return std::make_pair( std::move(value), bb );
                     default:
                         return std::make_pair( std::move(value),
                                                next.iterator( ) );
@@ -235,7 +290,7 @@ namespace mico {
                     return std::make_pair( std::move(value), bb );
 
                 } else if( idents::is_alfa(*bb) ) {
-                    value.name     = token_type::IDENT;
+                    value.name    = token_type::IDENT;
                     value.literal = read_ident( bb, end  );
                     return std::make_pair( std::move(value), bb );
                 } else {
@@ -272,18 +327,25 @@ namespace mico {
             b = skip_whitespaces( b, input.end( ), &lex_state );
 
             while( b != input.end( ) ) {
+
                 auto bb = b;
                 token_info ti;
+                auto line_start = lex_state.line_itr;
+                auto current_line = lex_state.line;
+
                 auto nt = next_noken( b, input.end( ), ttrie, &lex_state );
+
                 if( nt.first.name == token_type::END_OF_FILE ) {
                     break;
                 } else if( nt.first.name == token_type::NONE ) {
                     res.push_error( lex_state, b );
                     nt.second++;
                 } else {
+
                     ti.ident = std::move(nt.first);
-                    ti.line  = lex_state.line;
-                    ti.pos   = std::distance( lex_state.line_itr, bb );
+                    ti.line  = current_line;
+                    ti.pos   = std::distance( line_start, bb );
+
                     res.tokens_.emplace_back(std::move(ti));
                 }
                 b = skip_whitespaces( nt.second, input.end( ), &lex_state );
