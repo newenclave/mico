@@ -15,7 +15,7 @@ namespace mico { namespace tokens {
         END_OF_FILE,
 
         INT_BIN,
-        INT_TRE,
+        INT_TER,
         INT_OCT,
         INT_DEC,
         INT_HEX,
@@ -66,11 +66,15 @@ namespace mico { namespace tokens {
                 return "IDENT";
 
             case type::INT_BIN:
-            case type::INT_TRE:
+                return "INT_2";
+            case type::INT_TER:
+                return "INT_3";
             case type::INT_OCT:
+                return "INT_8";
             case type::INT_DEC:
+                return "INT_10";
             case type::INT_HEX:
-                return "INTEGER";
+                return "INT_16";
             case type::FLOAT:
                 return "FLOAT";
 

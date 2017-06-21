@@ -136,7 +136,7 @@ namespace mico {
             switch( t ) {
             case tokens::type::INT_BIN:
                 return valid_for_bin( c );
-            case tokens::type::INT_TRE:
+            case tokens::type::INT_TER:
                 return valid_for_tre( c );
             case tokens::type::INT_OCT:
                 return valid_for_oct( c );

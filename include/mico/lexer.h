@@ -61,8 +61,8 @@ namespace mico {
             add_token( res, "0b",   tokens::type::INT_BIN );
             add_token( res, "0B",   tokens::type::INT_BIN );
 
-            add_token( res, "0t",   tokens::type::INT_TRE );
-            add_token( res, "0T",   tokens::type::INT_TRE );
+            add_token( res, "0t",   tokens::type::INT_TER );
+            add_token( res, "0T",   tokens::type::INT_TER );
 
             add_token( res, "0x",   tokens::type::INT_HEX );
             add_token( res, "0X",   tokens::type::INT_HEX );
@@ -198,7 +198,7 @@ namespace mico {
                         lstate->line_itr = next.iterator( );
                         break;
                     case token_type::INT_BIN:
-                    case token_type::INT_TRE:
+                    case token_type::INT_TER:
                     case token_type::INT_HEX:
                         bb = next.iterator( );
                         value.literal = read_number( bb, end );
