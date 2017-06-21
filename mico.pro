@@ -17,5 +17,7 @@ HEADERS += \
     include/mico/parser.h \
     include/mico/ast.h \
     include/mico/objects.h \
-    include/mico/operations.h
+    include/mico/operations.h \
+    include/mico/expressions.h \
+    include/mico/statements.h
 

@@ -5,19 +5,27 @@
 #include "mico/tokens.h"
 #include "mico/lexer.h"
 #include "mico/objects.h"
+#include "mico/parser.h"
 
 int main( )
 {
 
-    std::string input = "let x = 0.1;             \n"
-                        "let z = 0b01010;         \n"
+    std::string input = "let x = m;             \n"
+                        "let z = t;         \n"
                         "let r = z * (0.05 + 10); \n"
-                        "let test_str = \"hello, world!\"\n"
-                        "let t = 0\n"
-                        "message AddressBook {\n"
-                        "   repeated Person people = 1;\n"
-                        "}\n"
+                        "let test_str = bb;\n"
+                        "let t = op\n"
             ;
+
+    auto pp = mico::parser::parse(input);
+
+    std::cout << pp.str( ) << "\n";
+
+    for( auto &e: pp.errors( ) ) {
+        std::cout << e << "\n";
+    }
+
+    return 0;
 
     auto tt = mico::lexer::make(input);
 

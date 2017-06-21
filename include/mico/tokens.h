@@ -33,6 +33,7 @@ namespace mico { namespace tokens {
         COMMA,
 
         /// operators
+        ASSIGN,
         MINUS,
         PLUS,
         BANG,
@@ -88,12 +89,13 @@ namespace mico { namespace tokens {
             case type::COMMA:       return ",";
 
             /// operators
+            case type::ASSIGN:      return "=";
             case type::MINUS:       return "-";
             case type::PLUS:        return "+";
             case type::BANG:        return "!";
             case type::ASTERISK:    return "*";
             case type::SLASH:       return "/";
-            case type::EQ:          return "=";
+            case type::EQ:          return "==";
             case type::NOT_EQ:      return "!=";
             case type::LT:          return "<";
             case type::GT:          return ">";
