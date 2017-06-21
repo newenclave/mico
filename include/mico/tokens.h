@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <utility>
 #include <string>
+#include <ostream>
 
 namespace mico { namespace tokens {
 

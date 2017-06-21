@@ -185,10 +185,10 @@ namespace mico {
         void push_error( const state &st, ItrT cur )
         {
             std::ostringstream oss;
-            oss << "Unexpected symbol '" << *cur << "' at line "
-                << st.line << ":" << std::distance(st.line_itr, cur);
+            oss << st.line << ":" << std::distance(st.line_itr, cur)
+                << " Unexpected symbol '" << *cur << "'";
 
-            errors_.emplace_back( std::move(oss.str( ) ) );
+            errors_.emplace_back( oss.str( ) );
         }
 
     public:
@@ -196,7 +196,7 @@ namespace mico {
         static
         lexer make( const std::string &input )
         {
-            static auto ttrie = make_trie( );
+            auto ttrie = make_trie( );
 
             state lex_state(input.begin( ));
             lexer res;
@@ -216,7 +216,7 @@ namespace mico {
                     res.tokens_.emplace_back(std::move(ti));
                 } else if( nt.first.name == token_type::NONE ) {
                     res.push_error( lex_state, b );
-                    break;
+                    nt.second++;
                 } else {
                     ti.ident = std::move(nt.first);
                     ti.line  = lex_state.line;
