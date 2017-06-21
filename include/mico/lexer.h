@@ -94,12 +94,12 @@ namespace mico {
 
         template <typename ItrT>
         static
-        std::string read_number( ItrT &begin, ItrT end, token_type t )
+        std::string read_number( ItrT &begin, ItrT end )
         {
             std::string res;
 
             for( ; begin != end; ++begin ) {
-                if( numeric::valid_for( t, *begin ) ) {
+                if( numeric::valid_for_hex( *begin ) ) {
                     res.push_back( *begin );
                 } else if( *begin != '_' ) {
                     break;
@@ -201,7 +201,7 @@ namespace mico {
                     case token_type::INT_TRE:
                     case token_type::INT_HEX:
                         bb = next.iterator( );
-                        value.literal = read_number( bb, end, *next );
+                        value.literal = read_number( bb, end );
                         return std::make_pair( std::move(value), bb );
                     case token_type::INT_OCT:
                         bb = std::prev(next.iterator( ));

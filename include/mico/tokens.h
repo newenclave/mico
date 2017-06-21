@@ -42,6 +42,8 @@ namespace mico { namespace tokens {
         LET,
         RETURN,
         FUNCTION,
+        BOOL_TRUE,
+        BOOL_FALSE,
 
         /// operators
         MINUS,
@@ -73,7 +75,6 @@ namespace mico { namespace tokens {
                 return "FLOAT";
 
             ////////// tokens that have names
-
             case type::SEMICOLON:
                  return ";";
             case type::COLON:
@@ -100,6 +101,10 @@ namespace mico { namespace tokens {
                 return "return";
             case type::FUNCTION:
                 return "fn";
+            case type::BOOL_TRUE:
+                return "true";
+            case type::BOOL_FALSE:
+                return "false";
 
             /// operators
             case type::MINUS:

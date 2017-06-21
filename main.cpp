@@ -4,14 +4,13 @@
 
 #include "mico/tokens.h"
 #include "mico/lexer.h"
-#include <cmath>
 
 int main( )
 {
 
-    std::string input = "let x = 0.1\n"
-                        "let z = 0b12345\n"
-                        "let r = z * 0.05;\n"
+    std::string input = "let x = 0.1;        \n"
+                        "let z = 0b12345;    \n"
+                        "let r = z * 0.05;   \n"
             ;
 
     auto tt = mico::lexer::make(input);
