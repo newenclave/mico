@@ -12,7 +12,10 @@ int main( )
                         "let z = 0b01010;         \n"
                         "let r = z * (0.05 + 10); \n"
                         "let test_str = \"hello, world!\"\n"
-                        "let t = 0"
+                        "let t = 0\n"
+                        "message AddressBook {\n"
+                        "   repeated Person people = 1;\n"
+                        "}\n"
             ;
 
     auto tt = mico::lexer::make(input);

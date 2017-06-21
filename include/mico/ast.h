@@ -8,6 +8,7 @@ namespace mico { namespace ast {
 
     enum class type {
         NONE = 0,
+
     };
 
     struct node {

@@ -47,6 +47,11 @@ namespace mico { namespace objects {
             return value_;
         }
 
+        void set_value( bool val )
+        {
+            value_ = val;
+        }
+
         std::string str( ) const override
         {
             return value( ) ? "true" : "false";
@@ -86,6 +91,11 @@ namespace mico { namespace objects {
         value_type value( ) const
         {
             return value_;
+        }
+
+        void set_value( value_type val )
+        {
+            value_ = val;
         }
 
     private:
