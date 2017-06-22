@@ -10,10 +10,10 @@
 int main( )
 {
 
-    std::string input = "let x = m;             \n"
-                        "let z = t;         \n"
-                        "let r = z * (0.05 + 10); \n"
-                        "let test_str = bb;\n"
+    std::string input = "let x = !-009090.7887;  \n"
+                        "let z = \"sdf\";         \n"
+                        "let r = z - 0.05 + !10; \n"
+                        "let test_str = 2 + 2 * 2;\n"
                         "let t = op\n"
             ;
 
@@ -22,7 +22,7 @@ int main( )
     std::cout << pp.str( ) << "\n";
 
     for( auto &e: pp.errors( ) ) {
-        std::cout << e << "\n";
+        std::cout << "Error: " <<  e << "\n";
     }
 
     return 0;
@@ -30,7 +30,7 @@ int main( )
     auto tt = mico::lexer::make(input);
 
     for( auto &l: tt ) {
-        std::cout << l.line << "\t" << l.pos
+        std::cout << l.where
                   << "\t" << l.ident.name
                   << "\t" << l.ident.literal
                   << "\n";

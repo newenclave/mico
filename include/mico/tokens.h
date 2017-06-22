@@ -127,10 +127,9 @@ namespace mico { namespace tokens {
         }
     };
 
-    template <typename Cont = std::string>
     struct type_ident {
 
-        using value_type = Cont;
+        using value_type = std::string;
 
         type_ident( ) = default;
         type_ident( const type_ident & ) = default;
@@ -162,10 +161,20 @@ namespace mico { namespace tokens {
         value_type  literal;
     };
 
-    template <typename Cont = std::string>
+    struct position {
+        std::size_t line = 0;
+        std::size_t pos  = 0;
+        position(std::size_t l, std::size_t p )
+            :line(l)
+            ,pos(p)
+        { }
+        position( const position & ) = default;
+        position(  ) = default;
+    };
+
     struct info {
 
-        using value_type = Cont;
+        using value_type = std::string;
 
         info( ) = default;
         info( const info & ) = default;
@@ -181,28 +190,43 @@ namespace mico { namespace tokens {
         { }
 
         info( info &&other )
-            :line(other.line)
-            ,pos(other.pos)
+            :where(other.where)
             ,ident(std::move(other.ident))
         { }
 
         info& operator = ( info &&other )
         {
-            line = other.line;
-            pos  = other.pos;
-            ident   = std::move(other.ident);
+            where = other.where;
+            ident = std::move(other.ident);
             return *this;
         }
 
-        std::size_t line = 0;
-        std::size_t pos  = 0;
-        type_ident<value_type> ident;
+        position where;
+        type_ident ident;
     };
 
     inline
     std::ostream &operator << (std::ostream &o, tokens::type tt )
     {
         return o << name::get(tt);
+    }
+
+    inline
+    std::ostream &operator << (std::ostream &o, const tokens::position &tt )
+    {
+        return o << tt.line << ":" << tt.pos;
+    }
+
+    inline
+    std::ostream &operator << (std::ostream &o, const tokens::type_ident &ti )
+    {
+        o << ti.name;
+        if( ti.name < tokens::type::FIRST_VISIBLE ||
+                      tokens::type::LAST_VISIBLE < ti.name )
+        {
+            o << "(" << ti.literal << ")";
+        }
+        return o;
     }
 
 }}

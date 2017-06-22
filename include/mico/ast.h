@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <sstream>
 
 namespace mico { namespace ast {
 
@@ -13,6 +14,10 @@ namespace mico { namespace ast {
         IDENT,
         LET,
         RETURN,
+        PREFIX,
+        INFIX,
+        INTEGER,
+        FLOAT,
     };
 
     struct node {

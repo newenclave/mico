@@ -50,10 +50,38 @@ namespace mico {
         void fill_nuds( )
         {
             nuds_[token_type::IDENT] = [this]( ) { return parse_ident( ); };
+            nuds_[token_type::FLOAT] = [this]( ) { return parse_float( ); };
+
+            nuds_[token_type::MINUS] =
+            nuds_[token_type::BANG]  =
+                    [this]( ) {
+                        return parse_prefix( );
+                    };
+
+            nuds_[token_type::INT_BIN] =
+            nuds_[token_type::INT_TER] =
+            nuds_[token_type::INT_OCT] =
+            nuds_[token_type::INT_DEC] =
+            nuds_[token_type::INT_HEX] =
+                    [this]( ) {
+                        return parse_int( );
+                    };
         }
 
         void fill_leds( )
         {
+            using EP = expression_uptr;
+            leds_[token_type::MINUS]    =
+            leds_[token_type::PLUS]     =
+            leds_[token_type::ASTERISK] =
+            leds_[token_type::LT]       =
+            leds_[token_type::GT]       =
+            leds_[token_type::EQ]       =
+            leds_[token_type::NOT_EQ]   =
+                    [this]( EP e ) {
+                        return parse_infix(std::move(e));
+                    };
+
         }
 
         static
@@ -86,8 +114,7 @@ namespace mico {
         void error_expect( token_type tt )
         {
             std::ostringstream oss;
-
-            oss << "parser error: " << peek( ).line << ":" << peek( ).pos
+            oss << "parser error: " << peek( ).where
                 << " expected token to be " << tt
                 <<  ", got "
                 << peek( ).ident.name
@@ -98,20 +125,30 @@ namespace mico {
         void error_no_prefix( )
         {
             std::ostringstream oss;
-            oss << "no prefix parse function for "
-                   << current( ).ident.name
-                   << "(" << current( ).ident.literal << ")"
-                   << " found";
+            oss << current( ).where
+                << " no prefix parse function for "
+                << current( ).ident
+                << " found";
             errors_.emplace_back(oss.str( ));
         }
 
         void error_no_suffix( )
         {
             std::ostringstream oss;
-            oss << "no suffix parse function for "
-                   << current( ).ident.name
-                   << "(" << current( ).ident.literal << ")"
-                   << " found";
+            oss << peek( ).where
+                << " no suffix parse function for "
+                << peek( ).ident
+                << " found";
+            errors_.emplace_back(oss.str( ));
+        }
+
+        void error_inval_data( int pos )
+        {
+            std::ostringstream oss;
+            oss << current( ).where << ":" << pos
+                << " invalid data format for "
+                << current( ).ident
+                ;
             errors_.emplace_back(oss.str( ));
         }
 
@@ -132,6 +169,11 @@ namespace mico {
         const token_info &peek( ) const
         {
             return (peek_ == lexer_.end( )) ? eof_token( ) : *peek_;
+        }
+
+        precedence peek_precedence( ) const
+        {
+            return get_precedence( peek( ).ident.name );
         }
 
         bool is_current( token_type tt ) const
@@ -176,6 +218,35 @@ namespace mico {
 
     public: /////////////////// PARSING
 
+        ast::expressions::prefix::uptr parse_prefix( )
+        {
+            ast::expressions::prefix::uptr res;
+
+            auto tt = current( ).ident.name;
+            advance( );
+
+            auto expr = parse_expr( precedence::PREFIX );
+
+            res.reset(new ast::expressions::prefix(tt, std::move(expr) ));
+
+            return res;
+        }
+
+        ast::expressions::infix::uptr parse_infix( expression_uptr left )
+        {
+            ast::expressions::infix::uptr res;
+
+            auto tt = current( ).ident.name;
+            res.reset(new ast::expressions::infix(tt, std::move(left)));
+
+            auto cp = get_precedence( tt );
+
+            advance( );
+            res->set_right( parse_expr( cp ) );
+
+            return  res;
+        }
+
         ast::expressions::ident::uptr parse_ident( )
         {
             using ident_type = ast::expressions::ident;
@@ -183,17 +254,70 @@ namespace mico {
             return res;
         }
 
+        ast::expressions::integer::uptr parse_int( )
+        {
+            ast::expressions::integer::uptr res;
+
+            int failed = -1;
+            auto num = numeric::parse_int( current( ).ident.literal,
+                                           current( ).ident.name, &failed );
+            if( failed >= 0 ) {
+                error_inval_data(failed);
+            } else {
+                res.reset(new ast::expressions::integer(num));
+            }
+
+            return res;
+        }
+
+        ast::expressions::floating::uptr parse_float( )
+        {
+            ast::expressions::floating::uptr res;
+
+            auto b = current( ).ident.literal.begin( );
+            auto e = current( ).ident.literal.end( );
+
+            double value = numeric::parse_float(b, e);
+
+            if( b != e ) {
+                error_inval_data(0);
+            } else {
+                res.reset(new ast::expressions::floating(value));
+            }
+
+            return res;
+        }
+
         ast::expression::uptr parse_expr( precedence p )
         {
-            ast::expression::uptr expr;
+            ast::expression::uptr left;
 
             auto nud = nuds_.find( current( ).ident.name );
             if( nud == nuds_.end( ) ) {
                 error_no_prefix( );
                 return ast::expression::uptr( );
             }
-            expr = nud->second( );
-            return expr;
+            left = nud->second( );
+
+            auto pp = peek_precedence( );
+            auto pt = peek( ).ident.name;
+
+            while( (pt != token_type::SEMICOLON) && (p < pp) ) {
+
+                auto led = leds_.find( pt );
+                if( led == leds_.end( ) ) {
+                    error_no_suffix( );
+                    return left;
+                }
+
+                advance( );
+                left = led->second(std::move(left));
+
+                pp = peek_precedence( );
+                pt = peek( ).ident.name;
+            }
+
+            return left;
         }
 
         ast::statements::let::uptr parse_let( )
@@ -216,6 +340,7 @@ namespace mico {
 
             //advance( );
 
+            /// TODO parse expression!
             while( !eof( ) && peek( ).ident.name != token_type::SEMICOLON ) {
                 advance( );
             }

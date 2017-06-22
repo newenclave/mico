@@ -16,8 +16,8 @@ namespace mico {
 
         using token_type  = tokens::type;
         using token_trie  = etool::trees::trie::base<char, token_type>;
-        using token_ident = tokens::type_ident<std::string>;
-        using token_info  = tokens::info<std::string>;
+        using token_ident = tokens::type_ident;
+        using token_info  = tokens::info;
         using token_list  = std::vector<token_info>;
         using error_list  = std::vector<std::string>;
 
@@ -342,9 +342,9 @@ namespace mico {
                     nt.second++;
                 } else {
 
-                    ti.ident = std::move(nt.first);
-                    ti.line  = current_line;
-                    ti.pos   = std::distance( line_start, bb );
+                    ti.ident      = std::move(nt.first);
+                    ti.where.line = current_line;
+                    ti.where.pos  = std::distance( line_start, bb );
 
                     res.tokens_.emplace_back(std::move(ti));
                 }
@@ -352,9 +352,9 @@ namespace mico {
             }
 
             token_info ti;
-            ti.ident = token_ident(token_type::END_OF_FILE);
-            ti.line  = lex_state.line;
-            ti.pos   = std::distance( lex_state.line_itr, b );
+            ti.ident      = token_ident(token_type::END_OF_FILE);
+            ti.where.line = lex_state.line;
+            ti.where.pos  = std::distance( lex_state.line_itr, b );
             res.tokens_.emplace_back(std::move(ti));
 
             return res;
