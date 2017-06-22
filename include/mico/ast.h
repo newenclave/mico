@@ -16,6 +16,7 @@ namespace mico { namespace ast {
         RETURN,
         PREFIX,
         INFIX,
+        STRING,
         INTEGER,
         FLOAT,
     };

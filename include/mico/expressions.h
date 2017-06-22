@@ -38,6 +38,33 @@ namespace mico { namespace ast { namespace expressions {
         std::string value_;
     };
 
+    class string: public expression {
+
+    public:
+
+        string(std::string val)
+            :value_(std::move(val))
+        { }
+
+        type get_type( ) const
+        {
+            return type::STRING;
+        }
+
+        std::string str( ) const
+        {
+            return std::string("\"") + value_ + '"';
+        }
+
+        const std::string &value( ) const
+        {
+            return value_;
+        }
+
+    private:
+        std::string value_;
+    };
+
     class integer: public expression {
     public:
 

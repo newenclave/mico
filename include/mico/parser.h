@@ -49,8 +49,9 @@ namespace mico {
 
         void fill_nuds( )
         {
-            nuds_[token_type::IDENT] = [this]( ) { return parse_ident( ); };
-            nuds_[token_type::FLOAT] = [this]( ) { return parse_float( ); };
+            nuds_[token_type::IDENT]  = [this]( ) { return parse_ident( ); };
+            nuds_[token_type::STRING] = [this]( ) { return parse_string( ); };
+            nuds_[token_type::FLOAT]  = [this]( ) { return parse_float( ); };
 
             nuds_[token_type::MINUS] =
             nuds_[token_type::BANG]  =
@@ -251,6 +252,13 @@ namespace mico {
         {
             using ident_type = ast::expressions::ident;
             ident_type::uptr res( new ident_type(current( ).ident.literal ) );
+            return res;
+        }
+
+        ast::expressions::string::uptr parse_string( )
+        {
+            using res_type = ast::expressions::string;
+            res_type::uptr res( new res_type(current( ).ident.literal ) );
             return res;
         }
 
