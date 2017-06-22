@@ -14,7 +14,8 @@ int main( )
                         "let z = \"sdf\";         \n"
                         "let r = z - 0.05 + !10; \n"
                         "let test_str = 2 + 2 * 2;\n"
-                        "let t = op\n"
+                        "let t = op\n;"
+                        " return (2 + 2) * 3 / 4 + 6 / (4 + z);"
             ;
 
     auto pp = mico::parser::parse(input);

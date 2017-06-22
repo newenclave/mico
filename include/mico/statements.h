@@ -44,6 +44,36 @@ namespace mico { namespace ast { namespace statements {
         std::string      ident_;
         expression::uptr expr_;
     };
+
+    class ret: public statement {
+
+    public:
+        using uptr = std::unique_ptr<ret>;
+
+        ret( expression::uptr ex )
+            :expr_(std::move(ex))
+        { }
+
+        type get_type( ) const
+        {
+            return type::RETURN;
+        }
+
+        std::string str( ) const
+        {
+            std::ostringstream oss;
+            oss << "return " << (expr_ ? expr_->str( ) : "null");
+            return oss.str( );
+        }
+
+        const expression *expr( ) const
+        {
+            return expr_.get( );
+        }
+
+    private:
+        expression::uptr expr_;
+    };
 }}}
 
 #endif // STATEMENTS_H

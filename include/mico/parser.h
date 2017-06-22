@@ -52,6 +52,7 @@ namespace mico {
             nuds_[token_type::IDENT]  = [this]( ) { return parse_ident( ); };
             nuds_[token_type::STRING] = [this]( ) { return parse_string( ); };
             nuds_[token_type::FLOAT]  = [this]( ) { return parse_float( ); };
+            nuds_[token_type::LPAREN] = [this]( ) { return parse_paren( ); };
 
             nuds_[token_type::MINUS] =
             nuds_[token_type::BANG]  =
@@ -75,6 +76,7 @@ namespace mico {
             leds_[token_type::MINUS]    =
             leds_[token_type::PLUS]     =
             leds_[token_type::ASTERISK] =
+            leds_[token_type::SLASH]    =
             leds_[token_type::LT]       =
             leds_[token_type::GT]       =
             leds_[token_type::EQ]       =
@@ -117,8 +119,8 @@ namespace mico {
             oss << "parser error: " << peek( ).where
                 << " expected token to be " << tt
                 <<  ", got "
-                << peek( ).ident.name
-                << "(" << peek( ).ident.literal << ") instead";
+                << peek( ).ident
+                << " instead";
             errors_.emplace_back(oss.str( ));
         }
 
@@ -192,7 +194,7 @@ namespace mico {
                 advance( );
                 return true;
             } else if( error ) {
-
+                error_expect( tt );
             }
             return false;
         }
@@ -245,6 +247,17 @@ namespace mico {
             res->set_right( parse_expr( cp ) );
 
             return  res;
+        }
+
+        ast::expression::uptr parse_paren( )
+        {
+            ///LPAREN
+            advance( );
+            auto res = parse_expr( precedence::LOWEST );
+            if( expect_peek( token_type::RPAREN, true ) ) {
+                //advance( );
+            }
+            return res;
         }
 
         ast::expressions::ident::uptr parse_ident( )
@@ -345,17 +358,15 @@ namespace mico {
 
             ast::expression::uptr nn(parse_expr( precedence::LOWEST ));
 
-            //advance( );
-
-            /// TODO parse expression!
-            while( !eof( ) && peek( ).ident.name != token_type::SEMICOLON ) {
-                advance( );
-            }
-
-            //ast::expression::uptr nn(new ast::expressions::null);
-
             return let_type::uptr(new let_type(ident_name, std::move(nn) ) );
-            //return ast::statements::let::uptr(new ast::statements::let(ident_name));
+        }
+
+        ast::statements::ret::uptr parse_return( )
+        {
+            using res_type = ast::statements::ret;
+            advance( );
+            ast::expression::uptr nn(parse_expr( precedence::LOWEST ));
+            return res_type::uptr( new res_type( std::move(nn) ) );
         }
 
         ast::program parse( )
@@ -369,6 +380,9 @@ namespace mico {
                 switch( current( ).ident.name ) {
                 case token_type::LET:
                     stmnt = parse_let( );
+                    break;
+                case token_type::RETURN:
+                    stmnt = parse_return( );
                     break;
                 default:
                     break;
