@@ -10,8 +10,8 @@
 int main( )
 {
 
-    std::string input = //"let f0 = fn( ) { }\n"
-                        "f0 ( 1, 2, 3 );\n"
+    std::string input = //"let f0 = fn(  ) { }\n"
+                        "f0 ( 1, 2, 3 );#\n"
                         "fn(x1, x2, x3) {\n"
                         "   x1 + 10;"
                         "   x2 + 30;"
