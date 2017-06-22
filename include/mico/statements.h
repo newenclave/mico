@@ -11,9 +11,10 @@ namespace mico { namespace ast { namespace statements {
     public:
         using uptr = std::unique_ptr<let>;
 
-        let( std::string ival, expression::uptr ex )
-            :ident_(std::move(ival))
-            ,expr_(std::move(ex))
+        using expr_type        = expression::uptr;
+        using ident_type       = expression::uptr;
+
+        let( )
         { }
 
         type get_type( ) const
@@ -24,25 +25,63 @@ namespace mico { namespace ast { namespace statements {
         std::string str( ) const
         {
             std::ostringstream oss;
-            oss << "let " << ident_ << " = "
-                << (expr_ ? expr_->str( ) : "null");
+            oss << "let ";
+            bool second = false;
+            for( auto &id: idents( ) ) {
+                if( second) {
+                    oss << ", ";
+                } else {
+                    second = true;
+                }
+                oss << id->str( );
+            }
+            oss << " = ";
+            second = false;
+            for( auto &ex: exprs( ) ) {
+                if( second) {
+                    oss << ", ";
+                } else {
+                    second = true;
+                }
+                oss << ex->str( );
+            }
             return oss.str( );
         }
 
-        const std::string &ident( ) const
+        const expression_list &idents( ) const
         {
             return ident_;
         }
 
-        const expression *expr( ) const
+        expression_list &idents( )
         {
-            return expr_.get( );
+            return ident_;
+        }
+
+        const expression_list &exprs( ) const
+        {
+            return expr_;
+        }
+
+        expression_list &exprs( )
+        {
+            return expr_;
+        }
+
+        void push_ident( ident_type val )
+        {
+            ident_.emplace_back(std::move(val));
+        }
+
+        void push_exp( expr_type val )
+        {
+            expr_.emplace_back(std::move(val));
         }
 
     private:
 
-        std::string      ident_;
-        expression::uptr expr_;
+        expression_list ident_;
+        expression_list expr_;
     };
 
     class ret: public statement {
@@ -50,8 +89,7 @@ namespace mico { namespace ast { namespace statements {
     public:
         using uptr = std::unique_ptr<ret>;
 
-        ret( expression::uptr ex )
-            :expr_(std::move(ex))
+        ret(  )
         { }
 
         type get_type( ) const
@@ -62,18 +100,65 @@ namespace mico { namespace ast { namespace statements {
         std::string str( ) const
         {
             std::ostringstream oss;
-            oss << "return " << (expr_ ? expr_->str( ) : "null");
+            oss << "return ";
+            bool second = false;
+            for( auto &ex: exprs( ) ) {
+                if( second) {
+                    oss << ", ";
+                } else {
+                    second = true;
+                }
+                oss << ex->str( );
+            }
             return oss.str( );
         }
 
-        const expression *expr( ) const
+        const expression_list &exprs( ) const
         {
-            return expr_.get( );
+            return expr_;
+        }
+
+        expression_list &exprs( )
+        {
+            return expr_;
+        }
+
+        void push_exp( expression::uptr val )
+        {
+            expr_.emplace_back(std::move(val));
+        }
+
+    private:
+        expression_list expr_;
+    };
+
+    class expr: public statement {
+    public:
+        using uptr = std::unique_ptr<expr>;
+
+        expr( expression::uptr val )
+            :expr_(std::move(val))
+        { }
+
+        type get_type( ) const
+        {
+            return type::EXPR;
+        }
+
+        std::string str( ) const
+        {
+            return expr_->str( );
+        }
+
+        expression::uptr &value( )
+        {
+            return expr_;
         }
 
     private:
         expression::uptr expr_;
     };
+
 }}}
 
 #endif // STATEMENTS_H

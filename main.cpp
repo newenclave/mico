@@ -10,12 +10,14 @@
 int main( )
 {
 
-    std::string input = "let x = !-009090.7887;  \n"
-                        "let z = \"sdf\";         \n"
-                        "let r = z - 0.05 + !10; \n"
-                        "let test_str = 2 + 2 * 2;\n"
-                        "let t = op\n;"
-                        " return (2 + 2) * 3 / 4 + 6 / (4 + z);"
+    std::string input = //"let f0 = fn( ) { }\n"
+                        "f0 ( 1, 2, 3 );\n"
+                        "fn(x1, x2, x3) {\n"
+                        "   x1 + 10;"
+                        "   x2 + 30;"
+                        "   x3"
+                        "}(1, 2, 3)\n"
+                        //"return 2 + 2 * 2;\n"
             ;
 
     auto pp = mico::parser::parse(input);

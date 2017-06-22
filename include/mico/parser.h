@@ -54,11 +54,20 @@ namespace mico {
             nuds_[token_type::FLOAT]  = [this]( ) { return parse_float( ); };
             nuds_[token_type::LPAREN] = [this]( ) { return parse_paren( ); };
 
+            nuds_[token_type::BOOL_TRUE]  = [this]( ) { return parse_bool( ); };
+            nuds_[token_type::BOOL_FALSE] = [this]( ) { return parse_bool( ); };
+            nuds_[token_type::FUNCTION]   =
+                    [this]( ) {
+                        return parse_function( );
+                    };
+
             nuds_[token_type::MINUS] =
             nuds_[token_type::BANG]  =
                     [this]( ) {
                         return parse_prefix( );
                     };
+
+
 
             nuds_[token_type::INT_BIN] =
             nuds_[token_type::INT_TER] =
@@ -83,6 +92,10 @@ namespace mico {
             leds_[token_type::NOT_EQ]   =
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
+                    };
+            leds_[token_type::LPAREN]   =
+                    [this]( EP e ) {
+                        return parse_call(std::move(e));
                     };
         }
 
@@ -226,11 +239,10 @@ namespace mico {
 
             auto tt = current( ).ident.name;
             advance( );
-
-            auto expr = parse_expr( precedence::PREFIX );
-
-            res.reset(new ast::expressions::prefix(tt, std::move(expr) ));
-
+            auto expr = parse_expression( precedence::PREFIX );
+            if( expr ) {
+                res.reset(new ast::expressions::prefix(tt, std::move(expr) ));
+            }
             return res;
         }
 
@@ -244,7 +256,14 @@ namespace mico {
             auto cp = get_precedence( tt );
 
             advance( );
-            res->set_right( parse_expr( cp ) );
+
+            auto right = parse_expression( cp );
+
+            if( !right ) {
+                return ast::expressions::infix::uptr( );
+            }
+
+            res->set_right( std::move(right) );
 
             return  res;
         }
@@ -253,11 +272,41 @@ namespace mico {
         {
             ///LPAREN
             advance( );
-            auto res = parse_expr( precedence::LOWEST );
+            auto res = parse_expression( precedence::LOWEST );
             if( expect_peek( token_type::RPAREN, true ) ) {
                 //advance( );
             }
             return res;
+        }
+
+        bool parse_ident_list( std::vector<ast::expression::uptr> &res )
+        {
+            while( is_current( token_type::IDENT ) ) {
+                res.emplace_back(parse_ident( ));
+                if( expect_peek( token_type::COMMA, false ) ) {
+                    advance( );
+                } else {
+                    break;
+                }
+            }
+            return true;
+        }
+
+        bool parse_expression_list( std::vector<ast::expression::uptr> &res )
+        {
+            do {
+                auto next = parse_expression( precedence::LOWEST );
+                if( !next ) {
+                    return false;
+                }
+                res.emplace_back( std::move(next) );
+                if( expect_peek( token_type::COMMA, false ) ) {
+                    advance( );
+                } else {
+                    break;
+                }
+            } while( true );
+            return true;
         }
 
         ast::expressions::ident::uptr parse_ident( )
@@ -271,6 +320,14 @@ namespace mico {
         {
             using res_type = ast::expressions::string;
             res_type::uptr res( new res_type(current( ).ident.literal ) );
+            return res;
+        }
+
+        ast::expressions::boolean::uptr parse_bool( )
+        {
+            using bool_type = ast::expressions::boolean;
+            auto cur = is_current(token_type::BOOL_TRUE);
+            bool_type::uptr res( new bool_type( cur ) );
             return res;
         }
 
@@ -308,7 +365,7 @@ namespace mico {
             return res;
         }
 
-        ast::expression::uptr parse_expr( precedence p )
+        ast::expression::uptr parse_expression( precedence p )
         {
             ast::expression::uptr left;
 
@@ -318,6 +375,9 @@ namespace mico {
                 return ast::expression::uptr( );
             }
             left = nud->second( );
+            if( !left ) {
+                return ast::expression::uptr( );
+            }
 
             auto pp = peek_precedence( );
             auto pt = peek( ).ident.name;
@@ -327,11 +387,14 @@ namespace mico {
                 auto led = leds_.find( pt );
                 if( led == leds_.end( ) ) {
                     error_no_suffix( );
-                    return left;
+                    return ast::expression::uptr( );
                 }
 
                 advance( );
                 left = led->second(std::move(left));
+                if( !left ) {
+                    return ast::expression::uptr( );
+                }
 
                 pp = peek_precedence( );
                 pt = peek( ).ident.name;
@@ -348,55 +411,129 @@ namespace mico {
                 return let_type::uptr( );
             }
 
-            std::string ident_name = current( ).ident.literal;
+            ast::statements::let::uptr res(new let_type);
 
-            if( !expect_peek( token_type::ASSIGN ) ) {
-                return let_type::uptr( );
+            parse_ident_list( res->idents( ) );
+
+            if( !expect_peek( token_type::ASSIGN, true ) ) {
+                return ast::statements::let::uptr( );
             }
 
             advance( );
 
-            ast::expression::uptr nn(parse_expr( precedence::LOWEST ));
+            if( !parse_expression_list( res->exprs( ) ) ) {
+                return ast::statements::let::uptr( );
+            }
 
-            return let_type::uptr(new let_type(ident_name, std::move(nn) ) );
+            return res;
         }
 
         ast::statements::ret::uptr parse_return( )
         {
             using res_type = ast::statements::ret;
             advance( );
-            ast::expression::uptr nn(parse_expr( precedence::LOWEST ));
-            return res_type::uptr( new res_type( std::move(nn) ) );
+            res_type::uptr res( new res_type );
+            if( !parse_expression_list( res->exprs( ) ) ) {
+                return ast::statements::ret::uptr( );
+            }
+            return res;
+        }
+
+        ast::expressions::function::uptr parse_function( )
+        {
+            using fn_type = ast::expressions::function;
+            fn_type::uptr res(new fn_type);
+
+            if( !expect_peek( token_type::LPAREN ) ) {
+                return fn_type::uptr( );
+            }
+
+            advance( );
+            if( !is_current( token_type::RPAREN ) ) {
+                parse_ident_list( res->idents( ) );
+
+                if( !expect_peek( token_type::RPAREN ) ) {
+                    return fn_type::uptr( );
+                }
+            }
+
+            if( !expect_peek( token_type::LBRACE ) ) {
+                return fn_type::uptr( );
+            }
+
+            advance( );
+            parse_statements( res->states( ), true );
+
+            return res;
+        }
+
+        ast::expressions::call::uptr parse_call( ast::expression::uptr left )
+        {
+            using call_type = ast::expressions::call;
+            call_type::uptr res(new call_type(std::move(left) ) );
+
+            advance( );
+
+            if( !is_current( token_type::RPAREN ) ) {
+                parse_expression_list( res->params( ) );
+                if( !expect_peek( token_type::RPAREN ) ) {
+                    return call_type::uptr( );
+                }
+            }
+
+            return res;
+        }
+
+        ast::statements::expr::uptr parse_exrp_stmt(  )
+        {
+            using expr_type = ast::statements::expr;
+            auto expt = parse_expression(precedence::LOWEST);
+            if( !expt ) {
+                return expr_type::uptr( );
+            }
+            ast::statements::expr::uptr res(new expr_type(std::move(expt)));
+            return res;
+        }
+
+        void parse_statements( ast::statement_list &stmts, bool brace )
+        {
+            while( !eof( ) ) {
+
+                ast::statement::uptr stmt;
+
+                switch( current( ).ident.name ) {
+                case token_type::LET:
+                    stmt = parse_let( );
+                    break;
+                case token_type::RETURN:
+                    stmt = parse_return( );
+                    break;
+                case token_type::RBRACE:
+                    if( brace ) {
+                        return;
+                    }
+                case token_type::SEMICOLON:
+                    break;
+                default:
+                    stmt = parse_exrp_stmt( );
+                    break;
+                }
+
+                if( stmt ) {
+                    stmts.emplace_back( std::move(stmt) );
+                }
+
+                advance( );
+            }
         }
 
         ast::program parse( )
         {
             ast::program prog;
 
-            while( !eof( ) ) {
-
-                ast::statement::uptr stmnt;
-
-                switch( current( ).ident.name ) {
-                case token_type::LET:
-                    stmnt = parse_let( );
-                    break;
-                case token_type::RETURN:
-                    stmnt = parse_return( );
-                    break;
-                default:
-                    break;
-                }
-
-                if( stmnt ) {
-                    prog.push_state( std::move(stmnt) );
-                }
-
-                advance( );
-            }
+            parse_statements( prog.states( ), false );
 
             prog.set_errors( errors_ );
-
             return prog;
         }
 

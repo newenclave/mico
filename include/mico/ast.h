@@ -13,12 +13,16 @@ namespace mico { namespace ast {
         PROGRAM,
         IDENT,
         LET,
+        EXPR,
         RETURN,
         PREFIX,
         INFIX,
         STRING,
         INTEGER,
+        BOOLEAN,
         FLOAT,
+        FN,
+        CALL,
     };
 
     struct node {
@@ -42,11 +46,14 @@ namespace mico { namespace ast {
         using uptr = std::unique_ptr<expression>;
     };
 
+    using expression_list = std::vector<expression::uptr>;
+    using statement_list  = std::vector<statement::uptr>;
+
     class program: public node {
     public:
 
         using uptr = std::unique_ptr<program>;
-        using state_list = std::vector<statement::uptr>;
+        using state_list = statement_list;
         using error_list = std::vector<std::string>;
 
         type get_type( ) const

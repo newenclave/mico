@@ -126,6 +126,38 @@ namespace mico { namespace ast { namespace expressions {
         double value_;
     };
 
+    //// TODO: use template
+    class boolean: public expression {
+    public:
+
+        using uptr = std::unique_ptr<boolean>;
+
+        boolean( bool val )
+            :value_(val)
+        { }
+
+        type get_type( ) const
+        {
+            return type::BOOLEAN;
+        }
+
+        std::string str( ) const
+        {
+            std::ostringstream oss;
+            oss << (value_ ? "true" : "false");
+            return oss.str( );
+        }
+
+        bool value( ) const
+        {
+            return value_;
+        }
+
+    private:
+
+        double value_;
+    };
+
     class prefix: public expression {
     public:
 
@@ -215,6 +247,132 @@ namespace mico { namespace ast { namespace expressions {
         tokens::type     token_;
         expression::uptr left_;
         expression::uptr right_;
+    };
+
+    class function: public expression {
+
+    public:
+        using uptr = std::unique_ptr<function>;
+
+        using stmt_type  = statement::uptr;
+        using ident_type = expression::uptr;
+
+        function( )
+        { }
+
+        type get_type( ) const
+        {
+            return type::FN;
+        }
+
+        std::string str( ) const
+        {
+            std::ostringstream oss;
+            oss << "fn(";
+            bool second = false;
+            for( auto &id: idents( ) ) {
+                if( second) {
+                    oss << ", ";
+                } else {
+                    second = true;
+                }
+                oss << id->str( );
+            }
+            oss << ") {\n";
+            for( auto &ex: states( ) ) {
+                oss << ex->str( ) << ";\n";
+            }
+            oss << "}";
+            return oss.str( );
+        }
+
+        const expression_list &idents( ) const
+        {
+            return ident_;
+        }
+
+        expression_list &idents( )
+        {
+            return ident_;
+        }
+
+        const statement_list &states( ) const
+        {
+            return expr_;
+        }
+
+        statement_list &states( )
+        {
+            return expr_;
+        }
+
+        void push_ident( ident_type val )
+        {
+            ident_.emplace_back(std::move(val));
+        }
+
+        void push_exp( stmt_type val )
+        {
+            expr_.emplace_back(std::move(val));
+        }
+
+    private:
+
+        expression_list ident_;
+        statement_list expr_;
+    };
+
+    class call: public expression {
+
+    public:
+
+        using uptr = std::unique_ptr<call>;
+        using param_type = expression::uptr;
+
+        call( expression::uptr f )
+            :func_(std::move(f))
+        { }
+
+        type get_type( ) const
+        {
+            return type::CALL;
+        }
+
+        std::string str( ) const
+        {
+            std::ostringstream oss;
+            oss << func_->str( ) << "(";
+            bool second = false;
+            for( auto &par: params( ) ) {
+                if( second) {
+                    oss << ", ";
+                } else {
+                    second = true;
+                }
+                oss << par->str( );
+            }
+            oss << ")";
+            return oss.str( );
+        }
+
+        const expression_list &params( ) const
+        {
+            return params_;
+        }
+
+        expression_list &params( )
+        {
+            return params_;
+        }
+
+        const expression *func( )
+        {
+            return func_.get( );
+        }
+
+    private:
+        expression::uptr func_;
+        expression_list  params_;
     };
 
 
