@@ -82,7 +82,6 @@ namespace mico {
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
                     };
-
         }
 
         static

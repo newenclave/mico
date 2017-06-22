@@ -25,7 +25,7 @@ int main( )
         std::cout << "Error: " <<  e << "\n";
     }
 
-    return 0;
+    //return 0;
 
     auto tt = mico::lexer::make(input);
 
