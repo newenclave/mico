@@ -10,15 +10,14 @@
 int main( )
 {
 
-    std::string input = //"let f0 = fn(  ) { }\n"
-                        "f0 ( 1, 2, 3 );#\n"
-                        "fn(x1, x2, x3) {\n"
-                        "   x1 + 10;"
-                        "   x2 + 30;"
-                        "   return 100, 90, 1 + 2 * 3;"
-                        "   x3"
-                        "}(1, 2, 3)\n"
-                        //"return 2 + 2 * 2;\n"
+    std::string input = "if t > 10 {                \n"
+                        "   let x = 10;             \n"
+                        "   return 100;             \n"
+                        "} elif 1 < 0 * 0.12e3 {          \n"
+                        "   1 + 1 * 1               \n"
+                        "} else {                   \n"
+                        "   return \"string!!1\";   \n"
+                        "}\n                        \n"
             ;
 
     auto pp = mico::parser::parse(input);

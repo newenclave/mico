@@ -56,6 +56,8 @@ namespace mico {
 
             nuds_[token_type::BOOL_TRUE]  = [this]( ) { return parse_bool( ); };
             nuds_[token_type::BOOL_FALSE] = [this]( ) { return parse_bool( ); };
+            nuds_[token_type::IF]         = [this]( ) { return parse_if( ); };
+
             nuds_[token_type::FUNCTION]   =
                     [this]( ) {
                         return parse_function( );
@@ -116,6 +118,10 @@ namespace mico {
                 { TT::ASTERISK, OP::PRODUCT      },
                 { TT::LPAREN,   OP::CALL         },
                 { TT::LBRACKET, OP::INDEX        },
+
+                { TT::LET,      OP::LOWEST       },
+                { TT::RETURN,   OP::LOWEST       },
+
             };
             auto f = val.find( tt );
             if( f !=  val.end( ) ){
@@ -233,6 +239,54 @@ namespace mico {
 
     public: /////////////////// PARSING
 
+        ast::expressions::if_expr::node parse_if_node( )
+        {
+            ast::expressions::if_expr::node res;
+            auto cond = parse_expression( precedence::LOWEST );
+            if( !cond ) {
+                return res;
+            }
+
+            if( !expect_peek( token_type::LBRACE ) ) {
+                return res;
+            }
+            advance( );
+            parse_statements( res.states, true );
+            res.cond = std::move(cond);
+
+            return res;
+        }
+
+        ast::expressions::if_expr::uptr parse_if( )
+        {
+            using if_type = ast::expressions::if_expr;
+            if_type::uptr res(new if_type);
+
+//            if( !is_peek( token_type::LPAREN ) ) {
+//                error_expect( token_type::LPAREN );
+//                return nullptr;
+//            }
+
+            do {
+                advance( );
+                auto next = parse_if_node( );
+                if( !next.cond ) {
+                    return nullptr;
+                }
+                res->ifs( ).emplace_back(std::move(next));
+            } while ( expect_peek( token_type::ELIF, false ) );
+
+            if( expect_peek( token_type::ELSE, false ) ) {
+                if( !expect_peek( token_type::LBRACE ) ) {
+                    return nullptr;
+                }
+                advance( );
+                parse_statements(res->alt( ), true );
+            }
+
+            return res;
+        }
+
         ast::expressions::prefix::uptr parse_prefix( )
         {
             ast::expressions::prefix::uptr res;
@@ -294,7 +348,7 @@ namespace mico {
 
         bool parse_expression_list( std::vector<ast::expression::uptr> &res )
         {
-            do {
+            if( !is_current( token_type::SEMICOLON ) ) do {
                 auto next = parse_expression( precedence::LOWEST );
                 if( !next ) {
                     return false;
@@ -445,7 +499,7 @@ namespace mico {
             fn_type::uptr res(new fn_type);
 
             if( !expect_peek( token_type::LPAREN ) ) {
-                return fn_type::uptr( );
+                return nullptr;
             }
 
             advance( );

@@ -19,12 +19,12 @@ namespace mico { namespace ast { namespace expressions {
             :value_(std::move(val))
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return type::IDENT;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             return value_;
         }
@@ -46,12 +46,12 @@ namespace mico { namespace ast { namespace expressions {
             :value_(std::move(val))
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return type::STRING;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             return std::string("\"") + value_ + '"';
         }
@@ -74,12 +74,12 @@ namespace mico { namespace ast { namespace expressions {
             :value_(val)
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return type::INTEGER;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << value_;
@@ -105,12 +105,12 @@ namespace mico { namespace ast { namespace expressions {
             :value_(val)
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return type::FLOAT;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << value_;
@@ -136,12 +136,12 @@ namespace mico { namespace ast { namespace expressions {
             :value_(val)
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return type::BOOLEAN;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << (value_ ? "true" : "false");
@@ -168,12 +168,12 @@ namespace mico { namespace ast { namespace expressions {
             ,expr_(std::move(exp))
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return type::PREFIX;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << "(" << token_ << expr_->str( ) << ")";
@@ -205,12 +205,12 @@ namespace mico { namespace ast { namespace expressions {
             ,left_(std::move(lft))
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return ast::type::INFIX;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << "(" << left_->str( ) << token_
@@ -260,12 +260,12 @@ namespace mico { namespace ast { namespace expressions {
         function( )
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return type::FN;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << "fn(";
@@ -333,12 +333,12 @@ namespace mico { namespace ast { namespace expressions {
             :func_(std::move(f))
         { }
 
-        type get_type( ) const
+        type get_type( ) const override
         {
             return type::CALL;
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << func_->str( ) << "(";
@@ -375,6 +375,74 @@ namespace mico { namespace ast { namespace expressions {
         expression_list  params_;
     };
 
+    class if_expr: public expression {
+
+    public:
+
+        using uptr = std::unique_ptr<if_expr>;
+
+        struct node {
+            node( expression::uptr val )
+                :cond(std::move(val))
+            { }
+
+            node( ) = default;
+            node( node && ) = default;
+            node &operator = ( node && ) = default;
+
+            node ( node & ) = delete;
+            node &operator = ( node & ) = delete;
+
+            expression::uptr cond;
+            statement_list   states;
+        };
+
+        using if_list = std::vector<node>;
+
+        type get_type( ) const override
+        {
+            return type::CALL;
+        }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+
+            bool first = true;
+            for( auto &f: general_ ) {
+                oss << (first ? "if " : " elif " )
+                    << f.cond->str( ) << " {\n";
+                for( auto &c: f.states ) {
+                    oss << c->str( ) << ";\n";
+                }
+                oss << "}";
+                first = false;
+            }
+            if( !alt_.empty( ) ) {
+                oss << " else {\n";
+                for( auto &a: alt_ ) {
+                    oss << a->str( ) << ";\n";
+                }
+                oss << "}";
+            }
+
+            return oss.str( );
+        }
+
+        if_list &ifs( )
+        {
+            return general_;
+        }
+
+        statement_list &alt( )
+        {
+            return alt_;
+        }
+
+    private:
+        if_list         general_;
+        statement_list  alt_;
+    };
 
     class null: public expression {
 
