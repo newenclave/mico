@@ -69,8 +69,6 @@ namespace mico {
                         return parse_prefix( );
                     };
 
-
-
             nuds_[token_type::INT_BIN] =
             nuds_[token_type::INT_TER] =
             nuds_[token_type::INT_OCT] =
@@ -78,6 +76,11 @@ namespace mico {
             nuds_[token_type::INT_HEX] =
                     [this]( ) {
                         return parse_int( );
+                    };
+
+            nuds_[token_type::END_OF_FILE] =
+                    [this]( ) {
+                        return unexpected_eof( );
                     };
         }
 
@@ -128,6 +131,20 @@ namespace mico {
         }
 
         ////////////// errors ///////
+
+        ast::expression::uptr unexpected_eof( )
+        {
+            error_eof( );
+            return nullptr;
+        }
+
+        void error_eof( )
+        {
+            std::ostringstream oss;
+            oss << "parser error: " << current( ).where
+                << " unexpected EOF";
+            errors_.emplace_back(oss.str( ));
+        }
 
         void error_expect( token_type tt )
         {

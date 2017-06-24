@@ -17,7 +17,8 @@ int main( )
                         "   1 + 1 * 1               \n"
                         "} else {                   \n"
                         "   return \"string!!1\";   \n"
-                        "}\n                        \n"
+                        "}\n"
+                        "1 * (2 + 6)\n"
             ;
 
     auto pp = mico::parser::parse(input);
