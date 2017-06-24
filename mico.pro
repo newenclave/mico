@@ -19,5 +19,7 @@ HEADERS += \
     include/mico/objects.h \
     include/mico/operations.h \
     include/mico/expressions.h \
-    include/mico/statements.h
+    include/mico/statements.h \
+    include/mico/eval/evaluator.h \
+    include/mico/eval/tree_walking.h
 

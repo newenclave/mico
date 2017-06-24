@@ -14,6 +14,7 @@ namespace mico { namespace objects {
         UNSIGNED_INT,
         FLOAT,
         STRING,
+        NULL_OBJ,
     };
 
     struct base {
@@ -31,8 +32,21 @@ namespace mico { namespace objects {
 
     };
 
-    using object_sptr = std::shared_ptr<base>;
-    using object_uptr = std::unique_ptr<base>;
+    struct null: public base {
+
+        virtual type get_type( ) const
+        {
+            return type::NULL_OBJ;
+        }
+
+        std::string str( ) const
+        {
+            return "null";
+        }
+    };
+
+    using sptr = std::shared_ptr<base>;
+    using uptr = std::unique_ptr<base>;
 
     template <type TName>
     struct type2object;
@@ -41,6 +55,8 @@ namespace mico { namespace objects {
     template <type TValue>
     class primitive: public base  {
     public:
+
+        using sptr = std::shared_ptr<primitive<TValue> >;
 
         static const type type_name = TValue;
         using value_type = typename type2object<type_name>::native_type;
@@ -86,6 +102,8 @@ namespace mico { namespace objects {
 
     class string: public base  {
     public:
+
+        using sptr = std::shared_ptr<string>;
 
         static const type type_name = type::STRING;
         using value_type = type2object<type_name>::native_type;

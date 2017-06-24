@@ -150,10 +150,10 @@ namespace mico {
         {
             std::ostringstream oss;
             oss << "parser error: " << peek( ).where
-                << " expected token to be " << tt
-                <<  ", got "
+                << " expected token to be '" << tt
+                <<  "', got '"
                 << peek( ).ident
-                << " instead";
+                << "' instead";
             errors_.emplace_back(oss.str( ));
         }
 
@@ -161,9 +161,9 @@ namespace mico {
         {
             std::ostringstream oss;
             oss << current( ).where
-                << " no prefix parse function for "
+                << " no prefix parse function for '"
                 << current( ).ident
-                << " found";
+                << "' found";
             errors_.emplace_back(oss.str( ));
         }
 
@@ -171,9 +171,9 @@ namespace mico {
         {
             std::ostringstream oss;
             oss << peek( ).where
-                << " no suffix parse function for "
+                << " no suffix parse function for '"
                 << peek( ).ident
-                << " found";
+                << "' found";
             errors_.emplace_back(oss.str( ));
         }
 
@@ -181,8 +181,9 @@ namespace mico {
         {
             std::ostringstream oss;
             oss << current( ).where << ":" << pos
-                << " invalid data format for "
+                << " invalid data format for '"
                 << current( ).ident
+                << "'"
                 ;
             errors_.emplace_back(oss.str( ));
         }

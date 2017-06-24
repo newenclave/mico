@@ -155,7 +155,7 @@ namespace mico { namespace ast { namespace expressions {
 
     private:
 
-        double value_;
+        bool value_;
     };
 
     class prefix: public expression {
