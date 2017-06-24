@@ -119,9 +119,6 @@ namespace mico {
                 { TT::LPAREN,   OP::CALL         },
                 { TT::LBRACKET, OP::INDEX        },
 
-                { TT::LET,      OP::LOWEST       },
-                { TT::RETURN,   OP::LOWEST       },
-
             };
             auto f = val.find( tt );
             if( f !=  val.end( ) ){
