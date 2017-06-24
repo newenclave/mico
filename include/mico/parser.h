@@ -108,16 +108,16 @@ namespace mico {
             using OP = operations::precedence;
 
             static const std::map<TT, OP> val = {
-                { TT::EQ,       OP::EQUALS       },
-                { TT::NOT_EQ,   OP::EQUALS       },
-                { TT::LT,       OP::LESSGREATER  },
-                { TT::GT,       OP::LESSGREATER  },
-                { TT::PLUS,     OP::SUM          },
-                { TT::MINUS,    OP::SUM          },
-                { TT::SLASH,    OP::PRODUCT      },
-                { TT::ASTERISK, OP::PRODUCT      },
-                { TT::LPAREN,   OP::CALL         },
-                { TT::LBRACKET, OP::INDEX        },
+                { TT::EQ,       OP::EQUALS      },
+                { TT::NOT_EQ,   OP::EQUALS      },
+                { TT::LT,       OP::LESSGREATER },
+                { TT::GT,       OP::LESSGREATER },
+                { TT::PLUS,     OP::SUM         },
+                { TT::MINUS,    OP::SUM         },
+                { TT::SLASH,    OP::PRODUCT     },
+                { TT::ASTERISK, OP::PRODUCT     },
+                { TT::LPAREN,   OP::CALL        },
+                { TT::LBRACKET, OP::INDEX       },
 
             };
             auto f = val.find( tt );
