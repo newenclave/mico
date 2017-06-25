@@ -21,5 +21,6 @@ HEADERS += \
     include/mico/expressions.h \
     include/mico/statements.h \
     include/mico/eval/evaluator.h \
-    include/mico/eval/tree_walking.h
+    include/mico/eval/tree_walking.h \
+    include/mico/repl.h
 

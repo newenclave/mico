@@ -18,10 +18,10 @@ namespace mico {
                 return c - '0';
             case 'a': case 'b': case 'c':
             case 'd': case 'e': case 'f':
-                return c - 'a';
+                return c - 'a' + 0xa;
             case 'A': case 'B': case 'C':
             case 'D': case 'E': case 'F':
-                return c - 'A';
+                return c - 'A' + 0xA;
             }
             return 0xFF;
         }

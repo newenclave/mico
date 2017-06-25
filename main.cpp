@@ -7,10 +7,18 @@
 #include "mico/objects.h"
 #include "mico/parser.h"
 #include "mico/eval/tree_walking.h"
+#include "mico/repl.h"
+
+int repl( )
+{
+    mico::repl::run( );
+
+    return 0;
+}
 
 int main( )
 {
-
+    return repl( );
     std::string input = "!!(\"!\");"
 //                        "if t > 10 {                \n"
 //                        "   let x = 10;             \n"

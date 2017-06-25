@@ -136,9 +136,6 @@ namespace mico { namespace eval {
             } else if( oper->get_type( ) == objects::type::BOOLEAN ) {
                 auto o = static_cast<objects::boolean *>(oper);
                 return o->value( );
-            } if( oper->get_type( ) == objects::type::STRING ) {
-                auto o = static_cast<objects::string *>(oper);
-                return !o->value( ).empty( );
             } if( oper->get_type( ) == objects::type::NULL_OBJ ) {
                 return false;
             } else {
@@ -150,7 +147,7 @@ namespace mico { namespace eval {
         objects::sptr produce_prefix_bang( ast::expressions::prefix *n )
         {
             auto oper = eval(n->value( ));
-            return oper ? get_bool( obj2bool( oper.get( ) ) ) : get_null( );
+            return oper ? get_bool( !obj2bool( oper.get( ) ) ) : get_null( );
         }
 
         objects::sptr get_prefix( ast::node *n )
@@ -162,6 +159,131 @@ namespace mico { namespace eval {
                 return produce_prefix_minus( expr );
             case tokens::type::BANG:
                 return produce_prefix_bang( expr );
+            default:
+                break;
+            }
+
+            return nullptr;
+        }
+
+        template <typename Res>
+        Res obj2num( objects::base *oper )
+        {
+            switch (oper->get_type( )) {
+            case objects::type::BOOLEAN: {
+                auto val = static_cast<objects::boolean *>(oper)->value( )
+                         ? 1 : 0;
+                return static_cast<Res>( val );
+            }
+            case objects::type::UNSIGNED_INT: {
+                auto val = static_cast<objects::unsigned_int *>(oper)->value( );
+                return static_cast<Res>( val );
+            }
+            case objects::type::SIGNED_INT: {
+                auto val = static_cast<objects::signed_int *>(oper)->value( );
+                return static_cast<Res>( val );
+            }
+            case objects::type::FLOAT: {
+                auto val = static_cast<objects::floating *>(oper)->value( );
+                return static_cast<Res>( val );
+            }
+            default:
+                break;
+            }
+        }
+
+        template <typename NumObj>
+        objects::sptr obj2num_obj( objects::base *oper )
+        {
+            switch (oper->get_type( )) {
+            case objects::type::BOOLEAN:
+                return std::make_shared<NumObj>( obj2num<bool>(oper) );
+            case objects::type::UNSIGNED_INT:
+                return std::make_shared<NumObj>( obj2num<std::uint64_t>(oper) );
+            case objects::type::SIGNED_INT:
+                return std::make_shared<NumObj>( obj2num<std::int64_t>(oper) );
+            case objects::type::FLOAT:
+                return std::make_shared<NumObj>( obj2num<double>(oper) );
+            default:
+                break;
+            }
+            return nullptr;
+        }
+
+        template <typename ResT, typename NumericT>
+        objects::sptr get_num_infix( NumericT lft, NumericT rgth,
+                                     tokens::type oper )
+        {
+            switch (oper) {
+            case tokens::type::PLUS:
+                return std::make_shared<ResT>( lft + rgth );
+            case tokens::type::MINUS:
+                return std::make_shared<ResT>( lft - rgth );
+            case tokens::type::ASTERISK:
+                return std::make_shared<ResT>( lft * rgth );
+            case tokens::type::SLASH:
+                return std::make_shared<ResT>( lft / rgth );
+            default:
+                break;
+            }
+            return nullptr;
+        }
+
+        objects::sptr get_infix( ast::node *n )
+        {
+            auto inf = static_cast<ast::expressions::infix *>(n);
+            auto left = eval(inf->left( ));
+            if( !left ) {
+                /////////// bad left value
+                return nullptr;
+            }
+
+            switch (left->get_type( )) {
+            case objects::type::SIGNED_INT: {
+                auto lval = obj2num<std::int64_t>(left.get( ));
+                auto right = eval(inf->right( ));
+                if( !right ) {
+                    /////////// bad right value
+                    return nullptr;
+                }
+                auto robj = obj2num_obj<objects::signed_int>(right.get( ));
+                if( !robj ) {
+                    /////////// bad right value type
+                    return nullptr;
+                }
+                return get_num_infix<objects::signed_int>( lval,
+                       obj2num<std::int64_t>(robj.get( )), inf->token( ));
+            }
+            case objects::type::UNSIGNED_INT: {
+                auto lval = obj2num<std::uint64_t>(left.get( ));
+                auto right = eval(inf->right( ));
+                if( !right ) {
+                    /////////// bad right value
+                    return nullptr;
+                }
+                auto robj = obj2num_obj<objects::unsigned_int>(right.get( ));
+                if( !robj ) {
+                    /////////// bad right value type
+                    return nullptr;
+                }
+                return get_num_infix<objects::unsigned_int>( lval,
+                       obj2num<std::uint64_t>(robj.get( )), inf->token( ));
+            }
+            case objects::type::FLOAT: {
+                auto lval = obj2num<double>(left.get( ));
+                auto right = eval(inf->right( ));
+                if( !right ) {
+                    /////////// bad right value
+                    return nullptr;
+                }
+                auto robj = obj2num_obj<objects::floating>(right.get( ));
+                if( !robj ) {
+                    /////////// bad right value type
+                    return nullptr;
+                }
+                return get_num_infix<objects::floating>( lval,
+                       obj2num<double>(robj.get( )), inf->token( ));
+            }
             default:
                 break;
             }
@@ -192,6 +314,8 @@ namespace mico { namespace eval {
                 return get_string( n );
             case ast::type::PREFIX:
                 return get_prefix( n );
+            case ast::type::INFIX:
+                return get_infix( n );
             default:
                 break;
             }
