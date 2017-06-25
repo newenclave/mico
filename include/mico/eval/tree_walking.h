@@ -190,6 +190,7 @@ namespace mico { namespace eval {
             default:
                 break;
             }
+            return Res( );
         }
 
         template <typename NumObj>
@@ -286,6 +287,18 @@ namespace mico { namespace eval {
             }
             default:
                 break;
+            }
+
+            if( inf->token( ) == tokens::type::PLUS ) {
+                if( left->get_type( ) == objects::type::STRING ) {
+                    auto rght = eval(inf->right( ));
+                    if( rght->get_type( ) == objects::type::STRING ) {
+                        auto lval = static_cast<objects::string *>(left.get( ));
+                        auto rval = static_cast<objects::string *>(rght.get( ));
+                        return std::make_shared<objects::string>(
+                                    lval->value( ) + rval->value( ));
+                    }
+                }
             }
 
             return nullptr;
