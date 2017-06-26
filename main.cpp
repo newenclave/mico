@@ -9,16 +9,30 @@
 #include "mico/eval/tree_walking.h"
 #include "mico/repl.h"
 
-int repl( )
+int run_repl( )
 {
     mico::repl::run( );
 
     return 0;
 }
 
+using namespace mico;
+
+
 int main( )
 {
-    return repl( );
+
+//    std::cout << objects::obj_less( )( objects::unsigned_int::make(1),
+//                                       objects::signed_int::make(10) );
+
+//    std::cout << objects::obj_less( )( objects::signed_int::make(1),
+//                                       objects::unsigned_int::make(10) );
+
+    std::cout << objects::obj_less( )( objects::floating::make(1.0),
+                                       objects::integer::make(10) );
+
+    return run_repl( );
+
     std::string input = "!!(\"!\");"
 //                        "if t > 10 {                \n"
 //                        "   let x = 10;             \n"

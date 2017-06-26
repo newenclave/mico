@@ -30,6 +30,23 @@ namespace mico { namespace eval {
             return nobj;
         }
 
+        template <typename ToT, typename FromT>
+        ToT *obj_cast( FromT *obj )
+        {
+#ifdef DEBUG
+            if(objects::object2type<ToT>::type_name == obj->get_type( )) {
+                throw std::runtime_error("Invalid type conversion;");
+            }
+#endif
+            return static_cast<ToT *>(obj);
+        }
+
+        static
+        bool is_null( const objects::sptr &obj )
+        {
+            return (!obj) || (obj->get_type( ) == objects::type::NULL_OBJ);
+        }
+
         static
         objects::boolean::sptr get_bool_true( )
         {
@@ -55,22 +72,22 @@ namespace mico { namespace eval {
             return b ? get_bool_true( ) : get_bool_false( );
         }
 
-        objects::unsigned_int::sptr get_int( ast::node *n )
+        objects::integer::sptr get_int( ast::node *n )
         {
             auto state = static_cast<ast::expressions::integer *>(n);
-            return std::make_shared<objects::unsigned_int>( state->value( ) );
+            return std::make_shared<objects::integer>( state->value( ) );
         }
 
-        objects::signed_int::sptr get_signed( ast::node *n )
+        objects::integer::sptr get_signed( ast::node *n )
         {
             auto state = static_cast<ast::expressions::integer *>(n);
             auto sign_value = static_cast<std::int64_t>(state->value( ));
-            return std::make_shared<objects::signed_int>( sign_value );
+            return std::make_shared<objects::integer>( sign_value );
         }
 
-        objects::signed_int::sptr get_signed( std::int64_t n )
+        objects::integer::sptr get_signed( std::int64_t n )
         {
-            return std::make_shared<objects::signed_int>( n );
+            return std::make_shared<objects::integer>( n );
         }
 
         objects::sptr get_float( ast::node *n )
@@ -93,30 +110,28 @@ namespace mico { namespace eval {
         objects::sptr produce_prefix_minus( ast::expressions::prefix *n )
         {
             auto oper = eval(n->value( ));
-            if( oper->get_type( ) == objects::type::SIGNED_INT ) {
-                auto o = static_cast<objects::unsigned_int *>(oper.get( ));
+            switch ( oper->get_type( ) ) {
+            case objects::type::INTEGER: {
+                auto o = obj_cast<objects::integer>(oper.get( ));
                 return get_signed( -1 * static_cast<std::int64_t>(o->value( )));
-            } else if( oper->get_type( ) == objects::type::UNSIGNED_INT ) {
-                auto o = static_cast<objects::signed_int *>(oper.get( ));
-                return get_signed( -1 * o->value( ) );
-            } else if( oper->get_type( ) == objects::type::FLOAT ) {
-                auto o = static_cast<objects::floating *>(oper.get( ));
-                return get_float( -1.0 * o->value( ) );
-            } else {
-                //// operation invalid
             }
-            return nullptr;
+            case objects::type::FLOAT: {
+                auto o = obj_cast<objects::floating>(oper.get( ));
+                return get_float( -1.0 * o->value( ) );
+            }
+            default:
+                break;
+            }
+            return get_null( );
         }
 
         bool is_bool( objects::base *oper )
         {
             switch (oper->get_type( ) ) {
-            case objects::type::SIGNED_INT:
-            case objects::type::UNSIGNED_INT:
+            case objects::type::INTEGER:
             case objects::type::FLOAT:
             case objects::type::BOOLEAN:
             case objects::type::NULL_OBJ:
-            case objects::type::STRING:
                 return true;
             }
             return false;
@@ -154,12 +169,8 @@ namespace mico { namespace eval {
                          ? 1 : 0;
                 return static_cast<Res>( val );
             }
-            case objects::type::UNSIGNED_INT: {
-                auto val = static_cast<objects::unsigned_int *>(oper)->value( );
-                return static_cast<Res>( val );
-            }
-            case objects::type::SIGNED_INT: {
-                auto val = static_cast<objects::signed_int *>(oper)->value( );
+            case objects::type::INTEGER: {
+                auto val = static_cast<objects::integer *>(oper)->value( );
                 return static_cast<Res>( val );
             }
             case objects::type::FLOAT: {
@@ -178,9 +189,7 @@ namespace mico { namespace eval {
             switch (oper->get_type( )) {
             case objects::type::BOOLEAN:
                 return get_bool( obj2num<bool>(oper) );
-            case objects::type::UNSIGNED_INT:
-                return std::make_shared<NumObj>( obj2num<std::uint64_t>(oper) );
-            case objects::type::SIGNED_INT:
+            case objects::type::INTEGER:
                 return std::make_shared<NumObj>( obj2num<std::int64_t>(oper) );
             case objects::type::FLOAT:
                 return std::make_shared<NumObj>( obj2num<double>(oper) );
@@ -286,7 +295,7 @@ namespace mico { namespace eval {
             case objects::type::BOOLEAN: {
                 auto lval = static_cast<objects::boolean *>(lft);
                 auto rval = obj2num_obj<objects::boolean>( rgh );
-                if( rval && rval != get_null( ) ) {
+                if( !is_null( rval ) ) {
                     auto bval = static_cast<objects::boolean *>(rval.get( ));
                     return compare_bool( lval->value( ), bval->value( ), tt );
                 } else {
@@ -310,35 +319,20 @@ namespace mico { namespace eval {
             }
 
             switch (left->get_type( )) {
-            case objects::type::SIGNED_INT: {
+            case objects::type::INTEGER: {
                 auto lval = obj2num<std::int64_t>(left.get( ));
                 auto right = eval(inf->right( ));
                 if( !right ) {
                     /////////// bad right value
                     return get_null( );;
                 }
-                auto robj = obj2num_obj<objects::signed_int>(right.get( ));
+                auto robj = obj2num_obj<objects::integer>(right.get( ));
                 if( !robj ) {
                     /////////// bad right value type
                     return get_null( );;
                 }
-                return get_num_infix<objects::signed_int>( lval,
+                return get_num_infix<objects::integer>( lval,
                             obj2num<std::int64_t>(robj.get( )), inf->token( ));
-            }
-            case objects::type::UNSIGNED_INT: {
-                auto lval = obj2num<std::uint64_t>(left.get( ));
-                auto right = eval(inf->right( ));
-                if( !right ) {
-                    /////////// bad right value
-                    return get_null( );;
-                }
-                auto robj = obj2num_obj<objects::unsigned_int>(right.get( ));
-                if( !robj ) {
-                    /////////// bad right value type
-                    return get_null( );;
-                }
-                return get_num_infix<objects::unsigned_int>( lval,
-                       obj2num<std::uint64_t>(robj.get( )), inf->token( ));
             }
             case objects::type::FLOAT: {
                 auto lval = obj2num<double>(left.get( ));
