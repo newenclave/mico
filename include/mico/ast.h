@@ -21,6 +21,7 @@ namespace mico { namespace ast {
         INTEGER,
         BOOLEAN,
         FLOAT,
+        TABLE,
         FN,
         CALL,
         IFELSE,

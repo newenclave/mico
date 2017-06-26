@@ -451,6 +451,50 @@ namespace mico { namespace ast { namespace expressions {
         statement_list  alt_;
     };
 
+    class table: public expression {
+    public:
+
+        using value_pair = std::pair<expression::uptr, expression::uptr>;
+        using value_type = std::vector<value_pair>;
+        using uptr = std::unique_ptr<table>;
+
+        type get_type( ) const override
+        {
+            return type::TABLE;
+        }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+
+            bool first = true;
+            for( auto &v: value_ ) {
+                if( first ) {
+                    first = false;
+                } else {
+                    oss << ", ";
+                }
+                oss << v.first->str( ) << ":" << v.second->str( );
+            }
+
+            return oss.str( );
+        }
+
+        value_type &value( )
+        {
+            return value_;
+        }
+
+        const value_type &value( ) const
+        {
+            return value_;
+        }
+
+    private:
+
+        value_type value_;
+    };
+
     class null: public expression {
 
     public:

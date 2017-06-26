@@ -38,10 +38,6 @@ std::int64_t fib( std::int64_t x ) {
 int main( )
 {
 
-    std::cout << fib(35) << "\n";
-
-    return 0;
-
     //let fac = fn( x ) { if(x > 1) { x * fac(x - 1)  } else { 1 } }
 
     //let fib = fn(x) { if (x == 0) { 0 } elif(x==1) { 1 } else { fib(x - 1) + fib(x - 2); } };

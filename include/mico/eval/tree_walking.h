@@ -521,6 +521,25 @@ namespace mico { namespace eval {
             return last;
         }
 
+        objects::sptr get_table( ast::node *n, enviroment::sptr env )
+        {
+            auto table = static_cast<ast::expressions::table *>( n );
+
+            auto res = objects::table::make( );
+
+            for( auto &v: table->value( ) ) {
+                auto key = eval_impl( v.first.get( ), env );
+                if( is_null( key ) ) {
+                    //// TODO bad key value for table
+                    return get_null( );
+                }
+                auto val = eval_impl( v.second.get( ), env );
+                res->value( )[key] = val;
+            }
+
+            return res;
+        }
+
         objects::sptr extract_return( objects::sptr obj )
         {
             if( obj->get_type( ) == objects::type::RETURN ) {
@@ -562,6 +581,8 @@ namespace mico { namespace eval {
                 return get_function( n, env );
             case ast::type::CALL:
                 return get_call( n, env );
+            case ast::type::TABLE:
+                return get_table( n, env );
             case ast::type::NONE:
                 break;
             }

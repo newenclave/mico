@@ -20,7 +20,7 @@ namespace mico {
                 std::getline( std::cin, data );
                 auto prog = mico::parser::parse( data );
                 if( prog.errors( ).empty( ) ) {
-                    //std::cout << prog.str( ) << "\n";
+                    std::cout << prog.str( ) << "\n";
                     mico::eval::tree_walking tv;
                     if( prog.states( ).size( ) > 0 ) {
                         auto obj = tv.eval( &prog, env );

@@ -405,19 +405,21 @@ namespace objects {
             } else {
                 return lft->get_type( ) < rght->get_type( );
             }
+            return false;
         }
     };
 
     template <>
     struct type2object<type::TABLE> {
-        using native_type = std::map<sptr, sptr, obj_less>;
+        using native_type = std::map<objects::sptr, objects::sptr, obj_less>;
     };
 
     class table: public base {
     public:
 
+        using sptr = std::shared_ptr<table>;
         static const type type_name = type::TABLE;
-        using value_type = std::map<sptr, sptr, obj_less>;
+        using value_type = std::map<objects::sptr, objects::sptr, obj_less>;
 
         type get_type( ) const override
         {
@@ -427,7 +429,12 @@ namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << "<table>";
+            oss << "{ ";
+            for( auto &v: values_ ) {
+                oss << v.first->str( ) << ":"
+                    << v.second->str( )<< " ";
+            }
+            oss << "}";
             return oss.str( );
         }
 
@@ -455,7 +462,6 @@ namespace objects {
     using boolean   = primitive<type::BOOLEAN>;
     using integer   = primitive<type::INTEGER>;
     using floating  = primitive<type::FLOAT>;
-
 
     template <typename ObjT>
     struct object2type;
