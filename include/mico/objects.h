@@ -17,6 +17,8 @@ namespace mico { namespace objects {
         STRING,
         TABLE,
         ARRAY,
+        RETURN,
+        FUNCTION,
     };
 
     struct cast {
@@ -50,6 +52,7 @@ namespace mico { namespace objects {
 
     using sptr = std::shared_ptr<base>;
     using uptr = std::unique_ptr<base>;
+    using list = std::vector<sptr>;
 
     template <type TName>
     struct type2object;
@@ -213,6 +216,43 @@ namespace mico { namespace objects {
         value_type values_;
     };
 
+    class retutn_obj: public base {
+    public:
+
+        using sptr = std::shared_ptr<retutn_obj>;
+        static const type type_name = type::RETURN;
+        using value_type = objects::sptr;
+
+        retutn_obj( value_type val )
+            :value_(val)
+        { }
+
+        type get_type( ) const override
+        {
+            return type_name;
+        }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "return " << value( )->str( );
+            return oss.str( );
+        }
+
+        value_type &value( )
+        {
+            return value_;
+        }
+
+        const value_type &value( ) const
+        {
+            return value_;
+        }
+
+    private:
+        value_type value_;
+    };
+
     struct obj_less {
 
         template <typename ValT>
@@ -252,6 +292,7 @@ namespace mico { namespace objects {
             case type::FLOAT:
                 return lval->value( ) < static_cast<typename LeftT::value_type>
                             (cast::to<floating>(rght.get( ))->value( ));
+            default:
                 break;
             }
             return false;

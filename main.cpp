@@ -18,6 +18,14 @@ int run_repl( )
 
 using namespace mico;
 
+struct test {
+    test( ) = default;
+    test( std::shared_ptr<test> p )
+        :parent_(p)
+    { }
+    std::shared_ptr<test> parent_;
+};
+
 
 int main( )
 {
@@ -33,7 +41,12 @@ int main( )
 
     return run_repl( );
 
-    std::string input = "!!(\"!\");"
+    std::string input = "10.34e255;"
+                        "if( \"test1\" < \"test1\" ) {"
+                        "   true"
+                        "} else {"
+                        "  false "
+                        "}"
 //                        "if t > 10 {                \n"
 //                        "   let x = 10;             \n"
 //                        "   return 100;             \n"
@@ -50,7 +63,8 @@ int main( )
 
     mico::eval::tree_walking tv;
 
-    auto obj = tv.eval( pp.states( )[0].get( ) );
+    auto env = std::make_shared<enviroment>( );
+    auto obj = tv.eval( &pp, env );
 
     std::cout << obj->str( ) << "\n";
 

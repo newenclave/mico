@@ -481,12 +481,10 @@ namespace mico {
             using let_type = ast::statements::let;
 
             if( !expect_peek( token_type::IDENT ) ) {
-                return let_type::uptr( );
+                return nullptr;
             }
 
-            ast::statements::let::uptr res(new let_type);
-
-            parse_ident_list( res->idents( ) );
+            auto id = parse_ident( );
 
             if( !expect_peek( token_type::ASSIGN, true ) ) {
                 return ast::statements::let::uptr( );
@@ -494,22 +492,17 @@ namespace mico {
 
             advance( );
 
-            if( !parse_expression_list( res->exprs( ) ) ) {
-                return ast::statements::let::uptr( );
-            }
-
-            return res;
+            auto expr = parse_expression( precedence::LOWEST );
+            return let_type::uptr(new let_type( std::move(id),
+                                                std::move(expr) ) );
         }
 
         ast::statements::ret::uptr parse_return( )
         {
             using res_type = ast::statements::ret;
             advance( );
-            res_type::uptr res( new res_type );
-            if( !parse_expression_list( res->exprs( ) ) ) {
-                return ast::statements::ret::uptr( );
-            }
-            return res;
+            auto expr = parse_expression( precedence::LOWEST );
+            return res_type::uptr( new res_type( std::move(expr ) ) );
         }
 
         ast::expressions::function::uptr parse_function( )
