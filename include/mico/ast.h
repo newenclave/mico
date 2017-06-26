@@ -23,6 +23,7 @@ namespace mico { namespace ast {
         FLOAT,
         FN,
         CALL,
+        IFELSE,
     };
 
     struct node {

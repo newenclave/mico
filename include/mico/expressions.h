@@ -401,7 +401,7 @@ namespace mico { namespace ast { namespace expressions {
 
         type get_type( ) const override
         {
-            return type::CALL;
+            return type::IFELSE;
         }
 
         std::string str( ) const override

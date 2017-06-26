@@ -196,7 +196,7 @@ namespace mico { namespace eval {
             default:
                 break;
             }
-            return std::shared_ptr<NumObj>( );
+            return get_null( );
         }
 
         template <typename ResT, typename NumericT>
@@ -371,6 +371,42 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
+        objects::sptr eval_scope( ast::statement_list &lst )
+        {
+            objects::sptr last = get_null( );
+            for( auto &s: lst ) {
+                last = eval(s.get( ));
+            }
+            return last;
+        }
+
+        objects::sptr get_ifelse( ast::node *n )
+        {
+            auto ifblock = static_cast<ast::expressions::if_expr *>( n );
+
+            for( auto &i: ifblock->ifs(  ) ) {
+                auto cond = eval( i.cond.get( ) );
+                if( is_null( cond ) ) {
+                    /////////// TODO bad condition in if
+                    return get_null( );
+                }
+                auto res = obj2num_obj<objects::boolean>( cond.get( ) );
+                if( is_null( res ) ) {
+                    /////////// TODO bad result type for cond
+                    return get_null( );
+                }
+                auto bres = obj_cast<objects::boolean>(res.get( ));
+                if( bres->value( ) ) {
+                    auto eval_states = eval_scope( i.states );
+                    return eval_states;
+                }
+            }
+            if( !ifblock->alt( ).empty( ) ) {
+                auto eval_states = eval_scope( ifblock->alt( ) );
+                return eval_states;
+            }
+        }
+
         objects::sptr get_expression( ast::node *n )
         {
             auto expr = static_cast<ast::statements::expr *>( n );
@@ -396,6 +432,8 @@ namespace mico { namespace eval {
                 return get_prefix( n );
             case ast::type::INFIX:
                 return get_infix( n );
+            case ast::type::IFELSE:
+                return get_ifelse( n );
             default:
                 break;
             }
