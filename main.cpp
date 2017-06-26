@@ -35,6 +35,37 @@ std::int64_t fib( std::int64_t x ) {
     }
 }
 
+enum class name {
+    NONE = 0,
+    STRING,
+    INTEGER,
+};
+
+struct base {
+    virtual ~base( ) = default;
+    virtual void call( ) = 0;
+};
+
+template <name N>
+struct derived;
+
+template <>
+struct derived<name::STRING>: public base {
+    virtual void call( ) {
+        std::cout << "String";
+    }
+};
+
+template <>
+struct derived<name::INTEGER>: public base {
+    virtual void call( ) {
+        std::cout << "INT";
+    }
+};
+
+using str  = derived<name::STRING>;
+using intg = derived<name::INTEGER>;
+
 int main( )
 {
 
