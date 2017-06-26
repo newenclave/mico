@@ -93,6 +93,8 @@ namespace mico {
             leds_[token_type::SLASH]    =
             leds_[token_type::LT]       =
             leds_[token_type::GT]       =
+            leds_[token_type::LT_EQ]    =
+            leds_[token_type::GT_EQ]    =
             leds_[token_type::EQ]       =
             leds_[token_type::NOT_EQ]   =
                     [this]( EP e ) {
@@ -115,6 +117,8 @@ namespace mico {
                 { TT::NOT_EQ,   OP::EQUALS      },
                 { TT::LT,       OP::LESSGREATER },
                 { TT::GT,       OP::LESSGREATER },
+                { TT::LT_EQ,    OP::LESSGREATER },
+                { TT::GT_EQ,    OP::LESSGREATER },
                 { TT::PLUS,     OP::SUM         },
                 { TT::MINUS,    OP::SUM         },
                 { TT::SLASH,    OP::PRODUCT     },

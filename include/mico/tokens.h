@@ -43,6 +43,8 @@ namespace mico { namespace tokens {
         NOT_EQ,
         LT,
         GT,
+        LT_EQ,
+        GT_EQ,
 
         LPAREN,
         RPAREN,
@@ -99,6 +101,8 @@ namespace mico { namespace tokens {
             case type::NOT_EQ:      return "!=";
             case type::LT:          return "<";
             case type::GT:          return ">";
+            case type::LT_EQ:       return "<=";
+            case type::GT_EQ:       return ">=";
 
             case type::LPAREN:      return "(";
             case type::RPAREN:      return ")";

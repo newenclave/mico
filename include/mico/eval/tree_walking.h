@@ -31,26 +31,26 @@ namespace mico { namespace eval {
         }
 
         static
-        objects::sptr get_bool_true( )
+        objects::boolean::sptr get_bool_true( )
         {
             static auto bobj = std::make_shared<objects::boolean>(true);
             return bobj;
         }
 
         static
-        objects::sptr get_bool_false( )
+        objects::boolean::sptr get_bool_false( )
         {
             static auto bobj = std::make_shared<objects::boolean>(false);
             return bobj;
         }
 
-        objects::sptr get_bool( ast::node *n )
+        objects::boolean::sptr get_bool( ast::node *n )
         {
             auto bstate = static_cast<ast::expressions::boolean *>(n);
             return bstate->value( ) ? get_bool_true( ) : get_bool_false( );
         }
 
-        objects::sptr get_bool( bool b )
+        objects::boolean::sptr get_bool( bool b )
         {
             return b ? get_bool_true( ) : get_bool_false( );
         }
@@ -122,32 +122,11 @@ namespace mico { namespace eval {
             return false;
         }
 
-        bool obj2bool( objects::base *oper )
-        {
-            if( oper->get_type( ) == objects::type::SIGNED_INT ) {
-                auto o = static_cast<objects::unsigned_int *>(oper);
-                return o->value( ) != 0;
-            } else if( oper->get_type( ) == objects::type::UNSIGNED_INT ) {
-                auto o = static_cast<objects::unsigned_int *>(oper);
-                return o->value( ) != 0;
-            } else if( oper->get_type( ) == objects::type::FLOAT ) {
-                auto o = static_cast<objects::unsigned_int *>(oper);
-                return o->value( ) != 0.0;
-            } else if( oper->get_type( ) == objects::type::BOOLEAN ) {
-                auto o = static_cast<objects::boolean *>(oper);
-                return o->value( );
-            } if( oper->get_type( ) == objects::type::NULL_OBJ ) {
-                return false;
-            } else {
-                //// operation invalid
-            }
-            return true; // ?
-        }
-
         objects::sptr produce_prefix_bang( ast::expressions::prefix *n )
         {
             auto oper = eval(n->value( ));
-            return oper ? get_bool( !obj2bool( oper.get( ) ) ) : get_null( );
+            return oper ? get_bool( !obj2num<bool>( oper.get( ) ) )
+                        : get_null( );
         }
 
         objects::sptr get_prefix( ast::node *n )
@@ -198,7 +177,7 @@ namespace mico { namespace eval {
         {
             switch (oper->get_type( )) {
             case objects::type::BOOLEAN:
-                return std::make_shared<NumObj>( obj2num<bool>(oper) );
+                return get_bool( obj2num<bool>(oper) );
             case objects::type::UNSIGNED_INT:
                 return std::make_shared<NumObj>( obj2num<std::uint64_t>(oper) );
             case objects::type::SIGNED_INT:
@@ -208,26 +187,117 @@ namespace mico { namespace eval {
             default:
                 break;
             }
-            return nullptr;
+            return std::shared_ptr<NumObj>( );
         }
 
         template <typename ResT, typename NumericT>
-        objects::sptr get_num_infix( NumericT lft, NumericT rgth,
+        objects::sptr get_num_infix( NumericT lft, NumericT rghg,
                                      tokens::type oper )
         {
             switch (oper) {
             case tokens::type::PLUS:
-                return std::make_shared<ResT>( lft + rgth );
+                return std::make_shared<ResT>( lft +  rghg );
             case tokens::type::MINUS:
-                return std::make_shared<ResT>( lft - rgth );
+                return std::make_shared<ResT>( lft -  rghg );
             case tokens::type::ASTERISK:
-                return std::make_shared<ResT>( lft * rgth );
+                return std::make_shared<ResT>( lft *  rghg );
             case tokens::type::SLASH:
-                return std::make_shared<ResT>( lft / rgth );
+                return std::make_shared<ResT>( lft /  rghg );
+            case tokens::type::LT:
+                return               get_bool( lft <  rghg );
+            case tokens::type::GT:
+                return               get_bool( lft >  rghg );
+            case tokens::type::EQ:
+                return               get_bool( lft == rghg );
+            case tokens::type::NOT_EQ:
+                return               get_bool( lft != rghg );
+            case tokens::type::LT_EQ:
+                return               get_bool( lft <= rghg );
+            case tokens::type::GT_EQ:
+                return               get_bool( lft >= rghg );
             default:
                 break;
             }
-            return nullptr;
+            return get_null( );
+        }
+
+        objects::sptr compare_bool( bool lft, bool rght, tokens::type tt )
+        {
+            switch (tt) {
+            case tokens::type::LT:
+                return get_bool( lft < rght );
+            case tokens::type::GT:
+                return get_bool( lft > rght );
+            case tokens::type::LT_EQ:
+                return get_bool( lft <= rght );
+            case tokens::type::GT_EQ:
+                return get_bool( lft >= rght );
+            case tokens::type::EQ:
+                return get_bool( lft == rght );
+            case tokens::type::NOT_EQ:
+                return get_bool( lft != rght );
+            default:
+                break;
+            }
+            /// invalid operation for boollean;
+            return get_null( );
+        }
+
+        objects::sptr infix_string( const std::string &lft,
+                                    const std::string &rght,
+                                    tokens::type tt )
+        {
+            switch (tt) {
+            case tokens::type::LT:
+                return get_bool( lft < rght );
+            case tokens::type::GT:
+                return get_bool( lft > rght );
+            case tokens::type::LT_EQ:
+                return get_bool( lft <= rght );
+            case tokens::type::GT_EQ:
+                return get_bool( lft >= rght );
+            case tokens::type::EQ:
+                return get_bool( lft == rght );
+            case tokens::type::NOT_EQ:
+                return get_bool( lft != rght );
+            case tokens::type::PLUS:
+                return std::make_shared<objects::string>(lft + rght);
+            default:
+                break;
+            }
+            /// invalid operation for string;
+            return get_null( );
+        }
+
+        objects::sptr other_infix( objects::base *lft, objects::base *rgh,
+                                   tokens::type tt )
+        {
+            switch ( lft->get_type( ) ) {
+            case objects::type::STRING: {
+                if( rgh->get_type( ) == objects::type::STRING ) {
+                    auto lval = static_cast<objects::string *>(lft);
+                    auto rval = static_cast<objects::string *>(rgh);
+                    return infix_string( lval->value( ), rval->value( ), tt );
+                } else {
+                    /// TODO: error bad operation for STRING and ...
+                    return get_null( );
+                }
+            }
+            case objects::type::BOOLEAN: {
+                auto lval = static_cast<objects::boolean *>(lft);
+                auto rval = obj2num_obj<objects::boolean>( rgh );
+                if( rval && rval != get_null( ) ) {
+                    auto bval = static_cast<objects::boolean *>(rval.get( ));
+                    return compare_bool( lval->value( ), bval->value( ), tt );
+                } else {
+                    /// TODO: error bad operation for BOOLEAN and ...
+                    return get_null( );
+                }
+            }
+            default:
+                break;
+            }
+            return get_null( );
         }
 
         objects::sptr get_infix( ast::node *n )
@@ -245,27 +315,27 @@ namespace mico { namespace eval {
                 auto right = eval(inf->right( ));
                 if( !right ) {
                     /////////// bad right value
-                    return nullptr;
+                    return get_null( );;
                 }
                 auto robj = obj2num_obj<objects::signed_int>(right.get( ));
                 if( !robj ) {
                     /////////// bad right value type
-                    return nullptr;
+                    return get_null( );;
                 }
                 return get_num_infix<objects::signed_int>( lval,
-                       obj2num<std::int64_t>(robj.get( )), inf->token( ));
+                            obj2num<std::int64_t>(robj.get( )), inf->token( ));
             }
             case objects::type::UNSIGNED_INT: {
                 auto lval = obj2num<std::uint64_t>(left.get( ));
                 auto right = eval(inf->right( ));
                 if( !right ) {
                     /////////// bad right value
-                    return nullptr;
+                    return get_null( );;
                 }
                 auto robj = obj2num_obj<objects::unsigned_int>(right.get( ));
                 if( !robj ) {
                     /////////// bad right value type
-                    return nullptr;
+                    return get_null( );;
                 }
                 return get_num_infix<objects::unsigned_int>( lval,
                        obj2num<std::uint64_t>(robj.get( )), inf->token( ));
@@ -275,12 +345,12 @@ namespace mico { namespace eval {
                 auto right = eval(inf->right( ));
                 if( !right ) {
                     /////////// bad right value
-                    return nullptr;
+                    return get_null( );;
                 }
                 auto robj = obj2num_obj<objects::floating>(right.get( ));
                 if( !robj ) {
                     /////////// bad right value type
-                    return nullptr;
+                    return get_null( );;
                 }
                 return get_num_infix<objects::floating>( lval,
                        obj2num<double>(robj.get( )), inf->token( ));
@@ -289,19 +359,22 @@ namespace mico { namespace eval {
                 break;
             }
 
-            if( inf->token( ) == tokens::type::PLUS ) {
-                if( left->get_type( ) == objects::type::STRING ) {
-                    auto rght = eval(inf->right( ));
-                    if( rght->get_type( ) == objects::type::STRING ) {
-                        auto lval = static_cast<objects::string *>(left.get( ));
-                        auto rval = static_cast<objects::string *>(rght.get( ));
-                        return std::make_shared<objects::string>(
-                                    lval->value( ) + rval->value( ));
-                    }
-                }
+            switch ( inf->token( ) ) {
+            case tokens::type::LT:
+            case tokens::type::PLUS:
+            case tokens::type::GT:
+            case tokens::type::LT_EQ:
+            case tokens::type::GT_EQ:
+            case tokens::type::EQ:
+            case tokens::type::NOT_EQ: {
+                auto rght = eval(inf->right( ));
+                return other_infix( left.get( ), rght.get( ), inf->token( ));
+            }
+            default:
+                break;
             }
 
-            return nullptr;
+            return get_null( );
         }
 
         objects::sptr get_expression( ast::node *n )
