@@ -139,6 +139,16 @@ namespace mico { namespace eval {
             return false;
         }
 
+        bool is_return( objects::sptr obj )
+        {
+            return obj->get_type( ) == objects::type::RETURN;
+        }
+
+        bool is_function( objects::sptr obj )
+        {
+            return obj->get_type( ) == objects::type::FUNCTION;
+        }
+
         objects::sptr produce_prefix_bang( ast::expressions::prefix *n,
                                            enviroment::sptr env )
         {
@@ -454,15 +464,61 @@ namespace mico { namespace eval {
             auto val = env->get( expr->value( ) );
             if( !val ) {
                 //// TODO error identifier
+                ///
+                //std::cout << expr->value( )  << " NOt FOUND!\n";
                 return get_null( );
             } else {
                 return val;
             }
         }
 
-        bool is_return( objects::sptr obj )
+        objects::sptr get_function( ast::node *n, enviroment::sptr env )
         {
-            return obj->get_type( ) == objects::type::RETURN;
+            auto func = static_cast<ast::expressions::function *>( n );
+            auto fff  = std::make_shared<objects::function>( env,
+                                              func->ident_ptr( ),
+                                              func->expr_ptr( ));
+
+            return fff;
+        }
+
+        objects::sptr get_call( ast::node *n, enviroment::sptr env )
+        {
+            auto call = static_cast<ast::expressions::call *>( n );
+            auto fun = eval_impl(call->func( ), env);
+            if( is_null( fun ) || !is_function( fun ) ) {
+                ///// TODO error call object
+                return get_null( );
+            }
+
+            auto vfun = obj_cast<objects::function>(fun.get( ));
+            auto new_env = std::make_shared<enviroment>(vfun->env( ));
+            if( call->params( ).size( ) != vfun->params( ).size( ) ) {
+                //// TODO bad params count
+            }
+
+            size_t id = 0;
+            for( auto &p: vfun->params( ) ) {
+                if( p->get_type( ) == ast::type::IDENT ) {
+                    auto n = static_cast<ast::expressions::ident *>(p.get( ));
+                    auto v = eval_impl( call->params( )[id++].get( ), env );
+                    new_env->set(n->value( ), v);
+                } else {
+                    /// TODO bad param
+                    return get_null( );
+                }
+            }
+
+            objects::sptr last = get_null( );
+            for( auto &stmt: vfun->body( ) ) {
+                auto next = eval_impl( stmt.get( ), new_env );
+                last = next;
+                if( is_return( next ) ) {
+                    return extract_return( last );
+                }
+            }
+
+            return last;
         }
 
         objects::sptr extract_return( objects::sptr obj )
@@ -503,7 +559,9 @@ namespace mico { namespace eval {
             case ast::type::RETURN:
                 return get_return( n, env );
             case ast::type::FN:
+                return get_function( n, env );
             case ast::type::CALL:
+                return get_call( n, env );
             case ast::type::NONE:
                 break;
             }

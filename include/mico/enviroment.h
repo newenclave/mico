@@ -1,7 +1,7 @@
 #ifndef MICO_ENVIROMENT_H
 #define MICO_ENVIROMENT_H
 
-#include <mico/objects.h>
+#include "mico/objects.h"
 
 namespace mico {
 
@@ -26,8 +26,8 @@ namespace mico {
             auto cur = this;
             objects::sptr res;
             while( cur && !res ) {
-                auto f = data_.find( name );
-                if( f != data_.end( ) ) {
+                auto f = cur->data_.find( name );
+                if( f != cur->data_.end( ) ) {
                     res = f->second;
                 } else {
                     cur = cur->parent_.get( );

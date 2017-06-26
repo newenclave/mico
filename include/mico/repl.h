@@ -10,7 +10,6 @@ namespace mico {
 
     struct repl {
 
-
         static
         void run( )
         {

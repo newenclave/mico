@@ -7,7 +7,15 @@
 #include <map>
 #include <vector>
 
-namespace mico { namespace objects {
+#include "mico/statements.h"
+#include "mico/expressions.h"
+//#include "mico/enviroment.h"
+
+namespace mico {
+
+class enviroment;
+
+namespace objects {
 
     enum class type {
         NULL_OBJ = 0,
@@ -251,6 +259,69 @@ namespace mico { namespace objects {
 
     private:
         value_type value_;
+    };
+
+    class function: public base {
+    public:
+
+        using sptr = std::shared_ptr<function>;
+        static const type type_name = type::FUNCTION;
+
+        function( std::shared_ptr<enviroment> e,
+                  std::shared_ptr<ast::expression_list> par,
+                  std::shared_ptr<ast::statement_list> st )
+            :env_(e)
+            ,params_(par)
+            ,body_(st)
+        { }
+
+        type get_type( ) const override
+        {
+            return type_name;
+        }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "fn(" << params_->size( ) << ")";
+            return oss.str( );
+        }
+
+        ast::expression_list &params( )
+        {
+            return *params_;
+        }
+
+        const ast::expression_list &params( ) const
+        {
+            return *params_;
+        }
+
+        const ast::statement_list &body( ) const
+        {
+            return *body_;
+        }
+
+        ast::statement_list &body( )
+        {
+            return *body_;
+        }
+
+        std::shared_ptr<enviroment> env( )
+        {
+            return env_;
+        }
+
+        const std::shared_ptr<enviroment> env( ) const
+        {
+            return env_;
+        }
+
+    private:
+
+        std::shared_ptr<enviroment> env_;
+        std::shared_ptr<ast::expression_list> params_;
+        std::shared_ptr<ast::statement_list>  body_;
     };
 
     struct obj_less {

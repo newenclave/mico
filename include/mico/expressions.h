@@ -258,6 +258,8 @@ namespace mico { namespace ast { namespace expressions {
         using ident_type = expression::uptr;
 
         function( )
+            :ident_(std::make_shared<expression_list>( ))
+            ,expr_(std::make_shared<statement_list>( ))
         { }
 
         type get_type( ) const override
@@ -286,40 +288,40 @@ namespace mico { namespace ast { namespace expressions {
             return oss.str( );
         }
 
-        const expression_list &idents( ) const
+        std::shared_ptr<expression_list> ident_ptr( )
         {
             return ident_;
+        }
+
+        std::shared_ptr<statement_list> expr_ptr( )
+        {
+            return expr_;
+        }
+
+        const expression_list &idents( ) const
+        {
+            return *ident_;
         }
 
         expression_list &idents( )
         {
-            return ident_;
+            return *ident_;
         }
 
         const statement_list &states( ) const
         {
-            return expr_;
+            return *expr_;
         }
 
         statement_list &states( )
         {
-            return expr_;
-        }
-
-        void push_ident( ident_type val )
-        {
-            ident_.emplace_back(std::move(val));
-        }
-
-        void push_exp( stmt_type val )
-        {
-            expr_.emplace_back(std::move(val));
+            return *expr_;
         }
 
     private:
 
-        expression_list ident_;
-        statement_list expr_;
+        std::shared_ptr<expression_list> ident_;
+        std::shared_ptr<statement_list> expr_;
     };
 
     class call: public expression {
@@ -365,7 +367,12 @@ namespace mico { namespace ast { namespace expressions {
             return params_;
         }
 
-        const expression *func( )
+        expression *func( )
+        {
+            return func_.get( );
+        }
+
+        const expression *func( ) const
         {
             return func_.get( );
         }

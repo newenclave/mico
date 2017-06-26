@@ -39,16 +39,21 @@ namespace mico { namespace ast {
     class statement: public node {
     public:
         using uptr = std::unique_ptr<statement>;
+        using sptr = std::shared_ptr<statement>;
     };
 
     ////////////////// EXPRESSIONS
     class expression: public node {
     public:
         using uptr = std::unique_ptr<expression>;
+        using sptr = std::shared_ptr<expression>;
     };
 
     using expression_list = std::vector<expression::uptr>;
     using statement_list  = std::vector<statement::uptr>;
+
+    using expression_slist = std::vector<expression::sptr>;
+    using statement_slist  = std::vector<statement::sptr>;
 
     class program: public node {
     public:
