@@ -10,14 +10,13 @@
 namespace mico { namespace objects {
 
     enum class type {
-        BASE = 0,
+        NULL_OBJ = 0,
         BOOLEAN,
         INTEGER,
         FLOAT,
         STRING,
         TABLE,
         ARRAY,
-        NULL_OBJ,
     };
 
     struct cast {
@@ -242,14 +241,14 @@ namespace mico { namespace objects {
         static
         bool compare_numbers( const sptr &lft, const sptr &rght )
         {
-            using signed_int   = primitive<type::INTEGER>;
-            using floating     = primitive<type::FLOAT>;
+            using integer   = primitive<type::INTEGER>;
+            using floating  = primitive<type::FLOAT>;
 
             auto lval = cast::to<LeftT>(lft.get( ));
             switch (rght->get_type( )) {
             case type::INTEGER:
                 return lval->value( ) < static_cast<typename LeftT::value_type>
-                            (cast::to<signed_int>(rght.get( ))->value( ));
+                            (cast::to<integer>(rght.get( ))->value( ));
             case type::FLOAT:
                 return lval->value( ) < static_cast<typename LeftT::value_type>
                             (cast::to<floating>(rght.get( ))->value( ));
@@ -260,16 +259,16 @@ namespace mico { namespace objects {
 
         bool operator ( )( const sptr &lft, const sptr &rght ) const
         {
-            using boolean      = primitive<type::BOOLEAN>;
-            using signed_int   = primitive<type::INTEGER>;
-            using floating     = primitive<type::FLOAT>;
+            using boolean   = primitive<type::BOOLEAN>;
+            using integer   = primitive<type::INTEGER>;
+            using floating  = primitive<type::FLOAT>;
 
             if( lft->get_type( ) == rght->get_type( ) ) {
                 switch (lft->get_type( )) {
                 case type::BOOLEAN:
                     return compare<boolean>( lft, rght );
                 case type::INTEGER:
-                    return compare<signed_int>( lft, rght );
+                    return compare<integer>( lft, rght );
                 case type::FLOAT:
                     return compare<floating>( lft, rght );
                 case type::STRING:
@@ -279,13 +278,12 @@ namespace mico { namespace objects {
                 case type::TABLE:
                     return compare<table>( lft, rght );
                 case type::NULL_OBJ:
-                case type::BASE:
                     return false;
                 }
             } else if( comparable(lft->get_type( ), rght->get_type( ) ) ){
                 switch ( lft->get_type( ) ) {
                 case type::INTEGER:
-                    return compare_numbers<signed_int>( lft, rght );
+                    return compare_numbers<integer>( lft, rght );
                 case type::FLOAT:
                     return compare_numbers<floating>( lft, rght );
                 default:
