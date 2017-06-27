@@ -8,9 +8,7 @@ Step 1:
         1: function object
         2: environment with all of parameters set for this function
 
-Step 2:
-
-    The object must be returned from the scope evaluator (evalStatements)
+    The object must be returned from scope evaluator (evalStatements)
         when the last expression or return are reached.
         something like this: (pseudocode)
     ```
@@ -40,11 +38,9 @@ Step 2:
     https://github.com/newenclave/mico/blob/master/include/mico/eval/tree_walking.h#L447
 
 
-    Here: make_env just set up new enviroment for the contCall.
+    Here: make_env just set up new environment for the contCall.
 
-Step 3:
-
-    Well, now we can rewrite evalStatements
+    Well now we can rewrite evalStatements
 
     ```
     func evalStatements ( stmts, env ) -> object
@@ -57,55 +53,16 @@ Step 3:
     }
     ```
 
-Step 4:
-
     And that is all.
     Now we can replace evalStatements in "evalIfExpression"
     ```
     if isTruthy(condition) {
-        return EvalImpl(ie.Consequence) // returns CONT_CALL if it is found
+        return EvalImpl(ie.Consequence) // returns CONT_CALL if it exists
     } else if ie.Alternative != nil {
-        return EvalImpl(ie.Alternative) // returns CONT_CALL if it is found
+        return EvalImpl(ie.Alternative) // returns CONT_CALL if it exists
     } else {
         return NULL
     }
     ```
 
-Step 5: tests
-    And here we go.
 
-    ```
-    let x = fn(count){
-        if(count > 0) {
-            x(count - 1)
-        } else {
-            0
-        }
-    }
-    x(0x7FFFFFFFFFFFFFFF)
-    ```
-    This code wil not failed with TRO and will without.
-
-    ```
-    let fac = fn(val) {
-        let impl = fn( val, acc ) {
-            if( val > 1 ) {
-                impl( val - 1, acc * val )
-            } else {
-                acc
-            }
-        }
-        impl( val, 1 )
-    }
-
-    let fib = fn( n ) {
-        let impl = fn( a, b, n ) {
-            if(n > 0) {
-                impl( b, a + b, n -1 )
-            } else {
-                a
-            }
-        }
-        impl(0, 1, n)
-    }
-    ```
