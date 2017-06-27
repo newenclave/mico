@@ -53,16 +53,15 @@ Here: makeCallEnv just set up new enviroment for the contCall.
 
 
 ```
-    func makeContCallEnv(FunctionLiteral *Function, Env *Environment, Call ) -> *Environment
+    func makeContCallEnv(FunctionLiteral *func, env *Environment, node ) -> *Environment
     {
-        args := evalExpressions(node.Arguments, Env)
+        args := evalExpressions(node.Arguments, env)
         if len(args) == 1 && isError(args[0]) {
             //// failed
             rerturn null; /// hmm
         }
-        return extendFunctionEnv(Function, args)
+        return extendFunctionEnv(func, args)
     }
-
 ```
 
 Step 3: Well, now we can rewrite evalStatements
@@ -72,7 +71,7 @@ Step 3: Well, now we can rewrite evalStatements
     {
         var result = evalStatementsImpl( stmts, env )
         while (result is CONT_CALL) {
-            result = evalStatementsImpl( result.Func.Body, result.Env )
+            result = evalStatementsImpl( result.Function.Body, result.Env )
         }
         return result
     }
