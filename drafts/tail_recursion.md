@@ -10,7 +10,7 @@ In the object system I added a very special object with type "CONT_CALL".
         2: environment with all of parameters set for this function
 
 ```
-    type ConCallLiteral struct {
+    type ContCallLiteral struct {
         FunctionLiteral *Function
         Env *Environment
     }
