@@ -25,3 +25,6 @@ HEADERS += \
     include/mico/repl.h \
     include/mico/enviroment.h
 
+DISTFILES += \
+    drafts/tail_recursion.md
+

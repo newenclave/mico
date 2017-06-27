@@ -79,13 +79,23 @@ let fac = fn(val) {
     impl( val, 1 )
 }
 
+let fib = fn( n ) {
+    let impl = fn( a, b, n ) {
+        if(n > 0) {
+            impl( b, a + b, n -1 )
+        } else {
+            a
+        }
+    }
+    impl(0, 1, n)
+}
+
 */
 
 int main( )
 {
 
-    // let x = fn(count){if(count > 0) { rerurn x(count-1)} else {return 0}}
-
+    // let x = fn(count){if(count > 0) { x(count - 1) } else { 0 }}
 
     //let fac = fn( x ) { if(x > 1) { x * fac(x - 1)  } else { 1 } }
 

@@ -461,6 +461,7 @@ namespace mico { namespace eval {
                         return get_cont_call( expr->value( ), env );
                     }
                 }
+
                 if( 0 == count ) {
                     if(stmt->get_type( ) == ast::type::EXPR) {
                         auto expr = static_cast<expression_type *>(stmt.get( ));
