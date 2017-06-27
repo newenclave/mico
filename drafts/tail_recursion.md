@@ -32,7 +32,7 @@ Something like this: (some pseudocode; so far as I use C++)
                                         Env = makeContCallEnv(Function, env, statement) }
                 }
             }
-            if( ISLAST && statement is CALL ) { /// is the statement is the last one and it is a CALL
+            if( ISLAST && statement is CALL ) { /// is the statement the last one and is a CALL
                 rerurn newContCall{ Function = statement.Function,
                                     Env = makeContCallEnv(Function, env, statement) }
 
@@ -105,6 +105,13 @@ And here we go.
         }
     }
     x(0x7FFFFFFFFFFFFFFF)
+```
+
+or
+
+```
+let x = fn( ){ x( ) }
+x( )
 ```
 
 Works!
