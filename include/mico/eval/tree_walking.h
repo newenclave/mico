@@ -267,7 +267,7 @@ namespace mico { namespace eval {
 
         enviroment::sptr make_env( enviroment::sptr parent )
         {
-            return std::make_shared<enviroment>(parent);
+            return enviroment::make(parent);
         }
 
         objects::sptr infix_string( const std::string &lft,
@@ -396,7 +396,7 @@ namespace mico { namespace eval {
         {
             auto vfun = obj_cast<objects::function>(fun);
 
-            auto new_env = std::make_shared<enviroment>(vfun->env( ));
+            auto new_env = enviroment::make(vfun->env( ));
 
             if( call->params( ).size( ) != vfun->params( ).size( ) ) {
                 //// TODO bad params count
@@ -541,7 +541,7 @@ namespace mico { namespace eval {
         {
             auto expr = static_cast<ast::statements::let *>( n );
             auto id   = expr->ident( )->str( );
-            auto val  = eval_tail( eval_impl( expr->value( ), env ) );
+            auto val  = eval_impl( expr->value( ), env );
             env->set( id, val );
             return get_null( );
         }

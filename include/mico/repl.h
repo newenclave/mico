@@ -13,7 +13,7 @@ namespace mico {
         static
         void run( )
         {
-            auto env = std::make_shared<enviroment>( );
+            auto env = enviroment::make( );
             std::string data;
             std::cout << ">>> ";
             while( true ) {

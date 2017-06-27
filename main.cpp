@@ -80,10 +80,22 @@ let fac = fn(val) {
 }
 
 let fib = fn( n ) {
+    let x = fn(count) {
+        if(count > 0) {
+            fn( ){
+                x(count - 1)
+            }
+        } else {
+            fn( ){
+                15
+            }
+        }
+    }
     let impl = fn( a, b, n ) {
         if(n > 0) {
             impl( b, a + b, n -1 )
         } else {
+            x(100)( );
             a
         }
     }
@@ -132,7 +144,7 @@ int main( )
 
     mico::eval::tree_walking tv;
 
-    auto env = std::make_shared<enviroment>( );
+    auto env = enviroment::make( );
     auto obj = tv.eval( &pp, env );
 
     std::cout << obj->str( ) << "\n";

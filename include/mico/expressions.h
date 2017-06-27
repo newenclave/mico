@@ -262,6 +262,9 @@ namespace mico { namespace ast { namespace expressions {
             ,expr_(std::make_shared<statement_list>( ))
         { }
 
+        ~function( )
+        { }
+
         type get_type( ) const override
         {
             return type::FN;
@@ -333,6 +336,9 @@ namespace mico { namespace ast { namespace expressions {
 
         call( expression::uptr f )
             :func_(std::move(f))
+        { }
+
+        ~call(  )
         { }
 
         type get_type( ) const override

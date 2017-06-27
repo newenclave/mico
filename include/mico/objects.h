@@ -9,10 +9,9 @@
 
 #include "mico/statements.h"
 #include "mico/expressions.h"
+#include "mico/enviroment.h"
 
 namespace mico {
-
-class enviroment;
 
 namespace objects {
 
@@ -275,6 +274,11 @@ namespace objects {
             ,body_(st)
         { }
 
+        ~function( )
+        {
+            drop( );
+        }
+
         type get_type( ) const override
         {
             return type_name;
@@ -309,17 +313,25 @@ namespace objects {
 
         std::shared_ptr<enviroment> env( )
         {
-            return env_;
+            return env_.lock( );
         }
 
         const std::shared_ptr<enviroment> env( ) const
         {
-            return env_;
+            return env_.lock( );
         }
 
     private:
 
-        std::shared_ptr<enviroment> env_;
+        void drop( )
+        {
+            auto p = env_.lock( );
+            if( p ) {
+                p->drop( );
+            }
+        }
+
+        std::weak_ptr<enviroment> env_;
         std::shared_ptr<ast::expression_list> params_;
         std::shared_ptr<ast::statement_list>  body_;
     };
@@ -335,6 +347,11 @@ namespace objects {
             :obj_(obj)
             ,env_(e)
         { }
+
+        ~cont_call( )
+        {
+            drop( );
+        }
 
         type get_type( ) const override
         {
@@ -355,12 +372,21 @@ namespace objects {
 
         std::shared_ptr<enviroment> env(  )
         {
-            return env_;
+            return env_.lock( );
         }
 
     private:
-        objects::sptr               obj_;
-        std::shared_ptr<enviroment> env_;
+
+        void drop( )
+        {
+            auto p = env_.lock( );
+            if( p ) {
+                p->drop( );
+            }
+        }
+
+        objects::sptr             obj_;
+        std::weak_ptr<enviroment> env_;
     };
 
     struct obj_less {
