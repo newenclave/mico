@@ -96,6 +96,7 @@ int main( )
 {
 
     // let x = fn(count){if(count > 0) { x(count - 1) } else { 0 }}
+    // let x = fn(count){ x(count - 1) }
 
     //let fac = fn( x ) { if(x > 1) { x * fac(x - 1)  } else { 1 } }
 
