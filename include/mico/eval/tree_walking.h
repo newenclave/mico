@@ -333,7 +333,7 @@ namespace mico { namespace eval {
             auto left = eval_impl(inf->left( ), env);
             if( !left ) {
                 /////////// bad left value
-                return nullptr;
+                return get_null( );
             }
 
             switch (left->get_type( )) {
