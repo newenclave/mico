@@ -3,11 +3,18 @@
 
 Step 1:
 
-In the object system I added a very special object that name is "continuation_call" (type: CONT_CALL).
+In the object system I added a very special object with type "CONT_CALL".
 
     The object contains:
         1: function object
         2: environment with all of parameters set for this function
+
+```
+    type ConCallLiteral struct {
+        FunctionLiteral *Function
+        Env *Environment
+    }
+```
 
 Step 2:
 
@@ -22,12 +29,12 @@ Something like this: (pseudocode)
             if( statement is RETURN ) {
                 if( statement.expression is CALL ) {
                     rerurn newContCall{ Function = statement.expression.Function,
-                                        Env = makeCallEnv(Function, env) }
+                                        Env = makeContCallEnv(Function, env, statement) }
                 }
             }
             if( ISLAST && statement is CALL ) { /// is the statement is the last one and it is a CALL
                 rerurn newContCall{ Function = statement.Function,
-                                    Env = makeCallEnv(Function, env) }
+                                    Env = makeContCallEnv(Function, env, statement) }
 
             }
             result = Eval(statement)
@@ -42,8 +49,21 @@ Something like this: (pseudocode)
 https://github.com/newenclave/mico/blob/master/include/mico/eval/tree_walking.h#L447
 
 
-Here: make_env just set up new enviroment for the contCall.
+Here: makeCallEnv just set up new enviroment for the contCall.
 
+
+```
+    func makeContCallEnv(FunctionLiteral *Function, Env *Environment, Call ) -> *Environment
+    {
+        args := evalExpressions(node.Arguments, Env)
+        if len(args) == 1 && isError(args[0]) {
+            //// failed
+            rerturn null; /// hmm
+        }
+        return extendFunctionEnv(Function, args)
+    }
+
+```
 
 Step 3: Well, now we can rewrite evalStatements
 
