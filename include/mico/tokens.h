@@ -172,7 +172,6 @@ namespace mico { namespace tokens {
             :line(l)
             ,pos(p)
         { }
-        position( const position & ) = default;
         position(  ) = default;
     };
 

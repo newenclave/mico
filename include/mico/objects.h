@@ -9,7 +9,6 @@
 
 #include "mico/statements.h"
 #include "mico/expressions.h"
-//#include "mico/enviroment.h"
 
 namespace mico {
 

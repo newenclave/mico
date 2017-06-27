@@ -81,7 +81,7 @@ namespace mico {
         template <typename ItrT>
         static ItrT skip_whitespaces( ItrT b, ItrT end, state *lstate  )
         {
-            while( (b != end) ) {
+            while( b != end ) {
                 if( idents::is_newline(*b) ) {
                     lstate->line++;
                     lstate->line_itr = ++b;
