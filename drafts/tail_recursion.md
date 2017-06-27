@@ -107,6 +107,13 @@ And here we go.
     x(0x7FFFFFFFFFFFFFFF)
 ```
 
+or
+
+```
+let x = fn( ){ x( ) }
+x( )
+```
+
 Works!
 
 
