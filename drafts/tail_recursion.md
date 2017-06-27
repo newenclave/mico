@@ -13,7 +13,7 @@ Step 2:
     The object must be returned from the scope evaluator (evalStatements)
         when the last expression or return are reached.
         something like this: (pseudocode)
-    ```
+```
     func evalStatementsImpl ( stmts, env ) -> object
     {
         var result null_obj
@@ -36,7 +36,7 @@ Step 2:
         }
         return result
     }
-    ```
+```
     https://github.com/newenclave/mico/blob/master/include/mico/eval/tree_walking.h#L447
 
 
@@ -46,7 +46,7 @@ Step 3:
 
     Well, now we can rewrite evalStatements
 
-    ```
+```
     func evalStatements ( stmts, env ) -> object
     {
         var result = evalStatementsImpl( stmts, env )
@@ -55,7 +55,8 @@ Step 3:
         }
         return result
     }
-    ```
+
+```
 
 Step 4:
 
@@ -72,9 +73,10 @@ Step 4:
     ```
 
 Step 5: tests
+
     And here we go.
 
-    ```
+```
     let x = fn(count){
         if(count > 0) {
             x(count - 1)
@@ -83,10 +85,11 @@ Step 5: tests
         }
     }
     x(0x7FFFFFFFFFFFFFFF)
-    ```
+```
+
     This code wil not failed with TRO and will without.
 
-    ```
+```
     let fac = fn(val) {
         let impl = fn( val, acc ) {
             if( val > 1 ) {
@@ -108,4 +111,4 @@ Step 5: tests
         }
         impl(0, 1, n)
     }
-    ```
+```
