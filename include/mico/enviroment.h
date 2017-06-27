@@ -13,7 +13,7 @@ namespace objects {
     struct base;
 }
 
-    class enviroment {
+    class enviroment: public std::enable_shared_from_this<enviroment> {
 
     public:
 

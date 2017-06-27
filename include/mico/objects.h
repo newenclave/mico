@@ -41,7 +41,6 @@ namespace objects {
         virtual ~base( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
-
     };
 
     template <type TN>
@@ -328,8 +327,8 @@ namespace objects {
         value_type value_;
     };
 
-    struct obj_less {
-
+    struct less
+    {
         template <typename ValT>
         static
         bool compare( const sptr &lft, const sptr &rght )
@@ -423,7 +422,7 @@ namespace objects {
     public:
         using sptr = std::shared_ptr<this_type>;
 
-        using value_type = std::map<objects::sptr, objects::sptr, obj_less>;
+        using value_type = std::map<objects::sptr, objects::sptr, less>;
 
         std::string str( ) const override
         {
@@ -470,7 +469,7 @@ namespace objects {
 
     template <>
     struct type2object<type::TABLE> {
-        using native_type = std::map<objects::sptr, objects::sptr, obj_less>;
+        using native_type = std::map<objects::sptr, objects::sptr, less>;
     };
 
 }}
