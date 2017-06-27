@@ -27,6 +27,7 @@ namespace objects {
         ARRAY,
         RETURN,
         FUNCTION,
+        CONT_CALL,
     };
 
     struct cast {
@@ -322,6 +323,45 @@ namespace objects {
         std::shared_ptr<enviroment> env_;
         std::shared_ptr<ast::expression_list> params_;
         std::shared_ptr<ast::statement_list>  body_;
+    };
+
+    class cont_call: public base {
+
+    public:
+
+        using sptr = std::shared_ptr<function>;
+        static const type type_name = type::CONT_CALL;
+
+        cont_call(objects::sptr obj, std::shared_ptr<enviroment> e)
+            :obj_(obj)
+            ,env_(e)
+        { }
+
+        type get_type( ) const override
+        {
+            return type_name;
+        }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "cc(" << ")";
+            return oss.str( );
+        }
+
+        objects::sptr  value( )
+        {
+            return obj_;
+        }
+
+        std::shared_ptr<enviroment> env(  )
+        {
+            return env_;
+        }
+
+    private:
+        objects::sptr               obj_;
+        std::shared_ptr<enviroment> env_;
     };
 
     struct obj_less {

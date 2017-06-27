@@ -385,12 +385,91 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
+        enviroment::sptr create_call_env( ast::expressions::call *call,
+                                          objects::base *fun,
+                                          enviroment::sptr env )
+        {
+            auto vfun = obj_cast<objects::function>(fun);
+            auto new_env = std::make_shared<enviroment>(vfun->env( ));
+            if( call->params( ).size( ) != vfun->params( ).size( ) ) {
+                //// TODO bad params count
+            }
+
+            size_t id = 0;
+            for( auto &p: vfun->params( ) ) {
+                if( p->get_type( ) == ast::type::IDENT ) {
+                    auto n = static_cast<ast::expressions::ident *>(p.get( ));
+                    auto v = eval_impl( call->params( )[id++].get( ), env );
+                    new_env->set(n->value( ), v);
+                } else {
+                    /// TODO bad param
+                    return nullptr;
+                }
+            }
+            return new_env;
+        }
+
+        objects::sptr get_cont_call( ast::node *n, enviroment::sptr env )
+        {
+            auto call = static_cast<ast::expressions::call *>( n );
+            auto fun = eval_impl(call->func( ), env);
+            if( is_null( fun ) || !is_function( fun ) ) {
+                ///// TODO error call object
+                return get_null( );
+            }
+
+            auto new_env = create_call_env( call, fun.get( ), env );
+            if( !new_env ) {
+                return get_null( );
+            }
+            return std::make_shared<objects::cont_call>(fun, new_env);
+        }
+
         objects::sptr eval_scope( ast::statement_list &lst,
                                   enviroment::sptr env )
         {
+            using call_type = objects::cont_call;
+            objects::sptr res = eval_scope_impl(lst, env);
+
+            while(res->get_type( ) == objects::type::CONT_CALL ) {
+                auto call = static_cast<call_type *>(res.get( ));
+                auto fun = obj_cast<objects::function>(call->value( ).get( ));
+                res = eval_scope_impl( fun->body( ), call->env( ) );
+            }
+            return res;
+        }
+
+        objects::sptr eval_scope_impl( ast::statement_list &lst,
+                                       enviroment::sptr env )
+        {
+            using return_type = ast::statements::ret;
+            using expression_type = ast::statements::expr;
+            auto count = lst.size( );
             objects::sptr last = get_null( );
-            for( auto &s: lst ) {
-                last = eval_impl( s.get( ), env );
+            for( auto &stmt: lst ) {
+
+                --count;
+
+                if(stmt->get_type( ) == ast::type::RETURN) {
+                    auto expr = static_cast<return_type *>( stmt.get( ) );
+                    if( expr->value( )->get_type( ) == ast::type::CALL ) {
+                        return get_cont_call( expr->value( ), env );
+                    }
+                }
+                if( 0 == count ) {
+                    if(stmt->get_type( ) == ast::type::EXPR) {
+                        auto expr = static_cast<expression_type *>(stmt.get( ));
+                        if( expr->value( )->get_type( ) == ast::type::CALL ) {
+                            return get_cont_call(expr->value( ).get( ), env);
+                        }
+                    }
+                }
+
+                auto next = eval_impl( stmt.get( ), env );
+                last = next;
+                if( is_return( next ) ) {
+                    return extract_return( last );
+                }
             }
             return last;
         }
@@ -412,12 +491,12 @@ namespace mico { namespace eval {
                 }
                 auto bres = obj_cast<objects::boolean>(res.get( ));
                 if( bres->value( ) ) {
-                    auto eval_states = eval_scope( i.states, env );
+                    auto eval_states = eval_scope_impl( i.states, env );
                     return eval_states;
                 }
             }
             if( !ifblock->alt( ).empty( ) ) {
-                auto eval_states = eval_scope( ifblock->alt( ), env );
+                auto eval_states = eval_scope_impl( ifblock->alt( ), env );
                 return eval_states;
             }
             return get_null( );
@@ -455,6 +534,7 @@ namespace mico { namespace eval {
         {
             auto expr = static_cast<ast::statements::ret *>( n );
             auto val  = eval_impl( expr->value( ), env );
+            auto sss = expr->value( )->get_type( );
             return std::make_shared<objects::retutn_obj>(val);
         }
 
@@ -492,33 +572,12 @@ namespace mico { namespace eval {
             }
 
             auto vfun = obj_cast<objects::function>(fun.get( ));
-            auto new_env = std::make_shared<enviroment>(vfun->env( ));
-            if( call->params( ).size( ) != vfun->params( ).size( ) ) {
-                //// TODO bad params count
+            auto new_env = create_call_env( call, fun.get( ), env );
+            if( !new_env ) {
+                return get_null( );
             }
 
-            size_t id = 0;
-            for( auto &p: vfun->params( ) ) {
-                if( p->get_type( ) == ast::type::IDENT ) {
-                    auto n = static_cast<ast::expressions::ident *>(p.get( ));
-                    auto v = eval_impl( call->params( )[id++].get( ), env );
-                    new_env->set(n->value( ), v);
-                } else {
-                    /// TODO bad param
-                    return get_null( );
-                }
-            }
-
-            objects::sptr last = get_null( );
-            for( auto &stmt: vfun->body( ) ) {
-                auto next = eval_impl( stmt.get( ), new_env );
-                last = next;
-                if( is_return( next ) ) {
-                    return extract_return( last );
-                }
-            }
-
-            return last;
+            return eval_scope( vfun->body( ), new_env );
         }
 
         objects::sptr get_table( ast::node *n, enviroment::sptr env )

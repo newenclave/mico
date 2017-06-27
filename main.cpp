@@ -69,6 +69,8 @@ using intg = derived<name::INTEGER>;
 int main( )
 {
 
+    // let x = fn(count){if(count > 0) {x(count-1)} else {0}}
+
     //let fac = fn( x ) { if(x > 1) { x * fac(x - 1)  } else { 1 } }
 
     //let fib = fn(x) { if (x == 0) { 0 } elif(x==1) { 1 } else { fib(x - 1) + fib(x - 2); } };
