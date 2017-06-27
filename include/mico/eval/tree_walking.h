@@ -380,8 +380,8 @@ namespace mico { namespace eval {
             case tokens::type::EQ:
             case tokens::type::NOT_EQ: {
                 auto rght = eval_impl(inf->right( ), env);
-                return other_infix( left.get( ), rght.get( ), inf->token( ),
-                                    env );
+                return other_infix( left.get( ), rght.get( ),
+                                    inf->token( ), env );
             }
             default:
                 break;
@@ -395,16 +395,19 @@ namespace mico { namespace eval {
                                           enviroment::sptr env )
         {
             auto vfun = obj_cast<objects::function>(fun);
+
             auto new_env = std::make_shared<enviroment>(vfun->env( ));
+
             if( call->params( ).size( ) != vfun->params( ).size( ) ) {
                 //// TODO bad params count
+                return nullptr;
             }
 
             size_t id = 0;
             for( auto &p: vfun->params( ) ) {
                 if( p->get_type( ) == ast::type::IDENT ) {
                     auto n = static_cast<ast::expressions::ident *>(p.get( ));
-                    auto v = eval_impl( call->params( )[id++].get( ), env );
+                    auto v = eval_impl_tail(call->params( )[id++].get( ), env );
                     new_env->set(n->value( ), v);
                 } else {
                     /// TODO bad param
@@ -430,18 +433,23 @@ namespace mico { namespace eval {
             return std::make_shared<objects::cont_call>(fun, new_env);
         }
 
+
+        objects::sptr eval_tail( objects::sptr obj )
+        {
+            using call_type = objects::cont_call;
+            while(obj->get_type( ) == objects::type::CONT_CALL ) {
+                auto call = static_cast<call_type *>(obj.get( ));
+                auto fun = obj_cast<objects::function>(call->value( ).get( ));
+                obj = eval_scope_impl( fun->body( ), call->env( ) );
+            }
+            return obj;
+        }
+
         objects::sptr eval_scope( ast::statement_list &lst,
                                   enviroment::sptr env )
         {
-            using call_type = objects::cont_call;
             objects::sptr res = eval_scope_impl(lst, env);
-
-            while(res->get_type( ) == objects::type::CONT_CALL ) {
-                auto call = static_cast<call_type *>(res.get( ));
-                auto fun = obj_cast<objects::function>(call->value( ).get( ));
-                res = eval_scope_impl( fun->body( ), call->env( ) );
-            }
-            return res;
+            return eval_tail( res );
         }
 
         objects::sptr eval_scope_impl( ast::statement_list &lst,
@@ -515,7 +523,7 @@ namespace mico { namespace eval {
             auto prog = static_cast<ast::program *>( n );
             objects::sptr last = get_null( );
             for( auto &s: prog->states( ) ) {
-                last = eval_impl( s.get( ), env );
+                last = eval_impl_tail( s.get( ), env );
                 if( is_return(last) ) {
                     return extract_return( last );
                 }
@@ -533,7 +541,7 @@ namespace mico { namespace eval {
         {
             auto expr = static_cast<ast::statements::let *>( n );
             auto id   = expr->ident( )->str( );
-            auto val  = eval_impl( expr->value( ), env );
+            auto val  = eval_tail( eval_impl( expr->value( ), env ) );
             env->set( id, val );
             return get_null( );
         }
@@ -542,7 +550,6 @@ namespace mico { namespace eval {
         {
             auto expr = static_cast<ast::statements::ret *>( n );
             auto val  = eval_impl( expr->value( ), env );
-            auto sss = expr->value( )->get_type( );
             return std::make_shared<objects::retutn_obj>(val);
         }
 
@@ -585,7 +592,9 @@ namespace mico { namespace eval {
                 return get_null( );
             }
 
-            return eval_scope( vfun->body( ), new_env );
+            auto res = eval_scope( vfun->body( ), new_env );
+
+            return res;
         }
 
         objects::sptr eval_table( ast::node *n, enviroment::sptr env )
@@ -595,12 +604,12 @@ namespace mico { namespace eval {
             auto res = objects::table::make( );
 
             for( auto &v: table->value( ) ) {
-                auto key = eval_impl( v.first.get( ), env );
+                auto key = eval_impl_tail( v.first.get( ), env );
                 if( is_null( key ) ) {
                     //// TODO bad key value for table
                     return get_null( );
                 }
-                auto val = eval_impl( v.second.get( ), env );
+                auto val = eval_impl_tail( v.second.get( ), env );
                 res->value( )[key] = val;
             }
 
@@ -617,44 +626,50 @@ namespace mico { namespace eval {
             }
         }
 
+        objects::sptr eval_impl_tail( ast::node *n, enviroment::sptr env )
+        {
+            auto res = eval_impl(n, env);
+            return eval_tail( res );
+        }
+
         objects::sptr eval_impl( ast::node *n, enviroment::sptr env )
         {
+            objects::sptr res = get_null( );
             switch (n->get_type( )) {
             case ast::type::PROGRAM:
-                return eval_program( n, env );
+                res = eval_program( n, env ); break;
             case ast::type::EXPR:
-                return eval_expression( n, env );
+                res = eval_expression( n, env ); break;
             case ast::type::BOOLEAN:
-                return eval_bool( n );
+                res = eval_bool( n ); break;
             case ast::type::INTEGER:
-                return eval_int( n );
+                res = eval_int( n ); break;
             case ast::type::FLOAT:
-                return eval_float( n );
+                res = eval_float( n ); break;
             case ast::type::STRING:
-                return eval_string( n );
+                res = eval_string( n ); break;
             case ast::type::PREFIX:
-                return eval_prefix( n, env );
+                res = eval_prefix( n, env ); break;
             case ast::type::INFIX:
-                return eval_infix( n, env );
+                res = eval_infix( n, env ); break;
             case ast::type::IFELSE:
-                return eval_ifelse( n, env );
+                res = eval_ifelse( n, env ); break;
             case ast::type::IDENT:
-                return eval_ident( n, env );
+                res = eval_ident( n, env ); break;
             case ast::type::LET:
-                return eval_let( n, env );
+                res = eval_let( n, env ); break;
             case ast::type::RETURN:
-                return eval_return( n, env );
+                res = eval_return( n, env ); break;
             case ast::type::FN:
-                return eval_function( n, env );
+                res = eval_function( n, env ); break;
             case ast::type::CALL:
-                return eval_call( n, env );
+                res = eval_call( n, env ); break;
             case ast::type::TABLE:
-                return eval_table( n, env );
+                res = eval_table( n, env ); break;
             case ast::type::NONE:
                 break;
             }
-            return get_null( );
-
+            return res;
         }
 
 

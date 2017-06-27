@@ -22,7 +22,7 @@ namespace mico {
                 if( tmp.empty( ) ) {
                     auto prog = mico::parser::parse( data );
                     if( prog.errors( ).empty( ) ) {
-                        std::cout << prog.str( ) << "\n";
+                        //std::cout << prog.str( ) << "\n";
                         mico::eval::tree_walking tv;
                         if( prog.states( ).size( ) > 0 ) {
                             auto obj = tv.eval( &prog, env );
@@ -35,12 +35,15 @@ namespace mico {
                     }
                     data.clear( );
                     std::cout << ">>> ";
+                } else if( data.empty( ) && tmp.size( )==1 && tmp[0] == 'q' ) {
+                    break;
                 } else {
                     data += " ";
                     data += tmp;
                     std::cout << "  > ";
                 }
             }
+            env->clear( );
         }
     };
 }

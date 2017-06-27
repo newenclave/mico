@@ -16,6 +16,12 @@ namespace mico {
             :parent_(env)
         { }
 
+        void clear(  )
+        {
+            parent_.reset( );
+            data_.clear( );
+        }
+
         void set( const std::string &name, objects::sptr val )
         {
             data_[name] = val;
