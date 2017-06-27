@@ -8,7 +8,9 @@ Step 1:
         1: function object
         2: environment with all of parameters set for this function
 
-    The object must be returned from scope evaluator (evalStatements)
+Step 2:
+
+    The object must be returned from the scope evaluator (evalStatements)
         when the last expression or return are reached.
         something like this: (pseudocode)
     ```
@@ -40,7 +42,9 @@ Step 1:
 
     Here: make_env just set up new enviroment for the contCall.
 
-    Well now we can rewrite evalStatements
+Step 3:
+
+    Well, now we can rewrite evalStatements
 
     ```
     func evalStatements ( stmts, env ) -> object
@@ -52,6 +56,8 @@ Step 1:
         return result
     }
     ```
+
+Step 4:
 
     And that is all.
     Now we can replace evalStatements in "evalIfExpression"
@@ -65,6 +71,7 @@ Step 1:
     }
     ```
 
+Step 5: tests
     And here we go.
 
     ```
