@@ -67,12 +67,6 @@ namespace objects {
             }
         }
 
-        void clear(  )
-        {
-            parent_.reset( );
-            data_.clear( );
-        }
-
         void set( const std::string &name, object_sptr val )
         {
             data_[name] = val;
