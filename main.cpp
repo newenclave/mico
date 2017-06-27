@@ -66,10 +66,26 @@ struct derived<name::INTEGER>: public base {
 using str  = derived<name::STRING>;
 using intg = derived<name::INTEGER>;
 
+/*
+
+let fac = fn(val) {
+    let impl = fn( val, acc ) {
+        if( val > 1 ) {
+            impl( val - 1, acc * val )
+        } else {
+            acc
+        }
+    }
+    impl( val, 1 )
+}
+
+*/
+
 int main( )
 {
 
     // let x = fn(count){if(count > 0) {x(count-1)} else {0}}
+
 
     //let fac = fn( x ) { if(x > 1) { x * fac(x - 1)  } else { 1 } }
 
@@ -80,9 +96,6 @@ int main( )
 
 //    std::cout << objects::obj_less( )( objects::signed_int::make(1),
 //                                       objects::unsigned_int::make(10) );
-
-    std::cout << objects::obj_less( )( objects::floating::make(1.0),
-                                       objects::integer::make(10) );
 
     return run_repl( );
 

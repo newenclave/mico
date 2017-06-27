@@ -265,6 +265,11 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
+        enviroment::sptr make_env( enviroment::sptr parent )
+        {
+            return std::make_shared<enviroment>(parent);
+        }
+
         objects::sptr infix_string( const std::string &lft,
                                     const std::string &rght,
                                     tokens::type tt )
@@ -491,12 +496,14 @@ namespace mico { namespace eval {
                 }
                 auto bres = obj_cast<objects::boolean>(res.get( ));
                 if( bres->value( ) ) {
-                    auto eval_states = eval_scope_impl( i.states, env );
+                    auto eval_states = eval_scope_impl( i.states,
+                                                        make_env(env) );
                     return eval_states;
                 }
             }
             if( !ifblock->alt( ).empty( ) ) {
-                auto eval_states = eval_scope_impl( ifblock->alt( ), env );
+                auto eval_states = eval_scope_impl( ifblock->alt( ),
+                                                    make_env(env) );
                 return eval_states;
             }
             return get_null( );
@@ -545,7 +552,7 @@ namespace mico { namespace eval {
             if( !val ) {
                 //// TODO error identifier
                 ///
-                //std::cout << expr->value( )  << " NOt FOUND!\n";
+                //std::cout << expr->value( )  << " NOT FOUND!\n";
                 return get_null( );
             } else {
                 return val;

@@ -14,22 +14,31 @@ namespace mico {
         void run( )
         {
             auto env = std::make_shared<enviroment>( );
+            std::string data;
+            std::cout << ">>> ";
             while( true ) {
-                std::string data;
-                std::cout << ">>> ";
-                std::getline( std::cin, data );
-                auto prog = mico::parser::parse( data );
-                if( prog.errors( ).empty( ) ) {
-                    std::cout << prog.str( ) << "\n";
-                    mico::eval::tree_walking tv;
-                    if( prog.states( ).size( ) > 0 ) {
-                        auto obj = tv.eval( &prog, env );
-                        std::cout << obj->str( ) << "\n";
+                std::string tmp;
+                std::getline( std::cin, tmp );
+                if( tmp.empty( ) ) {
+                    auto prog = mico::parser::parse( data );
+                    if( prog.errors( ).empty( ) ) {
+                        std::cout << prog.str( ) << "\n";
+                        mico::eval::tree_walking tv;
+                        if( prog.states( ).size( ) > 0 ) {
+                            auto obj = tv.eval( &prog, env );
+                            std::cout << obj->str( ) << "\n";
+                        }
+                    } else {
+                        for( auto &e: prog.errors( ) ) {
+                            std::cout << e << "\n";
+                        }
                     }
+                    data.clear( );
+                    std::cout << ">>> ";
                 } else {
-                    for( auto &e: prog.errors( ) ) {
-                        std::cout << e << "\n";
-                    }
+                    data += " ";
+                    data += tmp;
+                    std::cout << "  > ";
                 }
             }
         }
