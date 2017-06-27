@@ -19,7 +19,7 @@ In the object system I added a very special object with type "CONT_CALL".
 Step 2:
 
 The object must be returned from the scope evaluator (evalStatements) when the last expression or return are reached.
-Something like this: (pseudocode)
+Something like this: (some pseudocode; so far as I use C++)
 
 ```
     func evalStatementsImpl ( stmts, env ) -> object
