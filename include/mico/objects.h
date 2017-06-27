@@ -44,16 +44,11 @@ namespace objects {
 
     };
 
-    struct null: public base {
-
-        virtual type get_type( ) const
+    template <type TN>
+    struct typed_base: public base {
+        type get_type( ) const
         {
-            return type::NULL_OBJ;
-        }
-
-        std::string str( ) const
-        {
-            return "null";
+            return TN;
         }
     };
 
@@ -64,16 +59,6 @@ namespace objects {
     template <type TName>
     struct type2object;
 
-
-    template <>
-    struct type2object<type::STRING> {
-        using native_type = std::string;
-    };
-
-    template <>
-    struct type2object<type::ARRAY> {
-        using native_type = std::vector<sptr>;
-    };
     template <>
     struct type2object<type::BOOLEAN> {
         using native_type = bool;
@@ -89,72 +74,29 @@ namespace objects {
         using native_type = std::int64_t;
     };
 
-    template <type TValue>
-    class primitive: public base  {
+    template <type>
+    class derived;
+
+    template <>
+    class derived<type::NULL_OBJ>: public typed_base<type::NULL_OBJ> {
+        using this_type = derived<type::NULL_OBJ>;
     public:
-
-        using sptr = std::shared_ptr<primitive<TValue> >;
-
-        static const type type_name = TValue;
-        using value_type = typename type2object<type_name>::native_type;
-
-        primitive(value_type val)
-            :value_(val)
-        { }
-
-        type get_type( ) const override
+        using sptr = std::shared_ptr<this_type>;
+        std::string str( ) const
         {
-            return type_name;
+            return "null";
         }
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << std::boolalpha << value( );
-            return oss.str( );
-        }
-
-        value_type value( ) const
-        {
-            return value_;
-        }
-
-        void set_value( value_type val )
-        {
-            value_ = val;
-        }
-
-        static
-        sptr make( value_type val )
-        {
-            return std::make_shared<primitive<type_name> >(std::move(val));
-        }
-
-    private:
-
-        value_type value_;
     };
 
-    class string;
-    class table;
-    class array;
+    template <>
+    class derived<type::STRING>: public typed_base<type::STRING> {
 
-    class string: public base  {
+        using this_type = derived<type::STRING>;
+
     public:
 
-        using sptr = std::shared_ptr<string>;
-
-        static const type type_name = type::STRING;
-        using value_type = type2object<type_name>::native_type;
-
-        string(value_type val)
-            :value_(std::move(val))
-        { }
-
-        type get_type( ) const override
-        {
-            return type_name;
-        }
+        using sptr = std::shared_ptr<this_type>;
+        using value_type = std::string;
 
         std::string str( ) const override
         {
@@ -162,105 +104,24 @@ namespace objects {
             oss << "\"" << value( ) << "\"";
             return oss.str( );
         }
-
-        const value_type &value( ) const
-        {
-            return value_;
-        }
-
-        void set_value( value_type val )
-        {
-            value_ = std::move(val);
-        }
-
-        static
-        sptr make( value_type val )
-        {
-            return std::make_shared<string>(std::move(val));
-        }
-
-    private:
-
-        value_type value_;
-
-    };
-
-    class array: public base {
-    public:
-
-        static const type type_name = type::ARRAY;
-        using value_type = std::vector<sptr>;
-
-        type get_type( ) const override
-        {
-            return type_name;
-        }
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << "<array>";
-            return oss.str( );
-        }
-
-        const value_type &value( ) const
-        {
-            return values_;
-        }
-
-        value_type &value( )
-        {
-            return values_;
-        }
-
-        static
-        sptr make( )
-        {
-            return std::make_shared<array>( );
-        }
-
-    private:
-        value_type values_;
-    };
-
-    class retutn_obj: public base {
-    public:
-
-        using sptr = std::shared_ptr<retutn_obj>;
-        static const type type_name = type::RETURN;
-        using value_type = objects::sptr;
-
-        retutn_obj( value_type val )
-            :value_(val)
+        derived( value_type val )
+            :value_(std::move(val))
         { }
-
-        type get_type( ) const override
-        {
-            return type_name;
-        }
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << "return " << value( )->str( );
-            return oss.str( );
-        }
-
-        value_type &value( )
-        {
-            return value_;
-        }
-
         const value_type &value( ) const
         {
             return value_;
         }
-
+        value_type &value( )
+        {
+            return value_;
+        }
     private:
         value_type value_;
+    public:
     };
 
-    class env_object: public base {
+    template <type TN>
+    class env_object: public typed_base<TN> {
 
     public:
 
@@ -296,27 +157,19 @@ namespace objects {
         std::weak_ptr<enviroment> env_;
     };
 
-    class function: public env_object {
+    template <>
+    class derived<type::FUNCTION>: public env_object<type::FUNCTION> {
+        using this_type = derived<type::FUNCTION>;
     public:
+        using sptr = std::shared_ptr<this_type>;
 
-        using sptr = std::shared_ptr<function>;
-        static const type type_name = type::FUNCTION;
-
-        function( std::shared_ptr<enviroment> e,
+        derived( std::shared_ptr<enviroment> e,
                   std::shared_ptr<ast::expression_list> par,
                   std::shared_ptr<ast::statement_list> st )
             :env_object(e)
             ,params_(par)
             ,body_(st)
         { }
-
-        ~function( )
-        { }
-
-        type get_type( ) const override
-        {
-            return type_name;
-        }
 
         std::string str( ) const override
         {
@@ -350,25 +203,17 @@ namespace objects {
         std::shared_ptr<ast::statement_list>  body_;
     };
 
-    class cont_call: public env_object {
+    template <>
+    class derived<type::CONT_CALL>: public env_object<type::CONT_CALL> {
 
+        using this_type = derived<type::CONT_CALL>;
     public:
+        using sptr = std::shared_ptr<this_type>;
 
-        using sptr = std::shared_ptr<function>;
-        static const type type_name = type::CONT_CALL;
-
-        cont_call(objects::sptr obj, std::shared_ptr<enviroment> e)
+        derived(objects::sptr obj, enviroment::sptr e)
             :env_object(e)
             ,obj_(obj)
         { }
-
-        ~cont_call( )
-        { }
-
-        type get_type( ) const override
-        {
-            return type_name;
-        }
 
         std::string str( ) const override
         {
@@ -383,8 +228,104 @@ namespace objects {
         }
 
     private:
+        objects::sptr obj_;
+    };
 
-        objects::sptr             obj_;
+    template <>
+    class derived<type::RETURN>: public typed_base<type::RETURN> {
+        using this_type = derived<type::RETURN>;
+    public:
+        using sptr = std::shared_ptr<this_type>;
+
+        using value_type = objects::sptr;
+
+        derived( value_type val )
+            :value_(val)
+        { }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "return " << value( )->str( );
+            return oss.str( );
+        }
+
+        value_type &value( )
+        {
+            return value_;
+        }
+
+        const value_type &value( ) const
+        {
+            return value_;
+        }
+
+    private:
+        value_type value_;
+    };
+
+    template <>
+    class derived<type::ARRAY>: public typed_base<type::ARRAY> {
+        using this_type = derived<type::ARRAY>;
+    public:
+
+        using sptr = std::shared_ptr<this_type>;
+        using value_type = std::vector<sptr>;
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "<array>";
+            return oss.str( );
+        }
+
+        const value_type &value( ) const
+        {
+            return values_;
+        }
+
+        value_type &value( )
+        {
+            return values_;
+        }
+
+    private:
+        value_type values_;
+    };
+
+    template <type TN>
+    class derived: public typed_base<TN>  {
+        using this_type = derived<TN>;
+    public:
+        using sptr = std::shared_ptr<this_type>;
+
+        static const type type_name = TN;
+        using value_type = typename type2object<type_name>::native_type;
+
+        derived(value_type val)
+            :value_(val)
+        { }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << std::boolalpha << value( );
+            return oss.str( );
+        }
+
+        value_type value( ) const
+        {
+            return value_;
+        }
+
+        void set_value( value_type val )
+        {
+            value_ = val;
+        }
+
+    private:
+
+        value_type value_;
     };
 
     struct obj_less {
@@ -415,8 +356,8 @@ namespace objects {
         static
         bool compare_numbers( const sptr &lft, const sptr &rght )
         {
-            using integer   = primitive<type::INTEGER>;
-            using floating  = primitive<type::FLOAT>;
+            using integer   = derived<type::INTEGER>;
+            using floating  = derived<type::FLOAT>;
 
             auto lval = cast::to<LeftT>(lft.get( ));
             switch (rght->get_type( )) {
@@ -434,9 +375,12 @@ namespace objects {
 
         bool operator ( )( const sptr &lft, const sptr &rght ) const
         {
-            using boolean   = primitive<type::BOOLEAN>;
-            using integer   = primitive<type::INTEGER>;
-            using floating  = primitive<type::FLOAT>;
+            using boolean   = derived<type::BOOLEAN>;
+            using integer   = derived<type::INTEGER>;
+            using floating  = derived<type::FLOAT>;
+            using string    = derived<type::STRING>;
+            using array     = derived<type::ARRAY>;
+            using table     = derived<type::TABLE>;
 
             if( lft->get_type( ) == rght->get_type( ) ) {
                 switch (lft->get_type( )) {
@@ -473,21 +417,13 @@ namespace objects {
     };
 
     template <>
-    struct type2object<type::TABLE> {
-        using native_type = std::map<objects::sptr, objects::sptr, obj_less>;
-    };
+    class derived<type::TABLE>: public typed_base<type::TABLE> {
 
-    class table: public base {
+        using this_type = derived<type::TABLE>;
     public:
+        using sptr = std::shared_ptr<this_type>;
 
-        using sptr = std::shared_ptr<table>;
-        static const type type_name = type::TABLE;
         using value_type = std::map<objects::sptr, objects::sptr, obj_less>;
-
-        type get_type( ) const override
-        {
-            return type_name;
-        }
 
         std::string str( ) const override
         {
@@ -514,63 +450,28 @@ namespace objects {
         static
         sptr make( )
         {
-            return std::make_shared<table>( );
+            return std::make_shared<this_type>( );
         }
 
     private:
         value_type values_;
-
     };
 
-    using boolean   = primitive<type::BOOLEAN>;
-    using integer   = primitive<type::INTEGER>;
-    using floating  = primitive<type::FLOAT>;
-
-    template <typename ObjT>
-    struct object2type;
+    using null       = derived<type::NULL_OBJ>;
+    using string     = derived<type::STRING>;
+    using function   = derived<type::FUNCTION>;
+    using cont_call  = derived<type::CONT_CALL>;
+    using retutn_obj = derived<type::RETURN>;
+    using boolean    = derived<type::BOOLEAN>;
+    using integer    = derived<type::INTEGER>;
+    using floating   = derived<type::FLOAT>;
+    using array      = derived<type::ARRAY>;
+    using table      = derived<type::TABLE>;
 
     template <>
-    struct object2type<boolean> {
-        using object_type = boolean;
-        static const type type_name = type::BOOLEAN;
-        using native_type = typename type2object<type_name>::native_type;
+    struct type2object<type::TABLE> {
+        using native_type = std::map<objects::sptr, objects::sptr, obj_less>;
     };
-
-    template <>
-    struct object2type<integer> {
-        using object_type = integer;
-        static const type type_name = type::INTEGER;
-        using native_type = typename type2object<type_name>::native_type;
-    };
-
-    template <>
-    struct object2type<floating> {
-        using object_type = floating;
-        static const type type_name = type::FLOAT;
-        using native_type = typename type2object<type_name>::native_type;
-    };
-
-    template <>
-    struct object2type<string> {
-        using object_type = string;
-        static const type type_name = type::STRING;
-        using native_type = typename type2object<type_name>::native_type;
-    };
-
-    template <>
-    struct object2type<table> {
-        using object_type = table;
-        static const type type_name = type::TABLE;
-        using native_type = typename type2object<type_name>::native_type;
-    };
-
-    template <>
-    struct object2type<array> {
-        using object_type = array;
-        static const type type_name = type::ARRAY;
-        using native_type = typename type2object<type_name>::native_type;
-    };
-
 
 }}
 
