@@ -3,16 +3,17 @@
 
 Step 1:
 
-    In the object system I added a very special object that name is "continuation_call" (type: CONT_CALL).
+In the object system I added a very special object that name is "continuation_call" (type: CONT_CALL).
+
     The object contains:
         1: function object
         2: environment with all of parameters set for this function
 
 Step 2:
 
-    The object must be returned from the scope evaluator (evalStatements)
-        when the last expression or return are reached.
-        something like this: (pseudocode)
+The object must be returned from the scope evaluator (evalStatements) when the last expression or return are reached.
+Something like this: (pseudocode)
+
 ```
     func evalStatementsImpl ( stmts, env ) -> object
     {
@@ -37,14 +38,14 @@ Step 2:
         return result
     }
 ```
-    https://github.com/newenclave/mico/blob/master/include/mico/eval/tree_walking.h#L447
+
+https://github.com/newenclave/mico/blob/master/include/mico/eval/tree_walking.h#L447
 
 
-    Here: make_env just set up new enviroment for the contCall.
+Here: make_env just set up new enviroment for the contCall.
 
-Step 3:
 
-    Well, now we can rewrite evalStatements
+Step 3: Well, now we can rewrite evalStatements
 
 ```
     func evalStatements ( stmts, env ) -> object
@@ -60,9 +61,9 @@ Step 3:
 
 Step 4:
 
-    And that is all.
-    Now we can replace evalStatements in "evalIfExpression"
-    ```
+And that is all. Now we can replace evalStatements in "evalIfExpression"
+
+```
     if isTruthy(condition) {
         return EvalImpl(ie.Consequence) // returns CONT_CALL if it exists
     } else if ie.Alternative != nil {
@@ -70,11 +71,11 @@ Step 4:
     } else {
         return NULL
     }
-    ```
+```
 
 Step 5: tests
 
-    And here we go.
+And here we go.
 
 ```
     let x = fn(count){
@@ -87,7 +88,10 @@ Step 5: tests
     x(0x7FFFFFFFFFFFFFFF)
 ```
 
-    This code wil not failed with TRO and will without.
+This code wil not failed with TRO and will without.
+
+
+factorial and fibonacci
 
 ```
     let fac = fn(val) {
