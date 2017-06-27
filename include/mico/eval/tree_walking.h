@@ -62,18 +62,18 @@ namespace mico { namespace eval {
             return bobj;
         }
 
-        objects::boolean::sptr get_bool( ast::node *n )
+        objects::boolean::sptr eval_bool( ast::node *n )
         {
             auto bstate = static_cast<ast::expressions::boolean *>(n);
             return bstate->value( ) ? get_bool_true( ) : get_bool_false( );
         }
 
-        objects::boolean::sptr get_bool( bool b )
+        objects::boolean::sptr eval_bool( bool b )
         {
             return b ? get_bool_true( ) : get_bool_false( );
         }
 
-        objects::integer::sptr get_int( ast::node *n )
+        objects::integer::sptr eval_int( ast::node *n )
         {
             auto state = static_cast<ast::expressions::integer *>(n);
             return std::make_shared<objects::integer>( state->value( ) );
@@ -91,18 +91,18 @@ namespace mico { namespace eval {
             return std::make_shared<objects::integer>( n );
         }
 
-        objects::sptr get_float( ast::node *n )
+        objects::sptr eval_float( ast::node *n )
         {
             auto state = static_cast<ast::expressions::floating *>(n);
             return std::make_shared<objects::floating>( state->value( ) );
         }
 
-        objects::floating::sptr get_float( double n )
+        objects::floating::sptr eval_float( double n )
         {
             return std::make_shared<objects::floating>( n );
         }
 
-        objects::string::sptr get_string( ast::node *n )
+        objects::string::sptr eval_string( ast::node *n )
         {
             auto val = static_cast<ast::expressions::string *>(n);
             return std::make_shared<objects::string>( val->value( ) );
@@ -119,7 +119,7 @@ namespace mico { namespace eval {
             }
             case objects::type::FLOAT: {
                 auto o = obj_cast<objects::floating>(oper.get( ));
-                return get_float( -1.0 * o->value( ) );
+                return eval_float( -1.0 * o->value( ) );
             }
             default:
                 break;
@@ -153,11 +153,11 @@ namespace mico { namespace eval {
                                            enviroment::sptr env )
         {
             auto oper = eval_impl( n->value( ), env );
-            return oper ? get_bool( !obj2num<bool>( oper.get( ) ) )
+            return oper ? eval_bool( !obj2num<bool>( oper.get( ) ) )
                         : get_null( );
         }
 
-        objects::sptr get_prefix( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_prefix( ast::node *n, enviroment::sptr env )
         {
             auto expr = static_cast<ast::expressions::prefix *>( n );
 
@@ -201,7 +201,7 @@ namespace mico { namespace eval {
         {
             switch (oper->get_type( )) {
             case objects::type::BOOLEAN:
-                return get_bool( obj2num<bool>(oper) );
+                return eval_bool( obj2num<bool>(oper) );
             case objects::type::INTEGER:
                 return std::make_shared<NumObj>( obj2num<std::int64_t>(oper) );
             case objects::type::FLOAT:
@@ -226,17 +226,17 @@ namespace mico { namespace eval {
             case tokens::type::SLASH:
                 return std::make_shared<ResT>( lft /  rghg );
             case tokens::type::LT:
-                return               get_bool( lft <  rghg );
+                return               eval_bool( lft <  rghg );
             case tokens::type::GT:
-                return               get_bool( lft >  rghg );
+                return               eval_bool( lft >  rghg );
             case tokens::type::EQ:
-                return               get_bool( lft == rghg );
+                return               eval_bool( lft == rghg );
             case tokens::type::NOT_EQ:
-                return               get_bool( lft != rghg );
+                return               eval_bool( lft != rghg );
             case tokens::type::LT_EQ:
-                return               get_bool( lft <= rghg );
+                return               eval_bool( lft <= rghg );
             case tokens::type::GT_EQ:
-                return               get_bool( lft >= rghg );
+                return               eval_bool( lft >= rghg );
             default:
                 break;
             }
@@ -247,17 +247,17 @@ namespace mico { namespace eval {
         {
             switch (tt) {
             case tokens::type::LT:
-                return get_bool( lft < rght );
+                return eval_bool( lft < rght );
             case tokens::type::GT:
-                return get_bool( lft > rght );
+                return eval_bool( lft > rght );
             case tokens::type::LT_EQ:
-                return get_bool( lft <= rght );
+                return eval_bool( lft <= rght );
             case tokens::type::GT_EQ:
-                return get_bool( lft >= rght );
+                return eval_bool( lft >= rght );
             case tokens::type::EQ:
-                return get_bool( lft == rght );
+                return eval_bool( lft == rght );
             case tokens::type::NOT_EQ:
-                return get_bool( lft != rght );
+                return eval_bool( lft != rght );
             default:
                 break;
             }
@@ -276,17 +276,17 @@ namespace mico { namespace eval {
         {
             switch (tt) {
             case tokens::type::LT:
-                return get_bool( lft < rght );
+                return eval_bool( lft < rght );
             case tokens::type::GT:
-                return get_bool( lft > rght );
+                return eval_bool( lft > rght );
             case tokens::type::LT_EQ:
-                return get_bool( lft <= rght );
+                return eval_bool( lft <= rght );
             case tokens::type::GT_EQ:
-                return get_bool( lft >= rght );
+                return eval_bool( lft >= rght );
             case tokens::type::EQ:
-                return get_bool( lft == rght );
+                return eval_bool( lft == rght );
             case tokens::type::NOT_EQ:
-                return get_bool( lft != rght );
+                return eval_bool( lft != rght );
             case tokens::type::PLUS:
                 return std::make_shared<objects::string>(lft + rght);
             default:
@@ -327,7 +327,7 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        objects::sptr get_infix( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_infix( ast::node *n, enviroment::sptr env )
         {
             auto inf = static_cast<ast::expressions::infix *>(n);
             auto left = eval_impl(inf->left( ), env);
@@ -480,7 +480,7 @@ namespace mico { namespace eval {
             return last;
         }
 
-        objects::sptr get_ifelse( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_ifelse( ast::node *n, enviroment::sptr env )
         {
             auto ifblock = static_cast<ast::expressions::if_expr *>( n );
 
@@ -510,7 +510,7 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        objects::sptr get_program( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_program( ast::node *n, enviroment::sptr env )
         {
             auto prog = static_cast<ast::program *>( n );
             objects::sptr last = get_null( );
@@ -523,13 +523,13 @@ namespace mico { namespace eval {
             return last;
         }
 
-        objects::sptr get_expression( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_expression( ast::node *n, enviroment::sptr env )
         {
             auto expr = static_cast<ast::statements::expr *>( n );
             return eval_impl( expr->value( ).get( ), env );
         }
 
-        objects::sptr get_let( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_let( ast::node *n, enviroment::sptr env )
         {
             auto expr = static_cast<ast::statements::let *>( n );
             auto id   = expr->ident( )->str( );
@@ -538,7 +538,7 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        objects::sptr get_return( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_return( ast::node *n, enviroment::sptr env )
         {
             auto expr = static_cast<ast::statements::ret *>( n );
             auto val  = eval_impl( expr->value( ), env );
@@ -546,7 +546,7 @@ namespace mico { namespace eval {
             return std::make_shared<objects::retutn_obj>(val);
         }
 
-        objects::sptr get_ident( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_ident( ast::node *n, enviroment::sptr env )
         {
             auto expr = static_cast<ast::expressions::ident *>( n );
             auto val = env->get( expr->value( ) );
@@ -560,7 +560,7 @@ namespace mico { namespace eval {
             }
         }
 
-        objects::sptr get_function( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_function( ast::node *n, enviroment::sptr env )
         {
             auto func = static_cast<ast::expressions::function *>( n );
             auto fff  = std::make_shared<objects::function>( env,
@@ -570,7 +570,7 @@ namespace mico { namespace eval {
             return fff;
         }
 
-        objects::sptr get_call( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_call( ast::node *n, enviroment::sptr env )
         {
             auto call = static_cast<ast::expressions::call *>( n );
             auto fun = eval_impl(call->func( ), env);
@@ -588,7 +588,7 @@ namespace mico { namespace eval {
             return eval_scope( vfun->body( ), new_env );
         }
 
-        objects::sptr get_table( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_table( ast::node *n, enviroment::sptr env )
         {
             auto table = static_cast<ast::expressions::table *>( n );
 
@@ -621,35 +621,35 @@ namespace mico { namespace eval {
         {
             switch (n->get_type( )) {
             case ast::type::PROGRAM:
-                return get_program( n, env );
+                return eval_program( n, env );
             case ast::type::EXPR:
-                return get_expression( n, env );
+                return eval_expression( n, env );
             case ast::type::BOOLEAN:
-                return get_bool( n );
+                return eval_bool( n );
             case ast::type::INTEGER:
-                return get_int( n );
+                return eval_int( n );
             case ast::type::FLOAT:
-                return get_float( n );
+                return eval_float( n );
             case ast::type::STRING:
-                return get_string( n );
+                return eval_string( n );
             case ast::type::PREFIX:
-                return get_prefix( n, env );
+                return eval_prefix( n, env );
             case ast::type::INFIX:
-                return get_infix( n, env );
+                return eval_infix( n, env );
             case ast::type::IFELSE:
-                return get_ifelse( n, env );
+                return eval_ifelse( n, env );
             case ast::type::IDENT:
-                return get_ident( n, env );
+                return eval_ident( n, env );
             case ast::type::LET:
-                return get_let( n, env );
+                return eval_let( n, env );
             case ast::type::RETURN:
-                return get_return( n, env );
+                return eval_return( n, env );
             case ast::type::FN:
-                return get_function( n, env );
+                return eval_function( n, env );
             case ast::type::CALL:
-                return get_call( n, env );
+                return eval_call( n, env );
             case ast::type::TABLE:
-                return get_table( n, env );
+                return eval_table( n, env );
             case ast::type::NONE:
                 break;
             }
