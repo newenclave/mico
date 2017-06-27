@@ -260,7 +260,43 @@ namespace objects {
         value_type value_;
     };
 
-    class function: public base {
+    class env_object: public base {
+
+    public:
+
+        env_object( std::shared_ptr<enviroment> e )
+            :env_(e)
+        { }
+
+        ~env_object( )
+        {
+            drop( );
+        }
+
+        std::shared_ptr<enviroment> env( )
+        {
+            return env_.lock( );
+        }
+
+        const std::shared_ptr<enviroment> env( ) const
+        {
+            return env_.lock( );
+        }
+
+    private:
+
+        void drop( )
+        {
+            auto p = env_.lock( );
+            if( p ) {
+                p->drop( );
+            }
+        }
+
+        std::weak_ptr<enviroment> env_;
+    };
+
+    class function: public env_object {
     public:
 
         using sptr = std::shared_ptr<function>;
@@ -269,15 +305,13 @@ namespace objects {
         function( std::shared_ptr<enviroment> e,
                   std::shared_ptr<ast::expression_list> par,
                   std::shared_ptr<ast::statement_list> st )
-            :env_(e)
+            :env_object(e)
             ,params_(par)
             ,body_(st)
         { }
 
         ~function( )
-        {
-            drop( );
-        }
+        { }
 
         type get_type( ) const override
         {
@@ -311,32 +345,12 @@ namespace objects {
             return *body_;
         }
 
-        std::shared_ptr<enviroment> env( )
-        {
-            return env_.lock( );
-        }
-
-        const std::shared_ptr<enviroment> env( ) const
-        {
-            return env_.lock( );
-        }
-
     private:
-
-        void drop( )
-        {
-            auto p = env_.lock( );
-            if( p ) {
-                p->drop( );
-            }
-        }
-
-        std::weak_ptr<enviroment> env_;
         std::shared_ptr<ast::expression_list> params_;
         std::shared_ptr<ast::statement_list>  body_;
     };
 
-    class cont_call: public base {
+    class cont_call: public env_object {
 
     public:
 
@@ -344,14 +358,12 @@ namespace objects {
         static const type type_name = type::CONT_CALL;
 
         cont_call(objects::sptr obj, std::shared_ptr<enviroment> e)
-            :obj_(obj)
-            ,env_(e)
+            :env_object(e)
+            ,obj_(obj)
         { }
 
         ~cont_call( )
-        {
-            drop( );
-        }
+        { }
 
         type get_type( ) const override
         {
@@ -370,23 +382,9 @@ namespace objects {
             return obj_;
         }
 
-        std::shared_ptr<enviroment> env(  )
-        {
-            return env_.lock( );
-        }
-
     private:
 
-        void drop( )
-        {
-            auto p = env_.lock( );
-            if( p ) {
-                p->drop( );
-            }
-        }
-
         objects::sptr             obj_;
-        std::weak_ptr<enviroment> env_;
     };
 
     struct obj_less {
