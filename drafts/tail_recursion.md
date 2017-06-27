@@ -8,7 +8,9 @@ Step 1:
         1: function object
         2: environment with all of parameters set for this function
 
-    The object must be returned from scope evaluator (evalStatements)
+Step 2:
+
+    The object must be returned from the scope evaluator (evalStatements)
         when the last expression or return are reached.
         something like this: (pseudocode)
     ```
@@ -38,9 +40,11 @@ Step 1:
     https://github.com/newenclave/mico/blob/master/include/mico/eval/tree_walking.h#L447
 
 
-    Here: make_env just set up new environment for the contCall.
+    Here: make_env just set up new enviroment for the contCall.
 
-    Well now we can rewrite evalStatements
+Step 3:
+
+    Well, now we can rewrite evalStatements
 
     ```
     func evalStatements ( stmts, env ) -> object
@@ -52,6 +56,8 @@ Step 1:
         return result
     }
     ```
+
+Step 4:
 
     And that is all.
     Now we can replace evalStatements in "evalIfExpression"
@@ -65,4 +71,41 @@ Step 1:
     }
     ```
 
+Step 5: tests
+    And here we go.
 
+    ```
+    let x = fn(count){
+        if(count > 0) {
+            x(count - 1)
+        } else {
+            0
+        }
+    }
+    x(0x7FFFFFFFFFFFFFFF)
+    ```
+    This code wil not failed with TRO and will without.
+
+    ```
+    let fac = fn(val) {
+        let impl = fn( val, acc ) {
+            if( val > 1 ) {
+                impl( val - 1, acc * val )
+            } else {
+                acc
+            }
+        }
+        impl( val, 1 )
+    }
+
+    let fib = fn( n ) {
+        let impl = fn( a, b, n ) {
+            if(n > 0) {
+                impl( b, a + b, n -1 )
+            } else {
+                a
+            }
+        }
+        impl(0, 1, n)
+    }
+    ```
