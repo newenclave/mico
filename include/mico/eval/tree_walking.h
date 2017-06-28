@@ -1,6 +1,8 @@
 #ifndef MICO_TREE_WALKING_H
 #define MICO_TREE_WALKING_H
 
+#include <iostream>
+
 #include "mico/eval/evaluator.h"
 #include "mico/expressions.h"
 #include "mico/statements.h"
@@ -18,9 +20,12 @@ namespace mico { namespace eval {
 
         ////////////// errors /////////////
 
-        void error_operation_notfound( tokens::type tt, const objects::base *a )
+        objects::sptr error_operation_notfound( tokens::type tt,
+                                                const ast::node *n )
         {
-
+            std::ostringstream oss;
+            oss << "operation '" << tt << "' not found";
+            return objects::error::make( oss.str( ), n->pos( ) );
         }
 
         //////////////////////////////////
@@ -46,6 +51,23 @@ namespace mico { namespace eval {
         bool is_null( const objects::sptr &obj )
         {
             return (!obj) || (obj->get_type( ) == objects::type::NULL_OBJ);
+        }
+
+        static
+        bool is_fail( const objects::sptr &obj )
+        {
+            return (!!obj) && (obj->get_type( ) == objects::type::ERROR);
+        }
+
+        static
+        bool is_return( const objects::sptr &obj )
+        {
+            return ((!!obj) && (obj->get_type( ) == objects::type::RETURN));
+        }
+
+        bool is_func( objects::sptr obj )
+        {
+            return (!!obj) && (obj->get_type( ) == objects::type::FUNCTION);
         }
 
         static
@@ -137,16 +159,6 @@ namespace mico { namespace eval {
                 return true;
             }
             return false;
-        }
-
-        bool is_return( objects::sptr obj )
-        {
-            return obj->get_type( ) == objects::type::RETURN;
-        }
-
-        bool is_function( objects::sptr obj )
-        {
-            return obj->get_type( ) == objects::type::FUNCTION;
         }
 
         objects::sptr produce_prefix_bang( ast::expressions::prefix *n,
@@ -297,17 +309,18 @@ namespace mico { namespace eval {
         }
 
         objects::sptr other_infix( objects::base *lft, objects::base *rgh,
-                                   tokens::type tt, enviroment::sptr /*env*/ )
+                                   ast::expressions::infix *inf,
+                                   enviroment::sptr /*env*/ )
         {
             switch ( lft->get_type( ) ) {
             case objects::type::STRING: {
                 if( rgh->get_type( ) == objects::type::STRING ) {
                     auto lval = static_cast<objects::string *>(lft);
                     auto rval = static_cast<objects::string *>(rgh);
-                    return infix_string( lval->value( ), rval->value( ), tt );
+                    return infix_string( lval->value( ), rval->value( ),
+                                         inf->token( ) );
                 } else {
-                    /// TODO: error bad operation for STRING and ...
-                    return get_null( );
+                    return error_operation_notfound( inf->token( ), inf );
                 }
             }
             case objects::type::BOOLEAN: {
@@ -315,10 +328,10 @@ namespace mico { namespace eval {
                 auto rval = obj2num_obj<objects::boolean>( rgh );
                 if( !is_null( rval ) ) {
                     auto bval = static_cast<objects::boolean *>(rval.get( ));
-                    return compare_bool( lval->value( ), bval->value( ), tt );
+                    return compare_bool( lval->value( ), bval->value( ),
+                                         inf->token( ) );
                 } else {
-                    /// TODO: error bad operation for BOOLEAN and ...
-                    return get_null( );
+                    return error_operation_notfound( inf->token( ), inf );
                 }
             }
             default:
@@ -380,11 +393,10 @@ namespace mico { namespace eval {
             case tokens::type::EQ:
             case tokens::type::NOT_EQ: {
                 auto rght = eval_impl(inf->right( ), env);
-                return other_infix( left.get( ), rght.get( ),
-                                    inf->token( ), env );
+                return other_infix( left.get( ), rght.get( ), inf, env );
             }
             default:
-                break;
+                return error_operation_notfound( inf->token( ), inf );
             }
 
             return get_null( );
@@ -421,7 +433,7 @@ namespace mico { namespace eval {
         {
             auto call = static_cast<ast::expressions::call *>( n );
             auto fun = eval_impl(call->func( ), env);
-            if( is_null( fun ) || !is_function( fun ) ) {
+            if( is_null( fun ) || !is_func( fun ) ) {
                 ///// TODO error call object
                 return get_null( );
             }
@@ -581,7 +593,7 @@ namespace mico { namespace eval {
         {
             auto call = static_cast<ast::expressions::call *>( n );
             auto fun = eval_impl(call->func( ), env);
-            if( is_null( fun ) || !is_function( fun ) ) {
+            if( is_null( fun ) || !is_func( fun ) ) {
                 ///// TODO error call object
                 return get_null( );
             }

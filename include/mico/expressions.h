@@ -60,7 +60,6 @@ namespace mico { namespace ast { namespace expressions {
         std::string value_;
     };
 
-
     template <type TN, typename ValueT>
     class value_expr: public typed_expr<TN> {
 
@@ -431,7 +430,6 @@ namespace mico { namespace ast { namespace expressions {
 
         value_type value_;
     };
-
 
     template <>
     class detail<type::NONE>: public typed_expr<type::NONE> {

@@ -6,23 +6,22 @@
 
 namespace mico { namespace ast { namespace statements {
 
-    class let: public statement {
+    template <type>
+    class detail;
+
+    template <>
+    class detail<type::LET>: public typed_stmt<type::LET> {
 
     public:
-        using uptr = std::unique_ptr<let>;
+        using uptr = std::unique_ptr<detail>;
 
         using expr_type        = expression::uptr;
         using ident_type       = expression::uptr;
 
-        let( expression::uptr id, expression::uptr val )
+        detail( expression::uptr id, expression::uptr val )
             :ident_(std::move(id))
             ,value_(std::move(val))
         { }
-
-        type get_type( ) const
-        {
-            return type::LET;
-        }
 
         std::string str( ) const
         {
@@ -58,19 +57,15 @@ namespace mico { namespace ast { namespace statements {
         expression::uptr value_;
     };
 
-    class ret: public statement {
+    template <>
+    class detail<type::RETURN>: public typed_stmt<type::RETURN> {
 
     public:
-        using uptr = std::unique_ptr<ret>;
+        using uptr = std::unique_ptr<detail>;
 
-        ret( expression::uptr val )
+        detail( expression::uptr val )
             :value_(std::move(val))
         { }
-
-        type get_type( ) const
-        {
-            return type::RETURN;
-        }
 
         std::string str( ) const
         {
@@ -93,18 +88,14 @@ namespace mico { namespace ast { namespace statements {
         expression::uptr value_;
     };
 
-    class expr: public statement {
+    template <>
+    class detail<type::EXPR>: public typed_stmt<type::EXPR> {
     public:
-        using uptr = std::unique_ptr<expr>;
+        using uptr = std::unique_ptr<detail>;
 
-        expr( expression::uptr val )
+        detail( expression::uptr val )
             :expr_(std::move(val))
         { }
-
-        type get_type( ) const
-        {
-            return type::EXPR;
-        }
 
         std::string str( ) const
         {
@@ -119,6 +110,10 @@ namespace mico { namespace ast { namespace statements {
     private:
         expression::uptr expr_;
     };
+
+    using let   = detail<type::LET>;
+    using ret   = detail<type::RETURN>;
+    using expr  = detail<type::EXPR>;
 
 }}}
 

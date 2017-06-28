@@ -6,6 +6,8 @@
 #include <vector>
 #include <sstream>
 
+#include "mico/tokens.h"
+
 namespace mico { namespace ast {
 
     enum class type {
@@ -31,6 +33,19 @@ namespace mico { namespace ast {
         virtual ~node( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
+
+        const tokens::position &pos( ) const
+        {
+            return pos_;
+        }
+
+        void set_pos( tokens::position p )
+        {
+            pos_ = p;
+        }
+
+    private:
+        tokens::position pos_;
     };
 
     template <type TN, typename BaseT>

@@ -285,12 +285,7 @@ namespace mico {
         {
             using if_type = ast::expressions::ifelse;
             if_type::uptr res(new if_type);
-
-//            if( !is_peek( token_type::LPAREN ) ) {
-//                error_expect( token_type::LPAREN );
-//                return nullptr;
-//            }
-
+            res->set_pos( current( ).where );
             do {
                 advance( );
                 auto next = parse_if_node( );
@@ -316,10 +311,13 @@ namespace mico {
             ast::expressions::prefix::uptr res;
 
             auto tt = current( ).ident.name;
+            auto pos = current( ).where;
+
             advance( );
             auto expr = parse_expression( precedence::PREFIX );
             if( expr ) {
                 res.reset(new ast::expressions::prefix(tt, std::move(expr) ));
+                res->set_pos( pos );
             }
             return res;
         }
@@ -330,6 +328,7 @@ namespace mico {
 
             auto tt = current( ).ident.name;
             res.reset(new ast::expressions::infix(tt, std::move(left)));
+            res->set_pos( current( ).where );
 
             auto cp = get_precedence( tt );
 
@@ -350,6 +349,7 @@ namespace mico {
         {
             using table_type = ast::expressions::table;
             auto res = table_type::uptr(new table_type);
+            res->set_pos( current( ).where );
 
             std::int64_t id = 0;
 
@@ -393,6 +393,7 @@ namespace mico {
             if( expect_peek( token_type::RPAREN, true ) ) {
                 //advance( );
             }
+            res->set_pos( current( ).where );
             return res;
         }
 
@@ -430,6 +431,7 @@ namespace mico {
         {
             using ident_type = ast::expressions::ident;
             ident_type::uptr res( new ident_type(current( ).ident.literal ) );
+            res->set_pos( current( ).where );
             return res;
         }
 
@@ -437,6 +439,7 @@ namespace mico {
         {
             using res_type = ast::expressions::string;
             res_type::uptr res( new res_type(current( ).ident.literal ) );
+            res->set_pos( current( ).where );
             return res;
         }
 
@@ -445,6 +448,7 @@ namespace mico {
             using bool_type = ast::expressions::boolean;
             auto cur = is_current(token_type::BOOL_TRUE);
             bool_type::uptr res( new bool_type( cur ) );
+            res->set_pos( current( ).where );
             return res;
         }
 
@@ -452,6 +456,7 @@ namespace mico {
         {
             ast::expressions::integer::uptr res;
 
+            auto pos = current( ).where;
             int failed = -1;
             auto num = numeric::parse_int( current( ).ident.literal,
                                            current( ).ident.name, &failed );
@@ -459,6 +464,7 @@ namespace mico {
                 error_inval_data(failed);
             } else {
                 res.reset(new ast::expressions::integer(num));
+                res->set_pos( pos );
             }
 
             return res;
@@ -479,6 +485,7 @@ namespace mico {
                 res.reset(new ast::expressions::floating(value));
             }
 
+            res->set_pos( current( ).where );
             return res;
         }
 
@@ -489,8 +496,9 @@ namespace mico {
             auto nud = nuds_.find( current( ).ident.name );
             if( nud == nuds_.end( ) ) {
                 error_no_prefix( );
-                return ast::expression::uptr( );
+                return nullptr;
             }
+
             left = nud->second( );
             if( !left ) {
                 return ast::expression::uptr( );
@@ -504,13 +512,13 @@ namespace mico {
                 auto led = leds_.find( pt );
                 if( led == leds_.end( ) ) {
                     error_no_suffix( );
-                    return ast::expression::uptr( );
+                    return nullptr;
                 }
 
                 advance( );
                 left = led->second(std::move(left));
                 if( !left ) {
-                    return ast::expression::uptr( );
+                    return nullptr;
                 }
 
                 pp = peek_precedence( );
@@ -553,6 +561,7 @@ namespace mico {
         {
             using fn_type = ast::expressions::function;
             fn_type::uptr res(new fn_type);
+            res->set_pos( current( ).where );
 
             if( !expect_peek( token_type::LPAREN ) ) {
                 return nullptr;
@@ -581,7 +590,7 @@ namespace mico {
         {
             using call_type = ast::expressions::call;
             call_type::uptr res(new call_type(std::move(left) ) );
-
+            res->set_pos( current( ).where );
             advance( );
 
             if( !is_current( token_type::RPAREN ) ) {
@@ -622,6 +631,7 @@ namespace mico {
                     if( brace ) {
                         return;
                     }
+                    break;
                 case token_type::SEMICOLON:
                     break;
                 default:

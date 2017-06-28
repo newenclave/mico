@@ -26,6 +26,7 @@ namespace objects {
         RETURN,
         FUNCTION,
         CONT_CALL,
+        ERROR,
     };
 
     struct cast {
@@ -280,16 +281,16 @@ namespace objects {
 
         const value_type &value( ) const
         {
-            return values_;
+            return value_;
         }
 
         value_type &value( )
         {
-            return values_;
+            return value_;
         }
 
     private:
-        value_type values_;
+        value_type value_;
     };
 
     template <type TN>
@@ -335,6 +336,12 @@ namespace objects {
         {
             return cast::to<ValT>(lft.get( ))->value( ) <
                    cast::to<ValT>(rght.get( ))->value( );
+        }
+
+        static
+        bool compare_ptrs( const sptr &lft, const sptr &rght )
+        {
+            return lft < rght;
         }
 
         static
@@ -395,8 +402,13 @@ namespace objects {
                     return compare<array>( lft, rght );
                 case type::TABLE:
                     return compare<table>( lft, rght );
+                case type::FUNCTION:
+                    return compare_ptrs( lft, rght );
                 case type::NULL_OBJ:
                     return false;
+                case type::RETURN:
+                case type::CONT_CALL:
+                    break;
                 }
             } else if( comparable(lft->get_type( ), rght->get_type( ) ) ){
                 switch ( lft->get_type( ) ) {
@@ -428,7 +440,7 @@ namespace objects {
         {
             std::ostringstream oss;
             oss << "{ ";
-            for( auto &v: values_ ) {
+            for( auto &v: value_ ) {
                 oss << v.first->str( ) << ":"
                     << v.second->str( )<< " ";
             }
@@ -438,12 +450,12 @@ namespace objects {
 
         const value_type &value( ) const
         {
-            return values_;
+            return value_;
         }
 
         value_type &value( )
         {
-            return values_;
+            return value_;
         }
 
         static
@@ -453,8 +465,51 @@ namespace objects {
         }
 
     private:
-        value_type values_;
+        value_type value_;
     };
+
+    template <>
+    class derived<type::ERROR>: public typed_base<type::ERROR> {
+
+        using this_type = derived<type::ERROR>;
+    public:
+        using sptr = std::shared_ptr<this_type>;
+
+        using value_type = std::string;
+
+        derived( value_type val, tokens::position where )
+            :value_(std::move(val))
+            ,where_(where)
+        { }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "error: " << value( ) << "; " << where_;
+            return oss.str( );
+        }
+
+        const value_type &value( ) const
+        {
+            return value_;
+        }
+
+        value_type &value( )
+        {
+            return value_;
+        }
+
+        static
+        sptr make( value_type val, tokens::position where )
+        {
+            return std::make_shared<this_type>( std::move(val), where );
+        }
+
+    private:
+        value_type value_;
+        tokens::position where_;
+    };
+
 
     using null       = derived<type::NULL_OBJ>;
     using string     = derived<type::STRING>;
@@ -466,6 +521,7 @@ namespace objects {
     using floating   = derived<type::FLOAT>;
     using array      = derived<type::ARRAY>;
     using table      = derived<type::TABLE>;
+    using error      = derived<type::ERROR>;
 
     template <>
     struct type2object<type::TABLE> {

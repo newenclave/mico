@@ -18,54 +18,6 @@ int run_repl( )
 
 using namespace mico;
 
-struct test {
-    test( ) = default;
-    test( std::shared_ptr<test> p )
-        :parent_(p)
-    { }
-    std::shared_ptr<test> parent_;
-};
-
-std::int64_t fib( std::int64_t x ) {
-    //std::cout << x << "\n";
-    if( x == 0 || x == 1 ) {
-        return x;
-    } else {
-        return fib(x - 1) + fib( x - 2);
-    }
-}
-
-enum class name {
-    NONE = 0,
-    STRING,
-    INTEGER,
-};
-
-struct base {
-    virtual ~base( ) = default;
-    virtual void call( ) = 0;
-};
-
-template <name N>
-struct derived;
-
-template <>
-struct derived<name::STRING>: public base {
-    virtual void call( ) {
-        std::cout << "String";
-    }
-};
-
-template <>
-struct derived<name::INTEGER>: public base {
-    virtual void call( ) {
-        std::cout << "INT";
-    }
-};
-
-using str  = derived<name::STRING>;
-using intg = derived<name::INTEGER>;
-
 /*
 
 let fac = fn(val) {
