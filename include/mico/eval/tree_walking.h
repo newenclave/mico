@@ -73,14 +73,14 @@ namespace mico { namespace eval {
         static
         objects::boolean::sptr get_bool_true( )
         {
-            static auto bobj = std::make_shared<objects::boolean>(true);
+            static auto bobj = objects::boolean::make(true);
             return bobj;
         }
 
         static
         objects::boolean::sptr get_bool_false( )
         {
-            static auto bobj = std::make_shared<objects::boolean>(false);
+            static auto bobj = objects::boolean::make(false);
             return bobj;
         }
 

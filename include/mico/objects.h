@@ -60,11 +60,6 @@ namespace objects {
     struct type2object;
 
     template <>
-    struct type2object<type::BOOLEAN> {
-        using native_type = bool;
-    };
-
-    template <>
     struct type2object<type::FLOAT> {
         using native_type = double;
     };
@@ -293,6 +288,44 @@ namespace objects {
         value_type value_;
     };
 
+
+    template <>
+    class derived<type::BOOLEAN>: public typed_base<type::BOOLEAN> {
+        using this_type = derived<type::BOOLEAN>;
+
+        struct key { };
+
+    public:
+
+        using sptr = std::shared_ptr<this_type>;
+
+        derived( bool v )
+            :value_(v)
+        { }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << (value_ ? "true" : "false");
+            return oss.str( );
+        }
+
+        bool value( ) const
+        {
+            return value_;
+        }
+
+        static
+        sptr make( bool val )
+        {
+            return std::make_shared<this_type>( val );
+        }
+
+    private:
+
+        bool value_;
+    };
+
     template <type TN>
     class derived: public typed_base<TN>  {
         using this_type = derived<TN>;
@@ -309,7 +342,7 @@ namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << std::boolalpha << value( );
+            oss << value( );
             return oss.str( );
         }
 
