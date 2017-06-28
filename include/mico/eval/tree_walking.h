@@ -491,7 +491,6 @@ namespace mico { namespace eval {
             return std::make_shared<objects::cont_call>(fun, new_env);
         }
 
-
         objects::sptr eval_tail( objects::sptr obj )
         {
             using call_type = objects::cont_call;
