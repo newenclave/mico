@@ -602,7 +602,7 @@ namespace mico { namespace eval {
         objects::sptr eval_function( ast::node *n, enviroment::sptr env )
         {
             auto func = static_cast<ast::expressions::function *>( n );
-            auto fff  = std::make_shared<objects::function>( env,
+            auto fff  = std::make_shared<objects::function>( make_env(env),
                                               func->ident_ptr( ),
                                               func->expr_ptr( ));
 
@@ -653,13 +653,14 @@ namespace mico { namespace eval {
             }
 
             auto vfun = obj_cast<objects::function>(fun.get( ));
-            auto new_env = create_call_env( call, fun.get( ), env );
-            if( !new_env ) {
+            enviroment::scoped s(create_call_env( call, fun.get( ), env ));
+            if( !s.env( ) ) {
                 return get_null( );
             }
 
-            auto res = eval_scope( vfun->body( ), new_env );
+            auto res = eval_scope( vfun->body( ), s.env( ) );
 
+            s.env( )->unlock( );
             return res;
         }
 

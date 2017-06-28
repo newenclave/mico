@@ -122,7 +122,9 @@ namespace objects {
 
         env_object( std::shared_ptr<enviroment> e )
             :env_(e)
-        { }
+        {
+            e->lock( );
+        }
 
         ~env_object( )
         {
@@ -131,12 +133,14 @@ namespace objects {
 
         std::shared_ptr<enviroment> env( )
         {
-            return env_.lock( );
+            auto l = env_.lock( );
+            return l;
         }
 
         const std::shared_ptr<enviroment> env( ) const
         {
-            return env_.lock( );
+            auto l = env_.lock( );
+            return l;
         }
 
     private:
@@ -145,6 +149,8 @@ namespace objects {
         {
             auto p = env_.lock( );
             if( p ) {
+                //p->erase_obj( this );
+                p->unlock( );
                 p->drop( );
             }
         }

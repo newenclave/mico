@@ -13,6 +13,8 @@ namespace objects {
     struct base;
 }
 
+    static auto cout = 0;
+
     class enviroment: public std::enable_shared_from_this<enviroment> {
 
     public:
@@ -35,6 +37,8 @@ namespace objects {
 
             ~scoped(  )
             {
+                env_->unlock( );
+                env_->clear( );
                 drop( );
             }
 
@@ -46,7 +50,9 @@ namespace objects {
         private:
             void drop( )
             {
-                env_->drop( );
+                if( env_ ) {
+                    env_->drop( );
+                }
             }
             sptr env_;
         };
@@ -59,17 +65,36 @@ namespace objects {
         { }
 
         ~enviroment( )
-        { }
+        {
+            std::cout << --cout << "\n";
+        }
+
+        void erase_obj( void *t )
+        {
+            for( auto &d: data_ ) {
+                if( d.second.get( ) == t ) {
+                    data_.erase( d.first );
+                }
+            }
+        }
+
+        void clear( )
+        {
+            data_.clear( );
+            children_.clear( );
+        }
 
         static
         sptr make( )
         {
+            std::cout << ++cout << "\n";
             return std::make_shared<enviroment>( key( ) );
         }
 
         static
         sptr make( sptr parent )
         {
+            std::cout << ++cout << "\n";
             auto res = std::make_shared<enviroment>( parent, key( ) );
             parent->children_.insert( res );
             return res;
@@ -83,12 +108,24 @@ namespace objects {
 
         void drop( )
         {
-            if( children_.empty( ) ) {
+
+            if( children_.empty( ) && !locked_ ) {
                 auto p = parent_.lock( );
                 if( p ) {
+                    //data_.clear( );
                     p->drop( shared_from_this( ) );
                 }
             }
+        }
+
+        void lock( )
+        {
+            locked_ = true;
+        }
+
+        void unlock( )
+        {
+            locked_ = false;
         }
 
         void set( const std::string &name, object_sptr val )
@@ -118,6 +155,7 @@ namespace objects {
         wptr parent_;
         std::map<std::string, object_sptr> data_;
         std::set<sptr> children_;
+        bool locked_ = false;
     };
 }
 

@@ -50,6 +50,24 @@ let fib = fn( n ) {
     impl(0, 1, n)
 }
 
+let fib = fn( n ) {
+    let impl = fn( a, b, n ) {
+        if(n > 0) {
+            impl( b, a + b, n -1 )
+        } else {
+            a
+        }
+    }
+    impl(0, 1, n)
+}
+
+let t = fn( x ) {
+    let m = fn( y ) {
+        10
+    }
+    m( x + 1 )
+}
+
 let x = fn(count){if(count > 0) { x(count - 1) } else { 0 }}
 let x = fn( ){ x( ) }
 
