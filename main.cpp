@@ -52,6 +52,7 @@ let fib = fn( n ) {
 
 let fib = fn( n ) {
     let impl = fn( a, b, n ) {
+        false - false
         if(n > 0) {
             impl( b, a + b, n -1 )
         } else {
@@ -63,12 +64,13 @@ let fib = fn( n ) {
 
 let t = fn( x ) {
     let m = fn( y ) {
-        10
+        y + 10
     }
     m( x + 1 )
 }
 
-let x = fn(count){if(count > 0) { x(count - 1) } else { 0 }}
+let x = fn(count){if(count > 0) { return x(count - 1) } else {0} }
+let x = fn(count){if(count > 0) { return x(count - 1) } 0  }
 let x = fn( ){ x( ) }
 
 let fac = fn( x ) { if(x > 1) { x * fac(x - 1)  } else { 1 } }

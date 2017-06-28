@@ -37,9 +37,11 @@ namespace objects {
 
             ~scoped(  )
             {
-                env_->unlock( );
-                env_->clear( );
-                drop( );
+                if( env_ ) {
+                    env_->unlock( );
+                    env_->clear( );
+                    env_->drop( );
+                }
             }
 
             sptr env( )
@@ -48,12 +50,6 @@ namespace objects {
             }
 
         private:
-            void drop( )
-            {
-                if( env_ ) {
-                    env_->drop( );
-                }
-            }
             sptr env_;
         };
 
@@ -66,35 +62,25 @@ namespace objects {
 
         ~enviroment( )
         {
-            std::cout << --cout << "\n";
-        }
-
-        void erase_obj( void *t )
-        {
-            for( auto &d: data_ ) {
-                if( d.second.get( ) == t ) {
-                    data_.erase( d.first );
-                }
-            }
+            //std::cout << --cout << "\n";
         }
 
         void clear( )
         {
             data_.clear( );
-            children_.clear( );
         }
 
         static
         sptr make( )
         {
-            std::cout << ++cout << "\n";
+            //std::cout << ++cout << "\n";
             return std::make_shared<enviroment>( key( ) );
         }
 
         static
         sptr make( sptr parent )
         {
-            std::cout << ++cout << "\n";
+            //std::cout << ++cout << "\n";
             auto res = std::make_shared<enviroment>( parent, key( ) );
             parent->children_.insert( res );
             return res;

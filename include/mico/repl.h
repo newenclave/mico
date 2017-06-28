@@ -43,7 +43,6 @@ namespace mico {
                     std::cout << "  > ";
                 }
             }
-            //env->clear( );
         }
     };
 }

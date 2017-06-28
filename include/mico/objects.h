@@ -52,9 +52,10 @@ namespace objects {
         }
     };
 
-    using sptr = std::shared_ptr<base>;
-    using uptr = std::unique_ptr<base>;
-    using list = std::vector<sptr>;
+    using sptr  = std::shared_ptr<base>;
+    using uptr  = std::unique_ptr<base>;
+    using slist = std::vector<sptr>;
+    using ulist = std::vector<uptr>;
 
     template <type TName>
     struct type2object;
@@ -149,7 +150,6 @@ namespace objects {
         {
             auto p = env_.lock( );
             if( p ) {
-                //p->erase_obj( this );
                 p->unlock( );
                 p->drop( );
             }
@@ -451,6 +451,7 @@ namespace objects {
                 case type::NULL_OBJ:
                     return false;
                 case type::RETURN:
+                case type::ERROR:
                 case type::CONT_CALL:
                     break;
                 }

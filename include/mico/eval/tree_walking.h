@@ -78,16 +78,24 @@ namespace mico { namespace eval {
             return ((!!obj) && (obj->get_type( ) == objects::type::RETURN));
         }
 
+        static
         bool is_func( objects::sptr obj )
         {
             return (!!obj) && (obj->get_type( ) == objects::type::FUNCTION);
         }
 
+        static
         bool is_numeric( objects::sptr obj )
         {
             return (!!obj) &&
                     ( (obj->get_type( ) == objects::type::INTEGER)
                    || (obj->get_type( ) == objects::type::FLOAT) );
+        }
+
+        static
+        bool is_fail_args( const objects::slist &args )
+        {
+            return ( args.size( ) == 1 ) && ( is_fail( args[0] ) );
         }
 
         static
@@ -103,6 +111,7 @@ namespace mico { namespace eval {
             static auto bobj = objects::boolean::make(false);
             return bobj;
         }
+
         objects::boolean::sptr eval_bool( ast::node *n )
         {
             auto bstate = static_cast<ast::expressions::boolean *>(n);
@@ -421,6 +430,23 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
+        objects::slist eval_parameters( ast::expressions::call *call,
+                                        objects::base *fun,
+                                        enviroment::sptr env )
+        {
+            objects::slist res;
+            auto vfun = obj_cast<objects::function>(fun);
+            size_t id = 0;
+            for( auto &p: vfun->params( ) ) {
+                auto v = eval_impl_tail( call->params( )[id++].get( ), env );
+                if( is_fail( v ) ) {
+                    return objects::slist { v };
+                }
+                res.push_back( v );
+            }
+            return res;
+        }
+
         enviroment::sptr create_call_env( ast::expressions::call *call,
                                           objects::base *fun,
                                           enviroment::sptr env )
@@ -513,6 +539,7 @@ namespace mico { namespace eval {
 
                 auto next = eval_impl( stmt.get( ), env );
                 last = next;
+                //last = eval_tail(next);
                 if( is_return( next ) ) {
                     return extract_return( last );
                 }
