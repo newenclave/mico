@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <functional>
 
 #include "mico/lexer.h"
 #include "mico/operations.h"

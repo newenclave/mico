@@ -288,7 +288,6 @@ namespace objects {
         value_type value_;
     };
 
-
     template <>
     class derived<type::BOOLEAN>: public typed_base<type::BOOLEAN> {
         using this_type = derived<type::BOOLEAN>;

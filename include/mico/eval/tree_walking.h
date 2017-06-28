@@ -438,7 +438,8 @@ namespace mico { namespace eval {
             for( auto &p: vfun->params( ) ) {
                 if( p->get_type( ) == ast::type::IDENT ) {
                     auto n = static_cast<ast::expressions::ident *>(p.get( ));
-                    auto v = eval_impl_tail(call->params( )[id++].get( ), env );
+                    auto v = eval_impl_tail( call->params( )[id++].get( ),
+                                             env );
                     new_env->set(n->value( ), v);
                 } else {
                     /// TODO bad param
@@ -536,14 +537,14 @@ namespace mico { namespace eval {
                 }
                 auto bres = obj_cast<objects::boolean>(res.get( ));
                 if( bres->value( ) ) {
-                    auto eval_states = eval_scope_impl( i.states,
-                                                        make_env(env) );
+                    enviroment::scoped s(make_env(env));
+                    auto eval_states = eval_scope_impl( i.states, s.env( ));
                     return eval_states;
                 }
             }
             if( !ifblock->alt( ).empty( ) ) {
-                auto eval_states = eval_scope_impl( ifblock->alt( ),
-                                                    make_env(env) );
+                enviroment::scoped s(make_env(env));
+                auto eval_states = eval_scope_impl( ifblock->alt( ), s.env( ) );
                 return eval_states;
             }
             return get_null( );

@@ -27,9 +27,38 @@ namespace objects {
 
     public:
 
-        enviroment( key ) { }
+        struct scoped {
+
+            scoped( sptr v )
+                :env_(v)
+            { }
+
+            ~scoped(  )
+            {
+                drop( );
+            }
+
+            sptr env( )
+            {
+                return env_;
+            }
+
+        private:
+            void drop( )
+            {
+                env_->drop( );
+            }
+            sptr env_;
+        };
+
+        enviroment( key )
+        {  }
+
         enviroment( sptr env, key )
             :parent_(env)
+        { }
+
+        ~enviroment( )
         { }
 
         static
@@ -49,12 +78,7 @@ namespace objects {
         void drop( sptr child )
         {
             children_.erase( child );
-            if( children_.empty( ) ) {
-                auto p = parent_.lock( );
-                if( p ) {
-                    p->drop( shared_from_this( ) );
-                }
-            }
+            drop( );
         }
 
         void drop( )
