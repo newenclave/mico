@@ -112,13 +112,6 @@ let fib = fn(x) {
 int main( )
 {
 
-
-//    std::cout << objects::obj_less( )( objects::unsigned_int::make(1),
-//                                       objects::signed_int::make(10) );
-
-//    std::cout << objects::obj_less( )( objects::signed_int::make(1),
-//                                       objects::unsigned_int::make(10) );
-
     return run_repl( );
 
     std::string input = "10.34e255;"

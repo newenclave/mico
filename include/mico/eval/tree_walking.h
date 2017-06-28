@@ -490,7 +490,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_ifelse( ast::node *n, enviroment::sptr env )
         {
-            auto ifblock = static_cast<ast::expressions::if_expr *>( n );
+            auto ifblock = static_cast<ast::expressions::ifelse *>( n );
 
             for( auto &i: ifblock->ifs(  ) ) {
                 auto cond = eval_impl( i.cond.get( ), env );

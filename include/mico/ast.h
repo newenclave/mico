@@ -33,6 +33,17 @@ namespace mico { namespace ast {
         virtual std::string str( ) const = 0;
     };
 
+    template <type TN, typename BaseT>
+    struct typed_node: public BaseT {
+        type get_type( ) const override
+        {
+            return TN;
+        }
+    };
+
+    template <type>
+    class statement_;
+
     using node_sptr = std::shared_ptr<node>;
     using node_uptr = std::unique_ptr<node>;
 
@@ -43,6 +54,9 @@ namespace mico { namespace ast {
         using sptr = std::shared_ptr<statement>;
     };
 
+    template <type TN>
+    using typed_stmt = typed_node<TN, statement>;
+
     ////////////////// EXPRESSIONS
     class expression: public node {
     public:
@@ -50,23 +64,24 @@ namespace mico { namespace ast {
         using sptr = std::shared_ptr<expression>;
     };
 
+    template <type TN>
+    using typed_expr = typed_node<TN, expression>;
+
     using expression_list = std::vector<expression::uptr>;
     using statement_list  = std::vector<statement::uptr>;
 
     using expression_slist = std::vector<expression::sptr>;
     using statement_slist  = std::vector<statement::sptr>;
 
-    class program: public node {
+    class program: public typed_node<type::PROGRAM, node> {
+
     public:
 
         using uptr = std::unique_ptr<program>;
+        using sptr = std::shared_ptr<program>;
+
         using state_list = statement_list;
         using error_list = std::vector<std::string>;
-
-        type get_type( ) const
-        {
-            return type::PROGRAM;
-        }
 
         const std::vector<statement::uptr> &states( ) const
         {

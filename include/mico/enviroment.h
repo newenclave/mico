@@ -42,17 +42,17 @@ namespace objects {
         sptr make( sptr parent )
         {
             auto res = std::make_shared<enviroment>( parent, key( ) );
-            parent->children_[res.get( )] = res;
+            parent->children_.insert( res );
             return res;
         }
 
-        void drop( enviroment *child )
+        void drop( sptr child )
         {
             children_.erase( child );
             if( children_.empty( ) ) {
                 auto p = parent_.lock( );
                 if( p ) {
-                    p->drop( this );
+                    p->drop( shared_from_this( ) );
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace objects {
             if( children_.empty( ) ) {
                 auto p = parent_.lock( );
                 if( p ) {
-                    p->drop( this );
+                    p->drop( shared_from_this( ) );
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace objects {
 
         wptr parent_;
         std::map<std::string, object_sptr> data_;
-        std::map<enviroment *, sptr> children_;
+        std::set<sptr> children_;
     };
 }
 

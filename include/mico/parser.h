@@ -263,9 +263,9 @@ namespace mico {
 
     public: /////////////////// PARSING
 
-        ast::expressions::if_expr::node parse_if_node( )
+        ast::expressions::ifelse::node parse_if_node( )
         {
-            ast::expressions::if_expr::node res;
+            ast::expressions::ifelse::node res;
             auto cond = parse_expression( precedence::LOWEST );
             if( !cond ) {
                 return res;
@@ -281,9 +281,9 @@ namespace mico {
             return res;
         }
 
-        ast::expressions::if_expr::uptr parse_if( )
+        ast::expressions::ifelse::uptr parse_if( )
         {
-            using if_type = ast::expressions::if_expr;
+            using if_type = ast::expressions::ifelse;
             if_type::uptr res(new if_type);
 
 //            if( !is_peek( token_type::LPAREN ) ) {

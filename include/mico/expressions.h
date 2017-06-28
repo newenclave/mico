@@ -7,22 +7,21 @@
 
 namespace mico { namespace ast { namespace expressions {
 
+    template <type>
+    class detail;
 
-//virtual type get_type( ) const = 0;
-//virtual std::string str( ) const = 0;
+    template <>
+    class detail<type::IDENT>: public typed_expr<type::IDENT> {
 
-    class ident: public expression {
+        using this_type = detail<type::IDENT>;
 
     public:
 
-        ident(std::string val)
+        using uptr = std::unique_ptr<this_type>;
+
+        detail(std::string val)
             :value_(std::move(val))
         { }
-
-        type get_type( ) const override
-        {
-            return type::IDENT;
-        }
 
         std::string str( ) const override
         {
@@ -38,18 +37,14 @@ namespace mico { namespace ast { namespace expressions {
         std::string value_;
     };
 
-    class string: public expression {
+    template <>
+    class detail<type::STRING>: public typed_expr<type::STRING> {
 
     public:
 
-        string(std::string val)
+        detail(std::string val)
             :value_(std::move(val))
         { }
-
-        type get_type( ) const override
-        {
-            return type::STRING;
-        }
 
         std::string str( ) const override
         {
@@ -65,113 +60,75 @@ namespace mico { namespace ast { namespace expressions {
         std::string value_;
     };
 
-    class integer: public expression {
+
+    template <type TN, typename ValueT>
+    class value_expr: public typed_expr<TN> {
+
     public:
 
-        using uptr = std::unique_ptr<integer>;
+        using uptr       = std::unique_ptr<value_expr>;
+        using value_type = ValueT;
 
-        integer( std::uint64_t val )
+        value_expr( value_type val )
             :value_(val)
         { }
-
-        type get_type( ) const override
-        {
-            return type::INTEGER;
-        }
 
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << value_;
+            oss << std::boolalpha << value_;
             return oss.str( );
         }
 
-        std::uint64_t value( ) const
+        value_type value( ) const
         {
             return value_;
         }
 
     private:
-        std::uint64_t value_;
+        value_type value_;
     };
 
-    //// TODO: use template
-    class floating: public expression {
+    template <>
+    class detail<type::INTEGER>:
+            public value_expr<type::INTEGER, std::int64_t> {
     public:
-
-        using uptr = std::unique_ptr<floating>;
-
-        floating( double val )
-            :value_(val)
+        using uptr = std::unique_ptr<detail>;
+        detail( std::int64_t val )
+            :value_expr(val)
         { }
-
-        type get_type( ) const override
-        {
-            return type::FLOAT;
-        }
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << value_;
-            return oss.str( );
-        }
-
-        double value( ) const
-        {
-            return value_;
-        }
-
-    private:
-        double value_;
     };
 
-    //// TODO: use template
-    class boolean: public expression {
+    template <>
+    class detail<type::FLOAT>:
+            public value_expr<type::FLOAT, double> {
     public:
-
-        using uptr = std::unique_ptr<boolean>;
-
-        boolean( bool val )
-            :value_(val)
+        using uptr = std::unique_ptr<detail>;
+        detail( double val )
+            :value_expr(val)
         { }
-
-        type get_type( ) const override
-        {
-            return type::BOOLEAN;
-        }
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << (value_ ? "true" : "false");
-            return oss.str( );
-        }
-
-        bool value( ) const
-        {
-            return value_;
-        }
-
-    private:
-
-        bool value_;
     };
 
-    class prefix: public expression {
+    template <>
+    class detail<type::BOOLEAN>:
+            public value_expr<type::BOOLEAN, bool> {
+    public:
+        using uptr = std::unique_ptr<detail>;
+        detail( bool val )
+            :value_expr(val)
+        { }
+    };
+
+    template <>
+    class detail<type::PREFIX>: public typed_expr<type::PREFIX> {
     public:
 
-        using uptr = std::unique_ptr<prefix>;
+        using uptr = std::unique_ptr<detail>;
 
-        prefix( tokens::type tt, expression::uptr exp )
+        detail( tokens::type tt, expression::uptr exp )
             :token_(tt)
             ,expr_(std::move(exp))
         { }
-
-        type get_type( ) const override
-        {
-            return type::PREFIX;
-        }
 
         std::string str( ) const override
         {
@@ -195,20 +152,16 @@ namespace mico { namespace ast { namespace expressions {
         expression::uptr expr_;
     };
 
-    class infix: public expression {
+    template <>
+    class detail<type::INFIX>: public typed_expr<type::INFIX> {
     public:
 
-        using uptr = std::unique_ptr<infix>;
+        using uptr = std::unique_ptr<detail>;
 
-        infix( tokens::type tt, expression::uptr lft )
+        detail( tokens::type tt, expression::uptr lft )
             :token_(tt)
             ,left_(std::move(lft))
         { }
-
-        type get_type( ) const override
-        {
-            return ast::type::INFIX;
-        }
 
         std::string str( ) const override
         {
@@ -249,26 +202,19 @@ namespace mico { namespace ast { namespace expressions {
         expression::uptr right_;
     };
 
-    class function: public expression {
+    template <>
+    class detail<type::FN>: public typed_expr<type::FN> {
 
     public:
-        using uptr = std::unique_ptr<function>;
+        using uptr = std::unique_ptr<detail>;
 
         using stmt_type  = statement::uptr;
         using ident_type = expression::uptr;
 
-        function( )
+        detail( )
             :ident_(std::make_shared<expression_list>( ))
             ,expr_(std::make_shared<statement_list>( ))
         { }
-
-        ~function( )
-        { }
-
-        type get_type( ) const override
-        {
-            return type::FN;
-        }
 
         std::string str( ) const override
         {
@@ -327,24 +273,17 @@ namespace mico { namespace ast { namespace expressions {
         std::shared_ptr<statement_list> expr_;
     };
 
-    class call: public expression {
+    template <>
+    class detail<type::CALL>: public typed_expr<type::CALL> {
 
     public:
 
-        using uptr = std::unique_ptr<call>;
+        using uptr = std::unique_ptr<detail>;
         using param_type = expression::uptr;
 
-        call( expression::uptr f )
+        detail( expression::uptr f )
             :func_(std::move(f))
         { }
-
-        ~call(  )
-        { }
-
-        type get_type( ) const override
-        {
-            return type::CALL;
-        }
 
         std::string str( ) const override
         {
@@ -388,11 +327,12 @@ namespace mico { namespace ast { namespace expressions {
         expression_list  params_;
     };
 
-    class if_expr: public expression {
+    template <>
+    class detail<type::IFELSE>: public typed_expr<type::IFELSE> {
 
     public:
 
-        using uptr = std::unique_ptr<if_expr>;
+        using uptr = std::unique_ptr<detail>;
 
         struct node {
             node( expression::uptr val )
@@ -411,11 +351,6 @@ namespace mico { namespace ast { namespace expressions {
         };
 
         using if_list = std::vector<node>;
-
-        type get_type( ) const override
-        {
-            return type::IFELSE;
-        }
 
         std::string str( ) const override
         {
@@ -457,17 +392,13 @@ namespace mico { namespace ast { namespace expressions {
         statement_list  alt_;
     };
 
-    class table: public expression {
+    template <>
+    class detail<type::TABLE>: public typed_expr<type::TABLE> {
     public:
 
         using value_pair = std::pair<expression::uptr, expression::uptr>;
         using value_type = std::vector<value_pair>;
-        using uptr = std::unique_ptr<table>;
-
-        type get_type( ) const override
-        {
-            return type::TABLE;
-        }
+        using uptr = std::unique_ptr<detail>;
 
         std::string str( ) const override
         {
@@ -501,20 +432,32 @@ namespace mico { namespace ast { namespace expressions {
         value_type value_;
     };
 
-    class null: public expression {
+
+    template <>
+    class detail<type::NONE>: public typed_expr<type::NONE> {
 
     public:
-
-        type get_type( ) const
-        {
-            return type::NONE;
-        }
-
         std::string str( ) const
         {
             return "null";
         }
     };
+
+    using ident     = detail<type::IDENT>;
+    using string    = detail<type::STRING>;
+    using integer   = detail<type::INTEGER>;
+    using floating  = detail<type::FLOAT>;
+    using boolean   = detail<type::BOOLEAN>;
+
+    using prefix    = detail<type::PREFIX>;
+    using infix     = detail<type::INFIX>;
+
+    using function  = detail<type::FN>;
+    using call      = detail<type::CALL>;
+
+    using ifelse    = detail<type::IFELSE>;
+    using table     = detail<type::TABLE>;
+    using null      = detail<type::NONE>;
 
 }}}
 
