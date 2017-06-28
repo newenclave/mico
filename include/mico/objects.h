@@ -356,6 +356,12 @@ namespace objects {
             value_ = val;
         }
 
+        static
+        sptr make( value_type val )
+        {
+            return std::make_shared<this_type>( val );
+        }
+
     private:
 
         value_type value_;
@@ -518,7 +524,7 @@ namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << "error: " << value( ) << "; " << where_;
+            oss << "error: [" << where_ << "] " << value( );
             return oss.str( );
         }
 

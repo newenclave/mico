@@ -28,6 +28,19 @@ namespace mico { namespace eval {
             return objects::error::make( oss.str( ), n->pos( ) );
         }
 
+        objects::sptr error_index_inval( const ast::node *n,
+                                         objects::sptr val )
+        {
+            std::ostringstream oss;
+            oss << "invalid index for '" << val << "'";
+            return objects::error::make( oss.str( ), n->pos( ) );
+        }
+
+        objects::sptr error_str( const std::string &text, const ast::node *n )
+        {
+            return objects::error::make(text, n->pos( ) );
+        }
+
         //////////////////////////////////
         static
         objects::sptr get_null( )
@@ -70,6 +83,13 @@ namespace mico { namespace eval {
             return (!!obj) && (obj->get_type( ) == objects::type::FUNCTION);
         }
 
+        bool is_numeric( objects::sptr obj )
+        {
+            return (!!obj) &&
+                    ( (obj->get_type( ) == objects::type::INTEGER)
+                   || (obj->get_type( ) == objects::type::FLOAT) );
+        }
+
         static
         objects::boolean::sptr get_bool_true( )
         {
@@ -83,7 +103,6 @@ namespace mico { namespace eval {
             static auto bobj = objects::boolean::make(false);
             return bobj;
         }
-
         objects::boolean::sptr eval_bool( ast::node *n )
         {
             auto bstate = static_cast<ast::expressions::boolean *>(n);
@@ -591,6 +610,35 @@ namespace mico { namespace eval {
 
         objects::sptr eval_index( ast::node *n, enviroment::sptr env )
         {
+            auto idx = static_cast<ast::expressions::index *>(n);
+
+            auto val = eval_impl_tail( idx->value( ), env );
+
+            if( is_fail( val ) ) {
+                return val;
+            }
+
+            if( val->get_type( ) == objects::type::STRING ) {
+                auto str = obj_cast<objects::string>( val.get( ) );
+                auto id = eval_impl_tail( idx->param( ), env );
+
+                if( id->get_type( ) == objects::type::INTEGER ) {
+                    auto iid = obj_cast<objects::integer>( id.get( ) );
+                    return objects::integer::make( str->value( )
+                                                   [iid->value( )] );
+                } else if( id->get_type( ) == objects::type::FLOAT ) {
+                    auto iid = obj_cast<objects::floating>( id.get( ) );
+                    return objects::integer::make( str->value( )
+                                                   [iid->value( )] );
+                } else {
+                    return error_str( "Invalid type for []; must be integer",
+                                      idx->param( ) );
+                }
+
+            } else {
+
+            }
+
             return get_null( );
         }
 
