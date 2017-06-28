@@ -109,6 +109,10 @@ namespace mico {
                     [this]( EP e ) {
                         return parse_call(std::move(e));
                     };
+            leds_[token_type::LBRACKET]   =
+                    [this]( EP e ) {
+                        return parse_index(std::move(e));
+                    };
         }
 
         static
@@ -343,6 +347,18 @@ namespace mico {
             res->set_right( std::move(right) );
 
             return  res;
+        }
+
+        ast::expressions::index::uptr parse_index( expression_uptr left )
+        {
+            using index_type = ast::expressions::index;
+            advance( );
+            auto expr = parse_expression( precedence::LOWEST );
+            if( expr && expect_peek( token_type::RBRACKET ) ) {
+                return index_type::uptr(new index_type(std::move(left),
+                                                       std::move(expr) ) );
+            }
+            return nullptr;
         }
 
         ast::expressions::table::uptr parse_table( )

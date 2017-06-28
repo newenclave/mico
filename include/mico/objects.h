@@ -543,7 +543,6 @@ namespace objects {
         tokens::position where_;
     };
 
-
     using null       = derived<type::NULL_OBJ>;
     using string     = derived<type::STRING>;
     using function   = derived<type::FUNCTION>;

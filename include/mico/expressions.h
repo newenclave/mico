@@ -202,6 +202,51 @@ namespace mico { namespace ast { namespace expressions {
     };
 
     template <>
+    class detail<type::INDEX>: public typed_expr<type::INDEX> {
+
+    public:
+
+        using uptr = std::unique_ptr<detail>;
+        using param_type = expression::uptr;
+
+        detail( expression::uptr left, expression::uptr param )
+            :left_(std::move(left))
+            ,expr_(std::move(param))
+        { }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << value( )->str( ) << "[" << param( )->str( ) << "]";
+            return oss.str( );
+        }
+
+        expression *value( )
+        {
+            return left_.get( );
+        }
+
+        const expression *value( ) const
+        {
+            return left_.get( );
+        }
+
+        expression *param( )
+        {
+            return expr_.get( );
+        }
+
+        const expression *param( ) const
+        {
+            return expr_.get( );
+        }
+
+    private:
+        expression::uptr left_;
+        expression::uptr expr_;
+    };
+
+    template <>
     class detail<type::FN>: public typed_expr<type::FN> {
 
     public:
@@ -281,13 +326,13 @@ namespace mico { namespace ast { namespace expressions {
         using param_type = expression::uptr;
 
         detail( expression::uptr f )
-            :func_(std::move(f))
+            :expr_(std::move(f))
         { }
 
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << func_->str( ) << "(";
+            oss << expr_->str( ) << "(";
             bool second = false;
             for( auto &par: params( ) ) {
                 if( second) {
@@ -313,16 +358,16 @@ namespace mico { namespace ast { namespace expressions {
 
         expression *func( )
         {
-            return func_.get( );
+            return expr_.get( );
         }
 
         const expression *func( ) const
         {
-            return func_.get( );
+            return expr_.get( );
         }
 
     private:
-        expression::uptr func_;
+        expression::uptr expr_;
         expression_list  params_;
     };
 
@@ -449,6 +494,7 @@ namespace mico { namespace ast { namespace expressions {
 
     using prefix    = detail<type::PREFIX>;
     using infix     = detail<type::INFIX>;
+    using index     = detail<type::INDEX>;
 
     using function  = detail<type::FN>;
     using call      = detail<type::CALL>;

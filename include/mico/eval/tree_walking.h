@@ -589,6 +589,11 @@ namespace mico { namespace eval {
             return fff;
         }
 
+        objects::sptr eval_index( ast::node *n, enviroment::sptr env )
+        {
+            return get_null( );
+        }
+
         objects::sptr eval_call( ast::node *n, enviroment::sptr env )
         {
             auto call = static_cast<ast::expressions::call *>( n );
@@ -666,6 +671,8 @@ namespace mico { namespace eval {
                 res = eval_infix( n, env ); break;
             case ast::type::IFELSE:
                 res = eval_ifelse( n, env ); break;
+            case ast::type::INDEX:
+                res = eval_index( n, env ); break;
             case ast::type::IDENT:
                 res = eval_ident( n, env ); break;
             case ast::type::LET:

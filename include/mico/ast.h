@@ -26,6 +26,7 @@ namespace mico { namespace ast {
         TABLE,
         FN,
         CALL,
+        INDEX,
         IFELSE,
     };
 
