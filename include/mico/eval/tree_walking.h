@@ -378,7 +378,7 @@ namespace mico { namespace eval {
                                    enviroment::sptr env )
         {
             if( inf->left( )->get_type( ) != ast::type::IDENT ) {
-                return error_str( "Left side is not an identier", inf );
+                return error_str( "Left side is not an identifier", inf );
             }
 
             auto id = static_cast<ast::expressions::ident *>(inf->left( ));
@@ -494,7 +494,6 @@ namespace mico { namespace eval {
                 //// TODO bad params count
                 return nullptr;
             }
-
             size_t id = 0;
             for( auto &p: vfun->params( ) ) {
                 if( p->get_type( ) == ast::type::IDENT ) {
