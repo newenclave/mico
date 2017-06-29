@@ -261,6 +261,12 @@ namespace objects {
             return value_;
         }
 
+        static
+        sptr make( objects::sptr res )
+        {
+            return std::make_shared<this_type>( res );
+        }
+
     private:
         value_type value_;
     };

@@ -106,6 +106,12 @@ namespace mico { namespace eval {
         }
 
         static
+        objects::retutn_obj::sptr do_return( objects::sptr res )
+        {
+            return objects::retutn_obj::make( res );
+        }
+
+        static
         objects::boolean::sptr get_bool_false( )
         {
             static auto bobj = objects::boolean::make(false);
@@ -498,6 +504,9 @@ namespace mico { namespace eval {
                 auto call = static_cast<call_type *>(obj.get( ));
                 auto fun = obj_cast<objects::function>(call->value( ).get( ));
                 obj = eval_scope_impl( fun->body( ), call->env( ) );
+                if( is_return( obj ) ) {
+                    return obj;
+                }
             }
             return obj;
         }
@@ -523,7 +532,7 @@ namespace mico { namespace eval {
                 if(stmt->get_type( ) == ast::type::RETURN) {
                     auto expr = static_cast<return_type *>( stmt.get( ) );
                     if( expr->value( )->get_type( ) == ast::type::CALL ) {
-                        return get_cont_call( expr->value( ), env );
+                        return do_return(get_cont_call( expr->value( ), env ) );
                     }
                 }
 
@@ -540,7 +549,7 @@ namespace mico { namespace eval {
                 last = next;
                 //last = eval_tail(next);
                 if( is_return( next ) ) {
-                    return extract_return( last );
+                    return last;
                 }
             }
             return last;
@@ -583,7 +592,7 @@ namespace mico { namespace eval {
             for( auto &s: prog->states( ) ) {
                 last = eval_impl_tail( s.get( ), env );
                 if( is_return(last) ) {
-                    return extract_return( last );
+                    return eval_tail(extract_return( last ));
                 }
             }
             return last;
@@ -685,6 +694,10 @@ namespace mico { namespace eval {
             }
 
             auto res = eval_scope( vfun->body( ), s.env( ) );
+            while( is_return( res ) ) {
+                auto r = obj_cast<objects::retutn_obj>(res.get( ));
+                res = eval_tail( r->value( ) );
+            }
 
             s.env( )->unlock( );
             return res;

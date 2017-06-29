@@ -69,8 +69,19 @@ let t = fn( x ) {
     m( x + 1 )
 }
 
+let sum = fn( count ) {
+    let impl = fn( a, new ) {
+        if( new == 0 ) {
+            a
+        } else {
+            rerurn impl( a + 1, new - 1 )
+        }
+    }
+    impl( 0, count )
+}
+
 let x = fn(count){if(count > 0) { return x(count - 1) } else {0} }
-let x = fn(count){if(count > 0) { return x(count - 1) } 0  }
+let x = fn(count){if(count > 0) { return x(count - 1) + 1; 60 } 0 }
 let x = fn( ){ x( ) }
 
 let fac = fn( x ) { if(x > 1) { x * fac(x - 1)  } else { 1 } }
