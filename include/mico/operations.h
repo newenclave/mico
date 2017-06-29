@@ -7,6 +7,7 @@ namespace mico { namespace operations {
 
     enum class precedence {
         LOWEST,
+        ASSIGN,      // var = val
         EQUALS,      // ==
         LESSGREATER, // > or <
         SUM,         // +

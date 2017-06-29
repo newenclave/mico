@@ -36,7 +36,7 @@ let fib = fn( n ) {
         if(count > 0) {
             fn( ){ x(count - 1) }
         } else {
-            fn( ){ 15 }
+            fn( ){ return 15 }
         }
     }
     let impl = fn( a, b, n ) {

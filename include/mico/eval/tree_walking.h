@@ -374,9 +374,38 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
+        objects::sptr eval_assign( ast::expressions::infix *inf,
+                                   enviroment::sptr env )
+        {
+            if( inf->left( )->get_type( ) != ast::type::IDENT ) {
+                return error_str( "Left side is not an identier", inf );
+            }
+
+            auto id = static_cast<ast::expressions::ident *>(inf->left( ));
+
+            auto cont_env = env->find_contains( id->value( ) );
+            if( !cont_env ) {
+                return error_str( "Identifier not found", id );
+            }
+
+            auto rght = eval_impl(inf->right( ), env);
+            if( is_fail( rght ) ) {
+                return rght;
+            }
+
+            cont_env->set( id->value( ), rght );
+
+            return rght;
+        }
+
         objects::sptr eval_infix( ast::node *n, enviroment::sptr env )
         {
             auto inf = static_cast<ast::expressions::infix *>(n);
+
+            if( inf->token( ) == tokens::type::ASSIGN ) {
+                return eval_assign( inf, env );
+            }
+
             auto left = eval_impl(inf->left( ), env);
             if( !left ) {
                 /////////// bad left value

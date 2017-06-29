@@ -96,6 +96,7 @@ namespace mico {
             leds_[token_type::MINUS]    =
             leds_[token_type::PLUS]     =
             leds_[token_type::ASTERISK] =
+            leds_[token_type::ASSIGN]   =
             leds_[token_type::SLASH]    =
             leds_[token_type::LT]       =
             leds_[token_type::GT]       =
@@ -123,6 +124,7 @@ namespace mico {
             using OP = operations::precedence;
 
             static const std::map<TT, OP> val = {
+                { TT::ASSIGN,   OP::ASSIGN      },
                 { TT::EQ,       OP::EQUALS      },
                 { TT::NOT_EQ,   OP::EQUALS      },
                 { TT::LT,       OP::LESSGREATER },
@@ -135,8 +137,8 @@ namespace mico {
                 { TT::ASTERISK, OP::PRODUCT     },
                 { TT::LPAREN,   OP::CALL        },
                 { TT::LBRACKET, OP::INDEX       },
-
             };
+
             auto f = val.find( tt );
             if( f !=  val.end( ) ){
                 return f->second;

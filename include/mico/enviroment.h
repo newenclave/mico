@@ -61,9 +61,7 @@ namespace objects {
         { }
 
         ~enviroment( )
-        {
-            //std::cout << --cout << "\n";
-        }
+        { }
 
         void clear( )
         {
@@ -73,14 +71,12 @@ namespace objects {
         static
         sptr make( )
         {
-            //std::cout << ++cout << "\n";
             return std::make_shared<enviroment>( key( ) );
         }
 
         static
         sptr make( sptr parent )
         {
-            //std::cout << ++cout << "\n";
             auto res = std::make_shared<enviroment>( parent, key( ) );
             parent->children_.insert( res );
             return res;
@@ -94,7 +90,6 @@ namespace objects {
 
         void drop( )
         {
-
             if( children_.empty( ) && !locked_ ) {
                 auto p = parent_.lock( );
                 if( p ) {
@@ -112,6 +107,22 @@ namespace objects {
         void unlock( )
         {
             locked_ = false;
+        }
+
+        sptr find_contains( const std::string &name )
+        {
+            auto cur = this;
+            sptr parent = shared_from_this( );
+            while( cur ) {
+                auto f = cur->data_.find( name );
+                if( f != cur->data_.end( ) ) {
+                    return parent;
+                } else {
+                    parent = cur->parent_.lock( );
+                    cur = parent.get( );
+                }
+            }
+            return nullptr;
         }
 
         void set( const std::string &name, object_sptr val )
