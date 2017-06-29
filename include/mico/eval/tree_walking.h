@@ -548,7 +548,7 @@ namespace mico { namespace eval {
                 auto next = eval_impl( stmt.get( ), env );
                 last = next;
                 //last = eval_tail(next);
-                if( is_return( next ) ) {
+                if( is_return( next ) || is_fail( next ) ) {
                     return last;
                 }
             }
@@ -625,10 +625,7 @@ namespace mico { namespace eval {
             auto expr = static_cast<ast::expressions::ident *>( n );
             auto val = env->get( expr->value( ) );
             if( !val ) {
-                //// TODO error identifier
-                ///
-                //std::cout << expr->value( )  << " NOT FOUND!\n";
-                return get_null( );
+                return error_str( "Identifier not found", n );
             } else {
                 return val;
             }

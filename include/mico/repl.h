@@ -38,7 +38,9 @@ namespace mico {
                 } else if( data.empty( ) && tmp.size( )==1 && tmp[0] == 'q' ) {
                     break;
                 } else {
-                    data += " ";
+                    if( !data.empty( ) ) {
+                        data += "\n";
+                    }
                     data += tmp;
                     std::cout << "  > ";
                 }

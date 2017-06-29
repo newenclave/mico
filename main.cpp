@@ -71,6 +71,7 @@ let t = fn( x ) {
 
 let sum = fn( count ) {
     let impl = fn( a, new ) {
+        r
         if( new == 0 ) {
             a
         } else {
