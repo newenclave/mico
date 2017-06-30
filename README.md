@@ -46,6 +46,9 @@ let fibonacci = fn( n ) {
     }
     impl(0, 1, n)
 }
+
+let forever = fn( ){ forever( ) } /// will spin forever
+
 ```
 
 #### closures
