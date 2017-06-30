@@ -862,11 +862,13 @@ namespace mico { namespace eval {
             for( auto &v: table->value( ) ) {
                 auto key = extract_container(eval_impl_tail( v.first.get( ),
                                                              env ) );
-                if( is_null( key ) ) {
-                    //// TODO bad key value for table
-                    return get_null( );
+                if( is_fail( key ) ) {
+                    return key;
                 }
                 auto val = eval_impl_tail( v.second.get( ), env );
+                if( is_fail( val ) ) {
+                    return val;
+                }
                 res->insert(key, val);
             }
 
