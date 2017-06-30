@@ -65,6 +65,24 @@ let hello = newGreeter("Hello");
 hello("dear, future Reader!"); // => Hello dear, future Reader!
 ```
 
+#### if ... elif ... else 
+
+```
+/// it's possible to use 'if' like an explression
+
+let detect = fn( x ) {
+  let result =  if(x == 0) {
+                  "zero"
+                } elif( x < 10 ) {
+                  "less than 10"
+                } elif( x < 100 ) {
+                  "less than 100"
+                } else {
+                  "too big!"
+                }
+  return result
+}
+```
 
 ### ... are not supported yet
 
