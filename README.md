@@ -71,7 +71,7 @@ hello("dear, future Reader!"); // => Hello dear, future Reader!
 #### if ... elif ... else 
 
 ```
-/// it's possible to use 'if' like an explression
+/// it's possible to use 'if' like an expression
 
 let detect = fn( x ) {
   let result =  if(x == 0) {
