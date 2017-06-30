@@ -68,13 +68,13 @@ let t = fn( x ) {
     m( x + 1 )
 }
 
-let sum = fn( count ) {
-    let impl = fn( a, new ) {
-        r
+let sum = fn( count ) { // start
+    let impl = fn( a, new ) { /// internal
+            r(10)
         if( new == 0 ) {
             a
         } else {
-            rerurn impl( a + 1, new - 1 )
+            return impl( a + 1, new - 1 )
         }
     }
     impl( 0, count )

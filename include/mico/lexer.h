@@ -97,14 +97,9 @@ namespace mico {
         }
 
         template <typename ItrT>
-        static ItrT skip_comment( ItrT b, ItrT end, state *lstate  )
+        static ItrT skip_comment( ItrT b, ItrT end, state */*lstate*/  )
         {
-            while( b != end ) {
-                if( idents::is_newline(*b) ) {
-                    lstate->line++;
-                    lstate->line_itr = ++b;
-                    return b;
-                }
+            while( b != end && !idents::is_newline(*b) ) {
                 ++b;
             }
             return b;
@@ -260,6 +255,10 @@ namespace mico {
                     value = token_ident(*next);
 
                     switch( *next ) {
+                    case token_type::COMMENT:
+                        bb = skip_comment( next.iterator( ), end, lstate );
+                        value.literal = "";
+                        return std::make_pair( std::move(value), bb );
                     case token_type::END_OF_LINE:
                         lstate->line++;
                         lstate->line_itr = next.iterator( );
@@ -291,18 +290,12 @@ namespace mico {
                         bb = next.iterator( );
                         value.literal = read_string( bb, end, lstate );
                         return std::make_pair( std::move(value), bb );
-                    case token_type::COMMENT:
-                        break;
                     default:
                         return std::make_pair( std::move(value),
                                                next.iterator( ) );
                         break;
                     }
-                    if( *next == token_type::COMMENT ) {
-                        begin = skip_comment( ++begin, end, lstate );
-                    } else {
-                        begin = next.iterator( );
-                    }
+                    begin = next.iterator( );
                 } else if( idents::is_digit( *bb ) ) {
                     value.name = token_type::INT_DEC;
                     value.literal = read_float(bb, end, &ffound );
@@ -359,6 +352,8 @@ namespace mico {
 
                 if( nt.first.name == token_type::END_OF_FILE ) {
                     break;
+                } else if ( nt.first.name == token_type::COMMENT ) {
+                    /// do nothing
                 } else if( nt.first.name == token_type::NONE ) {
                     res.push_error( lex_state, b );
                     nt.second++;
