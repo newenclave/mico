@@ -105,6 +105,11 @@ let test = calls[h[true] == "true"](10) /// tets == 100
 
 ### ... are not supported yet
 
+
+#### comments
+```
+let x = 0 // comment; comment starts with // sequence
+```
 #### built in functions
 
 ```
@@ -114,9 +119,4 @@ let la = len(a) // 5
 let ls = len(s) // 6
 ```
 
-#### comments
-
-```
-let x = 0 /// yeah, this piece of code will fail to parse because of comment 
-```
 
