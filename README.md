@@ -66,7 +66,7 @@ hello("dear, future Reader!"); // => Hello dear, future Reader!
 ```
 
 
-### ... are not supportet yet
+### ... are not supported yet
 
 #### arrays
 
