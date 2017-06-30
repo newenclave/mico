@@ -87,14 +87,16 @@ let detect = fn( x ) {
 }
 ```
 
-### ... are not supported yet
-
 #### arrays
 
 ```
 let a = [1, 2, 3, 4, 5];
-a[0] = 10;
+a[0] = 10; // a = [10, 2, 3, 4, 5]
+let x = a[0] + a[3] // x = 14
 ```
+
+### ... are not supported yet
+
 #### built in functions
 
 ```
@@ -108,4 +110,10 @@ let ls = len(s) // 6
 
 ```
 let x = 0 /// yeah, this piece of code will fail to parse because of comment 
+```
+
+#### hashes 
+
+```
+let h = {"string": 0, true: "true", 10: "int", 0.1: [0, 1]}
 ```
