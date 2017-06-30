@@ -828,7 +828,8 @@ namespace mico { namespace eval {
             auto res = objects::table::make( );
 
             for( auto &v: table->value( ) ) {
-                auto key = eval_impl_tail( v.first.get( ), env );
+                auto key = extract_container(eval_impl_tail( v.first.get( ),
+                                                             env ) );
                 if( is_null( key ) ) {
                     //// TODO bad key value for table
                     return get_null( );
