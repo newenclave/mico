@@ -111,3 +111,9 @@ let ls = len(s) // 6
 ```
 let x = 0 /// yeah, this piece of code will fail to parse because of comment 
 ```
+
+#### hashes 
+
+```
+let h = {"string": 0, true: "true", 10: "int", 0.1: [0, 1]}
+```
