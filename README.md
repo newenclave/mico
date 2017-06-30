@@ -1,7 +1,6 @@
 # mico
 
 Monkey the language interpreter implementation done with C++. 
-See https://interpreterbook.com/
 
 Is not yet complete.
 
