@@ -6,6 +6,8 @@
 #include <sstream>
 #include <map>
 #include <vector>
+#include <algorithm>
+#include <unordered_map>
 
 #include "mico/statements.h"
 #include "mico/expressions.h"
@@ -30,6 +32,28 @@ namespace objects {
         ERROR,
     };
 
+    struct name {
+        static
+        const char *get( type t )
+        {
+            switch (t) {
+            case type::NULL_OBJ   : return "OBJ_NULL";
+            case type::BOOLEAN    : return "OBJ_BOOLEAN";
+            case type::INTEGER    : return "OBJ_INTEGER";
+            case type::FLOAT      : return "OBJ_FLOAT";
+            case type::STRING     : return "OBJ_STRING";
+            case type::TABLE      : return "OBJ_TABLE";
+            case type::ARRAY      : return "OBJ_ARRAY";
+            case type::CONTAINER  : return "OBJ_CONTAINER";
+            case type::RETURN     : return "OBJ_RETURN";
+            case type::FUNCTION   : return "OBJ_FUNCTION";
+            case type::CONT_CALL  : return "OBJ_CONT_CALL";
+            case type::ERROR      : return "OBJ_ERROR";
+            }
+            return "<invalid>";
+        }
+    };
+
     struct cast {
         template <typename ToT, typename FromT>
         static
@@ -43,6 +67,27 @@ namespace objects {
         virtual ~base( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
+
+        virtual std::uint64_t hash( ) const
+        {
+            std::hash<std::string> h;
+            return h( str( ) )  ;
+        }
+
+        virtual bool equal( const base *other ) const
+        {
+            return str( ) == other->str( );
+        }
+
+        static
+        std::uint64_t hash_next(uint64_t x)
+        {
+            x = (x ^ (x >> 30)) * std::uint64_t(0xbf58476d1ce4e5b9);
+            x = (x ^ (x >> 27)) * std::uint64_t(0x94d049bb133111eb);
+            x = x ^ (x >> 31);
+            return x;
+        }
+
     };
 
     template <type TN>
@@ -89,6 +134,15 @@ namespace objects {
             static auto val = std::make_shared<this_type>( );
             return val;
         }
+        std::uint64_t hash( ) const override
+        {
+            return 0;
+        }
+
+        bool equal( const base *o ) const override
+        {
+            return (o->get_type( ) == get_type( ));
+        }
     };
 
     template <>
@@ -117,6 +171,21 @@ namespace objects {
         value_type &value( )
         {
             return value_;
+        }
+
+        std::size_t hash( ) const override
+        {
+            std::hash<std::string> h;
+            return h(value_);
+        }
+
+        bool equal( const base *other ) const override
+        {
+            if( other->get_type( ) == get_type( ) ) {
+                auto o = static_cast<const this_type *>( other );
+                return o->value( ) == value( );
+            }
+            return false;
         }
 
     private:
@@ -279,7 +348,6 @@ namespace objects {
         value_type value_;
     };
 
-
     template <>
     class derived<type::CONTAINER>: public typed_base<type::CONTAINER> {
         using this_type = derived<type::CONTAINER>;
@@ -377,10 +445,34 @@ namespace objects {
             return std::make_shared<this_type>( );
         }
 
+        std::uint64_t hash( ) const override
+        {
+            std::uint64_t h = base::hash_next( 123 );
+            for( auto &o: value( ) ) {
+                h = base::hash_next( h + o->hash( ) );
+            }
+            return h;
+        }
+
+        bool equal( const base *other ) const override
+        {
+            if( other->get_type( ) == get_type( ) ) {
+                auto o = static_cast<const this_type *>( other );
+                if( o->value( ).size( ) == value( ).size( ) ) {
+                    std::size_t id = value( ).size( );
+                    while( id-- ) {
+                        if( !value( )[id]->equal( o->value( )[id].get( ) ) ) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
     private:
         value_type value_;
     };
-
 
     template <>
     class derived<type::BOOLEAN>: public typed_base<type::BOOLEAN> {
@@ -413,6 +505,21 @@ namespace objects {
         {
             return std::make_shared<this_type>( val );
         }
+
+        std::uint64_t hash( ) const override
+        {
+            return value_ ? 1 : 0;
+        }
+
+        bool equal( const base *other ) const override
+        {
+            if( other->get_type( ) == get_type( ) ) {
+                auto o = static_cast<const this_type *>( other );
+                return o->value( ) == value( );
+            }
+            return false;
+        }
+
 
     private:
 
@@ -455,108 +562,39 @@ namespace objects {
             return std::make_shared<this_type>( val );
         }
 
+        std::size_t hash( ) const override
+        {
+            return static_cast<std::size_t>(value_);
+        }
+
+        bool equal( const base *other ) const override
+        {
+            if( other->get_type( ) == this->get_type( ) ) {
+                auto o = static_cast<const this_type *>( other );
+                return o->value( ) == value( );
+            }
+            return false;
+        }
+
     private:
 
         value_type value_;
     };
 
-    struct less
-    {
-        template <typename ValT>
-        static
-        bool compare( const sptr &lft, const sptr &rght )
+    struct hash_helper {
+
+        std::size_t operator ( )(const objects::sptr &h) const
         {
-            return cast::to<ValT>(lft.get( ))->value( ) <
-                   cast::to<ValT>(rght.get( ))->value( );
+            return static_cast<std::size_t>(h->hash( ));
         }
+    };
 
-        static
-        bool compare_ptrs( const sptr &lft, const sptr &rght )
+    struct equal_helper {
+
+        bool operator ( )( const objects::sptr &l,
+                           const objects::sptr &r ) const
         {
-            return lft < rght;
-        }
-
-        static
-        bool comparable( type otl, type otr )
-        {
-            return
-                 ( (otl == type::FLOAT)
-                || (otl == type::INTEGER)
-                 )
-             &&
-                 ( (otr == type::FLOAT)
-                || (otr == type::INTEGER)
-                 )
-                    ;
-        }
-
-        template <typename LeftT>
-        static
-        bool compare_numbers( const sptr &lft, const sptr &rght )
-        {
-            using integer   = derived<type::INTEGER>;
-            using floating  = derived<type::FLOAT>;
-
-            auto lval = cast::to<LeftT>(lft.get( ));
-            switch (rght->get_type( )) {
-            case type::INTEGER:
-                return lval->value( ) < static_cast<typename LeftT::value_type>
-                            (cast::to<integer>(rght.get( ))->value( ));
-            case type::FLOAT:
-                return lval->value( ) < static_cast<typename LeftT::value_type>
-                            (cast::to<floating>(rght.get( ))->value( ));
-            default:
-                break;
-            }
-            return false;
-        }
-
-        bool operator ( )( const sptr &lft, const sptr &rght ) const
-        {
-            using boolean   = derived<type::BOOLEAN>;
-            using integer   = derived<type::INTEGER>;
-            using floating  = derived<type::FLOAT>;
-            using string    = derived<type::STRING>;
-            using array     = derived<type::ARRAY>;
-            using table     = derived<type::TABLE>;
-
-            if( lft->get_type( ) == rght->get_type( ) ) {
-                switch (lft->get_type( )) {
-                case type::BOOLEAN:
-                    return compare<boolean>( lft, rght );
-                case type::INTEGER:
-                    return compare<integer>( lft, rght );
-                case type::FLOAT:
-                    return compare<floating>( lft, rght );
-                case type::STRING:
-                    return compare<string>( lft, rght );
-                case type::ARRAY:
-                    return compare<array>( lft, rght );
-                case type::TABLE:
-                    return compare<table>( lft, rght );
-                case type::FUNCTION:
-                    return compare_ptrs( lft, rght );
-                case type::NULL_OBJ:
-                    return false;
-                case type::RETURN:
-                case type::ERROR:
-                case type::CONT_CALL:
-                    break;
-                }
-            } else if( comparable(lft->get_type( ), rght->get_type( ) ) ){
-                switch ( lft->get_type( ) ) {
-                case type::INTEGER:
-                    return compare_numbers<integer>( lft, rght );
-                case type::FLOAT:
-                    return compare_numbers<floating>( lft, rght );
-                default:
-                    break;
-                }
-                return false;
-            } else {
-                return lft->get_type( ) < rght->get_type( );
-            }
-            return false;
+            return l->equal( r.get( ) );
         }
     };
 
@@ -566,8 +604,11 @@ namespace objects {
         using this_type = derived<type::TABLE>;
     public:
         using sptr = std::shared_ptr<this_type>;
+        using cont = derived<type::CONTAINER>;
+        using cont_sptr = std::shared_ptr<cont>;
 
-        using value_type = std::map<objects::sptr, objects::sptr, less>;
+        using value_type = std::unordered_map<objects::sptr, cont_sptr,
+                                              hash_helper, equal_helper>;
 
         std::string str( ) const override
         {
@@ -589,6 +630,55 @@ namespace objects {
         value_type &value( )
         {
             return value_;
+        }
+
+        void insert( objects::sptr key, objects::sptr val )
+        {
+            value_.emplace( std::make_pair( key, cont::make(val) ) );
+        }
+
+        std::uint64_t hash( ) const override
+        {
+            std::uint64_t h = 0;
+            for( auto &o: value( ) ) {
+                h = base::hash_next( h + o.first->hash( ) +
+                                     o.second->hash( ) );
+            }
+            return h;
+        }
+
+        objects::sptr at( objects::sptr id )
+        {
+            auto f = value_.find( id );
+            if(f == value_.end( )) {
+                return derived<type::NULL_OBJ>::make( );
+            } else {
+                return f->second;
+            }
+        }
+
+        bool equal( const base *other ) const override
+        {
+            if( other->get_type( ) == get_type( ) ) {
+                auto o = static_cast<const this_type *>( other );
+                if( o->value( ).size( ) == value( ).size( ) ) {
+
+                    auto b0 = value( ).begin( );
+                    auto b1 = o->value( ).begin( );
+
+                    for( ;b0 != value( ).end( ); ++b0, ++b1 ) {
+                        auto f = b0->first->equal( b1->first.get( ) );
+                        if( f ) {
+                            auto s = b0->second->equal( b1->second.get( ) );
+                            if( !s ) {
+                                return false;
+                            }
+                        }
+                    }
+
+                }
+            }
+            return false;
         }
 
         static
@@ -656,15 +746,16 @@ namespace objects {
     using table      = derived<type::TABLE>;
     using error      = derived<type::ERROR>;
 
-    template <>
-    struct type2object<type::TABLE> {
-        using native_type = std::map<objects::sptr, objects::sptr, less>;
-    };
-
     inline
     std::ostream &operator << ( std::ostream &o, const objects::sptr &obj )
     {
         return o << obj->str( );
+    }
+
+    inline
+    std::ostream &operator << ( std::ostream &o, type t )
+    {
+        return o << name::get(t);
     }
 
 }}

@@ -773,6 +773,23 @@ namespace mico { namespace eval {
                                   " is not a valid index for the array" );
                 }
 
+            } else if(val->get_type( ) == objects::type::TABLE) {
+
+                auto arr = obj_cast<objects::table>( val.get( ) );
+                auto id = extract_container(eval_impl( idx->param( ), env ));
+
+                if( is_fail( id ) ) {
+                    return id;
+                }
+
+                auto res = arr->at( id );
+                if( !is_null( res ) ) {
+                    return res;
+                } else {
+                    return error( idx->param( ), idx->param( ),
+                                  " is not a valid index for the table" );
+                }
+
             } else {
 
             }
@@ -783,10 +800,14 @@ namespace mico { namespace eval {
         objects::sptr eval_call( ast::node *n, enviroment::sptr env )
         {
             auto call = static_cast<ast::expressions::call *>( n );
-            auto fun = eval_impl(call->func( ), env);
+            auto fun = extract_container(eval_impl(call->func( ), env));
+            if( is_fail( fun ) ) {
+                return fun;
+            }
             if( is_null( fun ) || !is_func( fun ) ) {
-                ///// TODO error call object
-                return get_null( );
+                return error( call->func( ),
+                              fun->get_type( ), "(", fun, ")",
+                              " is not a callable obect" );
             }
 
             auto vfun = obj_cast<objects::function>(fun.get( ));
@@ -835,7 +856,7 @@ namespace mico { namespace eval {
                     return get_null( );
                 }
                 auto val = eval_impl_tail( v.second.get( ), env );
-                res->value( )[key] = val;
+                res->insert(key, val);
             }
 
             return res;
