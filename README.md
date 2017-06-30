@@ -103,13 +103,13 @@ let calls = {true: fn(x){ x * x }, false: fn(x){ x + x } }
 let test = calls[h[true] == "true"](10) /// tets == 100
 ```
 
-### ... are not supported yet
-
-
 #### comments
 ```
 let x = 0 // comment; comment starts with // sequence
 ```
+
+### ... are not supported yet
+
 #### built in functions
 
 ```
