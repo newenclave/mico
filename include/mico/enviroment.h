@@ -13,8 +13,6 @@ namespace objects {
     struct base;
 }
 
-    static auto cout = 0;
-
     class enviroment: public std::enable_shared_from_this<enviroment> {
 
     public:

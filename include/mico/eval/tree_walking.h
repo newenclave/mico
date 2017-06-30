@@ -93,7 +93,9 @@ namespace mico { namespace eval {
         static
         bool is_func( objects::sptr obj )
         {
-            return (!!obj) && (obj->get_type( ) == objects::type::FUNCTION);
+            return  (!!obj) &&
+                 (  (obj->get_type( ) == objects::type::FUNCTION)
+                 || (obj->get_type( ) == objects::type::BUILTIN) );
         }
 
         static
@@ -512,23 +514,6 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-//        objects::slist eval_parameters( ast::expressions::call *call,
-//                                        objects::base *fun,
-//                                        enviroment::sptr env )
-//        {
-//            objects::slist res;
-////            auto vfun = obj_cast<objects::function>(fun);
-////            size_t id = 0;
-////            for( auto &p: vfun->params( ) ) {
-////                auto v = eval_impl_tail( call->params( )[id++].get( ), env );
-////                if( is_fail( v ) ) {
-////                    return objects::slist { v };
-////                }
-////                res.push_back( v );
-////            }
-//            return res;
-//        }
-
         enviroment::sptr create_call_env( ast::expressions::call *call,
                                           objects::base *fun,
                                           enviroment::sptr env )
@@ -797,6 +782,20 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
+        objects::slist eval_parameters( ast::expressions::call *call,
+                                        enviroment::sptr env )
+        {
+            objects::slist res;
+            for( auto &e: call->params( ) ) {
+                auto next = extract_container(eval_impl_tail( e.get( ), env ));
+                if( is_fail(next) ) {
+                    return objects::slist { next };
+                }
+                res.emplace_back( next );
+            }
+            return res;
+        }
+
         objects::sptr eval_call( ast::node *n, enviroment::sptr env )
         {
             auto call = static_cast<ast::expressions::call *>( n );
@@ -810,20 +809,32 @@ namespace mico { namespace eval {
                               " is not a callable obect" );
             }
 
-            auto vfun = obj_cast<objects::function>(fun.get( ));
-            enviroment::scoped s(create_call_env( call, fun.get( ), env ));
-            if( !s.env( ) ) {
-                return get_null( );
-            }
+            if( fun->get_type( ) == objects::type::FUNCTION ) {
+                auto vfun = obj_cast<objects::function>(fun.get( ));
+                enviroment::scoped s(create_call_env( call, fun.get( ), env ));
+                if( !s.env( ) ) {
+                    return get_null( );
+                }
 
-            auto res = eval_scope( vfun->body( ), s.env( ) );
-            while( is_return( res ) ) {
-                auto r = obj_cast<objects::retutn_obj>(res.get( ));
-                res = eval_tail( r->value( ) );
+                auto res = eval_scope( vfun->body( ), s.env( ) );
+                while( is_return( res ) ) {
+                    auto r = obj_cast<objects::retutn_obj>(res.get( ));
+                    res = eval_tail( r->value( ) );
+                }
+                return res;
+            } else if( fun->get_type( ) == objects::type::BUILTIN ) {
+                enviroment::scoped s(make_env( env ));
+                auto vfun = obj_cast<objects::builtin>(fun.get( ));
+                vfun->init( s.env( ) );
+                auto params = eval_parameters(call, s.env( ));
+                if( params.size( ) == 1 && is_fail( params[0] ) ) {
+                    return params[0];
+                }
+                auto res = vfun->call( params, s.env( ) );
+                return res;
             }
-
-            s.env( )->unlock( );
-            return res;
+            return error( call->func( ), "Internal error: ",
+                          fun, " is function, but it is not in call list" );
         }
 
         objects::sptr eval_array( ast::node *n, enviroment::sptr env )

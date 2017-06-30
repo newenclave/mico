@@ -29,6 +29,7 @@ namespace objects {
         RETURN,
         FUNCTION,
         CONT_CALL,
+        BUILTIN,
         ERROR,
     };
 
@@ -47,6 +48,7 @@ namespace objects {
             case type::CONTAINER  : return "OBJ_CONTAINER";
             case type::RETURN     : return "OBJ_RETURN";
             case type::FUNCTION   : return "OBJ_FUNCTION";
+            case type::BUILTIN    : return "OBJ_BUILTIN";
             case type::CONT_CALL  : return "OBJ_CONT_CALL";
             case type::ERROR      : return "OBJ_ERROR";
             }
@@ -282,6 +284,37 @@ namespace objects {
     };
 
     template <>
+    class derived<type::BUILTIN>: public env_object<type::BUILTIN> {
+        using this_type = derived<type::BUILTIN>;
+    public:
+        using sptr = std::shared_ptr<this_type>;
+
+        derived( std::shared_ptr<enviroment> e )
+            :env_object(e)
+        { }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "fn(" << static_cast<const void *>(this) << ")";
+            return oss.str( );
+        }
+
+        virtual
+        objects::sptr call( objects::slist &, enviroment::sptr )
+        {
+            return derived<type::NULL_OBJ>::make( );
+        }
+
+        virtual
+        void init( enviroment::sptr )
+        { }
+
+    private:
+    };
+
+
+    template <>
     class derived<type::CONT_CALL>: public env_object<type::CONT_CALL> {
 
         using this_type = derived<type::CONT_CALL>;
@@ -447,7 +480,8 @@ namespace objects {
 
         std::uint64_t hash( ) const override
         {
-            std::uint64_t h = base::hash_next( 123 );
+            auto init = static_cast<std::uint64_t>(get_type( ));
+            std::uint64_t h = base::hash_next( init );
             for( auto &o: value( ) ) {
                 h = base::hash_next( h + o->hash( ) );
             }
@@ -639,7 +673,7 @@ namespace objects {
 
         std::uint64_t hash( ) const override
         {
-            std::uint64_t h = 0;
+            auto h = static_cast<std::uint64_t>(get_type( ));
             for( auto &o: value( ) ) {
                 h = base::hash_next( h + o.first->hash( ) +
                                      o.second->hash( ) );
@@ -736,6 +770,7 @@ namespace objects {
     using null       = derived<type::NULL_OBJ>;
     using string     = derived<type::STRING>;
     using function   = derived<type::FUNCTION>;
+    using builtin    = derived<type::BUILTIN>;
     using cont_call  = derived<type::CONT_CALL>;
     using retutn_obj = derived<type::RETURN>;
     using boolean    = derived<type::BOOLEAN>;

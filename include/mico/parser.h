@@ -372,12 +372,11 @@ namespace mico {
         ast::expressions::array::uptr parse_array( )
         {
             using index_type = ast::expressions::array;
-            if( expect_peek( token_type::RBRACKET, false ) ) {
-                return index_type::uptr(new index_type);
-            }
-
             index_type::uptr res(new index_type);
             do {
+                if( expect_peek( token_type::RBRACKET, false ) ) {
+                    return res;
+                }
                 advance( );
                 auto next = parse_expression( precedence::LOWEST );
                 if( !next ) {
