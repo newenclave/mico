@@ -36,16 +36,28 @@ namespace mico { namespace eval {
             return objects::error::make( oss.str( ), n->pos( ) );
         }
 
-        objects::sptr error_str( const std::string &text, const ast::node *n )
+        void out_err( std::ostream & ) { }
+
+        template <typename HeadT, typename ...Rest>
+        void out_err( std::ostream &o, const HeadT &h, Rest&&...rest )
         {
-            return objects::error::make(text, n->pos( ) );
+            o << h;
+            out_err( o, std::forward<Rest>(rest)... );
+        }
+
+        template <typename ...Args>
+        objects::sptr error( const ast::node *n, Args&&...args )
+        {
+            std::ostringstream oss;
+            out_err( oss, std::forward<Args>(args)...);
+            return objects::error::make(oss.str( ), n->pos( ) );
         }
 
         //////////////////////////////////
         static
         objects::sptr get_null( )
         {
-            static auto nobj = std::make_shared<objects::null>( );
+            static auto nobj = objects::null::make( );
             return nobj;
         }
 
@@ -147,6 +159,26 @@ namespace mico { namespace eval {
             return std::make_shared<objects::integer>( n );
         }
 
+        objects::sptr extract_return( objects::sptr obj )
+        {
+            if( obj->get_type( ) == objects::type::RETURN ) {
+                auto ret = obj_cast<objects::retutn_obj>(obj.get( ));
+                return ret->value( );
+            } else {
+                return obj;
+            }
+        }
+
+        objects::sptr extract_container( objects::sptr obj )
+        {
+            if( obj->get_type( ) == objects::type::CONTAINER ) {
+                auto ret = obj_cast<objects::container>(obj.get( ));
+                return ret->value( );
+            } else {
+                return obj;
+            }
+        }
+
         objects::sptr eval_float( ast::node *n )
         {
             auto state = static_cast<ast::expressions::floating *>(n);
@@ -167,7 +199,7 @@ namespace mico { namespace eval {
         objects::sptr produce_prefix_minus( ast::expressions::prefix *n,
                                             enviroment::sptr env )
         {
-            auto oper = eval_impl(n->value( ), env);
+            auto oper = extract_container(eval_impl(n->value( ), env));
             switch ( oper->get_type( ) ) {
             case objects::type::INTEGER: {
                 auto o = obj_cast<objects::integer>(oper.get( ));
@@ -198,7 +230,7 @@ namespace mico { namespace eval {
         objects::sptr produce_prefix_bang( ast::expressions::prefix *n,
                                            enviroment::sptr env )
         {
-            auto oper = eval_impl( n->value( ), env );
+            auto oper = extract_container(eval_impl( n->value( ), env ));
             return oper ? eval_bool( !obj2num<bool>( oper.get( ) ) )
                         : get_null( );
         }
@@ -377,25 +409,37 @@ namespace mico { namespace eval {
         objects::sptr eval_assign( ast::expressions::infix *inf,
                                    enviroment::sptr env )
         {
-            if( inf->left( )->get_type( ) != ast::type::IDENT ) {
-                return error_str( "Left side is not an identifier", inf );
-            }
 
-            auto id = static_cast<ast::expressions::ident *>(inf->left( ));
+            if(inf->left( )->get_type( ) == ast::type::IDENT) {
+                using ident_type = ast::expressions::ident;
+                auto id = static_cast<ident_type *>(inf->left( ).get( ));
 
-            auto cont_env = env->find_contains( id->value( ) );
-            if( !cont_env ) {
-                return error_str( "Identifier not found", id );
-            }
+                auto cont_env = env->find_contains( id->value( ) );
+                if( !cont_env ) {
+                    return error( id, "Identifier not found: '",
+                                  id->value( ), "'" );
+                }
 
-            auto rght = eval_impl(inf->right( ), env);
-            if( is_fail( rght ) ) {
+                auto rght = eval_impl_tail(inf->right( ).get( ), env);
+                if( is_fail( rght ) ) {
+                    return rght;
+                }
+
+                cont_env->set( id->value( ), rght );
                 return rght;
+            } else {
+                auto lft = eval_impl_tail( inf->left( ).get( ), env );
+                if( lft->get_type( ) == objects::type::CONTAINER ) {
+                    auto cont = obj_cast<objects::container>(lft.get( ));
+                    auto rght = eval_impl_tail(inf->right( ).get( ), env);
+                    if( is_fail( rght ) ) {
+                        return rght;
+                    }
+                    return cont->value( ) = rght;
+                }
             }
-
-            cont_env->set( id->value( ), rght );
-
-            return rght;
+            return error( inf, "Invalid left value for ASSIGN ",
+                          inf->left( ) );
         }
 
         objects::sptr eval_infix( ast::node *n, enviroment::sptr env )
@@ -406,7 +450,7 @@ namespace mico { namespace eval {
                 return eval_assign( inf, env );
             }
 
-            auto left = eval_impl(inf->left( ), env);
+            auto left = extract_container(eval_impl(inf->left( ).get( ), env));
             if( !left ) {
                 /////////// bad left value
                 return get_null( );
@@ -415,7 +459,8 @@ namespace mico { namespace eval {
             switch (left->get_type( )) {
             case objects::type::INTEGER: {
                 auto lval = obj2num<std::int64_t>(left.get( ));
-                auto right = eval_impl(inf->right( ), env);
+                auto right = extract_container(eval_impl(inf->right( ).get( ),
+                                                         env ) );
                 if( !right ) {
                     /////////// bad right value
                     return get_null( );;
@@ -430,7 +475,8 @@ namespace mico { namespace eval {
             }
             case objects::type::FLOAT: {
                 auto lval = obj2num<double>(left.get( ));
-                auto right = eval_impl(inf->right( ), env);
+                auto right = extract_container(eval_impl(inf->right( ).get( ),
+                                                         env ) );
                 if( !right ) {
                     /////////// bad right value
                     return get_null( );;
@@ -455,7 +501,8 @@ namespace mico { namespace eval {
             case tokens::type::GT_EQ:
             case tokens::type::EQ:
             case tokens::type::NOT_EQ: {
-                auto rght = eval_impl(inf->right( ), env);
+                auto rght = extract_container(eval_impl( inf->right( ).get( ),
+                                                         env ) );
                 return other_infix( left.get( ), rght.get( ), inf, env );
             }
             default:
@@ -465,22 +512,22 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        objects::slist eval_parameters( ast::expressions::call *call,
-                                        objects::base *fun,
-                                        enviroment::sptr env )
-        {
-            objects::slist res;
-            auto vfun = obj_cast<objects::function>(fun);
-            size_t id = 0;
-            for( auto &p: vfun->params( ) ) {
-                auto v = eval_impl_tail( call->params( )[id++].get( ), env );
-                if( is_fail( v ) ) {
-                    return objects::slist { v };
-                }
-                res.push_back( v );
-            }
-            return res;
-        }
+//        objects::slist eval_parameters( ast::expressions::call *call,
+//                                        objects::base *fun,
+//                                        enviroment::sptr env )
+//        {
+//            objects::slist res;
+////            auto vfun = obj_cast<objects::function>(fun);
+////            size_t id = 0;
+////            for( auto &p: vfun->params( ) ) {
+////                auto v = eval_impl_tail( call->params( )[id++].get( ), env );
+////                if( is_fail( v ) ) {
+////                    return objects::slist { v };
+////                }
+////                res.push_back( v );
+////            }
+//            return res;
+//        }
 
         enviroment::sptr create_call_env( ast::expressions::call *call,
                                           objects::base *fun,
@@ -498,8 +545,9 @@ namespace mico { namespace eval {
             for( auto &p: vfun->params( ) ) {
                 if( p->get_type( ) == ast::type::IDENT ) {
                     auto n = static_cast<ast::expressions::ident *>(p.get( ));
-                    auto v = eval_impl_tail( call->params( )[id++].get( ),
-                                             env );
+                    auto v = extract_container(
+                                eval_impl_tail( call->params( )[id++].get( ),
+                                                env ) );
                     new_env->set(n->value( ), v);
                 } else {
                     /// TODO bad param
@@ -588,7 +636,7 @@ namespace mico { namespace eval {
             auto ifblock = static_cast<ast::expressions::ifelse *>( n );
 
             for( auto &i: ifblock->ifs(  ) ) {
-                auto cond = eval_impl( i.cond.get( ), env );
+                auto cond = extract_container(eval_impl( i.cond.get( ), env ));
                 if( is_null( cond ) ) {
                     /////////// TODO bad condition in if
                     return get_null( );
@@ -602,13 +650,13 @@ namespace mico { namespace eval {
                 if( bres->value( ) ) {
                     enviroment::scoped s(make_env(env));
                     auto eval_states = eval_scope_impl( i.states, s.env( ));
-                    return eval_states;
+                    return extract_container(eval_states);
                 }
             }
             if( !ifblock->alt( ).empty( ) ) {
                 enviroment::scoped s(make_env(env));
                 auto eval_states = eval_scope_impl( ifblock->alt( ), s.env( ) );
-                return eval_states;
+                return extract_container(eval_states);
             }
             return get_null( );
         }
@@ -653,7 +701,7 @@ namespace mico { namespace eval {
             auto expr = static_cast<ast::expressions::ident *>( n );
             auto val = env->get( expr->value( ) );
             if( !val ) {
-                return error_str( "Identifier not found", n );
+                return error( n, "Identifier not found" );
             } else {
                 return val;
             }
@@ -680,20 +728,49 @@ namespace mico { namespace eval {
             }
 
             if( val->get_type( ) == objects::type::STRING ) {
+
                 auto str = obj_cast<objects::string>( val.get( ) );
                 auto id = eval_impl_tail( idx->param( ), env );
+                std::size_t index = str->value( ).size( );
 
                 if( id->get_type( ) == objects::type::INTEGER ) {
                     auto iid = obj_cast<objects::integer>( id.get( ) );
-                    return objects::integer::make( str->value( )
-                                                   [iid->value( )] );
+                    index = static_cast<std::size_t>(iid->value( ));
                 } else if( id->get_type( ) == objects::type::FLOAT ) {
                     auto iid = obj_cast<objects::floating>( id.get( ) );
-                    return objects::integer::make( str->value( )
-                                                   [iid->value( )] );
+                    index = static_cast<std::size_t>(iid->value( ));
                 } else {
-                    return error_str( "Invalid type for []; must be integer",
-                                      idx->param( ) );
+                    return error( idx->param( ), idx->param( ),
+                                  " has invalid type; must be integer" );
+                }
+                if( index < str->value( ).size( ) ) {
+                    return objects::integer::make( str->value( )[index] );
+                } else {
+                    return error( idx->param( ), idx->param( ),
+                                  " is not a valid index for the string" );
+                }
+
+            } else if(val->get_type( ) == objects::type::ARRAY) {
+
+                auto arr = obj_cast<objects::array>( val.get( ) );
+                auto id = eval_impl_tail( idx->param( ), env );
+                std::int64_t index = arr->value( ).size( );
+
+                if( id->get_type( ) == objects::type::INTEGER ) {
+                    auto iid = obj_cast<objects::integer>( id.get( ) );
+                    index = static_cast<decltype(index)>(iid->value( ));
+                } else if( id->get_type( ) == objects::type::FLOAT ) {
+                    auto iid = obj_cast<objects::floating>( id.get( ) );
+                    index = static_cast<decltype(index)>(iid->value( ));
+                } else {
+                    return error( idx->param( ), idx->param( ),
+                                  " has invalid type; must be integer" );
+                }
+                if( static_cast<std::size_t>(index) < arr->value( ).size( ) ) {
+                    return arr->at( index );
+                } else {
+                    return error( idx->param( ), idx->param( ),
+                                  " is not a valid index for the array" );
                 }
 
             } else {
@@ -728,6 +805,22 @@ namespace mico { namespace eval {
             return res;
         }
 
+        objects::sptr eval_array( ast::node *n, enviroment::sptr env )
+        {
+            auto arr = static_cast<ast::expressions::array *>( n );
+            auto res = objects::array::make( );
+
+            for( auto &a: arr->value( ) ) {
+                auto next = eval_impl( a.get( ), env );
+                if( is_fail( next ) ) {
+                    return next;
+                }
+                res->push( next );
+            }
+
+            return res;
+        }
+
         objects::sptr eval_table( ast::node *n, enviroment::sptr env )
         {
             auto table = static_cast<ast::expressions::table *>( n );
@@ -745,16 +838,6 @@ namespace mico { namespace eval {
             }
 
             return res;
-        }
-
-        objects::sptr extract_return( objects::sptr obj )
-        {
-            if( obj->get_type( ) == objects::type::RETURN ) {
-                auto ret = obj_cast<objects::retutn_obj>(obj.get( ));
-                return ret->value( );
-            } else {
-                return obj;
-            }
         }
 
         objects::sptr eval_impl_tail( ast::node *n, enviroment::sptr env )
@@ -779,6 +862,8 @@ namespace mico { namespace eval {
                 res = eval_float( n ); break;
             case ast::type::STRING:
                 res = eval_string( n ); break;
+            case ast::type::ARRAY:
+                res = eval_array( n, env ); break;
             case ast::type::PREFIX:
                 res = eval_prefix( n, env ); break;
             case ast::type::INFIX:

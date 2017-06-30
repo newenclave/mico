@@ -69,6 +69,11 @@ namespace mico {
                         return parse_table( );
                     };
 
+            nuds_[token_type::LBRACKET] =
+                    [this]( ) {
+                        return parse_array( );
+                    };
+
             nuds_[token_type::MINUS] =
             nuds_[token_type::BANG]  =
                     [this]( ) {
@@ -362,6 +367,30 @@ namespace mico {
                                                        std::move(expr) ) );
             }
             return nullptr;
+        }
+
+        ast::expressions::array::uptr parse_array( )
+        {
+            using index_type = ast::expressions::array;
+            if( expect_peek( token_type::RBRACKET, false ) ) {
+                return index_type::uptr(new index_type);
+            }
+
+            index_type::uptr res(new index_type);
+            do {
+                advance( );
+                auto next = parse_expression( precedence::LOWEST );
+                if( !next ) {
+                    return nullptr;
+                }
+                res->value( ).emplace_back( std::move(next) );
+            } while( expect_peek( token_type::COMMA, false ) );
+
+            if( !expect_peek(token_type::RBRACKET) ) {
+                return nullptr;
+            }
+
+            return res;
         }
 
         ast::expressions::table::uptr parse_table( )

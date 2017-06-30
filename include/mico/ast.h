@@ -20,6 +20,7 @@ namespace mico { namespace ast {
         PREFIX,
         INFIX,
         STRING,
+        ARRAY,
         INTEGER,
         BOOLEAN,
         FLOAT,
@@ -28,6 +29,34 @@ namespace mico { namespace ast {
         CALL,
         INDEX,
         IFELSE,
+    };
+
+    struct name {
+        static
+        const char *get( type t )
+        {
+            switch (t) {
+            case type::NONE    : return "none";
+            case type::PROGRAM : return "PROGRAM";
+            case type::IDENT   : return "IDENTIFIER";
+            case type::LET     : return "LET";
+            case type::EXPR    : return "EXPRESSION";
+            case type::RETURN  : return "RETURN";
+            case type::PREFIX  : return "PREFIX";
+            case type::INFIX   : return "INFIX";
+            case type::STRING  : return "STRING";
+            case type::ARRAY   : return "ARRAY";
+            case type::INTEGER : return "INTEGER";
+            case type::BOOLEAN : return "BOOLEAN";
+            case type::FLOAT   : return "FLOAT";
+            case type::TABLE   : return "TABLE";
+            case type::FN      : return "FUNCTION";
+            case type::CALL    : return "CALL";
+            case type::INDEX   : return "INDEX";
+            case type::IFELSE  : return "IFELSE";
+            }
+            return "<INVALID>";
+        }
     };
 
     struct node {
@@ -139,6 +168,30 @@ namespace mico { namespace ast {
         state_list states_;
         error_list errors_;
     };
+
+    inline
+    std::ostream &operator << ( std::ostream &o, const expression::uptr &obj )
+    {
+        return o << obj->str( );
+    }
+
+    inline
+    std::ostream &operator << ( std::ostream &o, const statement::uptr &obj )
+    {
+        return o << obj->str( );
+    }
+
+    inline
+    std::ostream &operator << ( std::ostream &o, node *obj )
+    {
+        return o << obj->str( );
+    }
+
+    inline
+    std::ostream &operator << ( std::ostream &o, type t )
+    {
+        return o << name::get( t );
+    }
 
 }}
 

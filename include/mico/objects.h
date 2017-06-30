@@ -23,6 +23,7 @@ namespace objects {
         STRING,
         TABLE,
         ARRAY,
+        CONTAINER,
         RETURN,
         FUNCTION,
         CONT_CALL,
@@ -82,6 +83,12 @@ namespace objects {
         {
             return "null";
         }
+        static
+        sptr make( )
+        {
+            static auto val = std::make_shared<this_type>( );
+            return val;
+        }
     };
 
     template <>
@@ -111,6 +118,7 @@ namespace objects {
         {
             return value_;
         }
+
     private:
         value_type value_;
     public:
@@ -271,18 +279,23 @@ namespace objects {
         value_type value_;
     };
 
+
     template <>
-    class derived<type::ARRAY>: public typed_base<type::ARRAY> {
-        using this_type = derived<type::ARRAY>;
+    class derived<type::CONTAINER>: public typed_base<type::CONTAINER> {
+        using this_type = derived<type::CONTAINER>;
     public:
 
         using sptr = std::shared_ptr<this_type>;
-        using value_type = std::vector<sptr>;
+        using value_type = objects::sptr;
+
+        derived(value_type val)
+            :value_(val)
+        { }
 
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << "<array>";
+            oss << value( )->str( );
             return oss.str( );
         }
 
@@ -296,9 +309,78 @@ namespace objects {
             return value_;
         }
 
+        static
+        sptr make( value_type val )
+        {
+            return std::make_shared<this_type>(val);
+        }
+
     private:
         value_type value_;
     };
+
+    template <>
+    class derived<type::ARRAY>: public typed_base<type::ARRAY> {
+        using this_type = derived<type::ARRAY>;
+    public:
+
+        using sptr = std::shared_ptr<this_type>;
+        using cont = derived<type::CONTAINER>;
+        using cont_sptr = std::shared_ptr<cont>;
+        using value_type = std::vector<cont_sptr>;
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "[";
+            bool first = true;
+            for( auto &v: value( ) ) {
+                if( first ) {
+                    first = false;
+                } else {
+                    oss << ", ";
+                }
+                oss << v->value( )->str( );
+            }
+            oss << "]";
+            return oss.str( );
+        }
+
+        const value_type &value( ) const
+        {
+            return value_;
+        }
+
+        value_type &value( )
+        {
+            return value_;
+        }
+
+        objects::sptr at( std::int64_t id )
+        {
+            auto size = static_cast<std::size_t>(id);
+            if( (size < value_.size( )) && ( id >= 0) ) {
+                return value_[size];
+            } else {
+                return derived<type::NULL_OBJ>::make( );
+            }
+        }
+
+        void push( objects::sptr val )
+        {
+            value_.emplace_back( cont::make(val) );
+        }
+
+        static
+        sptr make( )
+        {
+            return std::make_shared<this_type>( );
+        }
+
+    private:
+        value_type value_;
+    };
+
 
     template <>
     class derived<type::BOOLEAN>: public typed_base<type::BOOLEAN> {
@@ -570,6 +652,7 @@ namespace objects {
     using integer    = derived<type::INTEGER>;
     using floating   = derived<type::FLOAT>;
     using array      = derived<type::ARRAY>;
+    using container  = derived<type::CONTAINER>;
     using table      = derived<type::TABLE>;
     using error      = derived<type::ERROR>;
 
@@ -577,6 +660,12 @@ namespace objects {
     struct type2object<type::TABLE> {
         using native_type = std::map<objects::sptr, objects::sptr, less>;
     };
+
+    inline
+    std::ostream &operator << ( std::ostream &o, const objects::sptr &obj )
+    {
+        return o << obj->str( );
+    }
 
 }}
 

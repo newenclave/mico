@@ -52,7 +52,6 @@ let fib = fn( n ) {
 
 let fib = fn( n ) {
     let impl = fn( a, b, n ) {
-        false - false
         if(n > 0) {
             impl( b, a + b, n -1 )
         } else {

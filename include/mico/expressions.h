@@ -60,6 +60,48 @@ namespace mico { namespace ast { namespace expressions {
         std::string value_;
     };
 
+    template <>
+    class detail<type::ARRAY>: public typed_expr<type::ARRAY> {
+        using this_type = detail<type::ARRAY>;
+    public:
+
+        using uptr = std::unique_ptr<this_type>;
+        using value_type = std::vector<expression::uptr>;
+
+        std::string str( ) const override
+        {
+            std::stringstream oss;
+
+            bool first = true;
+
+            oss << "[";
+            for( auto &e: value( ) ) {
+                if( !first ) {
+                    oss << ", ";
+                } else {
+                    first = true;
+                }
+                oss << e->str( );
+            }
+            oss << "]";
+            return oss.str( );
+        }
+
+        const value_type &value( ) const
+        {
+            return value_;
+        }
+
+        value_type &value( )
+        {
+            return value_;
+        }
+
+    private:
+
+        value_type value_;
+    };
+
     template <type TN, typename ValueT>
     class value_expr: public typed_expr<TN> {
 
@@ -180,15 +222,26 @@ namespace mico { namespace ast { namespace expressions {
             right_ = std::move(rght);
         }
 
-        expression *left( )
+        expression::uptr &left( )
         {
-            return left_.get( );
+            return left_;
         }
 
-        expression *right( )
+        expression::uptr &right( )
         {
-            return right_.get( );
+            return right_;
         }
+
+        const expression::uptr &left( ) const
+        {
+            return left_;
+        }
+
+        const expression::uptr &right( ) const
+        {
+            return right_;
+        }
+
 
         tokens::type token( ) const
         {
@@ -488,6 +541,7 @@ namespace mico { namespace ast { namespace expressions {
 
     using ident     = detail<type::IDENT>;
     using string    = detail<type::STRING>;
+    using array     = detail<type::ARRAY>;
     using integer   = detail<type::INTEGER>;
     using floating  = detail<type::FLOAT>;
     using boolean   = detail<type::BOOLEAN>;
