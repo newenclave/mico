@@ -107,5 +107,5 @@ let ls = len(s) // 6
 #### comments
 
 ```
-let x = 0 /// yeah, this piece of code will fail to compile because of comment 
+let x = 0 /// yeah, this piece of code will fail to parse because of comment 
 ```
