@@ -87,14 +87,16 @@ let detect = fn( x ) {
 }
 ```
 
-### ... are not supported yet
-
 #### arrays
 
 ```
 let a = [1, 2, 3, 4, 5];
-a[0] = 10;
+a[0] = 10; // a = [10, 2, 3, 4, 5]
+let x = a[0] + a[3] // x = 14
 ```
+
+### ... are not supported yet
+
 #### built in functions
 
 ```
