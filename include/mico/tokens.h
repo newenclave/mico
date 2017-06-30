@@ -13,6 +13,7 @@ namespace mico { namespace tokens {
         NONE        = 0,
         END_OF_LINE,
         END_OF_FILE,
+        COMMENT,
 
         INT_BIN,
         INT_TER,
@@ -74,6 +75,8 @@ namespace mico { namespace tokens {
             switch( t ) {
             case type::END_OF_FILE: return "EOF";
             case type::END_OF_LINE: return "EOL";
+            case type::COMMENT:     return "COMMENT";
+
             case type::IDENT:       return "IDENT";
 
             case type::INT_BIN:     return "INT_2";

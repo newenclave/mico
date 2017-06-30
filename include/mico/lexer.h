@@ -75,6 +75,8 @@ namespace mico {
             add_token( res, "\r\n", tokens::type::END_OF_LINE );
             add_token( res, "\n\r", tokens::type::END_OF_LINE );
 
+            add_token( res, "//", tokens::type::COMMENT);
+
             return res;
         }
 
@@ -90,6 +92,20 @@ namespace mico {
                 } else {
                     ++b;
                 }
+            }
+            return b;
+        }
+
+        template <typename ItrT>
+        static ItrT skip_comment( ItrT b, ItrT end, state *lstate  )
+        {
+            while( b != end ) {
+                if( idents::is_newline(*b) ) {
+                    lstate->line++;
+                    lstate->line_itr = ++b;
+                    return b;
+                }
+                ++b;
             }
             return b;
         }
@@ -275,12 +291,18 @@ namespace mico {
                         bb = next.iterator( );
                         value.literal = read_string( bb, end, lstate );
                         return std::make_pair( std::move(value), bb );
+                    case token_type::COMMENT:
+                        break;
                     default:
                         return std::make_pair( std::move(value),
                                                next.iterator( ) );
                         break;
                     }
-                    begin = next.iterator( );
+                    if( *next == token_type::COMMENT ) {
+                        begin = skip_comment( ++begin, end, lstate );
+                    } else {
+                        begin = next.iterator( );
+                    }
                 } else if( idents::is_digit( *bb ) ) {
                     value.name = token_type::INT_DEC;
                     value.literal = read_float(bb, end, &ffound );
