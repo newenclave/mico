@@ -6,7 +6,7 @@
 
 namespace mico {
 
-    class len_call: public objects::builtin {
+    class len: public objects::builtin {
         objects::sptr call( objects::slist &params, enviroment::sptr ) override
         {
             if( params.size( ) < 1 ) {
@@ -32,14 +32,14 @@ namespace mico {
 
     public:
 
-        len_call( enviroment::sptr e )
+        len( enviroment::sptr e )
             :objects::builtin(e)
         { }
 
         static
         objects::sptr make( enviroment::sptr e )
         {
-            return std::make_shared<len_call>( e );
+            return std::make_shared<len>( e );
         }
     };
 
@@ -47,7 +47,7 @@ namespace mico {
         static
         void init( enviroment::sptr env )
         {
-            env->set( "len", len_call::make( env ) );
+            env->set( "len", len::make( env ) );
         }
     };
 
