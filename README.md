@@ -108,8 +108,6 @@ let test = calls[h[true] == "true"](10) /// tets == 100
 let x = 0 // comment; comment starts with // sequence
 ```
 
-### ... are not supported yet
-
 #### built in functions
 
 ```
@@ -119,4 +117,13 @@ let la = len(a) // 5
 let ls = len(s) // 6
 ```
 
+### ... are not supported yet
+
+#### block comments 
+```
+/*
+This is a block of comments
+*/
+let a = 0
+```
 
