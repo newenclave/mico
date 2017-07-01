@@ -15,35 +15,61 @@ struct type_ident {
     type_ident& operator = ( const type_ident & ) = default;
 
     type_ident( tokens::type tt )
-        :name(tt)
+        :name_value_(tt)
     { }
 
     type_ident( tokens::type tt, slice val )
-        :literal(std::move(val))
-        ,name(tt)
+        :lit_value_(std::move(val))
+        ,name_value_(tt)
     { }
 
     type_ident( type_ident &&other )
-        :literal(std::move(other.literal))
-        ,name(other.name)
+        :lit_value_(std::move(other.lit_value_))
+        ,name_value_(other.name( ))
     { }
 
     type_ident& operator = ( type_ident &&other )
     {
-        name     = other.name;
-        literal = std::move(other.literal);
+        name_value_ = other.name( );
+        lit_value_  = std::move(other.lit_value_);
         return *this;
     }
 
-    std::string lit( ) const
+    std::string literal( ) const
     {
-        return literal.empty( )
-             ? tokens::name::get( name )
-             : std::string(literal.begin( ), literal.end( ));
+        return lit_value_.empty( )
+             ? tokens::name::get( name( ) )
+             : std::string(lit_value_.begin( ), lit_value_.end( ));
     }
 
-    slice        literal;
-    tokens::type name;
+    slice::iterator begin( ) const
+    {
+        return lit_value_.begin( );
+    }
+
+    slice::iterator end( ) const
+    {
+        return lit_value_.end( );
+    }
+
+    tokens::type name( ) const
+    {
+        return name_value_;
+    }
+
+    void set_name( tokens::type val )
+    {
+        name_value_ = val;
+    }
+
+    void set_literal( slice val )
+    {
+        lit_value_ = std::move(val);
+    }
+
+private:
+    slice        lit_value_;
+    tokens::type name_value_;
 };
 
 struct info2 {
@@ -135,7 +161,7 @@ public:
 
     bool eof( ) const
     {
-        return current( ).ident.name == token_type::END_OF_FILE;
+        return current( ).ident.name( ) == token_type::END_OF_FILE;
     }
 
     void reset( std::string newinput )
@@ -285,7 +311,7 @@ public:
             token_ident value;
             auto next = ttrie.get(begin, end, true);
 
-            value.name = token_type::NONE;
+            value.set_name( token_type::NONE );
             int ffound = 0;
 
             if( next ) {
@@ -294,7 +320,7 @@ public:
                 switch( *next ) {
                 case token_type::COMMENT:
                     bb = skip_comment( next.iterator( ), end, lstate );
-                    value.literal = slice( );
+                    value.set_literal(slice( ));
                     return std::make_pair( std::move(value), bb );
                 case token_type::END_OF_LINE:
                     lstate->line++;
@@ -304,20 +330,20 @@ public:
                 case token_type::INT_TER:
                 case token_type::INT_HEX:
                     bb = next.iterator( );
-                    value.literal = read_number( bb, end );
+                    value.set_literal(read_number( bb, end ));
                     return std::make_pair( std::move(value), bb );
                 case token_type::INT_OCT:
                     bb = std::prev(next.iterator( ));
-                    value.literal = read_float(bb, end, &ffound);
+                    value.set_literal(read_float(bb, end, &ffound));
                     if( ffound != 0 ) {
-                        value.name = token_type::FLOAT;
+                        value.set_name(token_type::FLOAT);
                     }
                     return std::make_pair( std::move(value), bb );
                 case token_type::DOT:
                     bb = std::prev(next.iterator( ));
                     if( idents::is_digit( *next.iterator( ) ) ) {
-                        value.name = token_type::FLOAT;
-                        value.literal = read_float(bb, end, &ffound );
+                        value.set_name(token_type::FLOAT);
+                        value.set_literal(read_float(bb, end, &ffound ));
                         return std::make_pair( std::move(value), bb );
                     } else {
                         return std::make_pair( std::move(value),
@@ -325,7 +351,7 @@ public:
                     }
                 case token_type::STRING:
                     bb = next.iterator( );
-                    value.literal = read_string( bb, end, lstate );
+                    value.set_literal(read_string( bb, end, lstate ));
                     return std::make_pair( std::move(value), bb );
                 default:
                     return std::make_pair( std::move(value),
@@ -334,16 +360,16 @@ public:
                 }
                 begin = next.iterator( );
             } else if( idents::is_digit( *bb ) ) {
-                value.name = token_type::INT_DEC;
-                value.literal = read_float(bb, end, &ffound );
+                value.set_name(token_type::INT_DEC);
+                value.set_literal(read_float(bb, end, &ffound ));
                 if( ffound != 0 ) {
-                    value.name = token_type::FLOAT;
+                    value.set_name(token_type::FLOAT);
                 }
                 return std::make_pair( std::move(value), bb );
 
             } else if( idents::is_alfa(*bb) ) {
-                value.name    = token_type::IDENT;
-                value.literal = read_ident( bb, end  );
+                value.set_name(token_type::IDENT);
+                value.set_literal(read_ident( bb, end  ));
                 return std::make_pair( std::move(value), bb );
             } else {
                 return std::make_pair( I(token_type::INVALID), ++begin );
@@ -366,7 +392,7 @@ public:
 
             auto nt = next_noken( b, input_.cend( ), trie_, &lstate_ );
 
-            if ( nt.first.name == token_type::COMMENT ) {
+            if ( nt.first.name( ) == token_type::COMMENT ) {
                 b = skip_whitespaces( nt.second, input_.end( ), &lstate_);
                 continue;
             } else {
@@ -415,15 +441,15 @@ int main_lex( )
 
     while( !lex.eof( ) ) {
         std::cout << lex.current( ).where << "\t"
-                  << lex.current( ).ident.name << "\t"
-                  << lex.current( ).ident.lit( ) << " "
+                  << lex.current( ).ident.name( ) << "\t"
+                  << lex.current( ).ident.literal( ) << " "
                   <<  "\n"
                       ;
         lex.advance( );
     }
     std::cout << lex.current( ).where << "\t"
-              << lex.current( ).ident.name << "\t"
-              << lex.current( ).ident.lit( ) << " "
+              << lex.current( ).ident.name( ) << "\t"
+              << lex.current( ).ident.literal( ) << " "
               <<  "\n"
                   ;
 
