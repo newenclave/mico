@@ -105,7 +105,6 @@ namespace mico {
             return b;
         }
 
-
         template <typename ItrT>
         static
         std::string read_string( ItrT &begin, ItrT end, state *lstate )

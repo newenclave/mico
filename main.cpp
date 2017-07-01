@@ -92,8 +92,11 @@ let fib = fn(x) {
 
 */
 
+int main_lex( );
+
 int main( )
 {
+    return main_lex( );
 
     return run_repl( );
 

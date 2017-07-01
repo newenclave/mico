@@ -6,7 +6,10 @@
 
 namespace mico {
 
-    struct numeric {
+    template <char GapChar>
+    struct numeric_templ {
+
+        static const char gap_character = GapChar;
 
         static
         std::uint8_t char2int( char cc )
@@ -56,12 +59,26 @@ namespace mico {
 
         template <typename CharT>
         static
+        bool valid_for_dec_( CharT c )
+        {
+            return valid_for_dec( c ) || (c == gap_character);
+        }
+
+        template <typename CharT>
+        static
         bool valid_for_hex( CharT c )
         {
             return (('0' <= c) && (c <= '9' ))
                 || (('a' <= c) && (c <= 'f' ))
                 || (('A' <= c) && (c <= 'F' ))
                  ;
+        }
+
+        template <typename CharT>
+        static
+        bool valid_for_hex_( CharT c )
+        {
+            return valid_for_hex( c ) || (c == gap_character);
         }
 
         static
@@ -82,6 +99,12 @@ namespace mico {
                 break;
             }
             return false;
+        }
+
+        static
+        bool valid_for_( tokens::type t, char c )
+        {
+            return valid_for(t, c) || (c == gap_character);
         }
 
         static
@@ -114,13 +137,15 @@ namespace mico {
             int pos = 0;
 
             for( auto c: input ) {
-                if( valid_for(tt, c) ) {
-                    res *= base_for( tt );
-                    res += char2int( c );
-                    ++pos;
-                } else {
-                    *first_inval = pos;
-                    return 0;
+                if( c != gap_character ) {
+                    if( valid_for(tt, c) ) {
+                        res *= base_for( tt );
+                        res += char2int( c );
+                        ++pos;
+                    } else {
+                        *first_inval = pos;
+                        return 0;
+                    }
                 }
             }
 
@@ -136,7 +161,7 @@ namespace mico {
                 char c = *begin++;
                 if( (c == 'e') || (c == 'E') || (c == '.') ) {
                     float_found = true;
-                } else if( !valid_for_dec( c ) ) {
+                } else if( !valid_for_dec_( c ) ) {
                     return false;
                 }
             }
@@ -160,14 +185,18 @@ namespace mico {
             int    e = 0;
             int    c = 0;
 
-            while( (s != end) && valid_for_dec(c = *s++) ) {
-                a = a * 10.0 + (c - '0');
+            while( (s != end) && valid_for_dec_(c = *s++) ) {
+                if( c != gap_character ) {
+                    a = a * 10.0 + (c - '0');
+                }
             }
 
             if( c == '.' ) {
-                while( (s != end) && valid_for_dec(c = *s++)) {
-                    a = a*10.0 + (c - '0');
-                    e = e-1;
+                while( (s != end) && valid_for_dec_(c = *s++)) {
+                    if( c != gap_character ) {
+                        a = a*10.0 + (c - '0');
+                        e = e-1;
+                    }
                 }
             }
 
@@ -183,7 +212,10 @@ namespace mico {
                     sign = -1;
                 }
 
-                while( valid_for_dec( c ) ) {
+                while( valid_for_dec_( c ) ) {
+                    if( c == gap_character ) {
+                        c = *s++;
+                    }
                     i = i * 10 + (c - '0');
                     if( s == end ) {
                         break;
@@ -211,7 +243,7 @@ namespace mico {
         }
 
     };
-
+    using numeric = numeric_templ<'_'>;
 }
 
 #endif // NUMERIC_H
