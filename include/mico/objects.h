@@ -82,12 +82,14 @@ namespace objects {
         }
 
         static
-        std::uint64_t hash_next(uint64_t x)
+        std::uint64_t hash64(uint64_t x)
         {
-            x = (x ^ (x >> 30)) * std::uint64_t(0xbf58476d1ce4e5b9);
-            x = (x ^ (x >> 27)) * std::uint64_t(0x94d049bb133111eb);
-            x = x ^ (x >> 31);
-            return x;
+            std::hash<std::uint64_t> h;
+            return h(x);
+////            x = (x ^ (x >> 30)) * std::uint64_t(0xbf58476d1ce4e5b9);
+////            x = (x ^ (x >> 27)) * std::uint64_t(0x94d049bb133111eb);
+////            x = x ^ (x >> 31);
+//            return x;
         }
 
     };
@@ -119,7 +121,7 @@ namespace objects {
                 u_int64_t uint;
             } u;
             u.dbl = x;
-            return base::hash_next( *reinterpret_cast<std::uint64_t *>(&u) );
+            return base::hash64( *reinterpret_cast<std::uint64_t *>(&u) );
         }
     };
 
@@ -129,7 +131,7 @@ namespace objects {
         static
         std::uint64_t hash(uint64_t x )
         {
-            return base::hash_next( x );
+            return base::hash64( x );
         }
     };
 
@@ -496,9 +498,9 @@ namespace objects {
         std::uint64_t hash( ) const override
         {
             auto init = static_cast<std::uint64_t>(get_type( ));
-            std::uint64_t h = base::hash_next( init );
+            std::uint64_t h = base::hash64( init );
             for( auto &o: value( ) ) {
-                h = base::hash_next( h + o->hash( ) );
+                h = base::hash64( h + o->hash( ) );
             }
             return h;
         }
@@ -691,7 +693,7 @@ namespace objects {
         {
             auto h = static_cast<std::uint64_t>(get_type( ));
             for( auto &o: value( ) ) {
-                h = base::hash_next( h + o.first->hash( ) +
+                h = base::hash64( h + o.first->hash( ) +
                                      o.second->hash( ) );
             }
             return h;
