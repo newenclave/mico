@@ -237,20 +237,19 @@ public:
     {
         slice::iterator res = begin;
         *found = 0;
-        auto chk = &idents::is_digit;
+        auto chk = &idents::is_digit_;
 
         for( ;begin != end; ++begin ) {
-            if( chk( *begin ) ) {
-            } else if( *begin != '_' ) {
+            if( !chk( *begin ) ) {
                 break;
             }
         }
 
         if( begin != end && *begin == '.' ) {
             *found = 1;
+            ++begin;
             for( ;begin != end; ++begin ) {
-                if( chk( *begin ) ) {
-                } else if( *begin != '_' ) {
+                if( !chk( *begin ) ) {
                     break;
                 }
             }
@@ -263,8 +262,7 @@ public:
                 ++begin;
             }
             for( ;begin != end; ++begin ) {
-                if( chk( *begin ) ) {
-                } else if( *begin != '_' ) {
+                if( !chk( *begin ) ) {
                     break;
                 }
             }
@@ -361,16 +359,15 @@ public:
         slice::iterator b = skip_whitespaces( iter_, input_.end( ), &lstate_);
 
         while( b != input_.end( ) ) {
-
             auto bb = b;
             info2 ti;
-            auto line_start =  lstate_.line_itr;
+            auto line_start   = lstate_.line_itr;
             auto current_line = lstate_.line;
 
             auto nt = next_noken( b, input_.cend( ), trie_, &lstate_ );
 
             if ( nt.first.name == token_type::COMMENT ) {
-                b = nt.second;
+                b = skip_whitespaces( nt.second, input_.end( ), &lstate_);
                 continue;
             } else {
                 ti.ident      = std::move(nt.first);
@@ -379,7 +376,6 @@ public:
                 iter_         = nt.second;
                 return ti;
             }
-            //b = skip_whitespaces( nt.second, input.end( ), &lstate_ );
         }
 
         info2 ti;
@@ -403,11 +399,12 @@ int main_lex( )
 {
     auto tr = mico::lexer::make_trie( );
     std::string test = "1e10!hello, \n"
+                       "0.000012345, 0.1e-11\n"
                        "; 0xFFFF_FFFF_FFFF_FFFF test //comment jhgkj$#@\n"
-                       "\"hello!\n"
-                       " \n"
-                       " \n"
-                       "\"\n"
+                       "    \"begin \n"
+                       "            \n"
+                       "            \n"
+                       "end\"       \n"
                        "<>!\n";
 
     auto bb = test.begin( );

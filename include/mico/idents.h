@@ -29,6 +29,12 @@ namespace mico {
         }
 
         static
+        bool is_digit_( char c )
+        {
+            return numeric::valid_for_dec_( c );
+        }
+
+        static
         bool is_alfa( char c )
         {
             return ( ('a' <= c) && (c <= 'z') )
