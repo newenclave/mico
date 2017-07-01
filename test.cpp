@@ -372,7 +372,10 @@ public:
                 value.set_literal(read_ident( bb, end  ));
                 return std::make_pair( std::move(value), bb );
             } else {
-                return std::make_pair( I(token_type::INVALID), ++begin );
+                bb = begin++;
+                value.set_name(token_type::INVALID);
+                value.set_literal( slice( bb, begin ) );
+                return std::make_pair( std::move(value), begin );
             }
             begin = skip_whitespaces( begin, end, lstate );
         }
@@ -425,7 +428,7 @@ int main_lex( )
 {
     auto tr = mico::lexer::make_trie( );
     std::string test = "1e10!hello, \n"
-                       "0.000012345, 0.1e-11\n"
+                       "0.000012345, @#$% 0.1e-11\n"
                        "; 0xFFFF_FFFF_FFFF_FFFF test //comment jhgkj$#@\n"
                        "    \"begin \n"
                        "            \n"
