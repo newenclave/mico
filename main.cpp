@@ -22,7 +22,7 @@ using namespace mico;
 
 let fac = fn(val) {
     let impl = fn( val, acc ) {
-        if( val > 1 ) {
+        if val > 1 {
             impl( val - 1, acc * val )
         } else {
             acc
@@ -33,14 +33,14 @@ let fac = fn(val) {
 
 let fib = fn( n ) {
     let x = fn(count) {
-        if(count > 0) {
+        if count > 0 {
             fn( ){ x(count - 1) }
         } else {
             fn( ){ return 15 }
         }
     }
     let impl = fn( a, b, n ) {
-        if(n > 0) {
+        if n > 0 {
             impl( b, a + b, n -1 )
         } else {
             x(100)( );

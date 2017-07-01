@@ -111,11 +111,26 @@ namespace objects {
     template <>
     struct type2object<type::FLOAT> {
         using native_type = double;
+        static
+        std::uint64_t hash( double x )
+        {
+            union {
+                double    dbl;
+                u_int64_t uint;
+            } u;
+            u.dbl = x;
+            return base::hash_next( *reinterpret_cast<std::uint64_t *>(&u) );
+        }
     };
 
     template <>
     struct type2object<type::INTEGER> {
         using native_type = std::int64_t;
+        static
+        std::uint64_t hash(uint64_t x )
+        {
+            return base::hash_next( x );
+        }
     };
 
     template <type>
@@ -590,15 +605,16 @@ namespace objects {
             value_ = val;
         }
 
+        template <typename T>
         static
-        sptr make( value_type val )
+        sptr make( T val )
         {
-            return std::make_shared<this_type>( val );
+            return std::make_shared<this_type>( static_cast<value_type>(val) );
         }
 
         std::size_t hash( ) const override
         {
-            return static_cast<std::size_t>(value_);
+            return type2object<type_name>::hash( value_ );
         }
 
         bool equal( const base *other ) const override
@@ -734,9 +750,9 @@ namespace objects {
 
         using value_type = std::string;
 
-        derived( value_type val, tokens::position where )
-            :value_(std::move(val))
-            ,where_(where)
+        derived( tokens::position where, value_type val )
+            :where_(where)
+            ,value_(std::move(val))
         { }
 
         std::string str( ) const override
@@ -756,15 +772,51 @@ namespace objects {
             return value_;
         }
 
+    private:
+
         static
-        sptr make( value_type val, tokens::position where )
+        void out_err( std::ostream & ) { }
+
+        template <typename HeadT, typename ...Rest>
+        static
+        void out_err( std::ostream &o, const HeadT &h, Rest&&...rest )
         {
-            return std::make_shared<this_type>( std::move(val), where );
+            o << h;
+            out_err( o, std::forward<Rest>(rest)... );
+        }
+    public:
+
+        template <typename ...Args>
+        static
+        objects::sptr make( const ast::node *n, Args&&...args )
+        {
+            std::ostringstream oss;
+            out_err( oss, std::forward<Args>(args)...);
+            return make( n->pos( ), oss.str( ) );
+        }
+
+        template <typename ...Args>
+        static
+        objects::sptr make( tokens::position where, Args&&...args )
+        {
+            std::ostringstream oss;
+            out_err( oss, std::forward<Args>(args)...);
+            return std::make_shared<this_type>( where, oss.str( ) );
+        }
+
+        template <typename ...Args>
+        static
+        objects::sptr make( Args&&...args )
+        {
+            std::ostringstream oss;
+            out_err( oss, std::forward<Args>(args)... );
+            tokens::position pos(0, 0);
+            return make(pos, oss.str( ) );
         }
 
     private:
-        value_type value_;
         tokens::position where_;
+        value_type value_;
     };
 
     using null       = derived<type::NULL_OBJ>;

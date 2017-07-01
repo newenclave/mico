@@ -25,7 +25,7 @@ namespace mico { namespace eval {
         {
             std::ostringstream oss;
             oss << "operation '" << tt << "' not found";
-            return objects::error::make( oss.str( ), n->pos( ) );
+            return objects::error::make( n->pos( ), oss.str( ) );
         }
 
         objects::sptr error_index_inval( const ast::node *n,
@@ -33,24 +33,13 @@ namespace mico { namespace eval {
         {
             std::ostringstream oss;
             oss << "invalid index for '" << val << "'";
-            return objects::error::make( oss.str( ), n->pos( ) );
-        }
-
-        void out_err( std::ostream & ) { }
-
-        template <typename HeadT, typename ...Rest>
-        void out_err( std::ostream &o, const HeadT &h, Rest&&...rest )
-        {
-            o << h;
-            out_err( o, std::forward<Rest>(rest)... );
+            return objects::error::make( n->pos( ), oss.str( ) );
         }
 
         template <typename ...Args>
         objects::sptr error( const ast::node *n, Args&&...args )
         {
-            std::ostringstream oss;
-            out_err( oss, std::forward<Args>(args)...);
-            return objects::error::make(oss.str( ), n->pos( ) );
+            return objects::error::make( n, std::forward<Args>(args)... );
         }
 
         //////////////////////////////////
@@ -806,7 +795,7 @@ namespace mico { namespace eval {
             if( is_null( fun ) || !is_func( fun ) ) {
                 return error( call->func( ),
                               fun->get_type( ), "(", fun, ")",
-                              " is not a callable obect" );
+                              " is not a callable object" );
             }
 
             if( fun->get_type( ) == objects::type::FUNCTION ) {
