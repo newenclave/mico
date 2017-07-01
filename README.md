@@ -39,7 +39,7 @@ let fibonacci = fn(x) {
 let fibonacci = fn( n ) {
     let impl = fn( a, b, n ) {
         if(n > 0) {
-            return impl( b, a + b, n -1 ); 
+            return impl( b, a + b, n -1 );
         } else {
             a
         }
@@ -68,13 +68,15 @@ let hello = newGreeter("Hello");
 hello("dear, future Reader!"); // => Hello dear, future Reader!
 ```
 
-#### if ... elif ... else 
+#### if ... elif ... else
 
 ```
 /// it's possible to use 'if' like an expression
 
 let detect = fn( x ) {
-  let result =  if(x == 0) {
+  let result =  if( x < 0 ) {
+                  "too small!"
+                } elif(x == 0) {
                   "zero"
                 } elif( x < 10 ) {
                   "less than 10"
@@ -95,7 +97,7 @@ a[0] = 10; // a = [10, 2, 3, 4, 5]
 let x = a[0] + a[3] // x = 14
 ```
 
-#### hashes 
+#### hashes
 
 ```
 let h = {"string": 0, true: "true", 10: "int", 0.1: [0, 1]}
@@ -113,13 +115,13 @@ let x = 0 // comment; comment starts with // sequence
 ```
 let a = [1, 2, 3, 4, 5];
 let s = "Hello!"
-let la = len(a) // 5 
+let la = len(a) // 5
 let ls = len(s) // 6
 ```
 
 ### ... are not supported yet
 
-#### block comments 
+#### block comments
 ```
 /*
 This is a block of comments
