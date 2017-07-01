@@ -105,12 +105,12 @@ public:
         std::string::const_iterator begin_itr;
     };
 
-    const token_ident &current( ) const
+    const info2 &current( ) const
     {
         return current_;
     }
 
-    const token_ident &peek( ) const
+    const info2 &peek( ) const
     {
         return peek_;
     }
@@ -127,39 +127,26 @@ public:
 
     void advance( )
     {
-        current_ = std::move(peek_);
-        bool space = true;
-        do {
-            auto pek = next_noken(iter_, input_.cend( ), trie_, &lstate_);
-            peek_    = pek.first;
-            iter_    = skip_whitespaces(pek.second, input_.end( ), &lstate_);
-            if( peek( ).name != token_type::COMMENT ) {
-                space = false;
-            }
-        } while ( space );
+        if( !eof( ) ) {
+            current_ = std::move(peek_);
+            peek_    = next( );
+        }
     }
 
     bool eof( ) const
     {
-        return current( ).name == token_type::END_OF_FILE;
+        return current( ).ident.name == token_type::END_OF_FILE;
     }
 
     void reset( std::string newinput )
     {
-        input_          = std::move( newinput );
-        iter_           = input_.begin( );
-        current_iter_   = iter_;
-        lstate_         = position_state(iter_);
+        input_   = std::move( newinput );
+        iter_    = input_.begin( );
+        lstate_  = position_state(iter_);
 
-        auto bb  = skip_whitespaces(input_.cbegin( ), input_.cend( ), &lstate_);
-        auto cur = next_noken( bb, input_.cend( ), trie_, &lstate_);
-        auto pek = next_noken( cur.second, input_.cend( ), trie_, &lstate_);
-
-        current_ = cur.first;
-        peek_    = pek.first;
-        iter_    = skip_whitespaces(pek.second, input_.cend( ), &lstate_);
+        current_ = next( );
+        peek_    = next( );
     }
-
 
     template <typename ItrT, typename EItrT = ItrT >
     static ItrT skip_whitespaces( ItrT b, EItrT end, position_state *lstate  )
@@ -361,7 +348,7 @@ public:
                 value.literal = read_ident( bb, end  );
                 return std::make_pair( std::move(value), bb );
             } else {
-                return std::make_pair( I(token_type::NONE), begin );
+                return std::make_pair( I(token_type::INVALID), ++begin );
             }
             begin = skip_whitespaces( begin, end, lstate );
         }
@@ -369,21 +356,62 @@ public:
         return std::make_pair( I(token_type::END_OF_FILE), end);
     }
 
+    info2 next( )
+    {
+        slice::iterator b = skip_whitespaces( iter_, input_.end( ), &lstate_);
+
+        while( b != input_.end( ) ) {
+
+            auto bb = b;
+            info2 ti;
+            auto line_start =  lstate_.line_itr;
+            auto current_line = lstate_.line;
+
+            auto nt = next_noken( b, input_.cend( ), trie_, &lstate_ );
+
+            if( nt.first.name == token_type::END_OF_FILE ) {
+                //break;
+            } else if ( nt.first.name == token_type::COMMENT ) {
+                continue;
+            } else {
+
+                ti.ident      = std::move(nt.first);
+                ti.where.line = current_line;
+                ti.where.pos  = std::distance( line_start, bb );
+                iter_         = nt.second;
+
+                return ti;
+            }
+            //b = skip_whitespaces( nt.second, input.end( ), &lstate_ );
+        }
+
+        info2 ti;
+        ti.ident      = token_ident(token_type::END_OF_FILE);
+        ti.where.line = lstate_.line;
+        ti.where.pos  = std::distance( lstate_.line_itr, b );
+        return ti;
+    }
+
 private:
 
     std::string       input_;
     lexer::token_trie trie_;
-    token_ident       current_;
-    token_ident       peek_;
+    info2             current_;
+    info2             peek_;
     slice::iterator   iter_;
-    slice::iterator   current_iter_;
     position_state    lstate_;
 };
 
 int main_lex( )
 {
     auto tr = mico::lexer::make_trie( );
-    std::string test = "1e10!hello, \n; <>!";
+    std::string test = "1e10!hello, \n"
+                       "; 0xFFFF_FFFF_FFFF_FFFF\n"
+                       "\"hello!\n"
+                       " \n"
+                       " \n"
+                       "\"\n"
+                       "<>!\n";
 
     auto bb = test.begin( );
     lexer2::position_state lstate(bb);
@@ -392,11 +420,18 @@ int main_lex( )
     lex.reset( test );
 
     while( !lex.eof( ) ) {
-        std::cout << lex.current( ).lit( ) << " "
-                  << lex.pos( ) << " "
-                  << lex.peek( ).lit( ) << "\n";
+        std::cout << lex.current( ).where << "\t"
+                  << lex.current( ).ident.name << "\t"
+                  << lex.current( ).ident.lit( ) << " "
+                  <<  "\n"
+                      ;
         lex.advance( );
     }
+    std::cout << lex.current( ).where << "\t"
+              << lex.current( ).ident.name << "\t"
+              << lex.current( ).ident.lit( ) << " "
+              <<  "\n"
+                  ;
 
     return 0;
 }

@@ -11,6 +11,7 @@ namespace mico { namespace tokens {
     enum class type {
 
         NONE        = 0,
+        INVALID,
         END_OF_LINE,
         END_OF_FILE,
         COMMENT,
@@ -73,6 +74,7 @@ namespace mico { namespace tokens {
         const char *get( type t )
         {
             switch( t ) {
+            case type::INVALID:     return "INVALID";
             case type::END_OF_FILE: return "EOF";
             case type::END_OF_LINE: return "EOL";
             case type::COMMENT:     return "COMMENT";
