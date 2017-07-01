@@ -369,18 +369,14 @@ public:
 
             auto nt = next_noken( b, input_.cend( ), trie_, &lstate_ );
 
-            if( nt.first.name == token_type::END_OF_FILE ) {
-                //break;
-            } else if ( nt.first.name == token_type::COMMENT ) {
+            if ( nt.first.name == token_type::COMMENT ) {
                 b = nt.second;
                 continue;
             } else {
-
                 ti.ident      = std::move(nt.first);
                 ti.where.line = current_line;
                 ti.where.pos  = std::distance( line_start, bb );
                 iter_         = nt.second;
-
                 return ti;
             }
             //b = skip_whitespaces( nt.second, input.end( ), &lstate_ );
