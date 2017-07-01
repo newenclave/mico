@@ -146,9 +146,10 @@ public:
 
     void reset( std::string newinput )
     {
-        input_   = std::move( newinput );
-        iter_    = input_.begin( );
-        lstate_  = position_state(iter_);
+        input_          = std::move( newinput );
+        iter_           = input_.begin( );
+        current_iter_   = iter_;
+        lstate_         = position_state(iter_);
 
         auto bb  = skip_whitespaces(input_.cbegin( ), input_.cend( ), &lstate_);
         auto cur = next_noken( bb, input_.cend( ), trie_, &lstate_);
@@ -194,7 +195,11 @@ public:
 
             auto next = std::next(begin);
 
-            if( *begin == '\n') {
+            if( *begin == '\\' ) {
+                if( next != end && *next == '"' ) {
+                    begin = next;
+                }
+            } else if( *begin == '\n') {
                 lstate->line++;
                 lstate->line_itr = next;
             }
@@ -371,13 +376,14 @@ private:
     token_ident       current_;
     token_ident       peek_;
     slice::iterator   iter_;
+    slice::iterator   current_iter_;
     position_state    lstate_;
 };
 
 int main_lex( )
 {
     auto tr = mico::lexer::make_trie( );
-    std::string test = "1e10!hello, ; <>!";
+    std::string test = "1e10!hello, \n; <>!";
 
     auto bb = test.begin( );
     lexer2::position_state lstate(bb);
