@@ -132,7 +132,7 @@ public:
         do {
             auto pek = next_noken(iter_, input_.cend( ), trie_, &lstate_);
             peek_    = pek.first;
-            iter_    = skip_whitespaces(pek.second, input_.cend( ), &lstate_);
+            iter_    = skip_whitespaces(pek.second, input_.end( ), &lstate_);
             if( peek( ).name != token_type::COMMENT ) {
                 space = false;
             }
@@ -160,8 +160,8 @@ public:
     }
 
 
-    template <typename ItrT>
-    static ItrT skip_whitespaces( ItrT b, ItrT end, position_state *lstate  )
+    template <typename ItrT, typename EItrT = ItrT >
+    static ItrT skip_whitespaces( ItrT b, EItrT end, position_state *lstate  )
     {
         while( b != end ) {
             if( idents::is_newline(*b) ) {
@@ -304,7 +304,7 @@ public:
                 switch( *next ) {
                 case token_type::COMMENT:
                     bb = skip_comment( next.iterator( ), end, lstate );
-                    value.literal = "";
+                    value.literal = slice( );
                     return std::make_pair( std::move(value), bb );
                 case token_type::END_OF_LINE:
                     lstate->line++;
@@ -371,7 +371,7 @@ private:
     token_ident       current_;
     token_ident       peek_;
     slice::iterator   iter_;
-    position_state             lstate_;
+    position_state    lstate_;
 };
 
 int main_lex( )
