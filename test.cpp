@@ -372,6 +372,7 @@ public:
             if( nt.first.name == token_type::END_OF_FILE ) {
                 //break;
             } else if ( nt.first.name == token_type::COMMENT ) {
+                b = nt.second;
                 continue;
             } else {
 
@@ -406,7 +407,7 @@ int main_lex( )
 {
     auto tr = mico::lexer::make_trie( );
     std::string test = "1e10!hello, \n"
-                       "; 0xFFFF_FFFF_FFFF_FFFF\n"
+                       "; 0xFFFF_FFFF_FFFF_FFFF test //comment jhgkj$#@\n"
                        "\"hello!\n"
                        " \n"
                        " \n"
