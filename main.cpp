@@ -106,61 +106,7 @@ int main_lex( );
 
 int main( )
 {
-    std::hash<double> h;
-
-    for( double i = 0.1; i<10.0; i += 0.01 ) {
-        std::cout << h(i) << "\n";
-    }
-
     //return main_lex( );
 
     return run_repl( );
-
-    std::string input = "10.34e255;"
-                        "if( \"test1\" < \"test1\" ) {"
-                        "   true"
-                        "} else {"
-                        "  false "
-                        "}"
-//                        "if t > 10 {                \n"
-//                        "   let x = 10;             \n"
-//                        "   return 100;             \n"
-//                        "} elif 1 < 0 * 0.12e3 {          \n"
-//                        "   1 + 1 * 1               \n"
-//                        "} else {                    \n"
-//                        "   return \"string!!1\";   \n"
-//                        "}\n"
-//                        "1 * (0b0101 + 6)\n"
-            ;
-
-    auto pp = mico::parser::parse(input);
-    std::cout << pp.str( ) << "\n";
-
-    mico::eval::tree_walking tv;
-
-    auto env = enviroment::make( );
-    auto obj = tv.eval( &pp, env );
-
-    std::cout << obj->str( ) << "\n";
-
-    for( auto &e: pp.errors( ) ) {
-        std::cout << "Error: " <<  e << "\n";
-    }
-
-    return 0;
-
-    auto tt = mico::lexer::make(input);
-
-    for( auto &l: tt ) {
-        std::cout << l.where
-                  << "\t" << l.ident.name
-                  << "\t" << l.ident.literal
-                  << "\n";
-    }
-
-    for( auto &e: tt.errors( ) ) {
-        std::cout << "error: " << e << "\n";
-    }
-
-    return 0;
 }
