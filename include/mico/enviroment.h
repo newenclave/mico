@@ -13,6 +13,8 @@ namespace objects {
     struct base;
 }
 
+    static int c = 0;
+
     class enviroment: public std::enable_shared_from_this<enviroment> {
 
     public:
@@ -52,14 +54,20 @@ namespace objects {
         };
 
         enviroment( key )
-        {  }
+        {
+            std::cout << ++c << "\n";
+        }
 
         enviroment( sptr env, key )
             :parent_(env)
-        { }
+        {
+            std::cout << ++c << "\n";
+        }
 
         ~enviroment( )
-        {  }
+        {
+            std::cout << --c << "\n";
+        }
 
         void clear( )
         {

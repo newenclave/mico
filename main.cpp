@@ -130,7 +130,8 @@ getName(people[1]); // => "Bob"
 
 let test = fn( ) {
     let a = [0, 1,2,3,4,5,6,7,8,9];
-    let int = fn( ) { a }
+    let i = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
+    let int = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
     int
 }
 
