@@ -32,7 +32,7 @@ let fibonacci = fn(x) {
   }
 };
 ```
-#### tail call optimization (there is no such a thing in the book)
+#### tail call optimization (there is no such a thing in the book yet)
 
 ```
 // Define a `fibonacci` function with tail calls
