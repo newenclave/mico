@@ -106,6 +106,12 @@ int main_lex( );
 
 int main( )
 {
+    std::hash<double> h;
+
+    for( double i = 0.1; i<10.0; i += 0.01 ) {
+        std::cout << h(i) << "\n";
+    }
+
     //return main_lex( );
 
     return run_repl( );

@@ -116,12 +116,8 @@ namespace objects {
         static
         std::uint64_t hash( double x )
         {
-            union {
-                double    dbl;
-                u_int64_t uint;
-            } u;
-            u.dbl = x;
-            return base::hash64( *reinterpret_cast<std::uint64_t *>(&u) );
+            std::hash<double> h;
+            return h(x);
         }
     };
 
@@ -831,7 +827,7 @@ namespace objects {
     using integer    = derived<type::INTEGER>;
     using floating   = derived<type::FLOAT>;
     using array      = derived<type::ARRAY>;
-    using container  = derived<type::REFERENCE>;
+    using reference  = derived<type::REFERENCE>;
     using table      = derived<type::TABLE>;
     using error      = derived<type::ERROR>;
 
