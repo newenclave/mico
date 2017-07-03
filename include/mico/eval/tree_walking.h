@@ -426,7 +426,7 @@ namespace mico { namespace eval {
                     if( is_fail( rght ) ) {
                         return rght;
                     }
-                    return cont->value( ) = rght;
+                    return cont->value( ) = rght->clone( );
                 }
             }
             return error( inf, "Invalid left value for ASSIGN ",
@@ -645,7 +645,7 @@ namespace mico { namespace eval {
                     return eval_tail(extract_return( last ));
                 }
             }
-            return last;
+            return extract_ref(last);
         }
 
         objects::sptr eval_expression( ast::node *n, enviroment::sptr env )
@@ -698,7 +698,7 @@ namespace mico { namespace eval {
         {
             auto idx = static_cast<ast::expressions::index *>(n);
 
-            auto val = eval_impl_tail( idx->value( ), env );
+            auto val = extract_ref(eval_impl_tail( idx->value( ), env ));
 
             if( is_fail( val ) ) {
                 return val;

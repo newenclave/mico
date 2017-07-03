@@ -307,7 +307,8 @@ namespace objects {
 
         std::shared_ptr<base> clone( ) const override
         {
-            return std::make_shared<this_type>( env( ), params_, body_ );
+            return std::make_shared<this_type>( enviroment::make( env( ) ),
+                                                params_, body_ );
         }
 
     private:
@@ -465,10 +466,10 @@ namespace objects {
 
         std::uint64_t hash( ) const override
         {
-            std::hash<objects::sptr> h;
-            if( is_container( value( ).get( ) ) ) {
-                return h(value( ));
-            }
+//            std::hash<objects::sptr> h;
+//            if( is_container( value( ).get( ) ) ) {
+//                return h(value( ));
+//            }
             return value_->hash( );
         }
 
@@ -557,6 +558,7 @@ namespace objects {
             for( auto &o: value( ) ) {
                 h = base::hash64( h + o->hash( ) );
             }
+            std::cout << "hash is " << h << "\n";
             return h;
         }
 
@@ -873,13 +875,13 @@ namespace objects {
             using table = derived<type::TABLE>;
 
             type cont = type::NULL_OBJ;
-            if( key->get_type( ) == type::ARRAY ) {
-                auto obj = cast::to<array>( key.get( ) );
-                cont = obj->has_container( ) ? type::ARRAY : cont;
-            } else if( key->get_type( ) == type::TABLE ) {
-                auto obj = cast::to<table>( key.get( ) );
-                cont = obj->has_container( ) ? type::TABLE : cont;
-            }
+//            if( key->get_type( ) == type::ARRAY ) {
+//                auto obj = cast::to<array>( key.get( ) );
+//                cont = obj->has_container( ) ? type::ARRAY : cont;
+//            } else if( key->get_type( ) == type::TABLE ) {
+//                auto obj = cast::to<table>( key.get( ) );
+//                cont = obj->has_container( ) ? type::TABLE : cont;
+//            }
 
             if( cont == type::NULL_OBJ ) {
                 containers_ += base::is_container( val.get( ) );
@@ -904,9 +906,6 @@ namespace objects {
         objects::sptr at( objects::sptr id )
         {
             objects::sptr ptr = id;
-//            if( is_container( id.get( ) ) ) {
-//                ptr = derived<type::REFERENCE>::make( id );
-//            }
             auto f = value_.find( ptr );
             if(f == value_.end( )) {
                 return derived<type::NULL_OBJ>::make( );
@@ -971,8 +970,6 @@ namespace objects {
         std::size_t containers_ = 0;
         value_type value_;
     };
-
-
 
     using null       = derived<type::NULL_OBJ>;
     using string     = derived<type::STRING>;

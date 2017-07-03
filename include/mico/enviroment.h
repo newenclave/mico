@@ -150,6 +150,11 @@ namespace objects {
             return data_;
         }
 
+        std::set<sptr> &children( )
+        {
+            return children_;
+        }
+
     private:
 
         wptr parent_;
