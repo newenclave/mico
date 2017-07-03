@@ -485,8 +485,14 @@ namespace mico {
         ast::expressions::string::uptr parse_string( )
         {
             using res_type = ast::expressions::string;
-            res_type::uptr res( new res_type(current( ).ident.literal ) );
+            res_type::uptr res( new res_type("") );
             res->set_pos( current( ).where );
+
+            do {
+                res->value( ).insert( res->value( ).end( ),
+                                      current( ).ident.literal.begin( ),
+                                      current( ).ident.literal.end( ) );
+            } while( expect_peek( token_type::STRING, false ) );
             return res;
         }
 

@@ -322,16 +322,19 @@ public:
                     bb = skip_comment( next.iterator( ), end, lstate );
                     value.set_literal(slice( ));
                     return std::make_pair( std::move(value), bb );
+
                 case token_type::END_OF_LINE:
                     lstate->line++;
                     lstate->line_itr = next.iterator( );
                     break;
+
                 case token_type::INT_BIN:
                 case token_type::INT_TER:
                 case token_type::INT_HEX:
                     bb = next.iterator( );
                     value.set_literal(read_number( bb, end ));
                     return std::make_pair( std::move(value), bb );
+
                 case token_type::INT_OCT:
                     bb = std::prev(next.iterator( ));
                     value.set_literal(read_float(bb, end, &ffound));
@@ -339,6 +342,7 @@ public:
                         value.set_name(token_type::FLOAT);
                     }
                     return std::make_pair( std::move(value), bb );
+
                 case token_type::DOT:
                     bb = std::prev(next.iterator( ));
                     if( idents::is_digit( *next.iterator( ) ) ) {
@@ -349,10 +353,12 @@ public:
                         return std::make_pair( std::move(value),
                                                next.iterator( ) );
                     }
+
                 case token_type::STRING:
                     bb = next.iterator( );
                     value.set_literal(read_string( bb, end, lstate ));
                     return std::make_pair( std::move(value), bb );
+
                 default:
                     return std::make_pair( std::move(value),
                                            next.iterator( ) );

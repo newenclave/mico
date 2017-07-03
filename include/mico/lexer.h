@@ -75,7 +75,7 @@ namespace mico {
             add_token( res, "\r\n", tokens::type::END_OF_LINE );
             add_token( res, "\n\r", tokens::type::END_OF_LINE );
 
-            add_token( res, "//", tokens::type::COMMENT);
+            add_token( res, "//",   tokens::type::COMMENT);
 
             return res;
         }
@@ -160,9 +160,9 @@ namespace mico {
             std::string res;
 
             for( ; begin != end; ++begin ) {
-                if( numeric::valid_for_hex( *begin ) ) {
+                if( numeric::valid_for_hex_( *begin ) ) {
                     res.push_back( *begin );
-                } else if( *begin != '_' ) {
+                } else {
                     break;
                 }
             }

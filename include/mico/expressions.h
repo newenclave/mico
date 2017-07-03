@@ -40,7 +40,9 @@ namespace mico { namespace ast { namespace expressions {
     template <>
     class detail<type::STRING>: public typed_expr<type::STRING> {
 
+        using this_type = detail<type::STRING>;
     public:
+        using uptr = std::unique_ptr<this_type>;
 
         detail(std::string val)
             :value_(std::move(val))
@@ -52,6 +54,11 @@ namespace mico { namespace ast { namespace expressions {
         }
 
         const std::string &value( ) const
+        {
+            return value_;
+        }
+
+        std::string &value( )
         {
             return value_;
         }
