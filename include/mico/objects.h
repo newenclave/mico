@@ -25,7 +25,7 @@ namespace objects {
         STRING,
         TABLE,
         ARRAY,
-        CONTAINER,
+        REFERENCE,
         RETURN,
         FUNCTION,
         CONT_CALL,
@@ -45,7 +45,7 @@ namespace objects {
             case type::STRING     : return "OBJ_STRING";
             case type::TABLE      : return "OBJ_TABLE";
             case type::ARRAY      : return "OBJ_ARRAY";
-            case type::CONTAINER  : return "OBJ_CONTAINER";
+            case type::REFERENCE  : return "OBJ_REFERENCE";
             case type::RETURN     : return "OBJ_RETURN";
             case type::FUNCTION   : return "OBJ_FUNCTION";
             case type::BUILTIN    : return "OBJ_BUILTIN";
@@ -399,8 +399,8 @@ namespace objects {
     };
 
     template <>
-    class derived<type::CONTAINER>: public typed_base<type::CONTAINER> {
-        using this_type = derived<type::CONTAINER>;
+    class derived<type::REFERENCE>: public typed_base<type::REFERENCE> {
+        using this_type = derived<type::REFERENCE>;
     public:
 
         using sptr = std::shared_ptr<this_type>;
@@ -443,7 +443,7 @@ namespace objects {
     public:
 
         using sptr = std::shared_ptr<this_type>;
-        using cont = derived<type::CONTAINER>;
+        using cont = derived<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;
         using value_type = std::vector<cont_sptr>;
 
@@ -656,7 +656,7 @@ namespace objects {
         using this_type = derived<type::TABLE>;
     public:
         using sptr = std::shared_ptr<this_type>;
-        using cont = derived<type::CONTAINER>;
+        using cont = derived<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;
 
         using value_type = std::unordered_map<objects::sptr, cont_sptr,
@@ -831,7 +831,7 @@ namespace objects {
     using integer    = derived<type::INTEGER>;
     using floating   = derived<type::FLOAT>;
     using array      = derived<type::ARRAY>;
-    using container  = derived<type::CONTAINER>;
+    using container  = derived<type::REFERENCE>;
     using table      = derived<type::TABLE>;
     using error      = derived<type::ERROR>;
 

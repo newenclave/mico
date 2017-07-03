@@ -162,7 +162,7 @@ namespace mico { namespace eval {
 
         objects::sptr extract_container( objects::sptr obj )
         {
-            if( obj->get_type( ) == objects::type::CONTAINER ) {
+            if( obj->get_type( ) == objects::type::REFERENCE ) {
                 auto ret = obj_cast<objects::container>(obj.get( ));
                 return ret->value( );
             } else {
@@ -420,7 +420,7 @@ namespace mico { namespace eval {
                 return rght;
             } else {
                 auto lft = eval_impl_tail( inf->left( ).get( ), env );
-                if( lft->get_type( ) == objects::type::CONTAINER ) {
+                if( lft->get_type( ) == objects::type::REFERENCE ) {
                     auto cont = obj_cast<objects::container>(lft.get( ));
                     auto rght = eval_impl_tail(inf->right( ).get( ), env);
                     if( is_fail( rght ) ) {
@@ -659,6 +659,9 @@ namespace mico { namespace eval {
             auto expr = static_cast<ast::statements::let *>( n );
             auto id   = expr->ident( )->str( );
             auto val  = eval_impl( expr->value( ), env );
+            if( is_fail( val ) ) {
+                return val;
+            }
             env->set( id, val );
             return get_null( );
         }
@@ -675,7 +678,7 @@ namespace mico { namespace eval {
             auto expr = static_cast<ast::expressions::ident *>( n );
             auto val = env->get( expr->value( ) );
             if( !val ) {
-                return error( n, "Identifier not found" );
+                return error( n, "Identifier not found '", n->str( ), "'" );
             } else {
                 return val;
             }
