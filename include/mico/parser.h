@@ -424,7 +424,7 @@ namespace mico {
                     } else {
                         advance( );
                     }
-                } else if( is_peek( token_type::RBRACE ) ) {
+                } else if( expect_peek( token_type::RBRACE, false ) ) {
                     break;
                 }
             } while( true );

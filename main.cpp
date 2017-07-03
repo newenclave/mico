@@ -90,13 +90,23 @@ let fib = fn(x) {
     else { fib(x - 1) + fib(x - 2); }
 };
 
+// Here is an array containing two hashes, that use strings as keys and integers
+// and strings as values
+let people = [{"name": "Anna", "age": 24}, {"name": "Bob", "age": 99}];
+// We can also access hash elements with index expressions:
+let getName = fn(person) { person["name"]; };
+// And here we access array elements and call a function with the element as
+// argument:
+getName(people[0]); // => "Anna"
+getName(people[1]); // => "Bob"
+
 */
 
 int main_lex( );
 
 int main( )
 {
-    return main_lex( );
+    //return main_lex( );
 
     return run_repl( );
 
