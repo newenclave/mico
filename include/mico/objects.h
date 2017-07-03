@@ -438,13 +438,14 @@ namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            if( value( )->get_type( ) == type::ARRAY ) {
-                oss << "array<size:" << value( )->size( ) << ">";
-            } else if( value( )->get_type( ) == type::TABLE ) {
-                oss << "table<size:" << value( )->size( ) << ">";
-            } else {
-                oss << value( )->str( );
-            }
+//            if( value( )->get_type( ) == type::ARRAY ) {
+//                oss << "array<size:" << value( )->size( ) << ">";
+//            } else if( value( )->get_type( ) == type::TABLE ) {
+//                oss << "table<size:" << value( )->size( ) << ">";
+//            } else {
+//                oss << value( )->str( );
+//            }
+            oss << value( )->str( );
             return oss.str( );
         }
 
@@ -558,7 +559,6 @@ namespace objects {
             for( auto &o: value( ) ) {
                 h = base::hash64( h + o->hash( ) );
             }
-            std::cout << "hash is " << h << "\n";
             return h;
         }
 
