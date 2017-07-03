@@ -86,9 +86,6 @@ namespace mico { namespace ast {
         }
     };
 
-    template <type>
-    class statement_;
-
     using node_sptr = std::shared_ptr<node>;
     using node_uptr = std::unique_ptr<node>;
 

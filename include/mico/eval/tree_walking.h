@@ -861,7 +861,11 @@ namespace mico { namespace eval {
                 if( is_fail( val ) ) {
                     return val;
                 }
-                res->insert(key, val);
+                auto t = res->insert(key, val);
+                if( t != objects::type::NULL_OBJ ) {
+                    return error( v.first.get( ), " The key contains an ", t,
+                                  " that is not valid for a key value" );
+                }
             }
 
             return res;

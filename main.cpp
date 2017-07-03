@@ -82,6 +82,20 @@ let t = fn( x ) {
     m( x + 1 )
 }
 
+let p = {"x": 0, "y": 0}
+let t = {p: 1000}
+t[{"x": 0, "y": 0}]
+p["y"] = 1000
+p["y"] = 0
+
+let a = [[100], 1,2,3,4]
+let m = {a: "Hello!"}
+m[[[100], 1,2,3,4]]
+
+let a = [1,2,3,4,5]
+a[0] = a
+let t = {a: 100}
+
 let sum = fn( count ) { // start
     let impl = fn( a, new ) { /// internal
             r(10)

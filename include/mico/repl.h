@@ -6,6 +6,7 @@
 #include "mico/parser.h"
 #include "mico/eval/tree_walking.h"
 #include "mico/builtin.h"
+#include "mico/objects.h"
 
 namespace mico {
 
@@ -47,6 +48,9 @@ namespace mico {
                     data += tmp;
                     std::cout << "  > ";
                 }
+            }
+            for( auto &r: env->data( ) ) {
+                r.second->env_reset( );
             }
         }
     };

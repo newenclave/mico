@@ -59,7 +59,7 @@ namespace objects {
         { }
 
         ~enviroment( )
-        { }
+        {  }
 
         void clear( )
         {
@@ -143,6 +143,11 @@ namespace objects {
                 }
             }
             return res;
+        }
+
+        std::map<std::string, object_sptr> &data( )
+        {
+            return data_;
         }
 
     private:

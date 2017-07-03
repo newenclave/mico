@@ -53,6 +53,11 @@ namespace mico {
             return std::make_shared<common>( e, std::move(i), std::move(c) );
         }
 
+        objects::sptr clone( ) const override
+        {
+            return std::make_shared<common>( env( ), init_, call_ );
+        }
+
     private:
         init_type init_;
         call_type call_;

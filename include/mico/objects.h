@@ -88,6 +88,24 @@ namespace objects {
             return h(x);
         }
 
+        virtual std::size_t size( ) const
+        {
+            return 0;
+        }
+
+        static
+        bool is_container( const base *o )
+        {
+            return (o->get_type( ) == type::ARRAY)
+                || (o->get_type( ) == type::TABLE)
+                 ;
+        }
+
+        virtual void env_reset( )
+        { }
+
+        virtual std::shared_ptr<base> clone( ) const = 0;
+
     };
 
     template <type TN>
@@ -109,22 +127,11 @@ namespace objects {
     template <>
     struct type2object<type::FLOAT> {
         using native_type = double;
-        static
-        std::uint64_t hash( double x )
-        {
-            std::hash<double> h;
-            return h(x);
-        }
     };
 
     template <>
     struct type2object<type::INTEGER> {
         using native_type = std::int64_t;
-        static
-        std::uint64_t hash(uint64_t x )
-        {
-            return base::hash64( x );
-        }
     };
 
     template <type>
@@ -154,6 +161,12 @@ namespace objects {
         {
             return (o->get_type( ) == get_type( ));
         }
+
+        std::shared_ptr<base> clone( ) const override
+        {
+            return make( );
+        }
+
     };
 
     template <>
@@ -197,6 +210,11 @@ namespace objects {
                 return o->value( ) == value( );
             }
             return false;
+        }
+
+        std::shared_ptr<base> clone( ) const override
+        {
+            return std::make_shared<this_type>( value_ );
         }
 
     private:
@@ -287,6 +305,11 @@ namespace objects {
             return *body_;
         }
 
+        std::shared_ptr<base> clone( ) const override
+        {
+            return std::make_shared<this_type>( env( ), params_, body_ );
+        }
+
     private:
         std::shared_ptr<ast::expression_list> params_;
         std::shared_ptr<ast::statement_list>  body_;
@@ -322,7 +345,6 @@ namespace objects {
     private:
     };
 
-
     template <>
     class derived<type::CONT_CALL>: public env_object<type::CONT_CALL> {
 
@@ -345,6 +367,11 @@ namespace objects {
         objects::sptr  value( )
         {
             return obj_;
+        }
+
+        std::shared_ptr<base> clone( ) const override
+        {
+            return std::make_shared<this_type>( obj_, env( ) );
         }
 
     private:
@@ -386,6 +413,11 @@ namespace objects {
             return std::make_shared<this_type>( res );
         }
 
+        std::shared_ptr<base> clone( ) const override
+        {
+            return std::make_shared<this_type>( value_ );
+        }
+
     private:
         value_type value_;
     };
@@ -405,7 +437,13 @@ namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << value( )->str( );
+            if( value( )->get_type( ) == type::ARRAY ) {
+                oss << "array<size:" << value( )->size( ) << ">";
+            } else if( value( )->get_type( ) == type::TABLE ) {
+                oss << "table<size:" << value( )->size( ) << ">";
+            } else {
+                oss << value( )->str( );
+            }
             return oss.str( );
         }
 
@@ -423,6 +461,25 @@ namespace objects {
         sptr make( value_type val )
         {
             return std::make_shared<this_type>(val);
+        }
+
+        std::uint64_t hash( ) const override
+        {
+            std::hash<objects::sptr> h;
+            if( is_container( value( ).get( ) ) ) {
+                return h(value( ));
+            }
+            return value_->hash( );
+        }
+
+        bool equal( const base *other ) const override
+        {
+            return value_->equal( other );
+        }
+
+        std::shared_ptr<base> clone( ) const override
+        {
+            return std::make_shared<this_type>( value_->clone( ) );
         }
 
     private:
@@ -450,7 +507,7 @@ namespace objects {
                 } else {
                     oss << ", ";
                 }
-                oss << v->value( )->str( );
+                oss << v->str( );
             }
             oss << "]";
             return oss.str( );
@@ -459,6 +516,11 @@ namespace objects {
         const value_type &value( ) const
         {
             return value_;
+        }
+
+        std::size_t size( ) const override
+        {
+            return value_.size( );
         }
 
         value_type &value( )
@@ -478,6 +540,7 @@ namespace objects {
 
         void push( objects::sptr val )
         {
+            containers_ += base::is_container( val.get( ) );
             value_.emplace_back( cont::make(val) );
         }
 
@@ -497,6 +560,11 @@ namespace objects {
             return h;
         }
 
+        bool has_container( ) const
+        {
+            return containers_ != 0;
+        }
+
         bool equal( const base *other ) const override
         {
             if( other->get_type( ) == get_type( ) ) {
@@ -504,17 +572,38 @@ namespace objects {
                 if( o->value( ).size( ) == value( ).size( ) ) {
                     std::size_t id = value( ).size( );
                     while( id-- ) {
-                        if( !value( )[id]->equal( o->value( )[id].get( ) ) ) {
+                        auto other = o->value( )[id]->value( ).get( );
+                        if( !value( )[id]->equal( other ) ) {
                             return false;
                         }
                     }
+                    return true;
                 }
             }
-            return true;
+            return false;
+        }
+
+        std::shared_ptr<base> clone( ) const override
+        {
+            auto res = std::make_shared<this_type>( );
+            for( auto &v: value_ ) {
+                res->push( v->value( )->clone( ) );
+            }
+            return res;
         }
 
     private:
-        value_type value_;
+
+        void env_reset( ) override
+        {
+            for( auto &v: value_ ) {
+                v->value( ).reset( );
+                v.reset( );
+            }
+        }
+
+        std::size_t containers_ = 0;
+        value_type  value_;
     };
 
     template <>
@@ -546,7 +635,9 @@ namespace objects {
         static
         sptr make( bool val )
         {
-            return std::make_shared<this_type>( val );
+            static auto true_this  = std::make_shared<this_type>( true );
+            static auto false_this = std::make_shared<this_type>( false );
+            return val ? true_this : false_this;
         }
 
         std::uint64_t hash( ) const override
@@ -563,6 +654,10 @@ namespace objects {
             return false;
         }
 
+        std::shared_ptr<base> clone( ) const override
+        {
+            return make( value_ );
+        }
 
     private:
 
@@ -606,9 +701,11 @@ namespace objects {
             return std::make_shared<this_type>( static_cast<value_type>(val) );
         }
 
-        std::size_t hash( ) const override
+        static
+        std::size_t hash(value_type x )
         {
-            return type2object<type_name>::hash( value_ );
+            std::hash<value_type> h;
+            return h(x);
         }
 
         bool equal( const base *other ) const override
@@ -618,6 +715,11 @@ namespace objects {
                 return o->value( ) == value( );
             }
             return false;
+        }
+
+        std::shared_ptr<base> clone( ) const override
+        {
+            return make( value_ );
         }
 
     private:
@@ -640,99 +742,6 @@ namespace objects {
         {
             return l->equal( r.get( ) );
         }
-    };
-
-    template <>
-    class derived<type::TABLE>: public typed_base<type::TABLE> {
-
-        using this_type = derived<type::TABLE>;
-    public:
-        using sptr = std::shared_ptr<this_type>;
-        using cont = derived<type::REFERENCE>;
-        using cont_sptr = std::shared_ptr<cont>;
-
-        using value_type = std::unordered_map<objects::sptr, cont_sptr,
-                                              hash_helper, equal_helper>;
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << "{ ";
-            for( auto &v: value_ ) {
-                oss << v.first->str( ) << ":"
-                    << v.second->str( )<< " ";
-            }
-            oss << "}";
-            return oss.str( );
-        }
-
-        const value_type &value( ) const
-        {
-            return value_;
-        }
-
-        value_type &value( )
-        {
-            return value_;
-        }
-
-        void insert( objects::sptr key, objects::sptr val )
-        {
-            value_.emplace( std::make_pair( key, cont::make(val) ) );
-        }
-
-        std::uint64_t hash( ) const override
-        {
-            auto h = static_cast<std::uint64_t>(get_type( ));
-            for( auto &o: value( ) ) {
-                h = base::hash64( h + o.first->hash( ) +
-                                     o.second->hash( ) );
-            }
-            return h;
-        }
-
-        objects::sptr at( objects::sptr id )
-        {
-            auto f = value_.find( id );
-            if(f == value_.end( )) {
-                return derived<type::NULL_OBJ>::make( );
-            } else {
-                return f->second;
-            }
-        }
-
-        bool equal( const base *other ) const override
-        {
-            if( other->get_type( ) == get_type( ) ) {
-                auto o = static_cast<const this_type *>( other );
-                if( o->value( ).size( ) == value( ).size( ) ) {
-
-                    auto b0 = value( ).begin( );
-                    auto b1 = o->value( ).begin( );
-
-                    for( ;b0 != value( ).end( ); ++b0, ++b1 ) {
-                        auto f = b0->first->equal( b1->first.get( ) );
-                        if( f ) {
-                            auto s = b0->second->equal( b1->second.get( ) );
-                            if( !s ) {
-                                return false;
-                            }
-                        }
-                    }
-
-                }
-            }
-            return false;
-        }
-
-        static
-        sptr make( )
-        {
-            return std::make_shared<this_type>( );
-        }
-
-    private:
-        value_type value_;
     };
 
     template <>
@@ -764,6 +773,12 @@ namespace objects {
         value_type &value( )
         {
             return value_;
+        }
+
+        std::shared_ptr<base> clone( ) const override
+        {
+            auto res = make( where_, value_ );
+            return res;
         }
 
     private:
@@ -812,6 +827,152 @@ namespace objects {
         tokens::position where_;
         value_type value_;
     };
+
+    template <>
+    class derived<type::TABLE>: public typed_base<type::TABLE> {
+
+        using this_type = derived<type::TABLE>;
+    public:
+        using sptr = std::shared_ptr<this_type>;
+        using cont = derived<type::REFERENCE>;
+        using cont_sptr = std::shared_ptr<cont>;
+
+        using value_type = std::unordered_map<objects::sptr, cont_sptr,
+                                              hash_helper, equal_helper>;
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "{ ";
+            for( auto &v: value_ ) {
+                oss << v.first->str( ) << ":";
+                oss << v.second->str( )<< " ";
+            }
+            oss << "}";
+            return oss.str( );
+        }
+
+        const value_type &value( ) const
+        {
+            return value_;
+        }
+
+        value_type &value( )
+        {
+            return value_;
+        }
+
+        bool has_container( ) const
+        {
+            return containers_ != 0;
+        }
+
+        type insert( objects::sptr key, objects::sptr val )
+        {
+            using array = derived<type::ARRAY>;
+            using table = derived<type::TABLE>;
+
+            type cont = type::NULL_OBJ;
+            if( key->get_type( ) == type::ARRAY ) {
+                auto obj = cast::to<array>( key.get( ) );
+                cont = obj->has_container( ) ? type::ARRAY : cont;
+            } else if( key->get_type( ) == type::TABLE ) {
+                auto obj = cast::to<table>( key.get( ) );
+                cont = obj->has_container( ) ? type::TABLE : cont;
+            }
+
+            if( cont == type::NULL_OBJ ) {
+                containers_ += base::is_container( val.get( ) );
+                value_.emplace( std::make_pair( key->clone( ),
+                                                cont::make(val) ) );
+                return type::NULL_OBJ;
+            }
+
+            return cont;
+        }
+
+        std::uint64_t hash( ) const override
+        {
+            auto h = static_cast<std::uint64_t>(get_type( ));
+            for( auto &o: value( ) ) {
+                h = base::hash64( h + o.first->hash( ) +
+                                     o.second->hash( ) );
+            }
+            return h;
+        }
+
+        objects::sptr at( objects::sptr id )
+        {
+            objects::sptr ptr = id;
+//            if( is_container( id.get( ) ) ) {
+//                ptr = derived<type::REFERENCE>::make( id );
+//            }
+            auto f = value_.find( ptr );
+            if(f == value_.end( )) {
+                return derived<type::NULL_OBJ>::make( );
+            } else {
+                return f->second;
+            }
+        }
+
+        bool equal( const base *other ) const override
+        {
+            if( other->get_type( ) == get_type( ) ) {
+                auto o = static_cast<const this_type *>( other );
+                if( o->value( ).size( ) == value( ).size( ) ) {
+
+                    auto b0 = value( ).begin( );
+                    auto b1 = o->value( ).begin( );
+
+                    for( ;b0 != value( ).end( ); ++b0, ++b1 ) {
+                        auto f = b0->first->equal( b1->first.get( ) );
+                        if( f ) {
+                            auto val = b1->second->value( ).get( );
+                            auto s = b0->second->equal( val );
+                            if( !s ) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static
+        sptr make( )
+        {
+            return std::make_shared<this_type>( );
+        }
+
+        std::shared_ptr<base> clone( ) const override
+        {
+            using ref = derived<type::REFERENCE>;
+            auto res = make( );
+            for( auto &v: value( ) ) {
+                auto kc = v.first->clone( );
+                auto vc = ref::make( v.second->clone( ) );
+                res->value( ).insert( std::make_pair(kc, vc) );
+            }
+            res->value_ = value_;
+            return res;
+        }
+
+    private:
+
+        void env_reset( ) override
+        {
+            for( auto &v: value_ ) {
+                v.second->value( ).reset( );
+                v.second.reset( );
+            }
+        }
+        std::size_t containers_ = 0;
+        value_type value_;
+    };
+
+
 
     using null       = derived<type::NULL_OBJ>;
     using string     = derived<type::STRING>;
