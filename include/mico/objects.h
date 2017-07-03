@@ -86,10 +86,6 @@ namespace objects {
         {
             std::hash<std::uint64_t> h;
             return h(x);
-////            x = (x ^ (x >> 30)) * std::uint64_t(0xbf58476d1ce4e5b9);
-////            x = (x ^ (x >> 27)) * std::uint64_t(0x94d049bb133111eb);
-////            x = x ^ (x >> 31);
-//            return x;
         }
 
     };
