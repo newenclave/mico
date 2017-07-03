@@ -61,6 +61,20 @@ let fib = fn( n ) {
     impl(0, 1, n)
 }
 
+let calls = {
+    true: fn( n ) {
+        let impl = fn( a, b, n ) {
+            if(n > 0) {
+                impl( b, a + b, n -1 )
+            } else {
+                a
+            }
+        }
+        impl(0, 1, n)
+    },
+    false: fn( n ) { n; }
+}
+
 let t = fn( x ) {
     let m = fn( y ) {
         y + 10
@@ -102,11 +116,17 @@ getName(people[1]); // => "Bob"
 
 */
 
+void run_file( )
+{
+
+}
+
 int main_lex( );
 
-int main( )
+int main( int argc, char * argv[ ]  )
 {
     //return main_lex( );
 
     return run_repl( );
 }
+
