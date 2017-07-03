@@ -803,7 +803,7 @@ namespace mico { namespace eval {
 
             if( fun->get_type( ) == objects::type::FUNCTION ) {
                 auto vfun = obj_cast<objects::function>(fun.get( ));
-                enviroment::scoped s(create_call_env( call, fun.get( ), env ));
+                enviroment::scoped s(create_call_env( call, vfun, env ));
                 if( !s.env( ) ) {
                     return get_null( );
                 }
@@ -813,6 +813,7 @@ namespace mico { namespace eval {
                     auto r = obj_cast<objects::retutn_obj>(res.get( ));
                     res = eval_tail( r->value( ) );
                 }
+
                 return res;
             } else if( fun->get_type( ) == objects::type::BUILTIN ) {
                 enviroment::scoped s(make_env( env ));
