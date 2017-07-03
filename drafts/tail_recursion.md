@@ -144,3 +144,12 @@ factorial and fibonacci
         impl(0, 1, n)
     }
 ```
+
+#### some words about C++ implementation
+
+The ```enviroment``` objects contains a map that binds object->object and a vector of children.
+Child is a ```shared_ptr<enviroment>```.
+Also ```enviroment``` contains a ```weak_ptr<enviroment>```. This is a parent.
+In the destruntor of the function object (or cont_call object)
+the enviroment goes to  the parent if it exists and removes itself from
+the parent object.
