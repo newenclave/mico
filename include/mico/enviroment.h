@@ -63,7 +63,9 @@ namespace objects {
 
         void clear( )
         {
-            data_.clear( );
+            if( children_.empty( ) ) {
+                data_.clear( );
+            }
         }
 
         static

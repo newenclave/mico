@@ -438,13 +438,6 @@ namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-//            if( value( )->get_type( ) == type::ARRAY ) {
-//                oss << "array<size:" << value( )->size( ) << ">";
-//            } else if( value( )->get_type( ) == type::TABLE ) {
-//                oss << "table<size:" << value( )->size( ) << ">";
-//            } else {
-//                oss << value( )->str( );
-//            }
             oss << value( )->str( );
             return oss.str( );
         }
@@ -467,10 +460,6 @@ namespace objects {
 
         std::uint64_t hash( ) const override
         {
-//            std::hash<objects::sptr> h;
-//            if( is_container( value( ).get( ) ) ) {
-//                return h(value( ));
-//            }
             return value_->hash( );
         }
 
@@ -542,7 +531,6 @@ namespace objects {
 
         void push( objects::sptr val )
         {
-            containers_ += base::is_container( val.get( ) );
             value_.emplace_back( cont::make(val) );
         }
 
@@ -560,11 +548,6 @@ namespace objects {
                 h = base::hash64( h + o->hash( ) );
             }
             return h;
-        }
-
-        bool has_container( ) const
-        {
-            return containers_ != 0;
         }
 
         bool equal( const base *other ) const override
@@ -603,8 +586,6 @@ namespace objects {
                 v.reset( );
             }
         }
-
-        std::size_t containers_ = 0;
         value_type  value_;
     };
 
@@ -864,33 +845,10 @@ namespace objects {
             return value_;
         }
 
-        bool has_container( ) const
+        bool insert( objects::sptr key, objects::sptr val )
         {
-            return containers_ != 0;
-        }
-
-        type insert( objects::sptr key, objects::sptr val )
-        {
-            using array = derived<type::ARRAY>;
-            using table = derived<type::TABLE>;
-
-            type cont = type::NULL_OBJ;
-//            if( key->get_type( ) == type::ARRAY ) {
-//                auto obj = cast::to<array>( key.get( ) );
-//                cont = obj->has_container( ) ? type::ARRAY : cont;
-//            } else if( key->get_type( ) == type::TABLE ) {
-//                auto obj = cast::to<table>( key.get( ) );
-//                cont = obj->has_container( ) ? type::TABLE : cont;
-//            }
-
-            if( cont == type::NULL_OBJ ) {
-                containers_ += base::is_container( val.get( ) );
-                value_.emplace( std::make_pair( key->clone( ),
-                                                cont::make(val) ) );
-                return type::NULL_OBJ;
-            }
-
-            return cont;
+            value_[key->clone( )] = cont::make(val);
+            return true;
         }
 
         std::uint64_t hash( ) const override
@@ -967,7 +925,6 @@ namespace objects {
                 v.second.reset( );
             }
         }
-        std::size_t containers_ = 0;
         value_type value_;
     };
 
