@@ -156,7 +156,6 @@ let y = "y"
 let z = "z"
 
 let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
-
 let table = {
     point(0, 0, 1): 0.1,
     point(0, 1, 0): 0.2,

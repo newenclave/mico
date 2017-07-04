@@ -92,24 +92,25 @@ namespace mico {
         }
     };
 
-    struct show {
-        objects::sptr operator ( )( objects::slist &, enviroment::sptr e )
+    struct gc_show {
+        gc_show( enviroment::sptr e )
+            :env(e)
+        { }
+
+        objects::sptr operator ( )( objects::slist &, enviroment::sptr )
         {
-            auto par = e;
-            while( par->parent( ) ) {
-                par = par->parent( );
-            }
-            par->introspect(  );
+            env->introspect(  );
             return objects::null::make( );
         }
+        enviroment::sptr env;
     };
 
     struct builtin {
         static
         void init( enviroment::sptr env )
         {
-            env->set( "len", common::make( env, len { } ) );
-            env->set( "show", common::make( env, show { } ) );
+            env->set( "len",     common::make( env, len { } ) );
+            env->set( "gc_show", common::make( env, gc_show(env) ) );
         }
     };
 
