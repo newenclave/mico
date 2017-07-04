@@ -108,7 +108,11 @@ let sum = fn( count ) { // start
     impl( 0, count )
 }
 
-let x = fn(count){if(count > 0) { let r = 1; return x(count - r) } else {0} }
+let gr = fn(name) { fn( hello ) { hello + name } }
+let t = gr("hello")
+t( )
+
+let x = fn(count){if(count > 0) { return x(count - 1) } else {0} }
 let x = fn(count){if(count > 0) { return x(count - 1) + 1; 60 } 0 }
 let x = fn( ){ x( ) }
 

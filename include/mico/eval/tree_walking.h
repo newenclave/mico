@@ -790,7 +790,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_call_impl( ast::node *n,
                                       enviroment::sptr env,
-                                      enviroment::sptr &work_env )
+                                      enviroment::sptr &/*work_env*/ )
         {
             auto call = static_cast<ast::expressions::call *>( n );
             auto fun = extract_ref(eval_impl(call->func( ), env));
@@ -806,7 +806,10 @@ namespace mico { namespace eval {
             if( fun->get_type( ) == objects::type::FUNCTION ) {
                 auto vfun = obj_cast<objects::function>(fun.get( ));
 
+                vfun->env( )->GC( );
+
                 enviroment::scoped s(create_call_env( call, vfun, env ));
+
                 if( !s.env( ) ) {
                     return get_null( );
                 }
@@ -817,8 +820,6 @@ namespace mico { namespace eval {
                     res = eval_tail( r->value( ) );
                 }
 
-                work_env = s.env( );
-                vfun->env( )->GC( );
                 return res;
 
             } else if( fun->get_type( ) == objects::type::BUILTIN ) {
