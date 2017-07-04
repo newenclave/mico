@@ -103,6 +103,30 @@ let x = a[0] + a[3] // x = 14
 let h = {"string": 0, true: "true", 10: "int", 0.1: [0, 1]}
 let calls = {true: fn(x){ x * x }, false: fn(x){ x + x } }
 let test = calls[h[true] == "true"](10) /// tets == 100
+
+/// hashes can be keys in other hashes
+
+let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
+
+let table = {
+    point(0, 0, 1): 0.1,
+    point(0, 1, 0): 0.2,
+    point(0, 1, 1): 0.3,
+    point(1, 0, 0): 0.4,
+    point(1, 0, 1): 0.5,
+    point(1, 1, 0): 0.6,
+    point(1, 1, 1): 0.7,
+}
+
+// teable = { { "z":1 "y":1 "x":1 }:0.7,
+//            { "z":1 "y":0 "x":0 }:0.1,
+//            { "z":0 "y":1 "x":0 }:0.2,
+//            { "z":0 "y":0 "x":1 }:0.4,
+//            { "z":0 "y":1 "x":1 }:0.6,
+//            { "z":1 "y":0 "x":1 }:0.5,
+//            { "z":1 "y":1 "x":0 }:0.3 
+//          }
+
 ```
 
 #### comments
