@@ -108,7 +108,7 @@ let sum = fn( count ) { // start
     impl( 0, count )
 }
 
-let x = fn(count){if(count > 0) { return x(count - 1) } else {0} }
+let x = fn(count){if(count > 0) { let r = 1; return x(count - r) } else {0} }
 let x = fn(count){if(count > 0) { return x(count - 1) + 1; 60 } 0 }
 let x = fn( ){ x( ) }
 
@@ -131,8 +131,11 @@ getName(people[1]); // => "Bob"
 let test = fn( ) {
     let a = [0, 1,2,3,4,5,6,7,8,9];
     let i = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
-    let int = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
+    let int = fn( ) { i() }
     int
+}
+let  z = fn(c) {
+    if(c>0) { test(); z(c - 1) } else { 0 }
 }
 
 */

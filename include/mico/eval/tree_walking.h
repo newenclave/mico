@@ -788,7 +788,9 @@ namespace mico { namespace eval {
             return res;
         }
 
-        objects::sptr eval_call( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_call_impl( ast::node *n,
+                                      enviroment::sptr env,
+                                      enviroment::sptr &work_env )
         {
             auto call = static_cast<ast::expressions::call *>( n );
             auto fun = extract_ref(eval_impl(call->func( ), env));
@@ -803,6 +805,7 @@ namespace mico { namespace eval {
 
             if( fun->get_type( ) == objects::type::FUNCTION ) {
                 auto vfun = obj_cast<objects::function>(fun.get( ));
+
                 enviroment::scoped s(create_call_env( call, vfun, env ));
                 if( !s.env( ) ) {
                     return get_null( );
@@ -814,7 +817,10 @@ namespace mico { namespace eval {
                     res = eval_tail( r->value( ) );
                 }
 
+                work_env = s.env( );
+                vfun->env( )->GC( );
                 return res;
+
             } else if( fun->get_type( ) == objects::type::BUILTIN ) {
                 enviroment::scoped s(make_env( env ));
                 auto vfun = obj_cast<objects::builtin>(fun.get( ));
@@ -828,6 +834,13 @@ namespace mico { namespace eval {
             }
             return error( call->func( ), "Internal error: ",
                           fun, " is function, but it is not in call list" );
+        }
+
+        objects::sptr eval_call( ast::node *n, enviroment::sptr env )
+        {
+            enviroment::sptr we;
+            auto res = eval_call_impl( n, env, we );
+            return res;
         }
 
         objects::sptr eval_array( ast::node *n, enviroment::sptr env )

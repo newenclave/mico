@@ -138,6 +138,11 @@ namespace objects {
             data_[name] = val;
         }
 
+        sptr parent( )
+        {
+            return parent_.lock( );
+        }
+
         object_sptr get( const std::string &name )
         {
             auto cur = this;
@@ -165,7 +170,55 @@ namespace objects {
             return children_;
         }
 
+        void introspect( int level = 0 )
+        {
+            std::string space( level * 2, ' ' );
+            for( auto &d: data_ ) {
+                auto us = d.second.use_count( );
+                std::cout << space << d.first << ":" << us << "\n";
+            }
+
+            for( auto &c: children_ ) {
+                auto us = c.use_count( );
+                std::cout << space << "Child: " << us << "\n";
+                c->introspect( level + 1 );
+            }
+        }
+
+        std::size_t maximum_level( )
+        {
+            std::size_t res = 1;
+            maximum_level_hide( res );
+            return res;
+        }
+
+        void GC( )
+        {
+            for( auto &c: children( ) ) {
+                if( c->maximum_level( ) == 1  ) {
+                    c->unlock( );
+                    c->children( ).clear( );
+                    c->data( ).clear( );
+                    c->clear( );
+                    c->drop( );
+                }
+            }
+        }
+
     private:
+
+        void maximum_level_hide( std::size_t &res )
+        {
+            for( auto &d: data_ ) {
+                auto us = d.second.use_count( );
+                res = (res > us) ? res : us;
+            }
+            for( auto &c: children_ ) {
+                auto us = c.use_count( );
+                res = (res > us) ? res : us;
+                c->maximum_level_hide( res );
+            }
+        }
 
         wptr parent_;
         std::map<std::string, object_sptr> data_;
