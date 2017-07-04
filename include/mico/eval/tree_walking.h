@@ -507,28 +507,34 @@ namespace mico { namespace eval {
                                           objects::base *fun,
                                           enviroment::sptr env )
         {
-            auto vfun = obj_cast<objects::function>(fun);
+            //// TODO bug with built in funcions!
 
-            auto new_env = enviroment::make(vfun->env( ));
+            //if( fun->get_type( ) == objects::type::FUNCTION ) {
+                using ident_type = ast::expressions::ident;
 
-            if( call->params( ).size( ) != vfun->params( ).size( ) ) {
-                //// TODO bad params count
-                return nullptr;
-            }
-            size_t id = 0;
-            for( auto &p: vfun->params( ) ) {
-                if( p->get_type( ) == ast::type::IDENT ) {
-                    auto n = static_cast<ast::expressions::ident *>(p.get( ));
-                    auto v = extract_ref(
-                                eval_impl_tail( call->params( )[id++].get( ),
-                                                env ) );
-                    new_env->set(n->value( ), v);
-                } else {
-                    /// TODO bad param
+                auto vfun = obj_cast<objects::function>(fun);
+
+                auto new_env = enviroment::make(vfun->env( ));
+
+                if( call->params( ).size( ) != vfun->params( ).size( ) ) {
+                    //// TODO bad params count
                     return nullptr;
                 }
-            }
-            return new_env;
+                size_t id = 0;
+                for( auto &p: vfun->params( ) ) {
+                    if( p->get_type( ) == ast::type::IDENT ) {
+                        auto n = static_cast<ast::expressions::ident *>(p.get( ));
+                        auto v = extract_ref(
+                                    eval_impl_tail( call->params( )[id++].get( ),
+                                                    env ) );
+                        new_env->set(n->value( ), v);
+                    } else {
+                        /// TODO bad param
+                        return nullptr;
+                    }
+                }
+                return new_env;
+            //}
         }
 
         objects::sptr get_cont_call( ast::node *n, enviroment::sptr env )
@@ -675,6 +681,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_ident( ast::node *n, enviroment::sptr env )
         {
+
             auto expr = static_cast<ast::expressions::ident *>( n );
             auto val = env->get( expr->value( ) );
             if( !val ) {
