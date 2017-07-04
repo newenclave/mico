@@ -523,10 +523,10 @@ namespace mico { namespace eval {
                 size_t id = 0;
                 for( auto &p: vfun->params( ) ) {
                     if( p->get_type( ) == ast::type::IDENT ) {
-                        auto n = static_cast<ast::expressions::ident *>(p.get( ));
+                        auto n = static_cast<ident_type *>(p.get( ));
                         auto v = extract_ref(
-                                    eval_impl_tail( call->params( )[id++].get( ),
-                                                    env ) );
+                                 eval_impl_tail( call->params( )[id++].get( ),
+                                                 env ) );
                         new_env->set(n->value( ), v);
                     } else {
                         /// TODO bad param
