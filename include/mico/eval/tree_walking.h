@@ -690,7 +690,7 @@ namespace mico { namespace eval {
             auto fff  = std::make_shared<objects::function>( make_env(env),
                                               func->ident_ptr( ),
                                               func->expr_ptr( ));
-
+            //env->add_keep(fff.get( ), fff);
             return fff;
         }
 
@@ -804,9 +804,10 @@ namespace mico { namespace eval {
             }
 
             if( fun->get_type( ) == objects::type::FUNCTION ) {
+
                 auto vfun = obj_cast<objects::function>(fun.get( ));
 
-                vfun->env( )->GC( );
+                //vfun->env( )->GC( );
 
                 enviroment::scoped s(create_call_env( call, vfun, env ));
 

@@ -238,6 +238,11 @@ namespace objects {
             drop( );
         }
 
+        void lock( )
+        {
+            env0_ = env_.lock( );
+        }
+
         std::shared_ptr<enviroment> env( )
         {
             auto l = env_.lock( );
@@ -262,6 +267,7 @@ namespace objects {
         }
 
         std::weak_ptr<enviroment> env_;
+        std::shared_ptr<enviroment> env0_;
     };
 
     template <>

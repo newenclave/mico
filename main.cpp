@@ -110,6 +110,7 @@ let sum = fn( count ) { // start
 
 let gr = fn(name) { fn( hello ) { hello + name } }
 let t = gr("hello")
+let r = gr("hello")
 t( )
 
 let x = fn(count){if(count > 0) { return x(count - 1) } else {0} }
@@ -134,6 +135,7 @@ getName(people[1]); // => "Bob"
 
 let test = fn( ) {
     let a = [0, 1,2,3,4,5,6,7,8,9];
+    let b = a;
     let i = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
     let int = fn( ) { i() }
     int
@@ -181,6 +183,21 @@ int main_lex( );
 
 int main( int argc, char * argv[ ]  )
 {
+
+//    auto s = std::make_shared<int>(100);
+
+//    std::weak_ptr<int> w1 = s;
+//    std::weak_ptr<int> w2 = s;
+//    std::weak_ptr<int> w3 = w2;
+
+//    auto s1 = w3.lock( );
+
+//    std::cout << w1.use_count( ) << "\n";
+//    std::cout << w3.use_count( ) << "\n";
+//    std::cout << s1.owner_before( w3 ) << "\n";
+
+
+//    return 0;
     //return main_lex( );
 
     return run_repl( );

@@ -26,6 +26,7 @@ namespace objects {
         using sptr = std::shared_ptr<enviroment>;
         using wptr = std::weak_ptr<enviroment>;
         using object_sptr = std::shared_ptr<objects::base>;
+        using object_wptr = std::weak_ptr<objects::base>;
 
     protected:
 
@@ -37,7 +38,9 @@ namespace objects {
 
             scoped( sptr v )
                 :env_(v)
-            { }
+            {
+                env_->lock( );
+            }
 
             ~scoped(  )
             {
@@ -119,12 +122,17 @@ namespace objects {
 
         void lock( )
         {
-            locked_ = true;
+            locked_++;
+        }
+
+        std::size_t locked( ) const
+        {
+            return locked_;
         }
 
         void unlock( )
         {
-            locked_ = false;
+            locked_--;
         }
 
         sptr find_contains( const std::string &name )
@@ -146,6 +154,17 @@ namespace objects {
         void set( const std::string &name, object_sptr val )
         {
             data_[name] = val;
+            keeped_[val.get( )] = val;
+        }
+
+        void add_keep( void *key, object_sptr val )
+        {
+            keeped_[key] = val;
+        }
+
+        void del_keep( void *key )
+        {
+            keeped_.erase(key);
         }
 
         sptr parent( )
@@ -183,14 +202,22 @@ namespace objects {
         void introspect( int level = 0 )
         {
             std::string space( level * 2, ' ' );
+            std::cout << space << locked( ) << "\n";
             for( auto &d: data_ ) {
+                std::weak_ptr<objects::base> w = d.second;
                 auto us = d.second.use_count( );
-                std::cout << space << d.first << ":" << us << "\n";
+                std::cout << space << d.first << ":"
+                          << us
+                          << "\n";
             }
 
             for( auto &c: children_ ) {
+                std::weak_ptr<enviroment> w = c;
                 auto us = c.use_count( );
-                std::cout << space << "Child: " << us << "\n";
+                std::cout << space << "Child: "
+                          << us
+                          << " l: " << c->locked_
+                          << "\n";
                 c->introspect( level + 1 );
             }
         }
@@ -233,7 +260,8 @@ namespace objects {
         wptr parent_;
         std::map<std::string, object_sptr> data_;
         std::set<sptr> children_;
-        bool locked_ = false;
+        std::map<void *, object_wptr> keeped_;
+        std::size_t locked_ = 0;
     };
 }
 
