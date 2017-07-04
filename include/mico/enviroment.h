@@ -3,6 +3,8 @@
 
 #include <set>
 #include <map>
+#include <vector>
+#include <iostream>
 #include <memory>
 
 //#include "mico/objects.h"
@@ -13,7 +15,9 @@ namespace objects {
     struct base;
 }
 
+#ifdef DEBUG
     static int c = 0;
+#endif
 
     class enviroment: public std::enable_shared_from_this<enviroment> {
 
@@ -55,18 +59,24 @@ namespace objects {
 
         enviroment( key )
         {
+#ifdef DEBUG
             std::cout << ++c << "\n";
+#endif
         }
 
         enviroment( sptr env, key )
             :parent_(env)
         {
+#ifdef DEBUG
             std::cout << ++c << "\n";
+#endif
         }
 
         ~enviroment( )
         {
+#ifdef DEBUG
             std::cout << --c << "\n";
+#endif
         }
 
         void clear( )
@@ -210,11 +220,11 @@ namespace objects {
         void maximum_level_hide( std::size_t &res )
         {
             for( auto &d: data_ ) {
-                auto us = d.second.use_count( );
+                auto us = static_cast<std::size_t>(d.second.use_count( ));
                 res = (res > us) ? res : us;
             }
             for( auto &c: children_ ) {
-                auto us = c.use_count( );
+                auto us = static_cast<std::size_t>(c.use_count( ));
                 res = (res > us) ? res : us;
                 c->maximum_level_hide( res );
             }

@@ -30,3 +30,5 @@ HEADERS += \
 DISTFILES += \
     drafts/tail_recursion.md
 
+
+# DEFINES += DEBUG=1

@@ -54,9 +54,9 @@ namespace mico { namespace eval {
         ToT *obj_cast( FromT *obj )
         {
 #ifdef DEBUG
-            if(objects::object2type<ToT>::type_name == obj->get_type( )) {
-                throw std::runtime_error("Invalid type conversion;");
-            }
+//            if(objects::<ToT>::type_name == obj->get_type( )) {
+//                throw std::runtime_error("Invalid type conversion;");
+//            }
 #endif
             return static_cast<ToT *>(obj);
         }

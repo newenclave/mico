@@ -138,6 +138,35 @@ let  z = fn(c) {
     if(c>0) { test(); z(c - 1) } else { 0 }
 }
 
+let zz = fn( nn ) {
+    let impl = fn( n ) {
+        if( n > 0 ) {
+            test( )
+            test( )( )
+            impl( n - 1 )
+        } else {
+            test( )
+        }
+    }
+    impl( nn )
+}
+
+let x = "x"
+let y = "y"
+let z = "z"
+
+let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
+
+let table = {
+    point(0, 0, 1): 0.1,
+    point(0, 1, 0): 0.2,
+    point(0, 1, 1): 0.3,
+    point(1, 0, 0): 0.4,
+    point(1, 0, 1): 0.5,
+    point(1, 1, 0): 0.6,
+    point(1, 1, 1): 0.7,
+}
+
 */
 
 void run_file( )
