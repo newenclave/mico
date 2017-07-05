@@ -27,6 +27,7 @@ namespace objects {
         using wptr = std::weak_ptr<enviroment>;
         using object_sptr = std::shared_ptr<objects::base>;
         using object_wptr = std::weak_ptr<objects::base>;
+        using children_type = std::map<enviroment *, wptr>;
 
     protected:
 
@@ -99,11 +100,11 @@ namespace objects {
         sptr make( sptr parent )
         {
             auto res = std::make_shared<enviroment>( parent, key( ) );
-            parent->children_.insert( res );
+            parent->children_ [res.get( )] = res;
             return res;
         }
 
-        void drop( sptr child )
+        void drop( enviroment * child )
         {
             children_.erase( child );
             drop( );
@@ -112,10 +113,10 @@ namespace objects {
         void drop( )
         {
             if( children_.empty( ) && !locked_ ) {
-                auto p = parent_.lock( );
+                auto p = parent_;
                 if( p ) {
                     //data_.clear( );
-                    p->drop( shared_from_this( ) );
+                    p->drop( this );
                 }
             }
         }
@@ -144,7 +145,7 @@ namespace objects {
                 if( f != cur->data_.end( ) ) {
                     return parent;
                 } else {
-                    parent = cur->parent_.lock( );
+                    parent = cur->parent_;
                     cur = parent.get( );
                 }
             }
@@ -169,7 +170,7 @@ namespace objects {
 
         sptr parent( )
         {
-            return parent_.lock( );
+            return parent_;
         }
 
         object_sptr get( const std::string &name )
@@ -182,7 +183,7 @@ namespace objects {
                 if( f != cur->data_.end( ) ) {
                     res = f->second;
                 } else {
-                    parent = cur->parent_.lock( );
+                    parent = cur->parent( );
                     cur = parent.get( );
                 }
             }
@@ -194,7 +195,7 @@ namespace objects {
             return data_;
         }
 
-        std::set<sptr> &children( )
+        children_type &children( )
         {
             return children_;
         }
@@ -212,13 +213,14 @@ namespace objects {
             }
 
             for( auto &c: children_ ) {
-                std::weak_ptr<enviroment> w = c;
-                auto us = c.use_count( );
+                auto cl = c.second.lock( );
+                if( !cl ) continue;
+                auto us = cl.use_count( );
                 std::cout << space << "Child: "
                           << us
-                          << " l: " << c->locked_
+                          << " l: " << cl->locked_
                           << "\n";
-                c->introspect( level + 1 );
+                cl->introspect( level + 1 );
             }
         }
 
@@ -232,13 +234,14 @@ namespace objects {
         void GC( )
         {
             for( auto &c: children( ) ) {
-                if( c->maximum_level( ) == 1  ) {
-                    c->unlock( );
-                    c->children( ).clear( );
-                    c->data( ).clear( );
-                    c->clear( );
-                    c->drop( );
-                }
+                auto cl = c.second.lock( );
+                //if( c->maximum_level( ) == 1  ) {
+                    cl->unlock( );
+                    cl->children( ).clear( );
+                    cl->data( ).clear( );
+                    //c->clear( );
+                    //c->drop( );
+                //}
             }
         }
 
@@ -251,15 +254,19 @@ namespace objects {
                 res = (res > us) ? res : us;
             }
             for( auto &c: children_ ) {
-                auto us = static_cast<std::size_t>(c.use_count( ));
+                auto cl = c.second.lock( );
+                if( !cl ) {
+                    continue;
+                }
+                auto us = static_cast<std::size_t>(cl.use_count( ));
                 res = (res > us) ? res : us;
-                c->maximum_level_hide( res );
+                cl->maximum_level_hide( res );
             }
         }
 
-        wptr parent_;
+        sptr parent_;
         std::map<std::string, object_sptr> data_;
-        std::set<sptr> children_;
+        children_type children_;
         std::map<void *, object_wptr> keeped_;
         std::size_t locked_ = 0;
     };

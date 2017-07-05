@@ -99,10 +99,12 @@ namespace mico {
 
         objects::sptr operator ( )( objects::slist &, enviroment::sptr )
         {
-            env->introspect(  );
+            if( auto l = env.lock( ) ) {
+                l->introspect(  );
+            }
             return objects::null::make( );
         }
-        enviroment::sptr env;
+        enviroment::wptr env;
     };
 
     struct puts {

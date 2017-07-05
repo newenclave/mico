@@ -109,8 +109,8 @@ let sum = fn( count ) { // start
 }
 
 let gr = fn(name) { fn( hello ) { hello + name } }
-let t = gr("hello")
-let r = gr("hello")
+let t = gr("hello T")
+let r = gr("hello R")
 t( )
 
 let x = fn(count){if(count > 0) { return x(count - 1) } else {0} }

@@ -16,11 +16,13 @@ namespace mico {
         static
         void env_reset( enviroment::sptr env )
         {
+
             for( auto &r: env->data( ) ) {
                 r.second->env_reset( );
             }
             for( auto &c: env->children( ) ) {
-                env_reset( c );
+                auto cl = c.second.lock( );
+                env_reset( cl );
             }
         }
 
@@ -62,7 +64,7 @@ namespace mico {
                     std::cout << "  > ";
                 }
             }
-            //env_reset( env );
+            env_reset( env );
         }
     };
 }

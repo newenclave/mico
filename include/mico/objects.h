@@ -240,18 +240,18 @@ namespace objects {
 
         void lock( )
         {
-            env0_ = env_.lock( );
+            //env0_ = env_.lock( );
         }
 
         std::shared_ptr<enviroment> env( )
         {
-            auto l = env_.lock( );
+            auto l = env_;
             return l;
         }
 
         const std::shared_ptr<enviroment> env( ) const
         {
-            auto l = env_.lock( );
+            auto l = env_;
             return l;
         }
 
@@ -259,15 +259,15 @@ namespace objects {
 
         void drop( )
         {
-            auto p = env_.lock( );
+            auto p = env( );
             if( p ) {
-                p->unlock( );
-                p->drop( );
+//                p->unlock( );
+//                p->drop( );
             }
         }
 
-        std::weak_ptr<enviroment> env_;
-        std::shared_ptr<enviroment> env0_;
+        std::weak_ptr<enviroment> env0_;
+        std::shared_ptr<enviroment> env_;
     };
 
     template <>

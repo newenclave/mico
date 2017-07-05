@@ -160,6 +160,90 @@ namespace mico { namespace eval {
             return std::make_shared<objects::integer>( n );
         }
 
+        static
+        enviroment::sptr object_env( objects::sptr o )
+        {
+            switch (o->get_type( )) {
+            case objects::type::FUNCTION:
+                return static_cast<objects::function *>(o.get( ))->env( );
+            case objects::type::BUILTIN:
+                return static_cast<objects::builtin *>(o.get( ))->env( );
+            case objects::type::CONT_CALL:
+                return static_cast<objects::cont_call *>(o.get( ))->env( );
+            }
+            return enviroment::sptr( );
+        }
+
+#define SHOW_DEBUG 1
+        static
+        bool contains_ext_links( enviroment::sptr e )
+        {
+            std::map<enviroment *, std::size_t> tmp;
+            for( auto &c: e->children( ) ) {
+                auto cl = c.second.lock( );
+                if( cl.get( ) ) {
+                    tmp[cl.get( )] =
+                            static_cast<std::size_t>(cl.use_count( ) );
+                    if( contains_ext_links( cl )) {
+        //                        cl->introspect( );
+                        return true;
+                    }
+                }
+            }
+#if SHOW_DEBUG
+            for( auto &t: tmp ) {
+                std::cout << t.first << " " << t.second << "\n";
+            }
+#endif
+            for( auto &d: e->data( ) ) {
+                auto ev = object_env( d.second );
+                if( ev ) {
+                    auto tf = tmp.find( ev.get( ) );
+                    if( tf != tmp.end( ) ) {
+#if SHOW_DEBUG
+                        std::cout << "has " << tf->first << " " << tf->second << "\n";
+#endif
+                        tf->second -= (ev.use_count( )); // locked
+                        if(tf->second == 0) {
+                            tmp.erase( tf );
+                        }
+                    }
+                }
+            }
+#if SHOW_DEBUG
+            std::cout << "resrt: \n";
+            for( auto &t: tmp ) {
+                std::cout << t.first << " " << t.second << "\n";
+            }
+#endif
+            return !tmp.empty( );
+        }
+
+        static
+        void clean_children( enviroment::sptr env )
+        {
+            auto b = env->children( ).begin( );
+            auto e = env->children( ).end( );
+
+            //return;
+
+            for( ; b != e;  ) {
+                auto c = b->second.lock( );
+                if( !c ) {
+                    b = env->children( ).erase( b );
+                } else if( !contains_ext_links( c )) {
+#if SHOW_DEBUG
+                    std::cout << "!Has external: \n";
+#endif
+                    c->GC( );
+                    b = env->children( ).erase( b );
+                } else {
+                    ++b;
+                }
+            }
+        }
+
+
         objects::sptr extract_return( objects::sptr obj )
         {
             if( obj->get_type( ) == objects::type::RETURN ) {
@@ -822,6 +906,7 @@ namespace mico { namespace eval {
 
                 auto vfun = obj_cast<objects::function>(fun.get( ));
 
+                clean_children( vfun->env( ) );
                 //vfun->env( )->GC( );
 
                 enviroment::scoped s(create_call_env( call, vfun, env ));
