@@ -588,7 +588,7 @@ namespace objects {
         void env_reset( ) override
         {
             for( auto &v: value_ ) {
-                v->value( ).reset( );
+                //v->value( ).reset( );
                 v.reset( );
             }
         }

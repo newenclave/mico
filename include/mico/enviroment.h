@@ -239,7 +239,7 @@ namespace objects {
                     cl->unlock( );
                     cl->children( ).clear( );
                     cl->data( ).clear( );
-                    //c->clear( );
+                    //cl->clear( );
                     //c->drop( );
                 //}
             }
