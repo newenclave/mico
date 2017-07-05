@@ -102,6 +102,16 @@ namespace mico { namespace eval {
         }
 
         static
+        bool is_function_call( const ast::expression *exp )
+        {
+            if(exp->get_type( ) == ast::type::CALL) {
+                auto call = static_cast<const ast::expressions::call *>(exp);
+                return call->func( )->get_type( ) == ast::type::FN;
+            }
+            return false;
+        }
+
+        static
         objects::boolean::sptr get_bool_true( )
         {
             static auto bobj = objects::boolean::make(true);
@@ -570,15 +580,6 @@ namespace mico { namespace eval {
         {
             objects::sptr res = eval_scope_impl(lst, env);
             return eval_tail( res );
-        }
-
-        bool is_function_call( const ast::expression *exp )
-        {
-            if(exp->get_type( ) == ast::type::CALL) {
-                auto call = static_cast<const ast::expressions::call *>(exp);
-                return call->func( )->get_type( ) == ast::type::FN;
-            }
-            return false;
         }
 
         objects::sptr eval_scope_impl( ast::statement_list &lst,
