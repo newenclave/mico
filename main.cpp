@@ -138,15 +138,15 @@ let create_array = fn( ) {
     fn( ) { a }
 }
 let array = create_array( )
-array( )[0] = 0.001
-array( )[1] = 0.001
-array( )[2] = 0.001
-array( )[3] = 0.001
-array( )[4] = 0.001
-array( )[5] = 0.001
-array( )[6] = 0.001
-array( )[7] = 0.001
-array( )[8] = 0.001
+array( )[0] =
+array( )[1] =
+array( )[2] =
+array( )[3] =
+array( )[4] =
+array( )[5] =
+array( )[6] =
+array( )[7] =
+array( )[8] =
 array( )[9] = 0.001
 array( )
 

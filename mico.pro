@@ -32,4 +32,4 @@ DISTFILES += \
     drafts/tail_recursion.md
 
 
-DEFINES += DEBUG=1
+#DEFINES += DEBUG=1
