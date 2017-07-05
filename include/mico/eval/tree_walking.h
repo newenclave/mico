@@ -205,6 +205,7 @@ namespace mico { namespace eval {
 #endif
                         tf->second -= (ev.use_count( )); // locked
                         if(tf->second == 0) {
+                            tf->first->reset_parent( );
                             tmp.erase( tf );
                         }
                     }
@@ -236,6 +237,7 @@ namespace mico { namespace eval {
                     std::cout << "!Has external: \n";
 #endif
                     c->GC( );
+                    c->reset_parent( );
                     b = env->children( ).erase( b );
                 } else {
                     ++b;

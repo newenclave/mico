@@ -235,6 +235,11 @@ namespace objects {
             }
         }
 
+        void reset_parent( )
+        {
+            parent_.reset( );
+        }
+
         std::size_t maximum_level( )
         {
             std::size_t res = 1;
@@ -244,7 +249,6 @@ namespace objects {
 
         void GC( )
         {
-            clear_parents( );
             for( auto &c: children( ) ) {
                 auto cl = c.second.lock( );
                 if( !cl ) {
