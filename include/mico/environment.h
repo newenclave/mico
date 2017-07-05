@@ -27,7 +27,7 @@ namespace objects {
         using wptr = std::weak_ptr<environment>;
         using object_sptr = std::shared_ptr<objects::base>;
         using object_wptr = std::weak_ptr<objects::base>;
-        using children_type = std::map<environment *, wptr>;
+        using children_type = std::set<sptr>;
 
     protected:
 
@@ -100,23 +100,28 @@ namespace objects {
         sptr make( sptr parent )
         {
             auto res = std::make_shared<environment>( parent, key( ) );
-            parent->children_ [res.get( )] = res;
+            parent->children_.insert(res);
             return res;
         }
 
-        void drop( environment * child )
+        void drop( sptr child )
         {
             children_.erase( child );
             drop( );
         }
 
+        sptr parent( )
+        {
+            return parent_.lock( );
+        }
+
         void drop( )
         {
             if( children_.empty( ) && !locked_ ) {
-                auto p = parent_;
+                auto p = parent( );
                 if( p ) {
-                    //data_.clear( );
-                    p->drop( this );
+                    data_.clear( );
+                    p->drop( shared_from_this( ) );
                 }
             }
         }
@@ -145,7 +150,7 @@ namespace objects {
                 if( f != cur->data_.end( ) ) {
                     return parent;
                 } else {
-                    parent = cur->parent_;
+                    parent = cur->parent( );
                     cur = parent.get( );
                 }
             }
@@ -155,22 +160,6 @@ namespace objects {
         void set( const std::string &name, object_sptr val )
         {
             data_[name] = val;
-            keeped_[val.get( )] = val;
-        }
-
-        void add_keep( void *key, object_sptr val )
-        {
-            keeped_[key] = val;
-        }
-
-        void del_keep( void *key )
-        {
-            keeped_.erase(key);
-        }
-
-        sptr parent( )
-        {
-            return parent_;
         }
 
         object_sptr get( const std::string &name )
@@ -213,7 +202,7 @@ namespace objects {
             }
 
             for( auto &c: children_ ) {
-                auto cl = c.second.lock( );
+                auto cl = c;
                 if( !cl ) continue;
                 auto us = cl.use_count( );
                 std::cout << space << "Child: "
@@ -221,17 +210,6 @@ namespace objects {
                           << " l: " << cl->locked_
                           << "\n";
                 cl->introspect( level + 1 );
-            }
-        }
-
-        void clear_parents( )
-        {
-            parent_.reset( );
-            for( auto &c: children( ) ) {
-                auto cl = c.second.lock( );
-                if( cl ) {
-                    cl->clear_parents( );
-                }
             }
         }
 
@@ -244,19 +222,18 @@ namespace objects {
 
         void GC( )
         {
-            clear_parents( );
             for( auto &c: children( ) ) {
-                auto cl = c.second.lock( );
+                auto cl = c;
                 if( !cl ) {
                     continue;
                 }
-                //if( c->maximum_level( ) == 1  ) {
+                if( c->maximum_level( ) == 1  ) {
                     cl->unlock( );
                     cl->children( ).clear( );
                     cl->data( ).clear( );
                     //cl->clear( );
                     //c->drop( );
-                //}
+                }
             }
         }
 
@@ -269,7 +246,7 @@ namespace objects {
                 res = (res > us) ? res : us;
             }
             for( auto &c: children_ ) {
-                auto cl = c.second.lock( );
+                auto cl = c;
                 if( !cl ) {
                     continue;
                 }
@@ -279,10 +256,9 @@ namespace objects {
             }
         }
 
-        sptr parent_;
+        wptr parent_;
         std::map<std::string, object_sptr> data_;
         children_type children_;
-        std::map<void *, object_wptr> keeped_;
         std::size_t locked_ = 0;
     };
 }

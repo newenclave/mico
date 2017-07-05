@@ -20,11 +20,10 @@ namespace mico {
                 r.second->env_reset( );
             }
             for( auto &c: env->children( ) ) {
-                auto cl = c.second.lock( );
+                auto cl = c;
                 env_reset( cl );
             }
             env->children( ).clear( );
-            env->clear_parents( );
         }
 
         static
