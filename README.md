@@ -75,13 +75,20 @@ let create_array = fn( ) {
     let a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     fn( ) { a } // returns a closure that keeps array `a`
 }
+
 let array = create_array( ) // get closure
+let test = create_array( ) // get another closure
 
 /// set all elemnts to 0.001
+
 array( )[0] = array( )[1] = array( )[2] = array( )[3] = array( )[4] =
 array( )[5] = array( )[6] = array( )[7] = array( )[8] = array( )[9] = 0.001
+
 array( ) // yeah. it works and returns the array `a` with
 // [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001]
+
+test( ) // returns [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 ```
 
 #### if ... elif ... else
