@@ -104,11 +104,13 @@ namespace mico { namespace eval {
         static
         bool is_function_call( const ast::expression *exp )
         {
-            if(exp->get_type( ) == ast::type::CALL) {
-                auto call = static_cast<const ast::expressions::call *>(exp);
-                return call->func( )->get_type( ) == ast::type::FN;
-            }
-            return false;
+            return (exp->get_type( ) == ast::type::CALL);
+//            if(exp->get_type( ) == ast::type::CALL) {
+//                return true;
+//                auto call = static_cast<const ast::expressions::call *>(exp);
+//                return call->func( )->get_type( ) == ast::type::FN;
+//            }
+//            return false;
         }
 
         static
