@@ -77,7 +77,7 @@ let create_array = fn( ) {
 }
 
 let array = create_array( ) // get closure
-let test = create_array( ) // get another closure
+let test = create_array( )  // get another closure
 
 /// set all elemnts to 0.001
 
