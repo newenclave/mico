@@ -346,6 +346,10 @@ namespace mico {
 
             advance( );
 
+            if( cp == precedence::ASSIGN ) {
+                cp = precedence::LOWEST;
+            }
+
             auto right = parse_expression( cp );
 
             if( !right ) {

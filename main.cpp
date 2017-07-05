@@ -133,11 +133,22 @@ let getName = fn(person) { person["name"]; };
 getName(people[0]); // => "Anna"
 getName(people[1]); // => "Bob"
 
-let test = fn( ) {
-    let a = [0, 1,2,3,4,5,6,7,8,9];
+let create_array = fn( ) {
+    let a = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     fn( ) { a }
 }
-
+let array = create_array( )
+array( )[0] = 0.001
+array( )[1] = 0.001
+array( )[2] = 0.001
+array( )[3] = 0.001
+array( )[4] = 0.001
+array( )[5] = 0.001
+array( )[6] = 0.001
+array( )[7] = 0.001
+array( )[8] = 0.001
+array( )[9] = 0.001
+array( )
 
 let test = fn( ) {
     let a = [0, 1,2,3,4,5,6,7,8,9];
