@@ -68,7 +68,7 @@ let hello = newGreeter("Hello");
 hello("dear, future Reader!"); // => Hello dear, future Reader!
 ```
 
-Closures keep them enviroments
+##### Closures keep their enviroment
 
 ```
 let create_array = fn( ) {
