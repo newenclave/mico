@@ -205,7 +205,6 @@ namespace mico { namespace eval {
 #endif
                         tf->second -= (ev.use_count( )); // locked
                         if(tf->second == 0) {
-                            tf->first->reset_parent( );
                             tmp.erase( tf );
                         }
                     }

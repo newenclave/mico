@@ -155,17 +155,6 @@ namespace objects {
         void set( const std::string &name, object_sptr val )
         {
             data_[name] = val;
-            keeped_[val.get( )] = val;
-        }
-
-        void add_keep( void *key, object_sptr val )
-        {
-            keeped_[key] = val;
-        }
-
-        void del_keep( void *key )
-        {
-            keeped_.erase(key);
         }
 
         sptr parent( )
@@ -286,7 +275,6 @@ namespace objects {
         sptr parent_;
         std::map<std::string, object_sptr> data_;
         children_type children_;
-        std::map<void *, object_wptr> keeped_;
         std::size_t locked_ = 0;
     };
 }

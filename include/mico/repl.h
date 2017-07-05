@@ -23,8 +23,8 @@ namespace mico {
                 auto cl = c.second.lock( );
                 env_reset( cl );
             }
-            env->children( ).clear( );
             env->clear_parents( );
+            env->children( ).clear( );
         }
 
         static
