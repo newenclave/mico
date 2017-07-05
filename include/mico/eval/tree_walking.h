@@ -530,35 +530,48 @@ namespace mico { namespace eval {
         }
 
         environment::sptr create_call_env( ast::expressions::call *call,
-                                          objects::base *fun,
-                                          environment::sptr env )
+                                           objects::base *fun,
+                                           environment::sptr env,
+                                           objects::slist &params )
         {
             //// TODO bug with built in funcions!
 
             using ident_type = ast::expressions::ident;
 
-            auto vfun = obj_cast<objects::function>(fun);
+            if( fun->get_type( ) == objects::type::FUNCTION ) {
+                auto vfun = obj_cast<objects::function>(fun);
 
-            auto new_env = environment::make(vfun->env( ));
+                auto new_env = environment::make(vfun->env( ));
 
-            if( call->params( ).size( ) != vfun->params( ).size( ) ) {
-                //// TODO bad params count
-                return nullptr;
-            }
-            size_t id = 0;
-            for( auto &p: vfun->params( ) ) {
-                if( p->get_type( ) == ast::type::IDENT ) {
-                    auto n = static_cast<ident_type *>(p.get( ));
-                    auto v = extract_ref(
-                             eval_impl_tail( call->params( )[id++].get( ),
-                                             env ) );
-                    new_env->set(n->value( ), v);
-                } else {
-                    /// TODO bad param
+                if( call->params( ).size( ) != vfun->params( ).size( ) ) {
+                    //// TODO bad params count
                     return nullptr;
                 }
+                size_t id = 0;
+                for( auto &p: vfun->params( ) ) {
+                    if( p->get_type( ) == ast::type::IDENT ) {
+                        auto n = static_cast<ident_type *>(p.get( ));
+                        auto v = extract_ref(
+                                 eval_impl_tail( call->params( )[id++].get( ),
+                                                 env ) );
+                        new_env->set(n->value( ), v);
+                    } else {
+                        /// TODO bad param
+                        return nullptr;
+                    }
+                }
+                return new_env;
+            } else if( fun->get_type( ) == objects::type::BUILTIN ) {
+
+                auto vfun = obj_cast<objects::builtin>(fun);
+                auto new_env = environment::make(vfun->env( ));
+
+                for( auto &cp: call->params( ) ) {
+                    auto v = extract_ref( eval_impl_tail( cp.get( ), env ) );
+                    params.push_back( v );
+                }
+                return new_env;
             }
-            return new_env;
         }
 
         objects::sptr get_cont_call( ast::node *n, environment::sptr env )
@@ -570,11 +583,12 @@ namespace mico { namespace eval {
                 return get_null( );
             }
 
-            auto new_env = create_call_env( call, fun.get( ), env );
+            objects::slist params;
+            auto new_env = create_call_env( call, fun.get( ), env, params );
             if( !new_env ) {
                 return get_null( );
             }
-            return std::make_shared<objects::cont_call>(fun, new_env);
+            return std::make_shared<objects::cont_call>(fun, params, new_env);
         }
 
         objects::sptr eval_tail( objects::sptr obj )
@@ -582,8 +596,17 @@ namespace mico { namespace eval {
             using call_type = objects::cont_call;
             while(obj->get_type( ) == objects::type::CONT_CALL ) {
                 auto call = static_cast<call_type *>(obj.get( ));
-                auto fun = obj_cast<objects::function>(call->value( ).get( ));
-                obj = eval_scope_impl( fun->body( ), call->env( ) );
+                auto call_type = call->value( )->get_type( );
+                if( call_type == objects::type::FUNCTION ) {
+                    auto fun = obj_cast<objects::function>
+                                        (call->value( ).get( ));
+                    obj = eval_scope_impl( fun->body( ), call->env( ) );
+                } else if( call_type == objects::type::BUILTIN ) {
+                    auto fun = obj_cast<objects::builtin>
+                                        (call->value( ).get( ));
+                    obj = fun->call( call->params( ), call->env( ) );
+
+                }
                 if( is_return( obj ) ) {
                     return obj;
                 }
@@ -840,7 +863,10 @@ namespace mico { namespace eval {
 
                 //vfun->env( )->GC( );
 
-                environment::scoped s(create_call_env( call, vfun, env ));
+                objects::slist params;
+
+                environment::scoped s(create_call_env( call, vfun,
+                                                       env, params ) );
 
                 if( !s.env( ) ) {
                     return get_null( );

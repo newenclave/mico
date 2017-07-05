@@ -358,9 +358,10 @@ namespace objects {
     public:
         using sptr = std::shared_ptr<this_type>;
 
-        derived(objects::sptr obj, environment::sptr e)
+        derived(objects::sptr obj, objects::slist p, environment::sptr e)
             :env_object(e)
             ,obj_(obj)
+            ,params_(std::move(p))
         { }
 
         std::string str( ) const override
@@ -375,13 +376,19 @@ namespace objects {
             return obj_;
         }
 
+        objects::slist &params( )
+        {
+            return params_;
+        }
+
         std::shared_ptr<base> clone( ) const override
         {
-            return std::make_shared<this_type>( obj_, env( ) );
+            return std::make_shared<this_type>( obj_, params_, env( ) );
         }
 
     private:
-        objects::sptr obj_;
+        objects::sptr   obj_;
+        objects::slist  params_;
     };
 
     template <>
