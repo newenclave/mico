@@ -24,7 +24,7 @@ HEADERS += \
     include/mico/eval/evaluator.h \
     include/mico/eval/tree_walking.h \
     include/mico/repl.h \
-    include/mico/enviroment.h \
+    include/mico/environment.h \
     include/mico/builtin.h \
     include/mico/memory.h
 
@@ -32,4 +32,4 @@ DISTFILES += \
     drafts/tail_recursion.md
 
 
-# DEFINES += DEBUG=1
+DEFINES += DEBUG=1

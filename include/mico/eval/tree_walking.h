@@ -7,7 +7,7 @@
 #include "mico/expressions.h"
 #include "mico/statements.h"
 #include "mico/tokens.h"
-#include "mico/enviroment.h"
+#include "mico/environment.h"
 
 namespace mico { namespace eval {
 
@@ -161,7 +161,7 @@ namespace mico { namespace eval {
         }
 
         static
-        enviroment::sptr object_env( objects::sptr o )
+        environment::sptr object_env( objects::sptr o )
         {
             switch (o->get_type( )) {
             case objects::type::FUNCTION:
@@ -171,14 +171,14 @@ namespace mico { namespace eval {
             case objects::type::CONT_CALL:
                 return static_cast<objects::cont_call *>(o.get( ))->env( );
             }
-            return enviroment::sptr( );
+            return environment::sptr( );
         }
 
 #define SHOW_DEBUG 1
         static
-        bool contains_ext_links( enviroment::sptr e )
+        bool contains_ext_links( environment::sptr e )
         {
-            std::map<enviroment *, std::size_t> tmp;
+            std::map<environment *, std::size_t> tmp;
             for( auto &c: e->children( ) ) {
                 auto cl = c.second.lock( );
                 if( cl.get( ) ) {
@@ -220,7 +220,7 @@ namespace mico { namespace eval {
         }
 
         static
-        void clean_children( enviroment::sptr env )
+        void clean_children( environment::sptr env )
         {
             auto b = env->children( ).begin( );
             auto e = env->children( ).end( );
@@ -282,7 +282,7 @@ namespace mico { namespace eval {
         }
 
         objects::sptr produce_prefix_minus( ast::expressions::prefix *n,
-                                            enviroment::sptr env )
+                                            environment::sptr env )
         {
             auto oper = extract_ref(eval_impl(n->value( ), env));
             switch ( oper->get_type( ) ) {
@@ -313,14 +313,14 @@ namespace mico { namespace eval {
         }
 
         objects::sptr produce_prefix_bang( ast::expressions::prefix *n,
-                                           enviroment::sptr env )
+                                           environment::sptr env )
         {
             auto oper = extract_ref(eval_impl( n->value( ), env ));
             return oper ? eval_bool( !obj2num<bool>( oper.get( ) ) )
                         : get_null( );
         }
 
-        objects::sptr eval_prefix( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_prefix( ast::node *n, environment::sptr env )
         {
             auto expr = static_cast<ast::expressions::prefix *>( n );
 
@@ -428,9 +428,9 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        enviroment::sptr make_env( enviroment::sptr parent )
+        environment::sptr make_env( environment::sptr parent )
         {
-            return enviroment::make(parent);
+            return environment::make(parent);
         }
 
         objects::sptr infix_string( const std::string &lft,
@@ -461,7 +461,7 @@ namespace mico { namespace eval {
 
         objects::sptr other_infix( objects::base *lft, objects::base *rgh,
                                    ast::expressions::infix *inf,
-                                   enviroment::sptr /*env*/ )
+                                   environment::sptr /*env*/ )
         {
             switch ( lft->get_type( ) ) {
             case objects::type::STRING: {
@@ -492,7 +492,7 @@ namespace mico { namespace eval {
         }
 
         objects::sptr eval_assign( ast::expressions::infix *inf,
-                                   enviroment::sptr env )
+                                   environment::sptr env )
         {
 
             if(inf->left( )->get_type( ) == ast::type::IDENT) {
@@ -527,7 +527,7 @@ namespace mico { namespace eval {
                           inf->left( ) );
         }
 
-        objects::sptr eval_infix( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_infix( ast::node *n, environment::sptr env )
         {
             auto inf = static_cast<ast::expressions::infix *>(n);
 
@@ -597,9 +597,9 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        enviroment::sptr create_call_env( ast::expressions::call *call,
+        environment::sptr create_call_env( ast::expressions::call *call,
                                           objects::base *fun,
-                                          enviroment::sptr env )
+                                          environment::sptr env )
         {
             //// TODO bug with built in funcions!
 
@@ -607,7 +607,7 @@ namespace mico { namespace eval {
 
             auto vfun = obj_cast<objects::function>(fun);
 
-            auto new_env = enviroment::make(vfun->env( ));
+            auto new_env = environment::make(vfun->env( ));
 
             if( call->params( ).size( ) != vfun->params( ).size( ) ) {
                 //// TODO bad params count
@@ -629,7 +629,7 @@ namespace mico { namespace eval {
             return new_env;
         }
 
-        objects::sptr get_cont_call( ast::node *n, enviroment::sptr env )
+        objects::sptr get_cont_call( ast::node *n, environment::sptr env )
         {
             auto call = static_cast<ast::expressions::call *>( n );
             auto fun = eval_impl(call->func( ), env);
@@ -660,14 +660,14 @@ namespace mico { namespace eval {
         }
 
         objects::sptr eval_scope( ast::statement_list &lst,
-                                  enviroment::sptr env )
+                                  environment::sptr env )
         {
             objects::sptr res = eval_scope_impl(lst, env);
             return eval_tail( res );
         }
 
         objects::sptr eval_scope_impl( ast::statement_list &lst,
-                                       enviroment::sptr env )
+                                       environment::sptr env )
         {
             using return_type = ast::statements::ret;
             using expression_type = ast::statements::expr;
@@ -703,7 +703,7 @@ namespace mico { namespace eval {
             return last;
         }
 
-        objects::sptr eval_ifelse( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_ifelse( ast::node *n, environment::sptr env )
         {
             auto ifblock = static_cast<ast::expressions::ifelse *>( n );
 
@@ -720,20 +720,20 @@ namespace mico { namespace eval {
                 }
                 auto bres = obj_cast<objects::boolean>(res.get( ));
                 if( bres->value( ) ) {
-                    enviroment::scoped s(make_env(env));
+                    environment::scoped s(make_env(env));
                     auto eval_states = eval_scope_impl( i.states, s.env( ));
                     return extract_ref(eval_states);
                 }
             }
             if( !ifblock->alt( ).empty( ) ) {
-                enviroment::scoped s(make_env(env));
+                environment::scoped s(make_env(env));
                 auto eval_states = eval_scope_impl( ifblock->alt( ), s.env( ) );
                 return extract_ref(eval_states);
             }
             return get_null( );
         }
 
-        objects::sptr eval_program( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_program( ast::node *n, environment::sptr env )
         {
             auto prog = static_cast<ast::program *>( n );
             objects::sptr last = get_null( );
@@ -746,13 +746,13 @@ namespace mico { namespace eval {
             return extract_ref(last);
         }
 
-        objects::sptr eval_expression( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_expression( ast::node *n, environment::sptr env )
         {
             auto expr = static_cast<ast::statements::expr *>( n );
             return eval_impl( expr->value( ).get( ), env );
         }
 
-        objects::sptr eval_let( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_let( ast::node *n, environment::sptr env )
         {
             auto expr = static_cast<ast::statements::let *>( n );
             auto id   = expr->ident( )->str( );
@@ -764,14 +764,14 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        objects::sptr eval_return( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_return( ast::node *n, environment::sptr env )
         {
             auto expr = static_cast<ast::statements::ret *>( n );
             auto val  = eval_impl( expr->value( ), env );
             return std::make_shared<objects::retutn_obj>(val);
         }
 
-        objects::sptr eval_ident( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_ident( ast::node *n, environment::sptr env )
         {
 
             auto expr = static_cast<ast::expressions::ident *>( n );
@@ -783,7 +783,7 @@ namespace mico { namespace eval {
             }
         }
 
-        objects::sptr eval_function( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_function( ast::node *n, environment::sptr env )
         {
             auto func = static_cast<ast::expressions::function *>( n );
             auto fff  = std::make_shared<objects::function>( make_env(env),
@@ -793,7 +793,7 @@ namespace mico { namespace eval {
             return fff;
         }
 
-        objects::sptr eval_index( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_index( ast::node *n, environment::sptr env )
         {
             auto idx = static_cast<ast::expressions::index *>(n);
 
@@ -874,7 +874,7 @@ namespace mico { namespace eval {
         }
 
         objects::slist eval_parameters( ast::expressions::call *call,
-                                        enviroment::sptr env )
+                                        environment::sptr env )
         {
             objects::slist res;
             for( auto &e: call->params( ) ) {
@@ -888,8 +888,8 @@ namespace mico { namespace eval {
         }
 
         objects::sptr eval_call_impl( ast::node *n,
-                                      enviroment::sptr env,
-                                      enviroment::sptr &/*work_env*/ )
+                                      environment::sptr env,
+                                      environment::sptr &/*work_env*/ )
         {
             auto call = static_cast<ast::expressions::call *>( n );
             auto fun = extract_ref(eval_impl(call->func( ), env));
@@ -909,7 +909,7 @@ namespace mico { namespace eval {
                 clean_children( vfun->env( ) );
                 //vfun->env( )->GC( );
 
-                enviroment::scoped s(create_call_env( call, vfun, env ));
+                environment::scoped s(create_call_env( call, vfun, env ));
 
                 if( !s.env( ) ) {
                     return get_null( );
@@ -924,7 +924,7 @@ namespace mico { namespace eval {
                 return res;
 
             } else if( fun->get_type( ) == objects::type::BUILTIN ) {
-                enviroment::scoped s(make_env( env ));
+                environment::scoped s(make_env( env ));
                 auto vfun = obj_cast<objects::builtin>(fun.get( ));
                 vfun->init( s.env( ) );
                 auto params = eval_parameters(call, s.env( ));
@@ -938,14 +938,14 @@ namespace mico { namespace eval {
                           fun, " is function, but it is not in call list" );
         }
 
-        objects::sptr eval_call( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_call( ast::node *n, environment::sptr env )
         {
-            enviroment::sptr we;
+            environment::sptr we;
             auto res = eval_call_impl( n, env, we );
             return res;
         }
 
-        objects::sptr eval_array( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_array( ast::node *n, environment::sptr env )
         {
             auto arr = static_cast<ast::expressions::array *>( n );
             auto res = objects::array::make( );
@@ -961,7 +961,7 @@ namespace mico { namespace eval {
             return res;
         }
 
-        objects::sptr eval_table( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_table( ast::node *n, environment::sptr env )
         {
             auto table = static_cast<ast::expressions::table *>( n );
 
@@ -983,13 +983,13 @@ namespace mico { namespace eval {
             return res;
         }
 
-        objects::sptr eval_impl_tail( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_impl_tail( ast::node *n, environment::sptr env )
         {
             auto res = eval_impl(n, env);
             return eval_tail( res );
         }
 
-        objects::sptr eval_impl( ast::node *n, enviroment::sptr env )
+        objects::sptr eval_impl( ast::node *n, environment::sptr env )
         {
             objects::sptr res = get_null( );
             switch (n->get_type( )) {
@@ -1036,7 +1036,7 @@ namespace mico { namespace eval {
 
     public:
 
-        objects::sptr eval( ast::node *n, enviroment::sptr env ) override
+        objects::sptr eval( ast::node *n, environment::sptr env ) override
         {
             return eval_impl( n, env );
         }

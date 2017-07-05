@@ -11,7 +11,7 @@
 
 #include "mico/statements.h"
 #include "mico/expressions.h"
-#include "mico/enviroment.h"
+#include "mico/environment.h"
 
 namespace mico {
 
@@ -227,7 +227,7 @@ namespace objects {
 
     public:
 
-        env_object( std::shared_ptr<enviroment> e )
+        env_object( std::shared_ptr<environment> e )
             :env_(e)
         {
             e->lock( );
@@ -243,13 +243,13 @@ namespace objects {
             //env0_ = env_.lock( );
         }
 
-        std::shared_ptr<enviroment> env( )
+        std::shared_ptr<environment> env( )
         {
             auto l = env_;
             return l;
         }
 
-        const std::shared_ptr<enviroment> env( ) const
+        const std::shared_ptr<environment> env( ) const
         {
             auto l = env_;
             return l;
@@ -266,8 +266,8 @@ namespace objects {
             }
         }
 
-        std::weak_ptr<enviroment> env0_;
-        std::shared_ptr<enviroment> env_;
+        std::weak_ptr<environment> env0_;
+        std::shared_ptr<environment> env_;
     };
 
     template <>
@@ -276,7 +276,7 @@ namespace objects {
     public:
         using sptr = std::shared_ptr<this_type>;
 
-        derived( std::shared_ptr<enviroment> e,
+        derived( std::shared_ptr<environment> e,
                   std::shared_ptr<ast::expression_list> par,
                   std::shared_ptr<ast::statement_list> st )
             :env_object(e)
@@ -313,7 +313,7 @@ namespace objects {
 
         std::shared_ptr<base> clone( ) const override
         {
-            return std::make_shared<this_type>( enviroment::make( env( ) ),
+            return std::make_shared<this_type>( environment::make( env( ) ),
                                                 params_, body_ );
         }
 
@@ -328,7 +328,7 @@ namespace objects {
     public:
         using sptr = std::shared_ptr<this_type>;
 
-        derived( std::shared_ptr<enviroment> e )
+        derived( std::shared_ptr<environment> e )
             :env_object(e)
         { }
 
@@ -340,13 +340,13 @@ namespace objects {
         }
 
         virtual
-        objects::sptr call( objects::slist &, enviroment::sptr )
+        objects::sptr call( objects::slist &, environment::sptr )
         {
             return derived<type::NULL_OBJ>::make( );
         }
 
         virtual
-        void init( enviroment::sptr )
+        void init( environment::sptr )
         { }
 
     private:
@@ -359,7 +359,7 @@ namespace objects {
     public:
         using sptr = std::shared_ptr<this_type>;
 
-        derived(objects::sptr obj, enviroment::sptr e)
+        derived(objects::sptr obj, environment::sptr e)
             :env_object(e)
             ,obj_(obj)
         { }

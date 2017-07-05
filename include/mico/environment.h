@@ -19,15 +19,15 @@ namespace objects {
     static int c = 0;
 #endif
 
-    class enviroment: public std::enable_shared_from_this<enviroment> {
+    class environment: public std::enable_shared_from_this<environment> {
 
     public:
 
-        using sptr = std::shared_ptr<enviroment>;
-        using wptr = std::weak_ptr<enviroment>;
+        using sptr = std::shared_ptr<environment>;
+        using wptr = std::weak_ptr<environment>;
         using object_sptr = std::shared_ptr<objects::base>;
         using object_wptr = std::weak_ptr<objects::base>;
-        using children_type = std::map<enviroment *, wptr>;
+        using children_type = std::map<environment *, wptr>;
 
     protected:
 
@@ -61,14 +61,14 @@ namespace objects {
             sptr env_;
         };
 
-        enviroment( key )
+        environment( key )
         {
 #ifdef DEBUG
             std::cout << ++c << "\n";
 #endif
         }
 
-        enviroment( sptr env, key )
+        environment( sptr env, key )
             :parent_(env)
         {
 #ifdef DEBUG
@@ -76,7 +76,7 @@ namespace objects {
 #endif
         }
 
-        ~enviroment( )
+        ~environment( )
         {
 #ifdef DEBUG
             std::cout << --c << "\n";
@@ -93,18 +93,18 @@ namespace objects {
         static
         sptr make( )
         {
-            return std::make_shared<enviroment>( key( ) );
+            return std::make_shared<environment>( key( ) );
         }
 
         static
         sptr make( sptr parent )
         {
-            auto res = std::make_shared<enviroment>( parent, key( ) );
+            auto res = std::make_shared<environment>( parent, key( ) );
             parent->children_ [res.get( )] = res;
             return res;
         }
 
-        void drop( enviroment * child )
+        void drop( environment * child )
         {
             children_.erase( child );
             drop( );
@@ -224,6 +224,17 @@ namespace objects {
             }
         }
 
+        void clear_parents( )
+        {
+            parent_.reset( );
+            for( auto &c: children( ) ) {
+                auto cl = c.second.lock( );
+                if( cl ) {
+                    cl->clear_parents( );
+                }
+            }
+        }
+
         std::size_t maximum_level( )
         {
             std::size_t res = 1;
@@ -233,8 +244,12 @@ namespace objects {
 
         void GC( )
         {
+            clear_parents( );
             for( auto &c: children( ) ) {
                 auto cl = c.second.lock( );
+                if( !cl ) {
+                    continue;
+                }
                 //if( c->maximum_level( ) == 1  ) {
                     cl->unlock( );
                     cl->children( ).clear( );

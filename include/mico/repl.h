@@ -14,7 +14,7 @@ namespace mico {
     struct repl {
 
         static
-        void env_reset( enviroment::sptr env )
+        void env_reset( environment::sptr env )
         {
             for( auto &r: env->data( ) ) {
                 r.second->env_reset( );
@@ -24,12 +24,13 @@ namespace mico {
                 env_reset( cl );
             }
             env->children( ).clear( );
+            env->clear_parents( );
         }
 
         static
         void run( )
         {
-            auto env = enviroment::make( );
+            auto env = environment::make( );
             builtin::init( env );
             std::string data;
             std::cout << ">>> ";
