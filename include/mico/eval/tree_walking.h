@@ -596,6 +596,9 @@ namespace mico { namespace eval {
             using call_type = objects::cont_call;
             while(obj->get_type( ) == objects::type::CONT_CALL ) {
                 auto call = static_cast<call_type *>(obj.get( ));
+
+                //clear_clients( call->env( ) );
+
                 auto call_type = call->value( )->get_type( );
                 if( call_type == objects::type::FUNCTION ) {
                     auto fun = obj_cast<objects::function>
@@ -856,7 +859,7 @@ namespace mico { namespace eval {
             }
             for( auto &d: env->data( ) ) {
                 auto val = d.second.value( );
-                auto name = d.first;
+                //auto name = d.first;
 
                 if( auto e = object_env( val ) ) {
 
