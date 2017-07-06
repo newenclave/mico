@@ -128,12 +128,18 @@ namespace objects {
         env_object( std::shared_ptr<environment> e )
             :env_(e)
         {
-            //e->lock( );
+//            e->lock( );
         }
 
         ~env_object( )
         {
-            //drop( );
+            drop( );
+//            if( auto e = env( ) ) {
+//                e->unlock( );
+////                if( e->locked( ) == 1 ) {
+////                    e->unlock( );
+////                }
+//            }
         }
 
         void lock( )
@@ -159,6 +165,13 @@ namespace objects {
         }
 
     private:
+
+        void drop( )
+        {
+            if( auto p = env( ) ) {
+                p->drop( );
+            }
+        }
 
         void on_copy( ) override
         {

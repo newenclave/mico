@@ -847,6 +847,47 @@ namespace mico { namespace eval {
             return res;
         }
 
+        void clear_clients( environment::sptr env )
+        {
+            auto &chldren(env->children( ));
+            for( auto &d: env->data( ) ) {
+                auto val = d.second.value( );
+                auto name = d.first;
+
+                if( auto e = object_env( val ) ) {
+
+                    auto ch = chldren.find( e );
+                    auto val_l = d.second.lock_factor( );
+                    auto e_l = e->locked( );
+
+                    if( ch != chldren.end( ) && (e_l == val_l) ) {
+                        e->data( ).clear( );
+                        e->children( ).clear( );
+                        e->unlock( e->locked( ) );
+                        //e->drop( );
+                    }
+                }
+            }
+        }
+
+        void clear_env( environment::sptr env )
+        {
+            auto b = env->children( ).begin( );
+            auto e = env->children( ).end( );
+
+            while( b != e ) {
+                auto c = *b;
+                if( c->locked( ) == 0 ) {
+                    //c->drop( );
+                    b = env->children( ).erase( b );
+                } else {
+                    clear_clients( c );
+                    ++b;
+                }
+                continue;
+            }
+        }
+
         objects::sptr eval_call_impl( ast::node *n,
                                       environment::sptr env,
                                       environment::sptr &/*work_env*/ )
@@ -867,6 +908,8 @@ namespace mico { namespace eval {
                 auto vfun = obj_cast<objects::function>(fun.get( ));
 
                 //vfun->env( )->GC( );
+
+                clear_env( vfun->env( ) );
 
                 objects::slist params;
 

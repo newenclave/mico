@@ -63,9 +63,9 @@ namespace mico {
 
             void check( object_sptr o )
             {
-                if( o->lock_factor( ) == 0 ) {
-                    o->on_copy( );
-                }
+//                if( o->lock_factor( ) == 0 ) {
+//                    o->on_copy( );
+//                }
             }
 
         private:
@@ -129,19 +129,11 @@ namespace mico {
         void drop( )
         {
             if( !locked( ) ) {
-                auto p = parent( );
-                if( p ) {
+                if( auto p = parent( ) ) {
                     data_.clear( );
                     p->drop( shared_from_this( ) );
                 }
             }
-//            if( children_.empty( ) && !locked_ ) {
-//                auto p = parent( );
-//                if( p ) {
-//                    data_.clear( );
-//                    p->drop( shared_from_this( ) );
-//                }
-//            }
         }
 
         void lock( )
@@ -158,21 +150,39 @@ namespace mico {
             return locked_;
         }
 
+        void unlock( std::size_t count )
+        {
+            if( locked_ ) {
+                locked_-=count;
+                auto p = shared_from_this( );
+                while((p = p->parent( ))) {
+                    p->locked_-=count;
+                    if( p->locked_ == 0 ) {
+                        std::cout << "Zero!!\n";
+                    }
+                }
+                if( locked_ == 0 ) {
+                    std::cout << "Zero!!\n";
+                }
+            }
+        }
+
         void unlock( )
         {
-            locked_--;
-
-//            if( locked_ == 0 ) {
-//                std::cout << "Zero reached!\n";
-//            }
-
-            auto p = shared_from_this( );
-            while((p = p->parent( ))) {
-                p->locked_--;
-            }
-            if( locked_ == 0 ) {
-                data( ).clear( );
-                drop( );
+            if( locked_ ) {
+                locked_--;
+                auto p = shared_from_this( );
+                while((p = p->parent( ))) {
+                    p->locked_--;
+                    if( p->locked_ == 0 ) {
+                        std::cout << "Zero!!\n";
+                    }
+                }
+                if( locked_ == 0 ) {
+                    std::cout << "Zero!!\n";
+    //                data( ).clear( );
+    //                drop( );
+                }
             }
         }
 
