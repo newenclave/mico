@@ -29,7 +29,8 @@ HEADERS += \
     include/mico/memory.h
 
 DISTFILES += \
-    drafts/tail_recursion.md
+    drafts/tail_recursion.md \
+    tests.txt
 
 
 #DEFINES += DEBUG=1
