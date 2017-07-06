@@ -847,9 +847,13 @@ namespace mico { namespace eval {
             return res;
         }
 
+        static
         void clear_clients( environment::sptr env )
         {
             auto &chldren(env->children( ));
+            for( auto &c: chldren ) {
+                clear_env( c );
+            }
             for( auto &d: env->data( ) ) {
                 auto val = d.second.value( );
                 auto name = d.first;
@@ -868,8 +872,10 @@ namespace mico { namespace eval {
                     }
                 }
             }
+
         }
 
+        static
         void clear_env( environment::sptr env )
         {
             auto b = env->children( ).begin( );

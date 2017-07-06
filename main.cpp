@@ -173,6 +173,20 @@ let  z = fn(c) {
     if(c>0) { test(); z(c - 1) } else { 0 }
 }
 
+
+let  z = fn(c) {
+    let test = fn( ) {
+        let a = [0, 1,2,3,4,5,6,7,8,9];
+        let b = a;
+        let i = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
+        let int = fn( ) { let r = i; a }
+        let int0 = int
+        let int1 = int
+        int
+    }
+    if(c>0) { test(); z(c - 1) } else { 0 }
+}
+
 let zz = fn( nn ) {
     let impl = fn( n ) {
         if( n > 0 ) {

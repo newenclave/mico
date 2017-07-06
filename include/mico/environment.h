@@ -157,12 +157,6 @@ namespace mico {
                 auto p = shared_from_this( );
                 while((p = p->parent( ))) {
                     p->locked_-=count;
-                    if( p->locked_ == 0 ) {
-                        std::cout << "Zero!!\n";
-                    }
-                }
-                if( locked_ == 0 ) {
-                    std::cout << "Zero!!\n";
                 }
             }
         }
@@ -174,14 +168,6 @@ namespace mico {
                 auto p = shared_from_this( );
                 while((p = p->parent( ))) {
                     p->locked_--;
-                    if( p->locked_ == 0 ) {
-                        std::cout << "Zero!!\n";
-                    }
-                }
-                if( locked_ == 0 ) {
-                    std::cout << "Zero!!\n";
-    //                data( ).clear( );
-    //                drop( );
                 }
             }
         }
