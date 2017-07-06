@@ -15,7 +15,9 @@ namespace objects {
     struct base;
 }
 
-#ifdef DEBUG
+#define DEBUG 0
+
+#if DEBUG
     static int c = 0;
 #endif
 
@@ -63,7 +65,7 @@ namespace objects {
 
         environment( key )
         {
-#ifdef DEBUG
+#if DEBUG
             std::cout << ++c << "\n";
 #endif
         }
@@ -71,14 +73,14 @@ namespace objects {
         environment( sptr env, key )
             :parent_(env)
         {
-#ifdef DEBUG
+#if DEBUG
             std::cout << ++c << "\n";
 #endif
         }
 
         ~environment( )
         {
-#ifdef DEBUG
+#if DEBUG
             std::cout << --c << "\n";
 #endif
         }
