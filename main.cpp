@@ -151,8 +151,13 @@ array( )[9] = 0.001
 array( )
 
 let t = fn( ) {
-    let impl = fn ( ) { 10 }
-    return impl
+    let i = fn ( ) { 10 }
+    let j = fn ( ) { let call = i; call( ) }
+    return j
+}
+
+let m = fn( ) {
+    fn ( ) { 10 }
 }
 
 let test = fn( ) {
@@ -160,6 +165,8 @@ let test = fn( ) {
     let b = a;
     let i = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
     let int = fn( ) { a }
+    let int0 = int
+    let int1 = int
     int
 }
 let  z = fn(c) {

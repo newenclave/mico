@@ -12,114 +12,12 @@
 #include "mico/statements.h"
 #include "mico/expressions.h"
 #include "mico/environment.h"
+#include "mico/object_wrapper.h"
 
 namespace mico {
 
 namespace objects {
 
-    enum class type {
-        NULL_OBJ = 0,
-        BOOLEAN,
-        INTEGER,
-        FLOAT,
-        STRING,
-        TABLE,
-        ARRAY,
-        REFERENCE,
-        RETURN,
-        FUNCTION,
-        CONT_CALL,
-        BUILTIN,
-        ERROR,
-    };
-
-    struct name {
-        static
-        const char *get( type t )
-        {
-            switch (t) {
-            case type::NULL_OBJ   : return "OBJ_NULL";
-            case type::BOOLEAN    : return "OBJ_BOOLEAN";
-            case type::INTEGER    : return "OBJ_INTEGER";
-            case type::FLOAT      : return "OBJ_FLOAT";
-            case type::STRING     : return "OBJ_STRING";
-            case type::TABLE      : return "OBJ_TABLE";
-            case type::ARRAY      : return "OBJ_ARRAY";
-            case type::REFERENCE  : return "OBJ_REFERENCE";
-            case type::RETURN     : return "OBJ_RETURN";
-            case type::FUNCTION   : return "OBJ_FUNCTION";
-            case type::BUILTIN    : return "OBJ_BUILTIN";
-            case type::CONT_CALL  : return "OBJ_CONT_CALL";
-            case type::ERROR      : return "OBJ_ERROR";
-            }
-            return "<invalid>";
-        }
-    };
-
-    struct cast {
-        template <typename ToT, typename FromT>
-        static
-        ToT *to( FromT *obj )
-        {
-            return static_cast<ToT *>(obj);
-        }
-    };
-
-    struct base {
-        virtual ~base( ) = default;
-        virtual type get_type( ) const = 0;
-        virtual std::string str( ) const = 0;
-
-        virtual std::uint64_t hash( ) const
-        {
-            std::hash<std::string> h;
-            return h( str( ) )  ;
-        }
-
-        virtual bool equal( const base *other ) const
-        {
-            return str( ) == other->str( );
-        }
-
-        static
-        std::uint64_t hash64(uint64_t x)
-        {
-            std::hash<std::uint64_t> h;
-            return h(x);
-        }
-
-        virtual std::size_t size( ) const
-        {
-            return 0;
-        }
-
-        static
-        bool is_container( const base *o )
-        {
-            return (o->get_type( ) == type::ARRAY)
-                || (o->get_type( ) == type::TABLE)
-                 ;
-        }
-
-        virtual void env_reset( )
-        { }
-
-        virtual std::shared_ptr<base> clone( ) const = 0;
-
-    };
-
-    template <type TN>
-    struct typed_base: public base {
-        type get_type( ) const
-        {
-            return TN;
-        }
-    };
-
-    using sptr  = std::shared_ptr<base>;
-    using uptr  = std::unique_ptr<base>;
-    using slist = std::vector<sptr>;
-    using ulist = std::vector<uptr>;
 
     template <type TName>
     struct type2object;
@@ -230,12 +128,12 @@ namespace objects {
         env_object( std::shared_ptr<environment> e )
             :env_(e)
         {
-            e->lock( );
+            //e->lock( );
         }
 
         ~env_object( )
         {
-            drop( );
+            //drop( );
         }
 
         void lock( )
@@ -254,9 +152,23 @@ namespace objects {
             return l;
         }
 
+        std::size_t lock_factor( ) const override
+        {
+            return lock_factor_;
+        }
+
     private:
 
-        void drop( )
+        void on_copy( ) override
+        {
+            auto p = env( );
+            if( p ) {
+                lock_factor_++;
+                p->lock( );
+            }
+        }
+
+        void on_destroy( ) override
         {
             auto p = env( );
             if( p ) {
@@ -265,6 +177,16 @@ namespace objects {
             }
         }
 
+        void drop( )
+        {
+            auto p = env( );
+            if( p ) {
+                //p->unlock( );
+                p->drop( );
+            }
+        }
+
+        std::size_t lock_factor_ = 0;
         std::weak_ptr<environment> env_;
         //std::shared_ptr<environment> env_;
     };
@@ -312,8 +234,7 @@ namespace objects {
 
         std::shared_ptr<base> clone( ) const override
         {
-            return std::make_shared<this_type>( environment::make( env( ) ),
-                                                params_, body_ );
+            return std::make_shared<this_type>( env( ), params_, body_ );
         }
 
     private:
@@ -441,9 +362,10 @@ namespace objects {
     public:
 
         using sptr = std::shared_ptr<this_type>;
-        using value_type = objects::sptr;
+        using value_type     = objects::sptr;
+        using container_type = objects::wrapper<base>;
 
-        derived(value_type val)
+        derived( value_type val)
             :value_(val)
         { }
 
@@ -456,12 +378,12 @@ namespace objects {
 
         const value_type &value( ) const
         {
-            return value_;
+            return value_.value( );
         }
 
         value_type &value( )
         {
-            return value_;
+            return value_.value( );
         }
 
         static
@@ -486,7 +408,7 @@ namespace objects {
         }
 
     private:
-        value_type value_;
+        container_type value_;
     };
 
     template <>

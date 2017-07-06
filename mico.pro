@@ -26,7 +26,9 @@ HEADERS += \
     include/mico/repl.h \
     include/mico/environment.h \
     include/mico/builtin.h \
-    include/mico/memory.h
+    include/mico/memory.h \
+    include/mico/object_wrapper.h \
+    include/mico/object_base.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

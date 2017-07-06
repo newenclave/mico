@@ -9,11 +9,9 @@
 
 //#include "mico/objects.h"
 
-namespace mico {
+#include "mico/object_wrapper.h"
 
-namespace objects {
-    struct base;
-}
+namespace mico {
 
 #define DEBUG 0
 
@@ -27,9 +25,13 @@ namespace objects {
 
         using sptr = std::shared_ptr<environment>;
         using wptr = std::weak_ptr<environment>;
+
         using object_sptr = std::shared_ptr<objects::base>;
         using object_wptr = std::weak_ptr<objects::base>;
+
         using children_type = std::set<sptr>;
+        using wrapper_type = objects::wrapper<objects::base>;
+        using data_map = std::map<std::string, wrapper_type>;
 
     protected:
 
@@ -49,8 +51,8 @@ namespace objects {
             {
                 if( env_ ) {
                     env_->unlock( );
-                    env_->clear( );
-                    env_->drop( );
+//                    env_->clear( );
+//                    env_->drop( );
                 }
             }
 
@@ -119,18 +121,29 @@ namespace objects {
 
         void drop( )
         {
-            if( children_.empty( ) && !locked_ ) {
+            if( !locked( ) ) {
                 auto p = parent( );
                 if( p ) {
                     data_.clear( );
                     p->drop( shared_from_this( ) );
                 }
             }
+//            if( children_.empty( ) && !locked_ ) {
+//                auto p = parent( );
+//                if( p ) {
+//                    data_.clear( );
+//                    p->drop( shared_from_this( ) );
+//                }
+//            }
         }
 
         void lock( )
         {
             locked_++;
+            auto p = shared_from_this( );
+            while((p = p->parent( ))) {
+                p->locked_++;
+            }
         }
 
         std::size_t locked( ) const
@@ -141,6 +154,10 @@ namespace objects {
         void unlock( )
         {
             locked_--;
+            auto p = shared_from_this( );
+            while((p = p->parent( ))) {
+                p->locked_--;
+            }
         }
 
         sptr find_contains( const std::string &name )
@@ -172,7 +189,7 @@ namespace objects {
             while( cur && !res ) {
                 auto f = cur->data_.find( name );
                 if( f != cur->data_.end( ) ) {
-                    res = f->second;
+                    res = f->second.value( );
                 } else {
                     parent = cur->parent( );
                     cur = parent.get( );
@@ -181,7 +198,7 @@ namespace objects {
             return res;
         }
 
-        std::map<std::string, object_sptr> &data( )
+        data_map &data( )
         {
             return data_;
         }
@@ -194,23 +211,22 @@ namespace objects {
         void introspect( int level = 0 )
         {
             std::string space( level * 2, ' ' );
-            std::cout << space << locked( ) << "\n";
+            std::cout << space << "Locked: "<< locked( ) << "\n";
             for( auto &d: data_ ) {
-                std::weak_ptr<objects::base> w = d.second;
-                auto us = d.second.use_count( );
+                auto us = d.second.value( ).use_count( );
+                auto lf = d.second.lock_factor( );
                 std::cout << space << d.first << ":"
                           << us
+                          << " factor: " << lf
                           << "\n";
             }
 
             for( auto &c: children_ ) {
                 auto cl = c;
                 if( !cl ) continue;
-                auto us = cl.use_count( );
                 std::cout << space << "Child: "
-                          << us
                           << " l: " << cl->locked_
-                          << "\n";
+                          << " ";
                 cl->introspect( level + 1 );
             }
         }
@@ -244,7 +260,10 @@ namespace objects {
         void maximum_level_hide( std::size_t &res )
         {
             for( auto &d: data_ ) {
-                auto us = static_cast<std::size_t>(d.second.use_count( ));
+
+                auto us = static_cast<std::size_t>(d.second
+                                                    .value( )
+                                                     .use_count( ));
                 res = (res > us) ? res : us;
             }
             for( auto &c: children_ ) {
@@ -259,7 +278,7 @@ namespace objects {
         }
 
         wptr parent_;
-        std::map<std::string, object_sptr> data_;
+        data_map data_;
         children_type children_;
         std::size_t locked_ = 0;
     };
