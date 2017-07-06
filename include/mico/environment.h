@@ -61,6 +61,13 @@ namespace mico {
                 return env_;
             }
 
+            void check( object_sptr o )
+            {
+                if( o->lock_factor( ) == 0 ) {
+                    o->on_copy( );
+                }
+            }
+
         private:
             sptr env_;
         };
@@ -154,9 +161,18 @@ namespace mico {
         void unlock( )
         {
             locked_--;
+
+//            if( locked_ == 0 ) {
+//                std::cout << "Zero reached!\n";
+//            }
+
             auto p = shared_from_this( );
             while((p = p->parent( ))) {
                 p->locked_--;
+            }
+            if( locked_ == 0 ) {
+                data( ).clear( );
+                drop( );
             }
         }
 

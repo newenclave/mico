@@ -677,13 +677,17 @@ namespace mico { namespace eval {
                 if( bres->value( ) ) {
                     environment::scoped s(make_env(env));
                     auto eval_states = eval_scope_impl( i.states, s.env( ));
-                    return extract_ref(eval_states);
+                    auto res = extract_ref(eval_states);;
+                    s.check( res );
+                    return res;
                 }
             }
             if( !ifblock->alt( ).empty( ) ) {
                 environment::scoped s(make_env(env));
                 auto eval_states = eval_scope_impl( ifblock->alt( ), s.env( ) );
-                return extract_ref(eval_states);
+                auto res = extract_ref(eval_states);
+                s.check( res );
+                return res;
             }
             return get_null( );
         }
@@ -741,7 +745,8 @@ namespace mico { namespace eval {
         objects::sptr eval_function( ast::node *n, environment::sptr env )
         {
             auto func = static_cast<ast::expressions::function *>( n );
-            auto fff  = std::make_shared<objects::function>( make_env(env),
+            auto fenv = make_env(env);
+            auto fff  = std::make_shared<objects::function>( fenv,
                                               func->ident_ptr( ),
                                               func->expr_ptr( ));
             //env->add_keep(fff.get( ), fff);
@@ -878,6 +883,7 @@ namespace mico { namespace eval {
                     res = eval_tail( r->value( ) );
                 }
 
+                s.check( res );
                 return res;
 
             } else if( fun->get_type( ) == objects::type::BUILTIN ) {
@@ -889,6 +895,7 @@ namespace mico { namespace eval {
                     return params[0];
                 }
                 auto res = vfun->call( params, s.env( ) );
+                s.check( res );
                 return res;
             }
             return error( call->func( ), "Internal error: ",

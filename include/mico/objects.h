@@ -154,7 +154,8 @@ namespace objects {
 
         std::size_t lock_factor( ) const override
         {
-            return lock_factor_;
+            auto p = env( );
+            return p ? p->locked( ) : 0;
         }
 
     private:
@@ -163,7 +164,6 @@ namespace objects {
         {
             auto p = env( );
             if( p ) {
-                lock_factor_++;
                 p->lock( );
             }
         }
@@ -173,20 +173,10 @@ namespace objects {
             auto p = env( );
             if( p ) {
                 p->unlock( );
-                p->drop( );
+                //p->drop( );
             }
         }
 
-        void drop( )
-        {
-            auto p = env( );
-            if( p ) {
-                //p->unlock( );
-                p->drop( );
-            }
-        }
-
-        std::size_t lock_factor_ = 0;
         std::weak_ptr<environment> env_;
         //std::shared_ptr<environment> env_;
     };
