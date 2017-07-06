@@ -184,7 +184,8 @@ let  z = fn(c) {
         let int1 = int
         int
     }
-    if(c>0) { test( ); z(c - 1) } else { test }
+    let r = test( )
+    if(c>0) { test( ); z(c - 1) } else { r }
 }
 
 let zz = fn( nn ) {
