@@ -111,7 +111,7 @@ It's so funny to add something new =)
 *   **Assignment arrays' elements**
     There are some tricks.
 ```
-    let a = [0,0] // ok. here we have a value a that binds an array [0,0]
+    let a = [0,0] // ok. here we have a value `a` that binds an array [0,0]
     let b = [a, a] // wow wow wow! Here we put the array `a` to another array
                    // b == [[0, 0], [0, 0]] Cool, eh?
     a[0] = 1 // what happens here? We've changed the first value of the array `a`
