@@ -929,6 +929,13 @@ namespace mico { namespace eval {
                 if( is_fail( key ) ) {
                     return key;
                 }
+
+                if( (key->get_type( ) == objects::type::FUNCTION) ||
+                    (key->get_type( ) == objects::type::BUILTIN ) ) {
+                    return error( v.first.get( ), "unusable as hash key: ",
+                                                   key->get_type( ));
+                }
+
                 auto val = unref(eval_impl_tail( v.second.get( ), env ));
                 if( is_fail( val ) ) {
                     return val;
