@@ -128,9 +128,9 @@ It's so funny to add something new =)
     //   [1, [[1, 0], [1, 0]]], // b[0] == a
     //   [1, [[1, 0], [1, 0]]]  // b[1] == a
     // ]
-```
-    But what if we what just a value and not the reference in the array?
-```
+    //
+    // But what if we what just a value and not the reference in the array?
+    //
     // we can ust `clone` it
     let a = [0, 0]
     let b = [a, clone(a)] // b = [[0, 0], [0, 0]]
