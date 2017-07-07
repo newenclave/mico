@@ -11,7 +11,7 @@ It's so funny to add something new =)
     I hope Thorsten will add this thing to the book soon.
 
 *   **line number for the tokens.**
-    Yeap. Now I can see where the an error happens.
+    Yeap. Now I can see where an error happens.
 ```
     error: [1:15] Identifier not found 'someUnknownCall'
 ```
