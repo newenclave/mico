@@ -93,11 +93,13 @@ It's so funny to add something new =)
     // table[point(0, 1, 1)] // 0.3
 ```
     Keys are immutable. So you cant change their values.
-        let p = point(1, 100, 200)
-        let t = {p: false} // here `p` is cloned
-        p["x"] = -1
-        t // is still has an unique key {"x": 1, "y": 100, "z": 200}
 
+```
+    let p = point(1, 100, 200)
+    let t = {p: false} // here `p` is cloned
+    p["x"] = -1
+    t // is still has an unique key {"x": 1, "y": 100, "z": 200}
+```
 
 Is not yet complete.
 
