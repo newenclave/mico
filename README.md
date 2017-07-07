@@ -54,10 +54,16 @@ It's so funny to add something new =)
                  "two":2,
                  "three":4}
     >>> m["three"] = 3      // { "three":3, "two":2, "one":1 }
+
+    // assign is a `right arm` operator.
+    let a = [1,2,3,4,5]
+    a[0] = a[1] = a[2] = a[3] = a[4] = 0
+    // a = [0, 0, 0, 0, 0]
+
 ```
 
 *   **Reference object**
-    The object that contains other object.
+    The object that contains an other object.
     Now I can change the values in arrays, tables (hashes) and the environment
 ```
     >>> m["three"] = 3 // m["three"] returns a reference object
