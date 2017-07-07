@@ -173,6 +173,12 @@ let  z = fn(c) {
     if(c>0) { test(); z(c - 1) } else { 0 }
 }
 
+let greeter = fn( name ) {
+    { true: fn( ) { puts( "is true, " + name ) },
+      false: fn( ) { puts( "is false, " + name ) }
+    }
+}
+let r = greeter("anonymous")
 
 let  z = fn(c) {
     let test = fn( ) {
