@@ -119,7 +119,7 @@ It's so funny to add something new =)
              // now b is [[1, 0], [1, 0]]
     /// but what if ...
     a[1] = b // ?
-    // well...nothing bad has happend here. Because `a[1]` is just an old value ob `b`
+    // well...nothing bad has happend here. Because `a[1]` is just an old value of `b`
     // now `a` is [1, [[1, 0], [1, 0]]]
     //            ^a  ^b`````````````
     // and what is `b` now?
