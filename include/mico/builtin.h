@@ -107,6 +107,16 @@ namespace mico {
         environment::wptr env;
     };
 
+    struct clone {
+        objects::sptr operator ( )( objects::slist &p, environment::sptr )
+        {
+            if( p.size( ) ) {
+                return p[0]->clone( );
+            }
+            return objects::null::make( );
+        }
+    };
+
     struct puts {
         objects::sptr operator ( )( objects::slist &p, environment::sptr )
         {
@@ -142,6 +152,7 @@ namespace mico {
         {
             env->set( "len",     common::make( env, len { } ) );
             env->set( "puts",    common::make( env, puts { } ) );
+            env->set( "clone",   common::make( env, clone { } ) );
             env->set( "gc_show", common::make( env, gc_show(env) ) );
         }
     };
