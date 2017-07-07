@@ -450,7 +450,7 @@ namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << value( )->str( );
+            oss << ""  << value( )->str( ) << "";
             return oss.str( );
         }
 

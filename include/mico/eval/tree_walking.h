@@ -186,7 +186,7 @@ namespace mico { namespace eval {
             }
         }
 
-        objects::sptr extract_ref( objects::sptr obj )
+        objects::sptr unref( objects::sptr obj )
         {
             if( obj->get_type( ) == objects::type::REFERENCE ) {
                 auto ret = obj_cast<objects::reference>(obj.get( ));
@@ -216,7 +216,7 @@ namespace mico { namespace eval {
         objects::sptr produce_prefix_minus( ast::expressions::prefix *n,
                                             environment::sptr env )
         {
-            auto oper = extract_ref(eval_impl(n->value( ), env));
+            auto oper = unref(eval_impl(n->value( ), env));
             switch ( oper->get_type( ) ) {
             case objects::type::INTEGER: {
                 auto o = obj_cast<objects::integer>(oper.get( ));
@@ -247,7 +247,7 @@ namespace mico { namespace eval {
         objects::sptr produce_prefix_bang( ast::expressions::prefix *n,
                                            environment::sptr env )
         {
-            auto oper = extract_ref(eval_impl( n->value( ), env ));
+            auto oper = unref(eval_impl( n->value( ), env ));
             return oper ? eval_bool( !obj2num<bool>( oper.get( ) ) )
                         : get_null( );
         }
@@ -467,7 +467,7 @@ namespace mico { namespace eval {
                 return eval_assign( inf, env );
             }
 
-            auto left = extract_ref(eval_impl(inf->left( ).get( ), env));
+            auto left = unref(eval_impl(inf->left( ).get( ), env));
             if( !left ) {
                 /////////// bad left value
                 return get_null( );
@@ -476,7 +476,7 @@ namespace mico { namespace eval {
             switch (left->get_type( )) {
             case objects::type::INTEGER: {
                 auto lval = obj2num<std::int64_t>(left.get( ));
-                auto right = extract_ref(eval_impl(inf->right( ).get( ),
+                auto right = unref(eval_impl(inf->right( ).get( ),
                                                          env ) );
                 if( !right ) {
                     /////////// bad right value
@@ -492,7 +492,7 @@ namespace mico { namespace eval {
             }
             case objects::type::FLOAT: {
                 auto lval = obj2num<double>(left.get( ));
-                auto right = extract_ref(eval_impl(inf->right( ).get( ),
+                auto right = unref(eval_impl(inf->right( ).get( ),
                                                          env ) );
                 if( !right ) {
                     /////////// bad right value
@@ -518,7 +518,7 @@ namespace mico { namespace eval {
             case tokens::type::GT_EQ:
             case tokens::type::EQ:
             case tokens::type::NOT_EQ: {
-                auto rght = extract_ref(eval_impl( inf->right( ).get( ),
+                auto rght = unref(eval_impl( inf->right( ).get( ),
                                                          env ) );
                 return other_infix( left.get( ), rght.get( ), inf, env );
             }
@@ -551,7 +551,7 @@ namespace mico { namespace eval {
                 for( auto &p: vfun->params( ) ) {
                     if( p->get_type( ) == ast::type::IDENT ) {
                         auto n = static_cast<ident_type *>(p.get( ));
-                        auto v = extract_ref(
+                        auto v = unref(
                                  eval_impl_tail( call->params( )[id++].get( ),
                                                  env ) );
                         new_env->set(n->value( ), v);
@@ -567,7 +567,7 @@ namespace mico { namespace eval {
                 auto new_env = environment::make(vfun->env( ));
 
                 for( auto &cp: call->params( ) ) {
-                    auto v = extract_ref( eval_impl_tail( cp.get( ), env ) );
+                    auto v = unref( eval_impl_tail( cp.get( ), env ) );
                     params.push_back( v );
                 }
                 return new_env;
@@ -663,7 +663,7 @@ namespace mico { namespace eval {
             auto ifblock = static_cast<ast::expressions::ifelse *>( n );
 
             for( auto &i: ifblock->ifs(  ) ) {
-                auto cond = extract_ref(eval_impl( i.cond.get( ), env ));
+                auto cond = unref(eval_impl( i.cond.get( ), env ));
                 if( is_null( cond ) ) {
                     /////////// TODO bad condition in if
                     return get_null( );
@@ -677,13 +677,13 @@ namespace mico { namespace eval {
                 if( bres->value( ) ) {
                     environment::scoped s(make_env(env));
                     auto eval_states = eval_scope_impl( i.states, s.env( ));
-                    return extract_ref(eval_states);
+                    return unref(eval_states);
                 }
             }
             if( !ifblock->alt( ).empty( ) ) {
                 environment::scoped s(make_env(env));
                 auto eval_states = eval_scope_impl( ifblock->alt( ), s.env( ) );
-                return extract_ref(eval_states);
+                return unref(eval_states);
             }
             return get_null( );
         }
@@ -698,7 +698,7 @@ namespace mico { namespace eval {
                     return eval_tail(extract_return( last ));
                 }
             }
-            return extract_ref(last);
+            return unref(last);
         }
 
         objects::sptr eval_expression( ast::node *n, environment::sptr env )
@@ -752,7 +752,7 @@ namespace mico { namespace eval {
         {
             auto idx = static_cast<ast::expressions::index *>(n);
 
-            auto val = extract_ref(eval_impl_tail( idx->value( ), env ));
+            auto val = unref(eval_impl_tail( idx->value( ), env ));
 
             if( is_fail( val ) ) {
                 return val;
@@ -807,7 +807,7 @@ namespace mico { namespace eval {
             } else if(val->get_type( ) == objects::type::TABLE) {
 
                 auto arr = obj_cast<objects::table>( val.get( ) );
-                auto id = extract_ref(eval_impl( idx->param( ), env ));
+                auto id = unref(eval_impl( idx->param( ), env ));
 
                 if( is_fail( id ) ) {
                     return id;
@@ -833,7 +833,7 @@ namespace mico { namespace eval {
         {
             objects::slist res;
             for( auto &e: call->params( ) ) {
-                auto next = extract_ref(eval_impl_tail( e.get( ), env ));
+                auto next = unref(eval_impl_tail( e.get( ), env ));
                 if( is_fail(next) ) {
                     return objects::slist { next };
                 }
@@ -847,7 +847,7 @@ namespace mico { namespace eval {
                                       environment::sptr &/*work_env*/ )
         {
             auto call = static_cast<ast::expressions::call *>( n );
-            auto fun = extract_ref(eval_impl(call->func( ), env));
+            auto fun = unref(eval_impl(call->func( ), env));
             if( is_fail( fun ) ) {
                 return fun;
             }
@@ -925,12 +925,11 @@ namespace mico { namespace eval {
             auto res = objects::table::make( );
 
             for( auto &v: table->value( ) ) {
-                auto key = extract_ref(eval_impl_tail( v.first.get( ),
-                                                             env ) );
+                auto key = unref( eval_impl_tail( v.first.get( ), env ) );
                 if( is_fail( key ) ) {
                     return key;
                 }
-                auto val = eval_impl_tail( v.second.get( ), env );
+                auto val = unref(eval_impl_tail( v.second.get( ), env ));
                 if( is_fail( val ) ) {
                     return val;
                 }

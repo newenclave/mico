@@ -18,56 +18,55 @@ It's so funny to add something new =)
 
 *   **Floating point** numbers
 ```
-    >>> let t = 0.0001          // t = 0.0001
-    >>> let r = 1e100           // r = 1e+100
-    >>> let test = .55 / .11    // test = 5
+    let t = 0.0001          // t = 0.0001
+    let r = 1e100           // r = 1e+100
+    let test = .55 / .11    // test = 5
 ```
 
 *   **Number formats**.
     It's possible to add DEC, OCT, TER, BIN and HEX number
 ```
-    >>> 123456         // decimal
-    >>> 01234567       // oct 342391
-    >>> 0b010101010101 // bin 1365
-    >>> 0t02120120     // ternary 1878
-    >>> 0xDEADBEEF     // hex 3735928559
+    123456         // decimal
+    01234567       // oct 342391
+    0b010101010101 // bin 1365
+    0t02120120     // ternary 1878
+    0xDEADBEEF     // hex 3735928559
 ```
 
 *   **Number's gap symbol** `_`
 ```
-    >>> 1_123_456          // decimal
-    >>> 01_234_567         // oct 342391
-    >>> 0b0101_0101_0101   // bin 1365
-    >>> 0t2_120_120        // ternary 1878
-    >>> 0xDEAD_BEEF        // hex 3735928559
-    >>> 0.000_000_000_1    // float 1e-10
+    1_123_456          // decimal
+    01_234_567         // oct 342391
+    0b0101_0101_0101   // bin 1365
+    0t2_120_120        // ternary 1878
+    0xDEAD_BEEF        // hex 3735928559
+    0.000_000_000_1    // float 1e-10
 ```
 
 *   **Assignment operator** `=`
 ```
-    >>> let a = 0
-    >>> a = 100             // a = 1000
-    >>> b = 0               // error: [1:0] Identifier not found: 'b'
-    >>> let m = [1, 2, 4]
-    >>> m[2] = 3            // m = [1, 2, 3]
-    >>> let m = {"one":1,
-                 "two":2,
-                 "three":4}
-    >>> m["three"] = 3      // { "three":3, "two":2, "one":1 }
+    let a = 0
+    a = 100             // a = 1000
+    b = 0               // error: [1:0] Identifier not found: 'b'
+    let m = [1, 2, 4]
+    m[2] = 3            // m = [1, 2, 3]
+    let m = {"one":1,
+             "two":2,
+             "three":4}
+    m["three"] = 3      // { "three":3, "two":2, "one":1 }
 
     // assignment is a `right arm` operator.
     let a = [1,2,3,4,5]
     a[0] = a[1] = a[2] = a[3] = a[4] = 0
     // a = [0, 0, 0, 0, 0]
-
 ```
 
 *   **Reference object**
     The object that contains another object.
     Now I can change the values in arrays, tables (hashes) and the environment
 ```
-    >>> m["three"] = 3 // m["three"] returns a reference object
-                       // and then assign the operator changes the value
+    m["three"] = 3 // m["three"] returns a reference object
+                   // and then assign the operator changes the value
 ```
 *   **elif** branch to **ifelse**
     Well...there is nothing to explain here =)
@@ -107,6 +106,28 @@ It's so funny to add something new =)
     // but `t` still has an unique key {"x": 1, "y": 100, "z": 200}
     // `t` = {{"x": 1, "y": 100, "z": 200}: false}
     t[point(1, 100, 200)] // returns false
+```
+
+*   **Assignment arrays' elements**
+    There are some tricks.
+```
+    let a = [0,0] // ok. here we have a value a that binds an array [0,0]
+    let b = [a, a] // wow wow wow! Here we put the array `a` to another array
+                   // b == [[0, 0], [0, 0]] Cool, eh?
+    a[0] = 1 // what happens here? We've changed the first value of the array `a`
+             // `b` also has been changed!
+             // now b is [[1, 0], [1, 0]]
+    /// but what if ...
+    a[1] = b // ?
+    // well...nothing bad has happend here. Because `a[1]` is just an old value ob `b`
+    // now `a` is [1, [[1, 0], [1, 0]]]
+    //            ^a  ^b`````````````
+    // and what is `b` now?
+    // It's easy. `b` is [a, a]...so
+    // [
+    //   [1, [[1, 0], [1, 0]]], // b[0] == a
+    //   [1, [[1, 0], [1, 0]]]  // b[1] == a
+    // ]
 ```
 
 Is not yet complete.
