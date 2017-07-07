@@ -8,7 +8,7 @@ Monkey the language interpreter implementation done with C++. https://interprete
 It's so funny to add something new =)
 
 *   **tail call optimization.**
-    So I hope Thorsten will add this thing to the book.
+    I hope Thorsten will add this thing to the book soon.
 
 *   **line number for the tokens.**
     Yeap. Now I can see where do happen the errors.
@@ -57,7 +57,8 @@ It's so funny to add something new =)
 ```
 
 *   **Reference object**
-    The object that contains other object. So now I can change the values in arrays, tables (hashes) and the
+    The object that contains other object.
+    Now I can change the values in arrays, tables (hashes) and the environment
 ```
     >>> m["three"] = 3 // m["three"] returns a reference object
                        // and then assign (the operation) changes the value
