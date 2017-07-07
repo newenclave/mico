@@ -91,10 +91,8 @@ It's so funny to add something new =)
         point(1, 1, 1): 0.7,
     }
     // table[point(0, 1, 1)] // 0.3
-```
-    Keys are immutable. So you cant change their values.
 
-```
+    // Keys are immutable. So you cant change their values.
     let p = point(1, 100, 200)
     let t = {p: false} // here `p` is cloned
     p["x"] = -1
