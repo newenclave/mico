@@ -46,7 +46,7 @@ It's so funny to add something new =)
 *   **Assignment operator** `=`
 ```
     let a = 0
-    a = 100             // a = 1000
+    a = 100             // a = 100
     b = 0               // error: [1:0] Identifier not found: 'b'
     let m = [1, 2, 4]
     m[2] = 3            // m = [1, 2, 3]
