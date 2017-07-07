@@ -24,7 +24,7 @@ It's so funny to add something new =)
 ```
 
 *   **Number formats**.
-    It's possible add DEC, OCT, TER, BIN and HEX number
+    It's possible to add DEC, OCT, TER, BIN and HEX number
 ```
     >>> 123456         // decimal
     >>> 01234567       // oct 342391
@@ -43,7 +43,7 @@ It's so funny to add something new =)
     >>> 0.000_000_000_1    // float 1e-10
 ```
 
-*   **Assign operator** `=`
+*   **Assignment operator** `=`
 ```
     >>> let a = 0
     >>> a = 100             // a = 1000
@@ -55,7 +55,7 @@ It's so funny to add something new =)
                  "three":4}
     >>> m["three"] = 3      // { "three":3, "two":2, "one":1 }
 
-    // assign is a `right arm` operator.
+    // assignment is a `right arm` operator.
     let a = [1,2,3,4,5]
     a[0] = a[1] = a[2] = a[3] = a[4] = 0
     // a = [0, 0, 0, 0, 0]
@@ -63,7 +63,7 @@ It's so funny to add something new =)
 ```
 
 *   **Reference object**
-    The object that contains an other object.
+    The object that contains another object.
     Now I can change the values in arrays, tables (hashes) and the environment
 ```
     >>> m["three"] = 3 // m["three"] returns a reference object
@@ -139,7 +139,7 @@ let fibonacci = fn(x) {
   }
 };
 ```
-#### tail call optimization (there is no such a thing in the book yet)
+#### tail call optimization (there is no such thing in the book yet)
 
 ```
 // Define a `fibonacci` function with tail calls
