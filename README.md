@@ -12,7 +12,9 @@ It's so funny to add somethink new =)
 
 *   line number for the tokens.
     Yeap. Now I can see where do happen the errors.
-        error: [1:15] Identifier not found 'someUnknownCall'
+```
+    error: [1:15] Identifier not found 'someUnknownCall'
+```
 
 *   Floating point
 ```
