@@ -2,88 +2,102 @@
 
 Monkey the language interpreter implementation done with C++. https://interpreterbook.com/
 
-## difference
+## Difference
 
 "Mico" in an implementation but of course it has some difference.
-It's so funny to add somethink new =)
+It's so funny to add something new =)
 
 *   tail call optimization.
-    So I hope Thorsten will add this think to the book.
-
+    So I hope Thorsten will add this thing to the book.
 
 *   line number for the tokens.
     Yeap. Now I can see where do happen the errors.
-        error: [1:15] Identifier not found 'someUnknownCall'
+```
+    error: [1:15] Identifier not found 'someUnknownCall'
+```
 
-*   Floating point numbers.
-        >>> let t = 0.0001          // t = 0.0001
-        >>> let r = 1e100           // r = 1e+100
-        >>> let test = .55 / .11    // test = 5
+*   Floating point
+```
+    >>> let t = 0.0001          // t = 0.0001
+    >>> let r = 1e100           // r = 1e+100
+    >>> let test = .55 / .11    // test = 5
+```
 
 *   Number formats
     It's possible add DEC, OCT, TER, BIN and HEX number
-        >>> 123456         // decimal
-        >>> 01234567       // oct 342391
-        >>> 0b010101010101 // bin 1365
-        >>> 0t02120120     // ternary 1878
-        >>> 0xDEADBEEF     // hex 3735928559
+```
+    >>> 123456         // decimal
+    >>> 01234567       // oct 342391
+    >>> 0b010101010101 // bin 1365
+    >>> 0t02120120     // ternary 1878
+    >>> 0xDEADBEEF     // hex 3735928559
+```
 
 *   Number's gap symbol `_`
-        >>> 1_123_456          // decimal
-        >>> 01_234_567         // oct 342391
-        >>> 0b0101_0101_0101   // bin 1365
-        >>> 0t2_120_120        // ternary 1878
-        >>> 0xDEAD_BEEF        // hex 3735928559
-        >>> 0.000_000_000_1    // float 1e-10
+```
+    >>> 1_123_456          // decimal
+    >>> 01_234_567         // oct 342391
+    >>> 0b0101_0101_0101   // bin 1365
+    >>> 0t2_120_120        // ternary 1878
+    >>> 0xDEAD_BEEF        // hex 3735928559
+    >>> 0.000_000_000_1    // float 1e-10
+```
 
 *   Assign operator
-        >>> let a = 0
-        >>> a = 100             // a = 1000
-        >>> b = 0               // error: [1:0] Identifier not found: 'b'
-        >>> let m = [1, 2, 4]
-        >>> m[2] = 3            // m = [1, 2, 3]
-        >>> let m = {"one":1,
-                     "two":2,
-                     "three":4}
-        >>> m["three"] = 3      // { "three":3, "two":2, "one":1 }
+```
+    >>> let a = 0
+    >>> a = 100             // a = 1000
+    >>> b = 0               // error: [1:0] Identifier not found: 'b'
+    >>> let m = [1, 2, 4]
+    >>> m[2] = 3            // m = [1, 2, 3]
+    >>> let m = {"one":1,
+                 "two":2,
+                 "three":4}
+    >>> m["three"] = 3      // { "three":3, "two":2, "one":1 }
+```
 
 *   Reference object
-    The object that contains other object. So now I can cahnge the values in arrays, tables (hashes) and the environment
-        >>> m["three"] = 3 // m["three"] returns a reference object and then assign (the operation) changes the value
-
-*   elif branch to ifelse
+    The object that contains other object. So now I can change the values in arrays, tables (hashes) and the
+```
+    >>> m["three"] = 3 // m["three"] returns a reference object
+                       // and then assign (the operation) changes the value
+```
+*   **elif** branch to **ifelse**
     Well...there is nothing to explain here =)
-        let result = if( x < 0 ) {
-                       "too small!"
-                     } elif(x == 0) {
-                       "zero"
-                     } elif( x < 10 ) {
-                       "less than 10"
-                     } elif( x < 100 ) {
-                       "less than 100"
-                     } else {
-                       "too big!"
-                     }
-
+```
+    let result = if( x < 0 ) {
+                   "too small!"
+                 } elif(x == 0) {
+                   "zero"
+                 } elif( x < 10 ) {
+                   "less than 10"
+                 } elif( x < 100 ) {
+                   "less than 100"
+                 } else {
+                   "too big!"
+                 }
+```
 *   Hashes (i.e. tables) and Arrays can be the keys for the other Hashes
-        // should work!
-        let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
-        let table = {
-            point(0, 0, 1): 0.1,
-            point(0, 1, 0): 0.2,
-            point(0, 1, 1): 0.3,
-            point(1, 0, 0): 0.4,
-            point(1, 0, 1): 0.5,
-            point(1, 1, 0): 0.6,
-            point(1, 1, 1): 0.7,
-        }
-        // table[point(0, 1, 1)] // 0.3
-    Keys are immutable. So you cant change their values.
-        let p = point(1, 100, 200)
-        let t = {p: false} // here `p` is cloned
-        p["x"] = -1
-        t // is still has an unique key {"x": 1, "y": 100, "z": 200}
+```
+    // should work!
+    let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
+    let table = {
+        point(0, 0, 1): 0.1,
+        point(0, 1, 0): 0.2,
+        point(0, 1, 1): 0.3,
+        point(1, 0, 0): 0.4,
+        point(1, 0, 1): 0.5,
+        point(1, 1, 0): 0.6,
+        point(1, 1, 1): 0.7,
+    }
+    // table[point(0, 1, 1)] // 0.3
 
+    // Keys are immutable. So you cant change their values.
+    let p = point(1, 100, 200)
+    let t = {p: false} // here `p` is cloned
+    p["x"] = -1
+    t // is still has an unique key {"x": 1, "y": 100, "z": 200}
+```
 
 Is not yet complete.
 
