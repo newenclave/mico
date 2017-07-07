@@ -131,7 +131,7 @@ It's so funny to add something new =)
     //
     // But what if we what just a value and not the reference in the array?
     //
-    // we can ust `clone` it
+    // we can just `clone` it
     let a = [0, 0]
     let b = [a, clone(a)] // b = [[0, 0], [0, 0]]
     a[0] = 1              // b = [[1, 0], [0, 0]]
