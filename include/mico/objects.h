@@ -924,7 +924,6 @@ namespace objects {
                 auto vc = ref::make( v.second->clone( ) );
                 res->value( ).insert( std::make_pair(kc, vc) );
             }
-            res->value_ = value_;
             return res;
         }
 
