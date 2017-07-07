@@ -13,12 +13,14 @@ It's so funny to add somethink new =)
 
 *   line number for the tokens.
     Yeap. Now I can see where do happen the errors.
-        ``error: [1:15] Identifier not found 'someUnknownCall'``
+        ```error: [1:15] Identifier not found 'someUnknownCall'```
 
 *   Floating point numbers.
-        ``>>> let t = 0.0001          // t = 0.0001``
-        ``>>> let r = 1e100           // r = 1e+100``
-        ``>>> let test = .55 / .11    // test = 5``
+        ```
+        >>> let t = 0.0001          // t = 0.0001
+        >>> let r = 1e100           // r = 1e+100
+        >>> let test = .55 / .11    // test = 5
+        ```
 
 *   Number formats
     It's possible add DEC, OCT, TER, BIN and HEX number
