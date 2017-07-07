@@ -11,12 +11,12 @@ It's so funny to add something new =)
     I hope Thorsten will add this thing to the book soon.
 
 *   **line number for the tokens.**
-    Yeap. Now I can see where do happen the errors.
+    Yeap. Now I can see where the an error happens.
 ```
     error: [1:15] Identifier not found 'someUnknownCall'
 ```
 
-*   **Floating point**
+*   **Floating point** numbers
 ```
     >>> let t = 0.0001          // t = 0.0001
     >>> let r = 1e100           // r = 1e+100
