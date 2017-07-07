@@ -4,26 +4,26 @@ Monkey the language interpreter implementation done with C++. https://interprete
 
 ## Difference
 
-"Mico" in an implementation but of course it has some difference.
+"Mico" is an implementation but of course it has some difference.
 It's so funny to add something new =)
 
-*   tail call optimization.
+*   **tail call optimization.**
     So I hope Thorsten will add this thing to the book.
 
-*   line number for the tokens.
+*   **line number for the tokens.**
     Yeap. Now I can see where do happen the errors.
 ```
     error: [1:15] Identifier not found 'someUnknownCall'
 ```
 
-*   Floating point
+*   **Floating point**
 ```
     >>> let t = 0.0001          // t = 0.0001
     >>> let r = 1e100           // r = 1e+100
     >>> let test = .55 / .11    // test = 5
 ```
 
-*   Number formats
+*   **Number formats**.
     It's possible add DEC, OCT, TER, BIN and HEX number
 ```
     >>> 123456         // decimal
@@ -33,7 +33,7 @@ It's so funny to add something new =)
     >>> 0xDEADBEEF     // hex 3735928559
 ```
 
-*   Number's gap symbol `_`
+*   **Number's gap symbol** `_`
 ```
     >>> 1_123_456          // decimal
     >>> 01_234_567         // oct 342391
@@ -43,7 +43,7 @@ It's so funny to add something new =)
     >>> 0.000_000_000_1    // float 1e-10
 ```
 
-*   Assign operator
+*   **Assign operator** `=`
 ```
     >>> let a = 0
     >>> a = 100             // a = 1000
@@ -56,7 +56,7 @@ It's so funny to add something new =)
     >>> m["three"] = 3      // { "three":3, "two":2, "one":1 }
 ```
 
-*   Reference object
+*   **Reference object**
     The object that contains other object. So now I can change the values in arrays, tables (hashes) and the
 ```
     >>> m["three"] = 3 // m["three"] returns a reference object
@@ -77,7 +77,7 @@ It's so funny to add something new =)
                    "too big!"
                  }
 ```
-*   Hashes (i.e. tables) and Arrays can be the keys for the other Hashes
+*   **Hashes (i.e. tables) and Arrays** can be the keys for the other Hashes
 ```
     // should work!
     let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
