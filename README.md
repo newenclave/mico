@@ -107,8 +107,7 @@ It's so funny to add something new =)
     // `t` = {{"x": 1, "y": 100, "z": 200}: false}
     t[point(1, 100, 200)] // returns false
 ```
-######
-*   **Assignment arrays' elements**
+###### *   **Assignment arrays' elements**
     There are some tricks.
 ```
     let a = [0,0] // ok. here we have a value `a` that binds an array [0,0]
