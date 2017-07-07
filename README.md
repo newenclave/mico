@@ -5,10 +5,10 @@ Monkey the language interpreter implementation done with C++. https://interprete
 ## Difference
 
 "Mico" in an implementation but of course it has some difference.
-It's so funny to add somethink new =)
+It's so funny to add something new =)
 
 *   tail call optimization.
-    So I hope Thorsten will add this think to the book.
+    So I hope Thorsten will add this thing to the book.
 
 *   line number for the tokens.
     Yeap. Now I can see where do happen the errors.
