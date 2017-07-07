@@ -67,7 +67,7 @@ It's so funny to add something new =)
     Now I can change the values in arrays, tables (hashes) and the environment
 ```
     >>> m["three"] = 3 // m["three"] returns a reference object
-                       // and then assign (the operation) changes the value
+                       // and then assign the operator changes the value
 ```
 *   **elif** branch to **ifelse**
     Well...there is nothing to explain here =)
