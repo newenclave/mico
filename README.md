@@ -55,12 +55,12 @@ It's so funny to add somethink new =)
 ```
 
 *   Reference object
-    The object that contains other object. So now I can cahnge the values in arrays, tables (hashes) and the
+    The object that contains other object. So now I can change the values in arrays, tables (hashes) and the
 ```
     >>> m["three"] = 3 // m["three"] returns a reference object
                        // and then assign (the operation) changes the value
 ```
-*   elif branch to ifelse
+*   **elif** branch to **ifelse**
     Well...there is nothing to explain here =)
 ```
     let result = if( x < 0 ) {
