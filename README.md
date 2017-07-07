@@ -103,7 +103,10 @@ It's so funny to add something new =)
     let p = point(1, 100, 200)
     let t = {p: false} // here `p` is cloned
     p["x"] = -1
-    t // is still has an unique key {"x": 1, "y": 100, "z": 200}
+    // now `p` is a hash {"x": -1, "y": 100, "z": 200}
+    // but `t` still has an unique key {"x": 1, "y": 100, "z": 200}
+    // `t` = {{"x": 1, "y": 100, "z": 200}: false}
+    t[point(1, 100, 200)] // returns false
 ```
 
 Is not yet complete.
