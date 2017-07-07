@@ -57,22 +57,23 @@ It's so funny to add somethink new =)
 *   Reference object
     The object that contains other object. So now I can cahnge the values in arrays, tables (hashes) and the
 ```
-    >>> m["three"] = 3 // m["three"] returns a reference object and then assign (the operation) changes the value
+    >>> m["three"] = 3 // m["three"] returns a reference object
+                       // and then assign (the operation) changes the value
 ```
 *   elif branch to ifelse
     Well...there is nothing to explain here =)
 ```
-        let result = if( x < 0 ) {
-                       "too small!"
-                     } elif(x == 0) {
-                       "zero"
-                     } elif( x < 10 ) {
-                       "less than 10"
-                     } elif( x < 100 ) {
-                       "less than 100"
-                     } else {
-                       "too big!"
-                     }
+    let result = if( x < 0 ) {
+                   "too small!"
+                 } elif(x == 0) {
+                   "zero"
+                 } elif( x < 10 ) {
+                   "less than 10"
+                 } elif( x < 100 ) {
+                   "less than 100"
+                 } else {
+                   "too big!"
+                 }
 ```
 *   Hashes (i.e. tables) and Arrays can be the keys for the other Hashes
 ```
