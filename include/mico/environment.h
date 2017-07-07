@@ -7,13 +7,9 @@
 #include <iostream>
 #include <memory>
 
-//#include "mico/objects.h"
+#include "mico/object_base.h"
 
 namespace mico {
-
-namespace objects {
-    struct base;
-}
 
 #define DEBUG 0
 
