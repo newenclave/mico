@@ -889,18 +889,14 @@ namespace objects {
             if( other->get_type( ) == get_type( ) ) {
                 auto o = static_cast<const this_type *>( other );
                 if( o->value( ).size( ) == value( ).size( ) ) {
-
-                    auto b0 = value( ).begin( );
-                    auto b1 = o->value( ).begin( );
-
-                    for( ;b0 != value( ).end( ); ++b0, ++b1 ) {
-                        auto f = b0->first->equal( b1->first.get( ) );
-                        if( f ) {
-                            auto val = b1->second->value( ).get( );
-                            auto s = b0->second->equal( val );
-                            if( !s ) {
-                                return false;
-                            }
+                    for( auto &next: value( ) ) {
+                        auto f = o->value( ).find( next.first );
+                        if( f == o->value( ).end( ) ) {
+                            return false;
+                        }
+                        auto ch = f->second->value( );
+                        if( !next.second->value( )->equal( ch.get( ) ) ) {
+                            return false;
                         }
                     }
                     return true;
@@ -921,7 +917,7 @@ namespace objects {
             auto res = make( );
             for( auto &v: value( ) ) {
                 auto kc = v.first->clone( );
-                auto vc = ref::make( v.second->clone( ) );
+                auto vc = ref::make( v.second->value( )->clone( ) );
                 res->value( ).insert( std::make_pair(kc, vc) );
             }
             return res;
