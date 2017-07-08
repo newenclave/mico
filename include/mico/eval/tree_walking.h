@@ -597,7 +597,9 @@ namespace mico { namespace eval {
             while(obj->get_type( ) == objects::type::CONT_CALL ) {
                 auto call = static_cast<call_type *>(obj.get( ));
 
-                //clear_clients( call->env( ) );
+                if( auto p = call->env( )->parent( ) ) {
+                    clear_clients( p, call->env( ) );
+                }
 
                 auto call_type = call->value( )->get_type( );
                 if( call_type == objects::type::FUNCTION ) {
@@ -851,28 +853,59 @@ namespace mico { namespace eval {
         }
 
         static
-        void clear_clients( environment::sptr env )
+        void clear_clients( environment::sptr env,
+                            environment::sptr ignore = nullptr )
         {
             auto &chldren(env->children( ));
-            for( auto &c: chldren ) {
-                clear_env( c );
+            auto cb = chldren.begin( );
+            auto ce = chldren.end( );
+
+            while ( cb != ce ) {
+                if( ignore == (*cb) ) {
+                    ++cb;
+                } else if( !(*cb)->locked( ) ) {
+                    cb = chldren.erase( cb );
+                } else {
+                    clear_env( (*cb) );
+                    ++cb;
+                }
             }
-            for( auto &d: env->data( ) ) {
-                auto val = d.second.value( );
-                //auto name = d.first;
+
+            auto db = env->data( ).begin( );
+            auto de = env->data( ).end( );
+
+            while( db != de ) {
+
+                auto uc = db->second.value( ).use_count( );
+                auto val = db->second.value( );
+//                auto name = db->first;
 
                 if( auto e = object_env( val ) ) {
 
+                    if( e == ignore ) {
+                        ++db;
+                        continue;
+                    }
+
                     auto ch = chldren.find( e );
-                    auto val_l = d.second.lock_factor( );
+                    auto val_l = db->second.lock_factor( );
                     auto e_l = e->locked( );
 
-                    if( ch != chldren.end( ) && (e_l == val_l) ) {
-                        e->data( ).clear( );
-                        e->children( ).clear( );
-                        e->unlock( e->locked( ) );
+                    if( ch != chldren.end( ) ) {
+                        if( e_l == val_l) {
+                            e->data( ).clear( );
+                            e->children( ).clear( );
+                            e->unlock( e->locked( ) );
+                        }
+                        ++db;
                         //e->drop( );
+                    } else if( uc == e->locked( ) ) {
+                        db = env->data( ).erase( db );
+                    } else {
+                        ++db;
                     }
+                } else {
+                    ++db;
                 }
             }
 

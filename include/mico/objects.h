@@ -168,9 +168,9 @@ namespace objects {
 
         void drop( )
         {
-            if( auto p = env( ) ) {
-                p->drop( );
-            }
+//            if( auto p = env( ) ) {
+//                p->drop( );
+//            }
         }
 
         void on_copy( ) override

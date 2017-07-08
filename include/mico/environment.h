@@ -44,7 +44,9 @@ namespace mico {
             scoped( sptr v )
                 :env_(v)
             {
-                env_->lock( );
+                if(env_) {
+                    env_->lock( );
+                }
             }
 
             ~scoped(  )
@@ -119,6 +121,15 @@ namespace mico {
         {
             children_.erase( child );
             drop( );
+        }
+
+        sptr root( )
+        {
+            auto p = shared_from_this( );
+            while( auto pp = p->parent( ) ) {
+                p = pp;
+            }
+            return p;
         }
 
         sptr parent( )
@@ -223,7 +234,7 @@ namespace mico {
         void introspect( int level = 0 )
         {
             std::string space( level * 2, ' ' );
-            std::cout << space << "Locked: "<< locked( ) << "\n";
+            std::cout << " Locked: "<< locked( ) << "\n";
             for( auto &d: data_ ) {
                 auto us = d.second.value( ).use_count( );
                 auto lf = d.second.lock_factor( );
@@ -236,7 +247,7 @@ namespace mico {
             for( auto &c: children_ ) {
                 auto cl = c;
                 if( !cl ) continue;
-                std::cout << space << "Child: "
+                std::cout << space << "Child: " << cl.get( )
                           << " l: " << cl->locked_
                           << " ";
                 cl->introspect( level + 1 );
