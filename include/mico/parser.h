@@ -40,13 +40,7 @@ namespace mico {
         }
 
         void reset( )
-        {
-            cur_ = peek_ = lexer_.begin( );
-            if( peek_ != lexer_.end( ) ) {
-                ++peek_;
-            }
-            errors_.clear( );
-        }
+        { }
 
         void fill_nuds( )
         {
@@ -220,27 +214,27 @@ namespace mico {
 
         const token_info &current( ) const
         {
-            return (cur_ == lexer_.end( )) ? eof_token( ) : *cur_;
+            return lexer_.current( );
         }
 
         const token_info &peek( ) const
         {
-            return (peek_ == lexer_.end( )) ? eof_token( ) : *peek_;
+            return lexer_.peek( );
         }
 
         precedence peek_precedence( ) const
         {
-            return get_precedence( peek( ).ident.name );
+            return get_precedence( peek( ).ident.name( ) );
         }
 
         bool is_current( token_type tt ) const
         {
-            return current( ).ident.name == tt;
+            return current( ).ident.name( ) == tt;
         }
 
         bool is_peek( token_type tt ) const
         {
-            return peek( ).ident.name == tt;
+            return peek( ).ident.name( ) == tt;
         }
 
         bool expect_peek( token_type tt, bool error = true )
@@ -256,16 +250,12 @@ namespace mico {
 
         void advance( )
         {
-            cur_ = peek_;
-            if( peek_ != lexer_.end( ) ) {
-                ++peek_;
-            }
+            lexer_.advance( );
         }
 
         bool eof( ) const
         {
-            return (cur_ == lexer_.end( ))
-                || (cur_->ident.name == token_type::END_OF_FILE );
+            return lexer_.eof( );
         }
 
         const errors_list &errors( ) const
@@ -322,7 +312,7 @@ namespace mico {
         {
             ast::expressions::prefix::uptr res;
 
-            auto tt = current( ).ident.name;
+            auto tt = current( ).ident.name( );
             auto pos = current( ).where;
 
             advance( );
@@ -338,7 +328,7 @@ namespace mico {
         {
             ast::expressions::infix::uptr res;
 
-            auto tt = current( ).ident.name;
+            auto tt = current( ).ident.name( );
             res.reset(new ast::expressions::infix(tt, std::move(left)));
             res->set_pos( current( ).where );
 
@@ -481,7 +471,7 @@ namespace mico {
         ast::expressions::ident::uptr parse_ident( )
         {
             using ident_type = ast::expressions::ident;
-            ident_type::uptr res( new ident_type(current( ).ident.literal ) );
+            ident_type::uptr res(new ident_type(current( ).ident.literal( ) ));
             res->set_pos( current( ).where );
             return res;
         }
@@ -494,8 +484,8 @@ namespace mico {
 
             do {
                 res->value( ).insert( res->value( ).end( ),
-                                      current( ).ident.literal.begin( ),
-                                      current( ).ident.literal.end( ) );
+                                      current( ).ident.literal( ).begin( ),
+                                      current( ).ident.literal( ).end( ) );
             } while( expect_peek( token_type::STRING, false ) );
             return res;
         }
@@ -515,8 +505,8 @@ namespace mico {
 
             auto pos = current( ).where;
             int failed = -1;
-            auto num = numeric::parse_int( current( ).ident.literal,
-                                           current( ).ident.name, &failed );
+            auto num = numeric::parse_int( current( ).ident.literal( ),
+                                           current( ).ident.name( ), &failed );
             if( failed >= 0 ) {
                 error_inval_data(failed);
             } else {
@@ -531,8 +521,8 @@ namespace mico {
         {
             ast::expressions::floating::uptr res;
 
-            auto b = current( ).ident.literal.begin( );
-            auto e = current( ).ident.literal.end( );
+            auto b = current( ).ident.literal( ).begin( );
+            auto e = current( ).ident.literal( ).end( );
 
             double value = numeric::parse_float(b, e);
 
@@ -550,7 +540,7 @@ namespace mico {
         {
             ast::expression::uptr left;
 
-            auto nud = nuds_.find( current( ).ident.name );
+            auto nud = nuds_.find( current( ).ident.name( ) );
             if( nud == nuds_.end( ) ) {
                 error_no_prefix( );
                 return nullptr;
@@ -562,7 +552,7 @@ namespace mico {
             }
 
             auto pp = peek_precedence( );
-            auto pt = peek( ).ident.name;
+            auto pt = peek( ).ident.name( );
 
             while( (pt != token_type::SEMICOLON) && (p < pp) ) {
 
@@ -579,7 +569,7 @@ namespace mico {
                 }
 
                 pp = peek_precedence( );
-                pt = peek( ).ident.name;
+                pt = peek( ).ident.name( );
             }
 
             return left;
@@ -677,7 +667,7 @@ namespace mico {
 
                 ast::statement::uptr stmt;
 
-                switch( current( ).ident.name ) {
+                switch( current( ).ident.name( ) ) {
                 case token_type::LET:
                     stmt = parse_let( );
                     break;
@@ -718,30 +708,15 @@ namespace mico {
         ast::program parse( std::string input )
         {
 
-            auto tt = mico::lexer::make(input);
-
-            ast::program::error_list errors;
-
-            for( auto &e: tt.errors( ) ) {
-                errors.emplace_back( std::string("lexer error: ") + e );
-            }
-
-            if( !errors.empty( ) ) {
-                ast::program prog;
-                prog.set_errors( std::move(errors) );
-                return prog;
-            }
-
+            lexer tt;
+            tt.reset( input );
             parser pp( std::move(tt) );
-
             return pp.parse( );
         }
 
     private:
 
         lexer           lexer_;
-        token_iterator  cur_;
-        token_iterator  peek_;
         nuds_map        nuds_;
         leds_map        leds_;
 

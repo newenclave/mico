@@ -6,6 +6,8 @@
 #include <string>
 #include <ostream>
 
+#include "etool/slices/container.h"
+
 namespace mico { namespace tokens {
 
     enum class type {
@@ -139,35 +141,68 @@ namespace mico { namespace tokens {
     struct type_ident {
 
         using value_type = std::string;
+        using slice = etool::slices::container<value_type::const_iterator>;
 
         type_ident( ) = default;
         type_ident( const type_ident & ) = default;
         type_ident& operator = ( const type_ident & ) = default;
 
-        type_ident( type tt )
-            :name(tt)
-            ,literal(name::get(tt))
+        type_ident( tokens::type tt )
+            :name_value_(tt)
         { }
 
-        type_ident( type tt, std::string val )
-            :name(tt)
-            ,literal(std::move(val))
+        type_ident( tokens::type tt, slice val )
+            :lit_value_(std::move(val))
+            ,name_value_(tt)
         { }
 
         type_ident( type_ident &&other )
-            :name(other.name)
-            ,literal(std::move(other.literal))
+            :lit_value_(std::move(other.lit_value_))
+            ,name_value_(other.name( ))
         { }
 
         type_ident& operator = ( type_ident &&other )
         {
-            name     = other.name;
-            literal = std::move(other.literal);
+            name_value_ = other.name( );
+            lit_value_  = std::move(other.lit_value_);
             return *this;
         }
 
-        type        name;
-        value_type  literal;
+        std::string literal( ) const
+        {
+            return lit_value_.empty( )
+                 ? tokens::name::get( name( ) )
+                 : std::string(lit_value_.begin( ), lit_value_.end( ));
+        }
+
+        slice::iterator begin( ) const
+        {
+            return lit_value_.begin( );
+        }
+
+        slice::iterator end( ) const
+        {
+            return lit_value_.end( );
+        }
+
+        tokens::type name( ) const
+        {
+            return name_value_;
+        }
+
+        void set_name( tokens::type val )
+        {
+            name_value_ = val;
+        }
+
+        void set_literal( slice val )
+        {
+            lit_value_ = std::move(val);
+        }
+
+    private:
+        slice        lit_value_;
+        tokens::type name_value_;
     };
 
     struct position {
@@ -183,17 +218,18 @@ namespace mico { namespace tokens {
     struct info {
 
         using value_type = std::string;
+        using slice = etool::slices::container<value_type::const_iterator>;
 
         info( ) = default;
         info( const info & ) = default;
         info& operator = ( const info & ) = default;
 
 
-        info( type t )
+        info( tokens::type t )
             :ident(t)
         { }
 
-        info( type t, std::string value )
+        info( tokens::type t, slice value )
             :ident(t, std::move(value))
         { }
 
@@ -209,8 +245,8 @@ namespace mico { namespace tokens {
             return *this;
         }
 
-        position where;
-        type_ident ident;
+        tokens::position where;
+        type_ident       ident;
     };
 
     inline
@@ -228,11 +264,11 @@ namespace mico { namespace tokens {
     inline
     std::ostream &operator << (std::ostream &o, const tokens::type_ident &ti )
     {
-        o << ti.name;
-        if( ti.name < tokens::type::FIRST_VISIBLE ||
-                      tokens::type::LAST_VISIBLE < ti.name )
+        o << ti.name( );
+        if( ti.name( ) < tokens::type::FIRST_VISIBLE ||
+                         tokens::type::LAST_VISIBLE < ti.name( ) )
         {
-            o << "(" << ti.literal << ")";
+            o << "(" << ti.literal( ) << ")";
         }
         return o;
     }

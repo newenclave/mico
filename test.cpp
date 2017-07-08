@@ -5,6 +5,8 @@
 
 using namespace mico;
 
+#if 0
+
 struct type_ident {
 
     using value_type = std::string;
@@ -106,7 +108,7 @@ struct info2 {
     type_ident       ident;
 };
 
-class lexer2 {
+class lexer {
 
 
 public:
@@ -115,8 +117,9 @@ public:
     using token_ident = type_ident;
     using value_type = std::string;
     using slice = etool::slices::container<value_type::const_iterator>;
+    using token_trie  = etool::trees::trie::base<char, token_type>;
 
-    lexer2( )
+    lexer( )
         :trie_(lexer::make_trie( ))
     { }
 
@@ -420,6 +423,53 @@ public:
         return ti;
     }
 
+    static
+    void add_token( token_trie &ttrie, std::string value, token_type tt )
+    {
+        ttrie.set( value, tt );
+    }
+
+    static
+    void add_token( token_trie &ttrie, int tt_int )
+    {
+        auto tt = static_cast<token_type>(tt_int);
+        std::string name = tokens::name::get( tt );
+        add_token( ttrie, name, tt );
+    }
+
+    static
+    token_trie make_trie(  )
+    {
+        auto begin = static_cast<int>(tokens::type::FIRST_VISIBLE);
+        const auto end = static_cast<int>(tokens::type::LAST_VISIBLE);
+
+        token_trie res;
+        for( ++begin; begin != end; ++begin ) {
+            add_token( res, begin );
+        }
+
+        add_token( res, "0b",   tokens::type::INT_BIN );
+        add_token( res, "0B",   tokens::type::INT_BIN );
+
+        add_token( res, "0t",   tokens::type::INT_TER );
+        add_token( res, "0T",   tokens::type::INT_TER );
+
+        add_token( res, "0x",   tokens::type::INT_HEX );
+        add_token( res, "0X",   tokens::type::INT_HEX );
+
+        add_token( res, "0",    tokens::type::INT_OCT );
+
+        add_token( res, "\"",   tokens::type::STRING );
+
+        add_token( res, "\n",   tokens::type::END_OF_LINE );
+        add_token( res, "\r\n", tokens::type::END_OF_LINE );
+        add_token( res, "\n\r", tokens::type::END_OF_LINE );
+
+        add_token( res, "//",   tokens::type::COMMENT);
+
+        return res;
+    }
+
 private:
 
     std::string       input_;
@@ -443,9 +493,9 @@ int main_lex( )
                        "<>!\n";
 
     auto bb = test.begin( );
-    lexer2::position_state lstate(bb);
+    lexer::position_state lstate(bb);
 
-    lexer2 lex;
+    lexer lex;
     lex.reset( test );
 
     while( !lex.eof( ) ) {
@@ -464,3 +514,5 @@ int main_lex( )
 
     return 0;
 }
+
+#endif
