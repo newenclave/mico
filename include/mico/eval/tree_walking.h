@@ -892,7 +892,7 @@ namespace mico { namespace eval {
                 return res;
             }
             return error( call->func( ), "Internal error: ",
-                          fun, " is function, but it is not in call list" );
+                          fun, " is function, but it is not in the call list" );
         }
 
         objects::sptr eval_call( ast::node *n, environment::sptr env )
