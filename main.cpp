@@ -158,6 +158,14 @@ let test = fn( ) {
     int
 }
 
+let g = fn (name) {
+    {
+      false: fn( ) { "This is not true, " + name },
+      true: fn( )  { "This is true, " + name }
+    }
+}
+
+
 let test = fn( ) {
     let a = [0, 1,2,3,4,5,6,7,8,9];
     fn( ) { a }
