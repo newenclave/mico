@@ -148,6 +148,7 @@ namespace mico { namespace objects {
                     my_env->lock( );
                     my_env = my_env->parent( );
                 }
+                my_env->lock( );
             }
         }
 
@@ -161,9 +162,10 @@ namespace mico { namespace objects {
                     my_env = my_env->parent( );
                     ++ul;
                 }
-//                if( ul ) {
-//                    my_env->drop( );
-//                }
+                my_env->unlock( );
+                if( ul ) {
+                    env( )->drop( );
+                }
             }
         }
 

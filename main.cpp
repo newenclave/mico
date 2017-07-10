@@ -188,8 +188,11 @@ let test = fn( ) {
     let a = [0, 1,2,3,4,5,6,7,8,9];
     fn( ) { a }
 }
+let m = fn( ) {
+    let r = test( )
+    r
+}
 let r = test( )
-
 
 let  z = fn(c) {
     if(c>0) { test(); z(c - 1) } else { 0 }
