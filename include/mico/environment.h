@@ -47,11 +47,11 @@ namespace mico {
 
             ~scoped(  )
             {
-//                if( env_ ) {
+                if( env_ ) {
 //                    env_->unlock( );
 //                    env_->clear( );
 //                    env_->drop( );
-//                }
+                }
             }
 
             sptr env( )
@@ -234,6 +234,16 @@ namespace mico {
 
         void GC( )
         {
+            auto b = children( ).begin( );
+            auto e = children( ).end( );
+            while( b != e ) {
+                auto lck = (*b)->locked( );
+                if( lck ) {
+                    b = children( ).erase( b );
+                } else {
+                    ++b;
+                }
+            }
             return;
             for( auto &c: children( ) ) {
                 auto cl = c;

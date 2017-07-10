@@ -195,6 +195,9 @@ namespace mico { namespace objects {
             ,body_(st)
         { }
 
+        ~derived( )
+        { }
+
         std::string str( ) const override
         {
             std::ostringstream oss;

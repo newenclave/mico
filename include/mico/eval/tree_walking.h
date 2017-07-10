@@ -861,7 +861,7 @@ namespace mico { namespace eval {
 
                 auto vfun = obj_cast<objects::function>(fun.get( ));
 
-                //vfun->env( )->GC( );
+                vfun->env( )->GC( );
 
                 objects::slist params;
 
