@@ -234,6 +234,7 @@ namespace mico {
                 if( 0 == lck ) {
                     b = children( ).erase( b );
                 } else {
+                    //(*b)->GC( );
                     ++b;
                 }
             }
