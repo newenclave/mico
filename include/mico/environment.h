@@ -225,13 +225,6 @@ namespace mico {
             }
         }
 
-        std::size_t maximum_level( )
-        {
-            std::size_t res = 1;
-            maximum_level_hide( res );
-            return res;
-        }
-
         void GC( )
         {
             auto b = children( ).begin( );
@@ -245,39 +238,9 @@ namespace mico {
                 }
             }
             return;
-            for( auto &c: children( ) ) {
-                auto cl = c;
-                if( !cl ) {
-                    continue;
-                }
-                if( c->maximum_level( ) == 1  ) {
-                    cl->unlock( );
-                    cl->children( ).clear( );
-                    cl->data( ).clear( );
-                    //cl->clear( );
-                    //c->drop( );
-                }
-            }
         }
 
     private:
-
-        void maximum_level_hide( std::size_t &res )
-        {
-            for( auto &d: data_ ) {
-                auto us = static_cast<std::size_t>(d.second->value( ).use_count( ));
-                res = (res > us) ? res : us;
-            }
-            for( auto &c: children_ ) {
-                auto cl = c;
-                if( !cl ) {
-                    continue;
-                }
-                auto us = static_cast<std::size_t>(cl.use_count( ));
-                res = (res > us) ? res : us;
-                cl->maximum_level_hide( res );
-            }
-        }
 
         wptr            parent_;
         data_map        data_;
