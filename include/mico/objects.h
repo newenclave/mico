@@ -292,7 +292,7 @@ namespace mico { namespace objects {
             return oss.str( );
         }
 
-        objects::sptr  value( )
+        objects::sptr value( )
         {
             return obj_;
         }
