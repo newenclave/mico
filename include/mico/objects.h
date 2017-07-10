@@ -126,7 +126,11 @@ namespace mico { namespace objects {
         { }
 
         ~env_object( )
-        { }
+        {
+//            if( auto p = env( ) ) {
+//                p->drop( );
+//            }
+        }
 
         std::shared_ptr<environment> env( )
         {
@@ -148,7 +152,7 @@ namespace mico { namespace objects {
                     my_env->lock( );
                     my_env = my_env->parent( );
                 }
-                my_env->lock( );
+//                my_env->lock( );
             }
         }
 
@@ -162,7 +166,7 @@ namespace mico { namespace objects {
                     my_env = my_env->parent( );
                     ++ul;
                 }
-                my_env->unlock( );
+//                my_env->unlock( );
                 if( ul ) {
                     env( )->drop( );
                 }
