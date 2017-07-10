@@ -238,7 +238,7 @@ namespace mico {
             auto e = children( ).end( );
             while( b != e ) {
                 auto lck = (*b)->locked( );
-                if( lck ) {
+                if( 0 == lck ) {
                     b = children( ).erase( b );
                 } else {
                     ++b;
