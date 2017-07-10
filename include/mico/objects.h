@@ -14,6 +14,7 @@
 #include "mico/environment.h"
 
 #include "mico/object_base.h"
+#include "mico/object_reference.h"
 
 namespace mico { namespace objects {
 
@@ -29,9 +30,6 @@ namespace mico { namespace objects {
     struct type2object<type::INTEGER> {
         using native_type = std::int64_t;
     };
-
-    template <type>
-    class derived;
 
     template <>
     class derived<type::NULL_OBJ>: public typed_base<type::NULL_OBJ> {
@@ -125,18 +123,10 @@ namespace mico { namespace objects {
 
         env_object( std::shared_ptr<environment> e )
             :env_(e)
-        {
-            e->lock( );
-        }
+        { }
 
         ~env_object( )
-        {
-            drop( );
-        }
-
-        void lock( )
-        {
-        }
+        { }
 
         std::shared_ptr<environment> env( )
         {
@@ -150,16 +140,42 @@ namespace mico { namespace objects {
             return l;
         }
 
-    private:
-
-        void drop( )
+        void lock_in( const environment *e ) override
         {
-            auto p = env( );
-            if( p ) {
-                p->unlock( );
-                p->drop( );
+            auto my_env = env( );
+            if( my_env && my_env->is_parent( e ) ) {
+                while( my_env.get( ) != e ) {
+                    my_env->lock( );
+                    my_env = my_env->parent( );
+                }
             }
         }
+
+        void unlock_in( const environment *e ) override
+        {
+            auto my_env = env( );
+            if( my_env && my_env->is_parent( e ) ) {
+                std::size_t ul = 0;
+                while( my_env.get( ) != e ) {
+                    my_env->unlock( );
+                    my_env = my_env->parent( );
+                    ++ul;
+                }
+//                if( ul ) {
+//                    my_env->drop( );
+//                }
+            }
+        }
+
+        std::size_t locked( ) const override
+        {
+            if( auto p = env( ) ) {
+                return p->locked( );
+            }
+            return 0;
+        }
+
+    private:
 
         std::weak_ptr<environment> env_;
         //std::shared_ptr<environment> env_;
@@ -332,60 +348,6 @@ namespace mico { namespace objects {
     };
 
     template <>
-    class derived<type::REFERENCE>: public typed_base<type::REFERENCE> {
-        using this_type = derived<type::REFERENCE>;
-    public:
-
-        using sptr = std::shared_ptr<this_type>;
-        using value_type = objects::sptr;
-
-        derived(value_type val)
-            :value_(val)
-        { }
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << ""  << value( )->str( ) << "";
-            return oss.str( );
-        }
-
-        const value_type &value( ) const
-        {
-            return value_;
-        }
-
-        value_type &value( )
-        {
-            return value_;
-        }
-
-        static
-        sptr make( value_type val )
-        {
-            return std::make_shared<this_type>(val);
-        }
-
-        std::uint64_t hash( ) const override
-        {
-            return value_->hash( );
-        }
-
-        bool equal( const base *other ) const override
-        {
-            return value_->equal( other );
-        }
-
-        std::shared_ptr<base> clone( ) const override
-        {
-            return std::make_shared<this_type>( value_->clone( ) );
-        }
-
-    private:
-        value_type value_;
-    };
-
-    template <>
     class derived<type::ARRAY>: public typed_base<type::ARRAY> {
         using this_type = derived<type::ARRAY>;
     public:
@@ -437,9 +399,9 @@ namespace mico { namespace objects {
             }
         }
 
-        void push( objects::sptr val )
+        void push( const environment *env, objects::sptr val )
         {
-            value_.emplace_back( cont::make(val) );
+            value_.emplace_back( cont::make(env, val) );
         }
 
         static
@@ -480,7 +442,7 @@ namespace mico { namespace objects {
         {
             auto res = std::make_shared<this_type>( );
             for( auto &v: value_ ) {
-                res->push( v->value( )->clone( ) );
+                res->push( v->env( ), v->value( )->clone( ) );
             }
             return res;
         }
@@ -753,9 +715,10 @@ namespace mico { namespace objects {
             return value_;
         }
 
-        bool insert( objects::sptr key, objects::sptr val )
+        bool insert( const environment *env,
+                     objects::sptr key, objects::sptr val )
         {
-            value_[key->clone( )] = cont::make(val);
+            value_[key->clone( )] = cont::make(env, val);
             return true;
         }
 
@@ -813,7 +776,8 @@ namespace mico { namespace objects {
             auto res = make( );
             for( auto &v: value( ) ) {
                 auto kc = v.first->clone( );
-                auto vc = ref::make( v.second->value( )->clone( ) );
+                auto vc = ref::make( v.second->env( ),
+                                     v.second->value( )->clone( ) );
                 res->value( ).insert( std::make_pair(kc, vc) );
             }
             return res;

@@ -157,6 +157,24 @@ let test = fn( ) {
     let int = fn( ) { a }
     int
 }
+let z = fn( c ) {
+    let test = fn( ) {
+        let a = [0, 1,2,3,4,5,6,7,8,9];
+        let b = a;
+        let i = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
+        let int = fn( ) { a }
+        int
+    }
+    let t = test( )
+    if c > 0  {
+        test( )
+        z(c-1)
+    } else {
+        test( )
+    }
+}
+
+let t = fn( ) { 10 }
 
 let g = fn (name) {
     {

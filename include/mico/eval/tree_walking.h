@@ -912,7 +912,7 @@ namespace mico { namespace eval {
                 if( is_fail( next ) ) {
                     return next;
                 }
-                res->push( next );
+                res->push( env.get( ), next );
             }
 
             return res;
@@ -940,7 +940,7 @@ namespace mico { namespace eval {
                 if( is_fail( val ) ) {
                     return val;
                 }
-                res->insert(key, val);
+                res->insert( env.get( ), key, val );
             }
 
             return res;
