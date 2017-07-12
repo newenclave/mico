@@ -63,6 +63,7 @@ namespace mico { namespace objects {
                      objects::sptr key, objects::sptr val )
         {
             value_[key->clone( )] = cont::make(env, val);
+            val->lock_in( env );
             return true;
         }
 

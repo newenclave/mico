@@ -63,6 +63,7 @@ namespace mico { namespace objects {
         void push( const environment *env, objects::sptr val )
         {
             value_.emplace_back( cont::make(env, val) );
+            val->lock_in( env );
         }
 
         static
