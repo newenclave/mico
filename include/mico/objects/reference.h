@@ -78,6 +78,11 @@ namespace mico { namespace objects {
             return false;
         }
 
+//        bool unlock_in( const environment *e ) override
+//        {
+//            return value_->unlock_in( e );
+//        }
+
         std::uint64_t hash( ) const override
         {
             return value_->hash( );

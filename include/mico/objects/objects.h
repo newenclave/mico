@@ -100,9 +100,9 @@ namespace mico { namespace objects {
 
         bool lock_in( const environment *e ) override
         {
-            if( locked_ && locked_->is_parent( e ) ) {
-                unlock_in( locked_ );
-            }
+//            if( locked_ && locked_->is_parent( e ) ) {
+//                unlock_in( locked_ );
+//            }
             auto my_env = env( );
             if( my_env && my_env->is_parent( e ) ) {
                 locked_ = e;
