@@ -17,7 +17,6 @@ HEADERS += \
     include/mico/idents.h \
     include/mico/parser.h \
     include/mico/ast.h \
-    include/mico/objects.h \
     include/mico/operations.h \
     include/mico/expressions.h \
     include/mico/statements.h \
@@ -27,8 +26,9 @@ HEADERS += \
     include/mico/environment.h \
     include/mico/builtin.h \
     include/mico/memory.h \
-    include/mico/object_base.h \
-    include/mico/object_reference.h
+    include/mico/objects/objects.h \
+    include/mico/objects/base.h \
+    include/mico/objects/reference.h
 
 DISTFILES += \
     drafts/tail_recursion.md

@@ -1,7 +1,7 @@
 #ifndef MICO_OBJECT_REFERENCE_H
 #define MICO_OBJECT_REFERENCE_H
 
-#include "object_base.h"
+#include "mico/objects/base.h"
 
 #include "mico/statements.h"
 #include "mico/expressions.h"

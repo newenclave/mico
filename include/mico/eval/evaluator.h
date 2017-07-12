@@ -1,7 +1,7 @@
 #ifndef MICO_EVALUATOR_H
 #define MICO_EVALUATOR_H
 
-#include "mico/objects.h"
+#include "mico/objects/objects.h"
 #include "mico/ast.h"
 #include "mico/environment.h"
 

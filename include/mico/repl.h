@@ -6,7 +6,7 @@
 #include "mico/parser.h"
 #include "mico/eval/tree_walking.h"
 #include "mico/builtin.h"
-#include "mico/objects.h"
+#include "mico/objects/objects.h"
 
 namespace mico {
 

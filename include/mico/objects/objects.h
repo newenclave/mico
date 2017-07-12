@@ -14,8 +14,8 @@
 #include "mico/expressions.h"
 #include "mico/environment.h"
 
-#include "mico/object_base.h"
-#include "mico/object_reference.h"
+#include "mico/objects/base.h"
+#include "mico/objects/reference.h"
 
 namespace mico { namespace objects {
 
