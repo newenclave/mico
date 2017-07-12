@@ -119,7 +119,9 @@ namespace mico { namespace objects {
 
         std::shared_ptr<base> clone( ) const override
         {
-            return std::make_shared<this_type>( my_env_, value_->clone( ) );
+            auto res = std::make_shared<this_type>( my_env_, value_->clone( ) );
+            res->cont_env_ = cont_env_;
+            return res;
         }
 
         std::size_t locked( ) const override

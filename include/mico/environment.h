@@ -155,6 +155,7 @@ namespace mico {
         void unlock( )
         {
             if( locked_ == 0  ) {
+                std::cout << "";
                 //std::cout << "zero unlock!\n";
             }
             locked_--;
