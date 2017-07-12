@@ -13,6 +13,7 @@ It's so funny to add something new =)
 *   **line number for the tokens.**
     Yeap. Now I can see where an error happens.
 ```
+    let test_val = someUnknownCall()
     error: [1:15] Identifier not found 'someUnknownCall'
 ```
 
