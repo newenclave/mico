@@ -115,6 +115,11 @@ namespace mico {
             return parent_.lock( );
         }
 
+        const sptr parent( ) const
+        {
+            return parent_.lock( );
+        }
+
         void drop( )
         {
             if( !locked_ ) {
@@ -124,6 +129,16 @@ namespace mico {
                     p->drop( shared_from_this( ) );
                 }
             }
+        }
+
+        static
+        const environment *common_parent( const environment *l,
+                                          const environment *r )
+        {
+            while( l && !r->is_parent( l ) ) {
+                l = l->parent( ).get( );
+            }
+            return l;
         }
 
         std::size_t is_parent( const environment *pp ) const

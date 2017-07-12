@@ -41,8 +41,8 @@ namespace mico { namespace objects {
                         my_env = my_env->parent( );
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
-                    my_env->lock( );
-                    my_env = my_env->parent( );
+                    auto par = environment::common_parent( e, my_env.get( ) );
+                    lock_in( par );
                 }
                 return true;
             }
@@ -61,11 +61,8 @@ namespace mico { namespace objects {
                         ++ul;
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
-                    while( my_env.get( ) ) {
-                        my_env->unlock( );
-                        my_env = my_env->parent( );
-                        ++ul;
-                    }
+                    auto par = environment::common_parent( e, my_env.get( ) );
+                    unlock_in( par );
                 }
                 return true;
             }
