@@ -101,8 +101,13 @@ namespace mico { namespace objects {
         bool lock_in( const environment *e ) override
         {
             auto my_env = env( );
-            if( my_env && my_env->is_parent( e ) ) {
-                while( my_env.get( ) != e ) {
+            if( my_env ) {
+                if( my_env->is_parent( e ) ) {
+                    while( my_env.get( ) != e ) {
+                        my_env->lock( );
+                        my_env = my_env->parent( );
+                    }
+                } else if( !e->is_parent( my_env.get( ) ) ) {
                     my_env->lock( );
                     my_env = my_env->parent( );
                 }
@@ -114,12 +119,20 @@ namespace mico { namespace objects {
         bool unlock_in( const environment *e ) override
         {
             auto my_env = env( );
-            if( my_env && my_env->is_parent( e ) ) {
+            if( my_env ) {
                 std::size_t ul = 0;
-                while( my_env.get( ) != e ) {
-                    my_env->unlock( );
-                    my_env = my_env->parent( );
-                    ++ul;
+                if( my_env->is_parent( e ) ) {
+                    while( my_env.get( ) != e ) {
+                        my_env->unlock( );
+                        my_env = my_env->parent( );
+                        ++ul;
+                    }
+                } else if( !e->is_parent( my_env.get( ) ) ) {
+                    while( my_env.get( ) ) {
+                        my_env->unlock( );
+                        my_env = my_env->parent( );
+                        ++ul;
+                    }
                 }
                 return true;
             }
