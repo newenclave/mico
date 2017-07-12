@@ -32,10 +32,12 @@ HEADERS += \
     include/mico/objects/numbers.h \
     include/mico/objects/table.h \
     include/mico/objects/null.h \
-    include/mico/objects/array.h
+    include/mico/objects/array.h \
+    include/mico/objects/functions.h
 
 DISTFILES += \
-    drafts/tail_recursion.md
+    drafts/tail_recursion.md \
+    tests.txt
 
 
 #DEFINES += DEBUG=1

@@ -49,8 +49,6 @@ namespace mico {
             {
                 if( env_ ) {
                     env_->unlock( );
-//                    env_->clear( );
-//                    env_->drop( );
                 }
             }
 
@@ -119,7 +117,7 @@ namespace mico {
 
         void drop( )
         {
-            if( /*children_.empty( ) &&*/ !locked_ ) {
+            if( !locked_ ) {
                 auto p = parent( );
                 if( p ) {
                     data_.clear( );
@@ -212,7 +210,6 @@ namespace mico {
         void introspect( int level = 0 )
         {
             std::string space( level * 2, ' ' );
-            std::cout << space << locked( ) << "\n";
             for( auto &d: data_ ) {
                 auto us = d.second->locked( );
                 std::cout << space << d.first << ": " << us
@@ -223,7 +220,8 @@ namespace mico {
             for( auto &c: children_ ) {
                 auto cl = c;
                 if( !cl ) continue;
-                std::cout << space << "Child: " << cl->locked_
+                std::cout << space
+                          << "Child: " << cl->locked_
                           << "\n";
                 cl->introspect( level + 1 );
             }

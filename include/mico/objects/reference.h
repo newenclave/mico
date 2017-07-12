@@ -61,18 +61,12 @@ namespace mico { namespace objects {
         {
             if( value_ != val ) {
                 //// unlock
-                if( cont_env_ ) {
-                    value_->unlock_in( cont_env_ );
-                }
                 value_->unlock_in( my_env_ );
 
                 ///replace lock
                 value_ = val;
                 my_env_ = my_env;
                 value_->lock_in( my_env_ );
-                if( cont_env_ ) {
-                    value_->lock_in( cont_env_ );
-                }
                 locked_ = val->locked( );
             }
         }
@@ -88,30 +82,14 @@ namespace mico { namespace objects {
             return my_env_;
         }
 
-        const environment *cont_env( ) const
-        {
-            return cont_env_;
-        }
-
         bool lock_in( const environment *e ) override
         {
             return value_->lock_in( e );
-            if( !cont_env_ ) {
-                if(value_->lock_in( e )) {
-                    cont_env_ = e;
-                    return true;
-                }
-            }
-            return false;
         }
 
         bool unlock_in( const environment *e ) override
         {
             return value_->unlock_in( e );
-            if( e == cont_env_ ) {
-                return value_->unlock_in( e );
-                cont_env_ = nullptr;
-            }
         }
 
         std::uint64_t hash( ) const override
@@ -127,7 +105,6 @@ namespace mico { namespace objects {
         std::shared_ptr<base> clone( ) const override
         {
             auto res = std::make_shared<this_type>( my_env_, value_->clone( ) );
-            res->cont_env_ = cont_env_;
             return res;
         }
 
@@ -138,7 +115,6 @@ namespace mico { namespace objects {
 
     private:
         const environment  *my_env_;
-        const environment  *cont_env_ = nullptr;
         value_type          value_;
         std::size_t         locked_ = 0;
     };
