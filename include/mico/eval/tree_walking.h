@@ -188,12 +188,7 @@ namespace mico { namespace eval {
 
         objects::sptr unref( objects::sptr obj )
         {
-            if( obj->get_type( ) == objects::type::REFERENCE ) {
-                auto ret = obj_cast<objects::reference>(obj.get( ));
-                return ret->value( );
-            } else {
-                return obj;
-            }
+            return objects::reference::unref( obj );
         }
 
         objects::sptr eval_float( ast::node *n )
@@ -915,7 +910,7 @@ namespace mico { namespace eval {
                 if( is_fail( next ) ) {
                     return next;
                 }
-                res->push( env.get( ), next );
+                res->push( env.get( ), unref(next) );
             }
 
             return res;

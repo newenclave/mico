@@ -18,7 +18,7 @@ namespace mico { namespace objects {
 
         derived(const environment *my_env, value_type val)
             :my_env_(my_env)
-            ,value_(val)
+            ,value_(unref(val))
         {
             value_->lock_in( my_env_ );
             locked_ = val->locked( );
@@ -44,6 +44,17 @@ namespace mico { namespace objects {
         value_type &value( )
         {
             return value_;
+        }
+
+        static
+        objects::sptr unref( objects::sptr obj )
+        {
+            if( obj->get_type( ) == objects::type::REFERENCE ) {
+                auto ret = static_cast<this_type *>(obj.get( ));
+                return ret->value( );
+            } else {
+                return obj;
+            }
         }
 
         void set_value( const environment *my_env, value_type val )

@@ -187,6 +187,8 @@ let g = fn (name) {
     }
 }
 let f = g("first")
+let a = [f[false], f[true]]
+
 //f[false] = 0
 let r = fn(  ){ let bu = f; bu[true] }
 let m = r( )
