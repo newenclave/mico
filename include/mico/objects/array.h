@@ -63,7 +63,6 @@ namespace mico { namespace objects {
         void push( const environment *env, objects::sptr val )
         {
             value_.emplace_back( cont::make(env, val) );
-            val->lock_in( env );
         }
 
         static
@@ -121,7 +120,6 @@ namespace mico { namespace objects {
             auto res = std::make_shared<this_type>( );
             for( auto &v: value_ ) {
                 auto clone = v->value( )->clone( );
-                clone->lock_in( v->cont_env( ) );
                 res->push( v->env( ), clone );
             }
             return res;
