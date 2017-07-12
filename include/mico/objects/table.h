@@ -145,6 +145,7 @@ namespace mico { namespace objects {
                 auto kc = v.first->clone( );
                 auto vc = ref::make( v.second->env( ),
                                      v.second->value( )->clone( ) );
+                vc->value( )->lock_in( v.second->cont_env( ) );
                 res->value( ).insert( std::make_pair(kc, vc) );
             }
             return res;

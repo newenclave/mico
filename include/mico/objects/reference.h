@@ -88,6 +88,11 @@ namespace mico { namespace objects {
             return my_env_;
         }
 
+        const environment *cont_env( ) const
+        {
+            return cont_env_;
+        }
+
         bool lock_in( const environment *e ) override
         {
             if( !cont_env_ ) {

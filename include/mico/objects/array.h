@@ -120,7 +120,9 @@ namespace mico { namespace objects {
         {
             auto res = std::make_shared<this_type>( );
             for( auto &v: value_ ) {
-                res->push( v->env( ), v->value( )->clone( ) );
+                auto clone = v->value( )->clone( );
+                clone->lock_in( v->cont_env( ) );
+                res->push( v->env( ), clone );
             }
             return res;
         }
