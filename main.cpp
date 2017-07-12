@@ -123,6 +123,9 @@ let fib = fn(x) {
     else { fib(x - 1) + fib(x - 2); }
 };
 
+let  z = fn(c) { let test = fn( ) { let a = [0, 1,2,3,4,5,6,7,8,9]; let b = a; let int = fn( ) { return a; }; let intA = int; let intB = int; return int } let copy_test = test( ); if(c>0) { test( ); return z(c - 1); } else { return copy_test; } }
+
+
 // Here is an array containing two hashes, that use strings as keys and integers
 // and strings as values
 let people = [{"name": "Anna", "age": 24}, {"name": "Bob", "age": 99}];
