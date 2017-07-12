@@ -95,6 +95,7 @@ namespace mico { namespace objects {
 
         bool lock_in( const environment *e ) override
         {
+            //return value_->lock_in( e );
             if( !cont_env_ ) {
                 if(value_->lock_in( e )) {
                     cont_env_ = e;
@@ -106,6 +107,7 @@ namespace mico { namespace objects {
 
         bool unlock_in( const environment *e ) override
         {
+            //return value_->unlock_in( e );
             if( e == cont_env_ ) {
                 return value_->unlock_in( e );
                 cont_env_ = nullptr;
