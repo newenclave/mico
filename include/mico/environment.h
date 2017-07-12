@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "mico/object_base.h"
+#include "mico/object_reference.h"
 
 namespace mico {
 
@@ -26,6 +27,9 @@ namespace mico {
         using object_sptr = std::shared_ptr<objects::base>;
         using object_wptr = std::weak_ptr<objects::base>;
         using children_type = std::set<sptr>;
+        using obj_reference = objects::derived<objects::type::REFERENCE>;
+
+        using data_map = std::map<std::string, obj_reference::sptr>;
 
     protected:
 
@@ -45,8 +49,8 @@ namespace mico {
             {
                 if( env_ ) {
                     env_->unlock( );
-                    env_->clear( );
-                    env_->drop( );
+//                    env_->clear( );
+//                    env_->drop( );
                 }
             }
 
@@ -115,13 +119,27 @@ namespace mico {
 
         void drop( )
         {
-            if( children_.empty( ) && !locked_ ) {
+            if( /*children_.empty( ) &&*/ !locked_ ) {
                 auto p = parent( );
                 if( p ) {
                     data_.clear( );
                     p->drop( shared_from_this( ) );
                 }
             }
+        }
+
+        std::size_t is_parent( const environment *pp ) const
+        {
+            auto c = this;
+            std::size_t count = 0;
+            while( c ) {
+                ++count;
+                if( c == pp ) {
+                    return count;
+                }
+                c = c->parent_.lock( ).get( );
+            }
+            return 0;
         }
 
         void lock( )
@@ -157,7 +175,7 @@ namespace mico {
 
         void set( const std::string &name, object_sptr val )
         {
-            data_[name] = val;
+            data_[name] = obj_reference::make( this, val );
         }
 
         object_sptr get( const std::string &name )
@@ -168,7 +186,7 @@ namespace mico {
             while( cur && !res ) {
                 auto f = cur->data_.find( name );
                 if( f != cur->data_.end( ) ) {
-                    res = f->second;
+                    res = f->second->value( );
                 } else {
                     parent = cur->parent( );
                     cur = parent.get( );
@@ -177,7 +195,7 @@ namespace mico {
             return res;
         }
 
-        std::map<std::string, object_sptr> &data( )
+        data_map &data( )
         {
             return data_;
         }
@@ -192,72 +210,43 @@ namespace mico {
             std::string space( level * 2, ' ' );
             std::cout << space << locked( ) << "\n";
             for( auto &d: data_ ) {
-                std::weak_ptr<objects::base> w = d.second;
-                auto us = d.second.use_count( );
-                std::cout << space << d.first << ":"
-                          << us
+                auto us = d.second->locked( );
+                std::cout << space << d.first << ": " << us
+                          << " obj l: " << d.second->value( )->locked( )
                           << "\n";
             }
 
             for( auto &c: children_ ) {
                 auto cl = c;
                 if( !cl ) continue;
-                auto us = cl.use_count( );
-                std::cout << space << "Child: "
-                          << us
-                          << " l: " << cl->locked_
+                std::cout << space << "Child: " << cl->locked_
                           << "\n";
                 cl->introspect( level + 1 );
             }
         }
 
-        std::size_t maximum_level( )
-        {
-            std::size_t res = 1;
-            maximum_level_hide( res );
-            return res;
-        }
-
         void GC( )
         {
-            for( auto &c: children( ) ) {
-                auto cl = c;
-                if( !cl ) {
-                    continue;
-                }
-                if( c->maximum_level( ) == 1  ) {
-                    cl->unlock( );
-                    cl->children( ).clear( );
-                    cl->data( ).clear( );
-                    //cl->clear( );
-                    //c->drop( );
+            auto b = children( ).begin( );
+            auto e = children( ).end( );
+            while( b != e ) {
+                auto lck = (*b)->locked( );
+                if( 0 == lck ) {
+                    b = children( ).erase( b );
+                } else {
+                    //(*b)->GC( );
+                    ++b;
                 }
             }
+            return;
         }
 
     private:
 
-        void maximum_level_hide( std::size_t &res )
-        {
-            for( auto &d: data_ ) {
-                auto us = static_cast<std::size_t>(d.second.use_count( ));
-                res = (res > us) ? res : us;
-            }
-            for( auto &c: children_ ) {
-                auto cl = c;
-                if( !cl ) {
-                    continue;
-                }
-                auto us = static_cast<std::size_t>(cl.use_count( ));
-                res = (res > us) ? res : us;
-                cl->maximum_level_hide( res );
-            }
-        }
-
-        wptr parent_;
-        std::map<std::string, object_sptr> data_;
-        children_type children_;
-        std::size_t locked_ = 0;
+        wptr            parent_;
+        data_map        data_;
+        children_type   children_;
+        std::size_t     locked_ = 0;
     };
 }
 

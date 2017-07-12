@@ -123,6 +123,8 @@ let fib = fn(x) {
     else { fib(x - 1) + fib(x - 2); }
 };
 
+let  z = fn(c) { let test = fn( ) { let a = [0, 1,2,3,4,5,6,7,8,9]; let b = a; let int = fn( ) { return a; }; let intA = int; let intB = int; return int } let copy_test = test( ); if(c>0) { test( ); return z(c - 1); } else { return copy_test; } }
+
 // Here is an array containing two hashes, that use strings as keys and integers
 // and strings as values
 let people = [{"name": "Anna", "age": 24}, {"name": "Bob", "age": 99}];
@@ -157,6 +159,24 @@ let test = fn( ) {
     let int = fn( ) { a }
     int
 }
+let z = fn( c ) {
+    let test = fn( ) {
+        let a = [0, 1,2,3,4,5,6,7,8,9];
+        let b = a;
+        let i = fn( ) { [0, 1,2,3,4,5,6,7,8,9] }
+        let int = fn( ) { a }
+        int
+    }
+    let t = test( )
+    if c > 0  {
+        test( )
+        z(c-1)
+    } else {
+        test( )
+    }
+}
+
+let t = fn( ) { 10 }
 
 let g = fn (name) {
     {
@@ -168,10 +188,14 @@ let g = fn (name) {
 
 let test = fn( ) {
     let a = [0, 1,2,3,4,5,6,7,8,9];
+    let t = test
     fn( ) { a }
 }
+let m = fn( ) {
+    let r = test( )
+    r
+}
 let r = test( )
-
 
 let  z = fn(c) {
     if(c>0) { test(); z(c - 1) } else { 0 }

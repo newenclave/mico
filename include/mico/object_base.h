@@ -2,7 +2,13 @@
 #define MICO_OBJECT_BASE_H
 
 #include <string>
+#include <memory>
+#include <vector>
 #include <algorithm>
+
+namespace mico {
+    class environment;
+}
 
 namespace mico { namespace objects {
 
@@ -90,6 +96,17 @@ namespace mico { namespace objects {
                  ;
         }
 
+        virtual void lock_in( const environment * )
+        { }
+
+        virtual void unlock_in( const environment * )
+        { }
+
+        virtual std::size_t locked( ) const
+        {
+            return 0;
+        }
+
         virtual void env_reset( )
         { }
 
@@ -104,6 +121,9 @@ namespace mico { namespace objects {
             return TN;
         }
     };
+
+    template <type>
+    class derived;
 
     using sptr  = std::shared_ptr<base>;
     using uptr  = std::unique_ptr<base>;

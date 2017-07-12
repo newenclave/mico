@@ -600,6 +600,8 @@ namespace mico { namespace eval {
                 if( call_type == objects::type::FUNCTION ) {
                     auto fun = obj_cast<objects::function>
                                         (call->value( ).get( ));
+                    environment::scoped s( call->env( ) );
+                    fun->env( )->GC( );
                     obj = eval_scope_impl( fun->body( ), call->env( ) );
                 } else if( call_type == objects::type::BUILTIN ) {
                     auto fun = obj_cast<objects::builtin>
@@ -861,7 +863,7 @@ namespace mico { namespace eval {
 
                 auto vfun = obj_cast<objects::function>(fun.get( ));
 
-                //vfun->env( )->GC( );
+                vfun->env( )->GC( );
 
                 objects::slist params;
 
@@ -912,7 +914,7 @@ namespace mico { namespace eval {
                 if( is_fail( next ) ) {
                     return next;
                 }
-                res->push( next );
+                res->push( env.get( ), next );
             }
 
             return res;
@@ -940,7 +942,7 @@ namespace mico { namespace eval {
                 if( is_fail( val ) ) {
                     return val;
                 }
-                res->insert(key, val);
+                res->insert( env.get( ), key, val );
             }
 
             return res;
