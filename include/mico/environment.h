@@ -81,6 +81,8 @@ namespace mico {
 #if DEBUG
             std::cout << --c << "\n";
 #endif
+            data_.clear( );
+            children_.clear( );
         }
 
         void clear( )
@@ -262,8 +264,8 @@ namespace mico {
     private:
 
         wptr            parent_;
-        data_map        data_;
         children_type   children_;
+        data_map        data_;
         std::size_t     locked_ = 0;
     };
 }
