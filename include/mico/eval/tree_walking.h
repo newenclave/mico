@@ -442,7 +442,7 @@ namespace mico { namespace eval {
                     return rght;
                 }
 
-                cont_env->set( id->value( ), rght );
+                cont_env->set( id->value( ), unref(rght) );
                 return rght;
             } else {
                 auto lft = eval_impl_tail( inf->left( ).get( ), env );
@@ -718,7 +718,7 @@ namespace mico { namespace eval {
             if( is_fail( val ) ) {
                 return val;
             }
-            env->set( id, val );
+            env->set( id, unref(val) );
             return get_null( );
         }
 
