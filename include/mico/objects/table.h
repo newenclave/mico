@@ -118,7 +118,7 @@ namespace mico { namespace objects {
         bool lock_in( const environment *e ) override
         {
             for( auto &d: value_ ) {
-                d.second->lock_in( e );
+                d.second->value( )->lock_in( e );
             }
             return true;
         }
@@ -126,7 +126,7 @@ namespace mico { namespace objects {
         bool unlock_in( const environment *e ) override
         {
             for( auto &d: value_ ) {
-                d.second->unlock_in( e );
+                d.second->value( )->unlock_in( e );
             }
             return true;
         }
