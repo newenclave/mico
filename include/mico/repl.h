@@ -42,6 +42,7 @@ namespace mico {
                         //std::cout << prog.str( ) << "\n";
                         mico::eval::tree_walking tv;
                         if( prog.states( ).size( ) > 0 ) {
+                            env->GC( );
                             auto obj = tv.eval( &prog, env );
                             if( obj->get_type( ) != objects::type::NULL_OBJ ) {
                                 std::cout << obj->str( ) << "\n";

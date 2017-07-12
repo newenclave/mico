@@ -275,18 +275,6 @@ namespace mico { namespace objects {
     using table      = derived<type::TABLE>;
     using error      = derived<type::ERROR>;
 
-    inline
-    std::ostream &operator << ( std::ostream &o, const objects::sptr &obj )
-    {
-        return o << obj->str( );
-    }
-
-    inline
-    std::ostream &operator << ( std::ostream &o, type t )
-    {
-        return o << name::get(t);
-    }
-
 }}
 
 #endif // OBJECTS_H

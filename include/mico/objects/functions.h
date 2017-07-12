@@ -42,6 +42,12 @@ namespace mico { namespace objects {
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
                     auto par = environment::common_parent( e, my_env.get( ) );
+                    if( !e->is_parent( par ) ) {
+                        throw std::logic_error( "Not a parent!" );
+                    }
+                    if( !my_env->is_parent( par ) ) {
+                        throw std::logic_error( "Not a parent!" );
+                    }
                     lock_in( par );
                 }
                 return true;
@@ -62,6 +68,12 @@ namespace mico { namespace objects {
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
                     auto par = environment::common_parent( e, my_env.get( ) );
+                    if( !e->is_parent( par ) ) {
+                        throw std::logic_error( "Not a parent!" );
+                    }
+                    if( !my_env->is_parent( par ) ) {
+                        throw std::logic_error( "Not a parent!" );
+                    }
                     unlock_in( par );
                 }
                 return true;

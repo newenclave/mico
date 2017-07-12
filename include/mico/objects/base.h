@@ -134,6 +134,19 @@ namespace mico { namespace objects {
     using slist = std::vector<sptr>;
     using ulist = std::vector<uptr>;
 
+
+    inline
+    std::ostream &operator << ( std::ostream &o, const objects::sptr &obj )
+    {
+        return o << obj->str( );
+    }
+
+    inline
+    std::ostream &operator << ( std::ostream &o, type t )
+    {
+        return o << name::get(t);
+    }
+
 }}
 
 #endif // OBJECT_BASE_H

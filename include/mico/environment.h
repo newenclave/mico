@@ -226,9 +226,8 @@ namespace mico {
         {
             std::string space( level * 2, ' ' );
             for( auto &d: data_ ) {
-                auto us = d.second->locked( );
-                std::cout << space << d.first << ": " << us
-                          << " obj l: " << d.second->value( )->locked( )
+                std::cout << space << d.first
+                          << " => " << d.second->value( )
                           << "\n";
             }
 
