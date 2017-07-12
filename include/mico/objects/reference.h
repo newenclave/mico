@@ -33,7 +33,7 @@ namespace mico { namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << ""  << value( )->str( ) << "";
+            oss << "*"  << value( )->str( ) << "";
             return oss.str( );
         }
 
@@ -89,9 +89,9 @@ namespace mico { namespace objects {
         }
 
     private:
-        const environment *my_env_;
-        value_type value_;
-        std::size_t locked_ = 0;
+        const environment  *my_env_;
+        value_type          value_;
+        std::size_t         locked_ = 0;
     };
 
 

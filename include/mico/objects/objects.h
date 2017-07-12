@@ -6,9 +6,7 @@
 #include <sstream>
 #include <map>
 #include <vector>
-#include <deque>
 #include <algorithm>
-#include <unordered_map>
 
 #include "mico/statements.h"
 #include "mico/expressions.h"
@@ -16,53 +14,12 @@
 
 #include "mico/objects/base.h"
 #include "mico/objects/reference.h"
+#include "mico/objects/numbers.h"
+#include "mico/objects/null.h"
+#include "mico/objects/table.h"
+#include "mico/objects/array.h"
 
 namespace mico { namespace objects {
-
-    template <type TName>
-    struct type2object;
-
-    template <>
-    struct type2object<type::FLOAT> {
-        using native_type = double;
-    };
-
-    template <>
-    struct type2object<type::INTEGER> {
-        using native_type = std::int64_t;
-    };
-
-    template <>
-    class derived<type::NULL_OBJ>: public typed_base<type::NULL_OBJ> {
-        using this_type = derived<type::NULL_OBJ>;
-    public:
-        using sptr = std::shared_ptr<this_type>;
-        std::string str( ) const
-        {
-            return "null";
-        }
-        static
-        sptr make( )
-        {
-            static auto val = std::make_shared<this_type>( );
-            return val;
-        }
-        std::uint64_t hash( ) const override
-        {
-            return 0;
-        }
-
-        bool equal( const base *o ) const override
-        {
-            return (o->get_type( ) == get_type( ));
-        }
-
-        std::shared_ptr<base> clone( ) const override
-        {
-            return make( );
-        }
-
-    };
 
     template <>
     class derived<type::STRING>: public typed_base<type::STRING> {
@@ -127,11 +84,7 @@ namespace mico { namespace objects {
         { }
 
         ~env_object( )
-        {
-//            if( auto p = env( ) ) {
-//                p->drop( );
-//            }
-        }
+        { }
 
         std::shared_ptr<environment> env( )
         {
@@ -153,7 +106,6 @@ namespace mico { namespace objects {
                     my_env->lock( );
                     my_env = my_env->parent( );
                 }
-//                my_env->lock( );
             }
         }
 
@@ -167,7 +119,6 @@ namespace mico { namespace objects {
                     my_env = my_env->parent( );
                     ++ul;
                 }
-//                my_env->unlock( );
                 if( ul ) {
                     env( )->drop( );
                 }
@@ -358,118 +309,6 @@ namespace mico { namespace objects {
     };
 
     template <>
-    class derived<type::ARRAY>: public typed_base<type::ARRAY> {
-        using this_type = derived<type::ARRAY>;
-    public:
-
-        using sptr = std::shared_ptr<this_type>;
-        using cont = derived<type::REFERENCE>;
-        using cont_sptr = std::shared_ptr<cont>;
-        using value_type = std::deque<cont_sptr>;
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << "[";
-            bool first = true;
-            for( auto &v: value( ) ) {
-                if( first ) {
-                    first = false;
-                } else {
-                    oss << ", ";
-                }
-                oss << v->str( );
-            }
-            oss << "]";
-            return oss.str( );
-        }
-
-        const value_type &value( ) const
-        {
-            return value_;
-        }
-
-        std::size_t size( ) const override
-        {
-            return value_.size( );
-        }
-
-        value_type &value( )
-        {
-            return value_;
-        }
-
-        objects::sptr at( std::int64_t id )
-        {
-            auto size = static_cast<std::size_t>(id);
-            if( (size < value_.size( )) && ( id >= 0) ) {
-                return value_[size];
-            } else {
-                return derived<type::NULL_OBJ>::make( );
-            }
-        }
-
-        void push( const environment *env, objects::sptr val )
-        {
-            value_.emplace_back( cont::make(env, val) );
-        }
-
-        static
-        sptr make( )
-        {
-            return std::make_shared<this_type>( );
-        }
-
-        std::uint64_t hash( ) const override
-        {
-            auto init = static_cast<std::uint64_t>(get_type( ));
-            std::uint64_t h = base::hash64( init );
-            for( auto &o: value( ) ) {
-                h = base::hash64( h + o->hash( ) );
-            }
-            return h;
-        }
-
-        bool equal( const base *other ) const override
-        {
-            if( other->get_type( ) == get_type( ) ) {
-                auto o = static_cast<const this_type *>( other );
-                if( o->value( ).size( ) == value( ).size( ) ) {
-                    std::size_t id = value( ).size( );
-                    while( id-- ) {
-                        auto other = o->value( )[id]->value( ).get( );
-                        if( !value( )[id]->equal( other ) ) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        std::shared_ptr<base> clone( ) const override
-        {
-            auto res = std::make_shared<this_type>( );
-            for( auto &v: value_ ) {
-                res->push( v->env( ), v->value( )->clone( ) );
-            }
-            return res;
-        }
-
-    private:
-
-        void env_reset( ) override
-        {
-            for( auto &v: value_ ) {
-                //v->value( ).reset( );
-                v.reset( );
-            }
-        }
-        value_type  value_;
-    };
-
-    template <>
     class derived<type::BOOLEAN>: public typed_base<type::BOOLEAN> {
         using this_type = derived<type::BOOLEAN>;
 
@@ -525,86 +364,6 @@ namespace mico { namespace objects {
     private:
 
         bool value_;
-    };
-
-    template <type TN>
-    class derived: public typed_base<TN>  {
-        using this_type = derived<TN>;
-    public:
-        using sptr = std::shared_ptr<this_type>;
-
-        static const type type_name = TN;
-        using value_type = typename type2object<type_name>::native_type;
-
-        derived(value_type val)
-            :value_(val)
-        { }
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << value( );
-            return oss.str( );
-        }
-
-        value_type value( ) const
-        {
-            return value_;
-        }
-
-        void set_value( value_type val )
-        {
-            value_ = val;
-        }
-
-        template <typename T>
-        static
-        sptr make( T val )
-        {
-            return std::make_shared<this_type>( static_cast<value_type>(val) );
-        }
-
-        static
-        std::size_t hash(value_type x )
-        {
-            std::hash<value_type> h;
-            return h(x);
-        }
-
-        bool equal( const base *other ) const override
-        {
-            if( other->get_type( ) == this->get_type( ) ) {
-                auto o = static_cast<const this_type *>( other );
-                return o->value( ) == value( );
-            }
-            return false;
-        }
-
-        std::shared_ptr<base> clone( ) const override
-        {
-            return make( value_ );
-        }
-
-    private:
-
-        value_type value_;
-    };
-
-    struct hash_helper {
-
-        std::size_t operator ( )(const objects::sptr &h) const
-        {
-            return static_cast<std::size_t>(h->hash( ));
-        }
-    };
-
-    struct equal_helper {
-
-        bool operator ( )( const objects::sptr &l,
-                           const objects::sptr &r ) const
-        {
-            return l->equal( r.get( ) );
-        }
     };
 
     template <>
@@ -688,120 +447,6 @@ namespace mico { namespace objects {
 
     private:
         tokens::position where_;
-        value_type value_;
-    };
-
-    template <>
-    class derived<type::TABLE>: public typed_base<type::TABLE> {
-
-        using this_type = derived<type::TABLE>;
-    public:
-        using sptr = std::shared_ptr<this_type>;
-        using cont = derived<type::REFERENCE>;
-        using cont_sptr = std::shared_ptr<cont>;
-
-        using value_type = std::unordered_map<objects::sptr, cont_sptr,
-                                              hash_helper, equal_helper>;
-
-        std::string str( ) const override
-        {
-            std::ostringstream oss;
-            oss << "{ ";
-            for( auto &v: value_ ) {
-                oss << v.first->str( ) << ":";
-                oss << v.second->str( )<< " ";
-            }
-            oss << "}";
-            return oss.str( );
-        }
-
-        const value_type &value( ) const
-        {
-            return value_;
-        }
-
-        value_type &value( )
-        {
-            return value_;
-        }
-
-        bool insert( const environment *env,
-                     objects::sptr key, objects::sptr val )
-        {
-            value_[key->clone( )] = cont::make(env, val);
-            return true;
-        }
-
-        std::uint64_t hash( ) const override
-        {
-            auto h = static_cast<std::uint64_t>(get_type( ));
-            for( auto &o: value( ) ) {
-                h = base::hash64( h + o.first->hash( ) +
-                                     o.second->hash( ) );
-            }
-            return h;
-        }
-
-        objects::sptr at( objects::sptr id )
-        {
-            objects::sptr ptr = id;
-            auto f = value_.find( ptr );
-            if(f == value_.end( )) {
-                return derived<type::NULL_OBJ>::make( );
-            } else {
-                return f->second;
-            }
-        }
-
-        bool equal( const base *other ) const override
-        {
-            if( other->get_type( ) == get_type( ) ) {
-                auto o = static_cast<const this_type *>( other );
-                if( o->value( ).size( ) == value( ).size( ) ) {
-                    for( auto &next: value( ) ) {
-                        auto f = o->value( ).find( next.first );
-                        if( f == o->value( ).end( ) ) {
-                            return false;
-                        }
-                        auto ch = f->second->value( );
-                        if( !next.second->value( )->equal( ch.get( ) ) ) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        static
-        sptr make( )
-        {
-            return std::make_shared<this_type>( );
-        }
-
-        std::shared_ptr<base> clone( ) const override
-        {
-            using ref = derived<type::REFERENCE>;
-            auto res = make( );
-            for( auto &v: value( ) ) {
-                auto kc = v.first->clone( );
-                auto vc = ref::make( v.second->env( ),
-                                     v.second->value( )->clone( ) );
-                res->value( ).insert( std::make_pair(kc, vc) );
-            }
-            return res;
-        }
-
-    private:
-
-        void env_reset( ) override
-        {
-            for( auto &v: value_ ) {
-                v.second->value( ).reset( );
-                v.second.reset( );
-            }
-        }
         value_type value_;
     };
 

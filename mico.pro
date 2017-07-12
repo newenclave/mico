@@ -28,7 +28,11 @@ HEADERS += \
     include/mico/memory.h \
     include/mico/objects/objects.h \
     include/mico/objects/base.h \
-    include/mico/objects/reference.h
+    include/mico/objects/reference.h \
+    include/mico/objects/numbers.h \
+    include/mico/objects/table.h \
+    include/mico/objects/null.h \
+    include/mico/objects/array.h
 
 DISTFILES += \
     drafts/tail_recursion.md
