@@ -114,6 +114,28 @@ namespace mico { namespace objects {
             return std::make_shared<this_type>( );
         }
 
+
+        bool lock_in( const environment *e ) override
+        {
+            for( auto &d: value_ ) {
+                d.second->lock_in( e );
+            }
+            return true;
+        }
+
+        bool unlock_in( const environment *e ) override
+        {
+            for( auto &d: value_ ) {
+                d.second->value( )->unlock_in( e );
+            }
+            return true;
+        }
+
+        std::size_t locked( ) const override
+        {
+            return 0;
+        }
+
         std::shared_ptr<base> clone( ) const override
         {
             using ref = derived<type::REFERENCE>;

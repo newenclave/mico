@@ -186,7 +186,10 @@ let g = fn (name) {
       true: fn( )  { "This is true, " + name }
     }
 }
-
+let f = g("first")
+f[false] = 0
+let r = fn(  ){ let bu = f; bu[true] }
+r()
 
 let test = fn( ) {
     let a = [0, 1,2,3,4,5,6,7,8,9];

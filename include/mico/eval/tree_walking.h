@@ -452,7 +452,8 @@ namespace mico { namespace eval {
                     if( is_fail( rght ) ) {
                         return rght;
                     }
-                    return cont->value( ) = rght->clone( );
+                    cont->set_value(env.get( ), rght->clone( ));
+                    return cont->value( );
                 }
             }
             return error( inf, "Invalid left value for ASSIGN ",

@@ -96,11 +96,15 @@ namespace mico { namespace objects {
                  ;
         }
 
-        virtual void lock_in( const environment * )
-        { }
+        virtual bool lock_in( const environment * )
+        {
+            return false;
+        }
 
-        virtual void unlock_in( const environment * )
-        { }
+        virtual bool unlock_in( const environment * )
+        {
+            return false;
+        }
 
         virtual std::size_t locked( ) const
         {

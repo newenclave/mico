@@ -1,11 +1,10 @@
 #ifndef MICO_OBJECT_REFERENCE_H
 #define MICO_OBJECT_REFERENCE_H
 
+#include "mico/environment.h"
 #include "mico/objects/base.h"
-
 #include "mico/statements.h"
 #include "mico/expressions.h"
-#include "mico/environment.h"
 
 namespace mico { namespace objects {
 
@@ -47,11 +46,13 @@ namespace mico { namespace objects {
             return value_;
         }
 
-        void set_value( value_type val )
+        void set_value( const environment *my_env, value_type val )
         {
             if( value_ != val ) {
                 value_->unlock_in( my_env_ );
+
                 value_ = val;
+                my_env_ = my_env;
                 val->lock_in( my_env_ );
                 locked_ = val->locked( );
             }
@@ -66,6 +67,15 @@ namespace mico { namespace objects {
         const environment *env( ) const
         {
             return my_env_;
+        }
+
+        bool lock_in( const environment *e ) override
+        {
+            if(value_->lock_in( e )) {
+                my_env_= e;
+                return true;
+            }
+            return false;
         }
 
         std::uint64_t hash( ) const override

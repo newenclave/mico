@@ -98,18 +98,24 @@ namespace mico { namespace objects {
             return l;
         }
 
-        void lock_in( const environment *e ) override
+        bool lock_in( const environment *e ) override
         {
+            if( locked_ && locked_->is_parent( e ) ) {
+                unlock_in( locked_ );
+            }
             auto my_env = env( );
             if( my_env && my_env->is_parent( e ) ) {
+                locked_ = e;
                 while( my_env.get( ) != e ) {
                     my_env->lock( );
                     my_env = my_env->parent( );
                 }
+                return true;
             }
+            return false;
         }
 
-        void unlock_in( const environment *e ) override
+        bool unlock_in( const environment *e ) override
         {
             auto my_env = env( );
             if( my_env && my_env->is_parent( e ) ) {
@@ -119,10 +125,12 @@ namespace mico { namespace objects {
                     my_env = my_env->parent( );
                     ++ul;
                 }
-                if( ul ) {
-                    env( )->drop( );
-                }
+                return true;
+//                if( ul ) {
+//                    env( )->drop( );
+//                }
             }
+            return false;
         }
 
         std::size_t locked( ) const override
@@ -135,7 +143,8 @@ namespace mico { namespace objects {
 
     private:
 
-        std::weak_ptr<environment> env_;
+        std::weak_ptr<environment>  env_;
+        const environment          *locked_ = nullptr;
         //std::shared_ptr<environment> env_;
     };
 
