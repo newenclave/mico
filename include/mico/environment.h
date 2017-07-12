@@ -248,6 +248,8 @@ namespace mico {
             while( b != e ) {
                 auto lck = (*b)->locked( );
                 if( 0 == lck ) {
+                    (*b)->data( ).clear( );
+                    (*b)->children( ).clear( );
                     b = children( ).erase( b );
                 } else {
                     //(*b)->GC( );
