@@ -6,6 +6,7 @@
 #include <sstream>
 #include <map>
 #include <vector>
+#include <deque>
 #include <algorithm>
 #include <unordered_map>
 
@@ -393,7 +394,7 @@ namespace mico { namespace objects {
         using sptr = std::shared_ptr<this_type>;
         using cont = derived<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;
-        using value_type = std::vector<cont_sptr>;
+        using value_type = std::deque<cont_sptr>;
 
         std::string str( ) const override
         {
