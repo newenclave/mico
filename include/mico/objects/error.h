@@ -11,9 +11,9 @@
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::ERROR>: public typed_base<type::ERROR> {
+    class derived<type::FAILURE>: public typed_base<type::FAILURE> {
 
-        using this_type = derived<type::ERROR>;
+        using this_type = derived<type::FAILURE>;
     public:
         using sptr = std::shared_ptr<this_type>;
 

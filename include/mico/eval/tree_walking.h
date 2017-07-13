@@ -70,7 +70,7 @@ namespace mico { namespace eval {
         static
         bool is_fail( const objects::sptr &obj )
         {
-            return (!!obj) && (obj->get_type( ) == objects::type::ERROR);
+            return (!!obj) && (obj->get_type( ) == objects::type::FAILURE);
         }
 
         static

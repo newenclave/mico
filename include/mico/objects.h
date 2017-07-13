@@ -28,7 +28,7 @@ namespace mico { namespace objects {
     using array      = derived<type::ARRAY>;
     using reference  = derived<type::REFERENCE>;
     using table      = derived<type::TABLE>;
-    using error      = derived<type::ERROR>;
+    using error      = derived<type::FAILURE>;
 
 }}
 
