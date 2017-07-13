@@ -31,13 +31,13 @@ It's so funny to add something new =)
 
 *   **line number for the tokens.**
     Yeap. Now I can see where an error happens.
-```
+```js
     let test_val = someUnknownCall()
     error: [1:15] Identifier not found 'someUnknownCall'
 ```
 
 *   **Floating point** numbers
-```
+```js
     let t = 0.0001          // t = 0.0001
     let r = 1e100           // r = 1e+100
     let test = .55 / .11    // test = 5
@@ -45,7 +45,7 @@ It's so funny to add something new =)
 
 *   **Number formats**.
     It's possible to add DEC, OCT, TER, BIN and HEX number
-```
+```js
     123456         // decimal
     01234567       // oct 342391
     0b010101010101 // bin 1365
@@ -54,7 +54,7 @@ It's so funny to add something new =)
 ```
 
 *   **Number's gap symbol** `_`
-```
+```js
     1_123_456          // decimal
     01_234_567         // oct 342391
     0b0101_0101_0101   // bin 1365
@@ -64,7 +64,7 @@ It's so funny to add something new =)
 ```
 
 *   **Assignment operator** `=`
-```
+```js
     let a = 0
     a = 100             // a = 100
     b = 0               // error: [1:0] Identifier not found: 'b'
@@ -84,13 +84,13 @@ It's so funny to add something new =)
 *   **Reference object**
     The object that contains another object.
     Now I can change the values in arrays, tables (hashes) and the environment
-```
+```js
     m["three"] = 3 // m["three"] returns a reference object
                    // and then assign the operator changes the value
 ```
 *   **elif** branch to **ifelse**
     Well...there is nothing to explain here =)
-```
+```js
     let result = if( x < 0 ) {
                    "too small!"
                  } elif(x == 0) {
@@ -104,7 +104,7 @@ It's so funny to add something new =)
                  }
 ```
 *   **Hashes (i.e. tables) and Arrays** can be the keys for the other Hashes
-```
+```js
     // should work!
     let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
     let table = {
@@ -130,7 +130,7 @@ It's so funny to add something new =)
 ###### aae
 *   **Assignment arrays' elements**
     There are some tricks.
-```
+```js
     let a = [0,0] // ok. here we have a value `a` that binds an array [0,0]
     let b = [a, a] // wow wow wow! Here we put the array `a` to another array
                    // b == [[0, 0], [0, 0]] Cool, eh?
