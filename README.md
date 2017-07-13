@@ -9,6 +9,25 @@ It's so funny to add something new =)
 
 *   **tail call optimization.**
     I hope Thorsten will add this thing to the book soon.
+```
+    let spin = fn( count ) {
+        if( count > 0 ) {
+            spin(count - 1)
+        } else {
+            "Ok"
+        }
+    }
+    spin( 0xFFFFFFFF ) // Ok, Here is a tail call
+
+    let spin = fn( count ) {
+        if( count > 0 ) {
+            spin(count - 1)
+            "Ok"
+        }
+        count
+    }
+    spin( 10000 ) /// Oops. Stack overflow is here
+```
 
 *   **line number for the tokens.**
     Yeap. Now I can see where an error happens.
