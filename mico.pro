@@ -33,7 +33,12 @@ HEADERS += \
     include/mico/objects/table.h \
     include/mico/objects/null.h \
     include/mico/objects/array.h \
-    include/mico/objects/functions.h
+    include/mico/objects/functions.h \
+    include/mico/gc/gc.h \
+    include/mico/objects/string.h \
+    include/mico/objects/error.h \
+    include/mico/objects/return.h \
+    include/mico/objects/boolean.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

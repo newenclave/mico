@@ -42,7 +42,9 @@ namespace mico {
             scoped( sptr v )
                 :env_(v)
             {
-                env_->lock( );
+                if( env_ ) {
+                    env_->lock( );
+                }
             }
 
             ~scoped(  )

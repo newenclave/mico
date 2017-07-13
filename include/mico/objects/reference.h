@@ -1,8 +1,8 @@
 #ifndef MICO_OBJECT_REFERENCE_H
 #define MICO_OBJECT_REFERENCE_H
 
-#include "mico/environment.h"
 #include "mico/objects/base.h"
+#include "mico/environment.h"
 #include "mico/statements.h"
 #include "mico/expressions.h"
 
