@@ -35,20 +35,20 @@ namespace mico { namespace objects {
             return env( ).get( );
         }
 
-        bool lock_in( const environment *e ) override
+        bool mark_in( const environment *e ) override
         {
-            return environment::lock_in( env( ), e );
+            return environment::mark_in( env( ), e );
         }
 
-        bool unlock_in( const environment *e ) override
+        bool unmark_in( const environment *e ) override
         {
-            return environment::unlock_in( env( ), e );
+            return environment::unmark_in( env( ), e );
         }
 
-        std::size_t locked( ) const override
+        std::size_t marked( ) const override
         {
             if( auto p = env( ) ) {
-                return p->locked( );
+                return p->marked( );
             }
             return 0;
         }

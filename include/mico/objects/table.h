@@ -119,7 +119,7 @@ namespace mico { namespace objects {
             return std::make_shared<this_type>( env );
         }
 
-        std::size_t locked( ) const override
+        std::size_t marked( ) const override
         {
             return 0;
         }

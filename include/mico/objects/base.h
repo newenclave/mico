@@ -106,19 +106,19 @@ namespace mico { namespace objects {
         }
 
         virtual
-        bool lock_in( const environment * )
+        bool mark_in( const environment * )
         {
             return false;
         }
 
         virtual
-        bool unlock_in( const environment * )
+        bool unmark_in( const environment * )
         {
             return false;
         }
 
         virtual
-        std::size_t locked( ) const
+        std::size_t marked( ) const
         {
             return 0;
         }

@@ -20,13 +20,13 @@ namespace mico { namespace objects {
             :my_env_(my_env)
             ,value_(unref(val))
         {
-            value_->lock_in( my_env_ );
-            locked_ = val->locked( );
+            value_->mark_in( my_env_ );
+            marked_ = val->marked( );
         }
 
         ~derived( )
         {
-            value_->unlock_in( my_env_ );
+            value_->unmark_in( my_env_ );
         }
 
         std::string str( ) const override
@@ -61,13 +61,13 @@ namespace mico { namespace objects {
         {
             if( value_ != val ) {
                 //// unlock
-                value_->unlock_in( my_env_ );
+                value_->unmark_in( my_env_ );
 
                 ///replace lock
                 value_ = val;
                 my_env_ = my_env;
-                value_->lock_in( my_env_ );
-                locked_ = val->locked( );
+                value_->mark_in( my_env_ );
+                marked_ = val->marked( );
             }
         }
 
@@ -82,14 +82,14 @@ namespace mico { namespace objects {
             return my_env_;
         }
 
-        bool lock_in( const environment *e ) override
+        bool mark_in( const environment *e ) override
         {
-            return value_->lock_in( e );
+            return value_->mark_in( e );
         }
 
-        bool unlock_in( const environment *e ) override
+        bool unmark_in( const environment *e ) override
         {
-            return value_->unlock_in( e );
+            return value_->unmark_in( e );
         }
 
         std::uint64_t hash( ) const override
@@ -108,15 +108,15 @@ namespace mico { namespace objects {
             return res;
         }
 
-        std::size_t locked( ) const override
+        std::size_t marked( ) const override
         {
-            return locked_;
+            return marked_;
         }
 
     private:
         const environment  *my_env_;
         value_type          value_;
-        std::size_t         locked_ = 0;
+        std::size_t         marked_ = 0;
     };
 
 

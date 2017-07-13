@@ -42,14 +42,14 @@ namespace mico {
                 :env_(v)
             {
                 if( env_ ) {
-                    env_->lock( );
+                    env_->mark( );
                 }
             }
 
             ~scoped(  )
             {
                 if( env_ ) {
-                    env_->unlock( );
+                    env_->unmark( );
                 }
             }
 
@@ -108,14 +108,14 @@ namespace mico {
         }
 
         static
-        bool lock_in( environment::sptr remote, const environment *current )
+        bool mark_in( environment::sptr remote, const environment *current )
         {
             auto my_env = remote;
             auto e      = current;
             if( my_env ) {
                 if( my_env->is_parent( e ) ) {
                     while( my_env.get( ) != e ) {
-                        my_env->lock( );
+                        my_env->mark( );
                         my_env = my_env->parent( );
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
@@ -126,7 +126,7 @@ namespace mico {
                     if( !my_env->is_parent( par ) ) {
                         throw std::logic_error( "Lock. Not a parent!" );
                     }
-                    lock_in( remote, par );
+                    mark_in( remote, par );
                 }
                 return true;
             }
@@ -134,7 +134,7 @@ namespace mico {
         }
 
         static
-        bool unlock_in( environment::sptr remote, const environment *current )
+        bool unmark_in( environment::sptr remote, const environment *current )
         {
             auto my_env = remote;
             auto e      = current;
@@ -143,7 +143,7 @@ namespace mico {
                 std::size_t ul = 0;
                 if( my_env->is_parent( current ) ) {
                     while( my_env.get( ) != current ) {
-                        my_env->unlock( );
+                        my_env->unmark( );
                         my_env = my_env->parent( );
                         ++ul;
                     }
@@ -156,7 +156,7 @@ namespace mico {
                         if( !my_env->is_parent( par ) ) {
                             throw std::logic_error( "Unlock. Not a parent!" );
                         }
-                        unlock_in( remote, par );
+                        unmark_in( remote, par );
                     }
                 }
                 return true;
@@ -182,7 +182,7 @@ namespace mico {
 
         void drop( )
         {
-            if( !locked_ ) {
+            if( !marked_ ) {
                 auto p = parent( );
                 if( p ) {
                     data_.clear( );
@@ -214,23 +214,23 @@ namespace mico {
             return 0;
         }
 
-        void lock( )
+        void mark( )
         {
-            locked_++;
+            marked_++;
         }
 
-        std::size_t locked( ) const
+        std::size_t marked( ) const
         {
-            return locked_;
+            return marked_;
         }
 
-        void unlock( )
+        void unmark( )
         {
-            if( locked_ == 0  ) {
+            if( marked_ == 0  ) {
                 std::cout << "";
                 std::cout << "zero unlock!\n";
             }
-            locked_--;
+            marked_--;
         }
 
         sptr find_contains( const std::string &name )
@@ -303,23 +303,23 @@ namespace mico {
             for( auto &c: children_ ) {
                 auto cl = c;
                 if( !cl ) continue;
-                std::cout << space << "Child: " << cl->locked_ << " ";
+                std::cout << space << "Child: " << cl->marked( ) << " ";
                 cl->introspect( level + 1 );
             }
         }
 
-        void GC( )
+        void GC( bool deep = true )
         {
             auto b = children( ).begin( );
             auto e = children( ).end( );
             while( b != e ) {
-                auto lck = (*b)->locked( );
+                auto lck = (*b)->marked( );
                 if( 0 == lck ) {
-//                    (*b)->data( ).clear( );
-//                    (*b)->children( ).clear( );
                     b = children( ).erase( b );
                 } else {
-                    (*b)->GC( );
+                    if( deep ) {
+                        (*b)->GC( );
+                    }
                     ++b;
                 }
             }
@@ -331,7 +331,7 @@ namespace mico {
         wptr            parent_;
         children_type   children_;
         data_map        data_;
-        std::size_t     locked_ = 0;
+        std::size_t     marked_ = 0;
     };
 }
 
