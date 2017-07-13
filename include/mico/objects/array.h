@@ -5,11 +5,12 @@
 #include "mico/objects/base.h"
 #include "mico/objects/reference.h"
 #include "mico/objects/null.h"
+#include "mico/objects/collectable.h"
 
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::ARRAY>: public typed_base<type::ARRAY> {
+    class derived<type::ARRAY>: public collectable<type::ARRAY> {
         using this_type = derived<type::ARRAY>;
     public:
 
@@ -17,6 +18,10 @@ namespace mico { namespace objects {
         using cont = derived<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;
         using value_type = std::deque<cont_sptr>;
+
+        derived( environment::sptr env )
+            :collectable<type::ARRAY>(env)
+        { }
 
         std::string str( ) const override
         {
@@ -66,9 +71,9 @@ namespace mico { namespace objects {
         }
 
         static
-        sptr make( )
+        sptr make( environment::sptr env )
         {
-            return std::make_shared<this_type>( );
+            return std::make_shared<this_type>( env );
         }
 
         std::uint64_t hash( ) const override
@@ -99,25 +104,25 @@ namespace mico { namespace objects {
             return false;
         }
 
-        bool lock_in( const environment *e ) override
-        {
-            for( auto &d: value_ ) {
-                d->lock_in( e );
-            }
-            return true;
-        }
+//        bool lock_in( const environment *e ) override
+//        {
+//            for( auto &d: value_ ) {
+//                d->lock_in( e );
+//            }
+//            return true;
+//        }
 
-        bool unlock_in( const environment *e ) override
-        {
-            for( auto &d: value_ ) {
-                d->unlock_in( e );
-            }
-            return true;
-        }
+//        bool unlock_in( const environment *e ) override
+//        {
+//            for( auto &d: value_ ) {
+//                d->unlock_in( e );
+//            }
+//            return true;
+//        }
 
         std::shared_ptr<base> clone( ) const override
         {
-            auto res = std::make_shared<this_type>( );
+            auto res = make( env( ) );
             for( auto &v: value_ ) {
                 auto clone = v->value( )->clone( );
                 res->push( v->env( ), clone );
@@ -126,14 +131,6 @@ namespace mico { namespace objects {
         }
 
     private:
-
-        void env_reset( ) override
-        {
-            for( auto &v: value_ ) {
-                //v->value( ).reset( );
-                v.reset( );
-            }
-        }
         value_type  value_;
     };
 

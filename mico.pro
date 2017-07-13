@@ -26,7 +26,7 @@ HEADERS += \
     include/mico/environment.h \
     include/mico/builtin.h \
     include/mico/memory.h \
-    include/mico/objects/objects.h \
+    include/mico/objects.h \
     include/mico/objects/base.h \
     include/mico/objects/reference.h \
     include/mico/objects/numbers.h \
@@ -38,7 +38,9 @@ HEADERS += \
     include/mico/objects/string.h \
     include/mico/objects/error.h \
     include/mico/objects/return.h \
-    include/mico/objects/boolean.h
+    include/mico/objects/boolean.h \
+    include/mico/gc/collectable.h \
+    include/mico/objects/collectable.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

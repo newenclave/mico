@@ -108,6 +108,63 @@ namespace mico {
             return res;
         }
 
+        static
+        bool lock_in( environment::sptr remote, const environment *current )
+        {
+            auto my_env = remote;
+            auto e      = current;
+            if( my_env ) {
+                if( my_env->is_parent( e ) ) {
+                    while( my_env.get( ) != e ) {
+                        my_env->lock( );
+                        my_env = my_env->parent( );
+                    }
+                } else if( !e->is_parent( my_env.get( ) ) ) {
+                    auto par = environment::common_parent( e, my_env.get( ) );
+                    if( !e->is_parent( par ) ) {
+                        throw std::logic_error( "Lock. Not a parent!" );
+                    }
+                    if( !my_env->is_parent( par ) ) {
+                        throw std::logic_error( "Lock. Not a parent!" );
+                    }
+                    lock_in( remote, par );
+                }
+                return true;
+            }
+            return false;
+        }
+
+        static
+        bool unlock_in( environment::sptr remote, const environment *current )
+        {
+            auto my_env = remote;
+            auto e      = current;
+
+            if( my_env ) {
+                std::size_t ul = 0;
+                if( my_env->is_parent( current ) ) {
+                    while( my_env.get( ) != current ) {
+                        my_env->unlock( );
+                        my_env = my_env->parent( );
+                        ++ul;
+                    }
+                } else if( !e->is_parent( my_env.get( ) ) ) {
+                    auto par = environment::common_parent( e, my_env.get( ) );
+                    if( par ) {
+                        if( !e->is_parent( par ) ) {
+                            throw std::logic_error( "Unlock. Not a parent!" );
+                        }
+                        if( !my_env->is_parent( par ) ) {
+                            throw std::logic_error( "Unlock. Not a parent!" );
+                        }
+                        unlock_in( remote, par );
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
         void drop( sptr child )
         {
             children_.erase( child );

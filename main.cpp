@@ -5,7 +5,7 @@
 #include "mico/tokens.h"
 #include "mico/lexer.h"
 
-#include "mico/objects/objects.h"
+#include "mico/objects.h"
 #include "mico/parser.h"
 #include "mico/eval/tree_walking.h"
 #include "mico/repl.h"

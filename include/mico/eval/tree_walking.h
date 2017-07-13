@@ -903,7 +903,7 @@ namespace mico { namespace eval {
         objects::sptr eval_array( ast::node *n, environment::sptr env )
         {
             auto arr = static_cast<ast::expressions::array *>( n );
-            auto res = objects::array::make( );
+            auto res = objects::array::make( env );
 
             for( auto &a: arr->value( ) ) {
                 auto next = eval_impl( a.get( ), env );
@@ -920,7 +920,7 @@ namespace mico { namespace eval {
         {
             auto table = static_cast<ast::expressions::table *>( n );
 
-            auto res = objects::table::make( );
+            auto res = objects::table::make( env );
 
             for( auto &v: table->value( ) ) {
                 auto key = unref( eval_impl_tail( v.first.get( ), env ) );

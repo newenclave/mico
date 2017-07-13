@@ -111,9 +111,6 @@ namespace mico { namespace objects {
             return 0;
         }
 
-        virtual void env_reset( )
-        { }
-
         virtual std::shared_ptr<base> clone( ) const = 0;
 
     };

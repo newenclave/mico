@@ -5,6 +5,7 @@
 #include "mico/objects/base.h"
 #include "mico/objects/reference.h"
 #include "mico/objects/null.h"
+#include "mico/objects/collectable.h"
 
 namespace mico { namespace objects {
 
@@ -26,7 +27,7 @@ namespace mico { namespace objects {
     };
 
     template <>
-    class derived<type::TABLE>: public typed_base<type::TABLE> {
+    class derived<type::TABLE>: public collectable<type::TABLE> {
 
         using this_type = derived<type::TABLE>;
     public:
@@ -36,6 +37,10 @@ namespace mico { namespace objects {
 
         using value_type = std::unordered_map<objects::sptr, cont_sptr,
                                               hash_helper, equal_helper>;
+
+        derived( environment::sptr e )
+            :collectable<type::TABLE>(e)
+        { }
 
         std::string str( ) const override
         {
@@ -109,27 +114,26 @@ namespace mico { namespace objects {
         }
 
         static
-        sptr make( )
+        sptr make( environment::sptr env )
         {
-            return std::make_shared<this_type>( );
+            return std::make_shared<this_type>( env );
         }
 
+//        bool lock_in( const environment *e ) override
+//        {
+//            for( auto &d: value_ ) {
+//                d.second->lock_in( e );
+//            }
+//            return true;
+//        }
 
-        bool lock_in( const environment *e ) override
-        {
-            for( auto &d: value_ ) {
-                d.second->lock_in( e );
-            }
-            return true;
-        }
-
-        bool unlock_in( const environment *e ) override
-        {
-            for( auto &d: value_ ) {
-                d.second->unlock_in( e );
-            }
-            return true;
-        }
+//        bool unlock_in( const environment *e ) override
+//        {
+//            for( auto &d: value_ ) {
+//                d.second->unlock_in( e );
+//            }
+//            return true;
+//        }
 
         std::size_t locked( ) const override
         {
@@ -139,7 +143,7 @@ namespace mico { namespace objects {
         std::shared_ptr<base> clone( ) const override
         {
             using ref = derived<type::REFERENCE>;
-            auto res = make( );
+            auto res = make( env( ) );
             for( auto &v: value( ) ) {
                 auto kc = v.first->clone( );
                 auto vc = ref::make( v.second->env( ),
@@ -150,14 +154,6 @@ namespace mico { namespace objects {
         }
 
     private:
-
-        void env_reset( ) override
-        {
-            for( auto &v: value_ ) {
-                v.second->value( ).reset( );
-                v.second.reset( );
-            }
-        }
         value_type value_;
     };
 

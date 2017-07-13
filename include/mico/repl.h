@@ -6,25 +6,11 @@
 #include "mico/parser.h"
 #include "mico/eval/tree_walking.h"
 #include "mico/builtin.h"
-#include "mico/objects/objects.h"
+#include "mico/objects.h"
 
 namespace mico {
 
-
     struct repl {
-
-        static
-        void env_reset( environment::sptr env )
-        {
-            for( auto &r: env->data( ) ) {
-                r.second->env_reset( );
-            }
-            for( auto &c: env->children( ) ) {
-                auto cl = c;
-                env_reset( cl );
-            }
-            env->children( ).clear( );
-        }
 
         static
         void run( )
@@ -65,7 +51,6 @@ namespace mico {
                     std::cout << "  > ";
                 }
             }
-            env_reset( env );
         }
     };
 }
