@@ -54,7 +54,7 @@ It's so funny to add something new =)
 ```
 
 *   **Number's gap symbol** `_`
-```js
+```D
     1_123_456          // decimal
     01_234_567         // oct 342391
     0b0101_0101_0101   // bin 1365
