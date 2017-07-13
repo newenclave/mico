@@ -7,6 +7,7 @@
 #include "mico/eval/tree_walking.h"
 #include "mico/builtin.h"
 #include "mico/objects.h"
+#include "etool/console/colors.h"
 
 namespace mico {
 
@@ -15,6 +16,7 @@ namespace mico {
         static
         void run( )
         {
+            using namespace etool::console::ccout;
             auto env = environment::make( );
             builtin::init( env );
             std::string data;
@@ -31,7 +33,15 @@ namespace mico {
                             env->GC( );
                             auto obj = tv.eval( &prog, env );
                             if( obj->get_type( ) != objects::type::NULL_OBJ ) {
+                                bool failed =
+                                    (obj->get_type( ) == objects::type::ERROR);
+                                if( failed ) {
+                                    std::cout << red;
+                                }
                                 std::cout << obj->str( ) << "\n";
+                                if( failed ) {
+                                    std::cout << none;
+                                }
                             }
                         }
                     } else {
