@@ -9,6 +9,7 @@
 
 #include "mico/objects/base.h"
 #include "mico/objects/reference.h"
+#include "etool/console/colors.h"
 
 namespace mico {
 
@@ -288,13 +289,18 @@ namespace mico {
 
         void introspect( int level )
         {
+            using namespace etool::console::ccout;
+
             std::string space( level * 2, ' ' );
-            std::cout << "[" << this << "]\n";
+            std::cout << "[" << cyan << this << none << "]\n" ;
             for( auto &d: data_ ) {
                 std::cout << space << d.first
                           << " => " << d.second->value( );
                 if( d.second->value( )->hold( ) ) {
-                    std::cout << " [" << d.second->value( )->hold( ) << "]";
+                    std::cout << " [" << blue << d.second->value( )->hold( )
+                              << none
+                              << "]"
+                                 ;
                 }
                 std::cout << std::endl;
             }

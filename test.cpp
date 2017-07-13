@@ -2,6 +2,7 @@
 
 #include "mico/lexer.h"
 #include "etool/slices/container.h"
+#include "etool/console/colors.h"
 
 using namespace mico;
 
