@@ -227,8 +227,7 @@ namespace mico {
         void unmark( )
         {
             if( marked_ == 0  ) {
-                std::cout << "";
-                std::cout << "zero unlock!\n";
+                throw std::logic_error( "Unmark. This item is not marked." );
             }
             marked_--;
         }
