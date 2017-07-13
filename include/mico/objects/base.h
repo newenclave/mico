@@ -65,13 +65,15 @@ namespace mico { namespace objects {
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
 
-        virtual std::uint64_t hash( ) const
+        virtual
+        std::uint64_t hash( ) const
         {
             std::hash<std::string> h;
             return h( str( ) )  ;
         }
 
-        virtual bool equal( const base *other ) const
+        virtual
+        bool equal( const base *other ) const
         {
             return str( ) == other->str( );
         }
@@ -83,7 +85,8 @@ namespace mico { namespace objects {
             return h(x);
         }
 
-        virtual std::size_t size( ) const
+        virtual
+        std::size_t size( ) const
         {
             return 0;
         }
@@ -96,17 +99,26 @@ namespace mico { namespace objects {
                  ;
         }
 
-        virtual bool lock_in( const environment * )
+        virtual
+        const environment *hold( ) const
+        {
+            return nullptr;
+        }
+
+        virtual
+        bool lock_in( const environment * )
         {
             return false;
         }
 
-        virtual bool unlock_in( const environment * )
+        virtual
+        bool unlock_in( const environment * )
         {
             return false;
         }
 
-        virtual std::size_t locked( ) const
+        virtual
+        std::size_t locked( ) const
         {
             return 0;
         }

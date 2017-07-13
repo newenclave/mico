@@ -30,6 +30,11 @@ namespace mico { namespace objects {
             return l;
         }
 
+        const environment *hold( ) const
+        {
+            return env( ).get( );
+        }
+
         bool lock_in( const environment *e ) override
         {
             return environment::lock_in( env( ), e );

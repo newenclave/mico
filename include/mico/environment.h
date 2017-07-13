@@ -22,14 +22,13 @@ namespace mico {
 
     public:
 
-        using sptr = std::shared_ptr<environment>;
-        using wptr = std::weak_ptr<environment>;
-        using object_sptr = std::shared_ptr<objects::base>;
-        using object_wptr = std::weak_ptr<objects::base>;
+        using sptr          = std::shared_ptr<environment>;
+        using wptr          = std::weak_ptr<environment>;
+        using object_sptr   = std::shared_ptr<objects::base>;
+        using object_wptr   = std::weak_ptr<objects::base>;
         using children_type = std::set<sptr>;
         using obj_reference = objects::derived<objects::type::REFERENCE>;
-
-        using data_map = std::map<std::string, obj_reference::sptr>;
+        using data_map      = std::map<std::string, obj_reference::sptr>;
 
     protected:
 
@@ -120,7 +119,7 @@ namespace mico {
                         my_env = my_env->parent( );
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
-                    auto par = environment::common_parent( e, my_env.get( ) );
+                    auto par = environment::barrier( e, my_env.get( ) );
                     if( !e->is_parent( par ) ) {
                         throw std::logic_error( "Lock. Not a parent!" );
                     }
@@ -149,7 +148,7 @@ namespace mico {
                         ++ul;
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
-                    auto par = environment::common_parent( e, my_env.get( ) );
+                    auto par = environment::barrier( e, my_env.get( ) );
                     if( par ) {
                         if( !e->is_parent( par ) ) {
                             throw std::logic_error( "Unlock. Not a parent!" );
@@ -193,8 +192,7 @@ namespace mico {
         }
 
         static
-        const environment *common_parent( const environment *l,
-                                          const environment *r )
+        const environment *barrier( const environment *l, const environment *r )
         {
             while( l && !r->is_parent( l ) ) {
                 l = l->parent( ).get( );
@@ -283,21 +281,29 @@ namespace mico {
             return children_;
         }
 
-        void introspect( int level = 0 )
+        void introspect( )
+        {
+            std::cout << "Root: ";
+            introspect( 0 );
+        }
+
+        void introspect( int level )
         {
             std::string space( level * 2, ' ' );
+            std::cout << "[" << this << "]\n";
             for( auto &d: data_ ) {
                 std::cout << space << d.first
-                          << " => " << d.second->value( )
-                          << "\n";
+                          << " => " << d.second->value( );
+                if( d.second->value( )->hold( ) ) {
+                    std::cout << " [" << d.second->value( )->hold( ) << "]";
+                }
+                std::cout << std::endl;
             }
 
             for( auto &c: children_ ) {
                 auto cl = c;
                 if( !cl ) continue;
-                std::cout << space
-                          << "Child: " << cl->locked_
-                          << "\n";
+                std::cout << space << "Child: " << cl->locked_ << " ";
                 cl->introspect( level + 1 );
             }
         }
@@ -309,11 +315,11 @@ namespace mico {
             while( b != e ) {
                 auto lck = (*b)->locked( );
                 if( 0 == lck ) {
-                    (*b)->data( ).clear( );
-                    (*b)->children( ).clear( );
+//                    (*b)->data( ).clear( );
+//                    (*b)->children( ).clear( );
                     b = children( ).erase( b );
                 } else {
-                    //(*b)->GC( );
+                    (*b)->GC( );
                     ++b;
                 }
             }

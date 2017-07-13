@@ -104,22 +104,6 @@ namespace mico { namespace objects {
             return false;
         }
 
-//        bool lock_in( const environment *e ) override
-//        {
-//            for( auto &d: value_ ) {
-//                d->lock_in( e );
-//            }
-//            return true;
-//        }
-
-//        bool unlock_in( const environment *e ) override
-//        {
-//            for( auto &d: value_ ) {
-//                d->unlock_in( e );
-//            }
-//            return true;
-//        }
-
         std::shared_ptr<base> clone( ) const override
         {
             auto res = make( env( ) );
