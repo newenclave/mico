@@ -285,7 +285,7 @@ namespace mico {
         void introspect( )
         {
             std::cout << "Root: ";
-            introspect( 0 );
+            introspect( 1 );
         }
 
         void introspect( int level )
@@ -293,7 +293,8 @@ namespace mico {
             using namespace etool::console::ccout;
 
             std::string space( level * 2, ' ' );
-            std::cout << "[" << cyan << this << none << "]\n" ;
+            std::cout << "[" << (marked( ) ? cyan : light)
+                      << this << none << "]\n" ;
             for( auto &d: data_ ) {
                 std::cout << space << d.first
                           << " => " << d.second->value( );

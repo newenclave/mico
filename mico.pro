@@ -25,7 +25,6 @@ HEADERS += \
     include/mico/repl.h \
     include/mico/environment.h \
     include/mico/builtin.h \
-    include/mico/memory.h \
     include/mico/objects.h \
     include/mico/objects/base.h \
     include/mico/objects/reference.h \
@@ -34,12 +33,10 @@ HEADERS += \
     include/mico/objects/null.h \
     include/mico/objects/array.h \
     include/mico/objects/functions.h \
-    include/mico/gc/gc.h \
     include/mico/objects/string.h \
     include/mico/objects/error.h \
     include/mico/objects/return.h \
     include/mico/objects/boolean.h \
-    include/mico/gc/collectable.h \
     include/mico/objects/collectable.h
 
 DISTFILES += \
