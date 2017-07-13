@@ -192,6 +192,7 @@ namespace mico {
             }
         }
 
+        // lowest common ancestor
         static
         const environment *barrier( const environment *l, const environment *r )
         {
