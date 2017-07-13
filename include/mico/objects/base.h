@@ -25,7 +25,7 @@ namespace mico { namespace objects {
         FUNCTION,
         CONT_CALL,
         BUILTIN,
-        ERROR,
+        FAILURE,
     };
 
     struct name {
@@ -45,7 +45,7 @@ namespace mico { namespace objects {
             case type::FUNCTION   : return "OBJ_FUNCTION";
             case type::BUILTIN    : return "OBJ_BUILTIN";
             case type::CONT_CALL  : return "OBJ_CONT_CALL";
-            case type::ERROR      : return "OBJ_ERROR";
+            case type::FAILURE    : return "OBJ_FAILURE";
             }
             return "<invalid>";
         }

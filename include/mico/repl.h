@@ -34,7 +34,7 @@ namespace mico {
                             auto obj = tv.eval( &prog, env );
                             if( obj->get_type( ) != objects::type::NULL_OBJ ) {
                                 bool failed =
-                                    (obj->get_type( ) == objects::type::ERROR);
+                                    (obj->get_type( )==objects::type::FAILURE);
                                 if( failed ) {
                                     std::cout << red;
                                 }
