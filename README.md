@@ -45,7 +45,7 @@ It's so funny to add something new =)
 
 *   **Number formats**.
     It's possible to add DEC, OCT, TER, BIN and HEX number
-```js
+```D
     123456         // decimal
     01234567       // oct 342391
     0b010101010101 // bin 1365
