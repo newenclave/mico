@@ -168,7 +168,7 @@ It's so funny to add something new =)
     let bits = fn( value ) {
         let impl = fn( val, acc ) {
             if( val > 0 ) {
-                acc = acc + val % 2
+                acc = acc + (val & 2)
                 impl( val >> 1, acc )
             } else {
                 acc
