@@ -571,7 +571,7 @@ namespace mico { namespace eval {
             auto fun = eval_impl(call->func( ), env);
             if( is_null( fun ) || !is_func( fun ) ) {
                 ///// TODO error call object
-                return get_null( );
+                return error(n->pos( ), "It is not a callable object");
             }
 
             objects::slist params;
