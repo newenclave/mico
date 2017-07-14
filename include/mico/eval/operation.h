@@ -1,0 +1,24 @@
+#ifndef MICO_EVAL_OPERATION_H
+#define MICO_EVAL_OPERATION_H
+
+#include <functional>
+
+#include "mico/objects/base.h"
+#include "mico/ast.h"
+#include "mico/ast.h"
+#include "mico/tokens.h"
+
+namespace mico { namespace eval {
+
+    using eval_call = std::function<objects::sptr (ast::node *)>;
+
+    template <objects::type T>
+    struct operation;
+    /*
+     *  objects::sptr eval_prefix( tokens::type, objects::sptr );
+     *  objects::sptr eval_infix( tokens::type, objects::sptr,
+     *                            ast::node *, eval_call );
+    */
+}}
+
+#endif // OPERATION_H
