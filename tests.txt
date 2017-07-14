@@ -238,4 +238,6 @@ let call = fn( ) {
     a
 }
 
+let call = fn( ) { let gg = fn(name) { let g = fn (name) { { false: fn( ) { "This is not true, " + name }, true: fn( )  { "This is true, " + name } } } g(name) } let f = gg("first") let a = fn(  ) { let b = f; return b; } return a }
+
 */
