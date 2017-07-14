@@ -923,7 +923,9 @@ namespace mico { namespace eval {
 
             }
 
-            return get_null( );
+            return objects::error::make(n->pos( ),
+                                        "Impossible to get an index of ",
+                                        idx->param( )->get_type( ));
         }
 
         objects::slist eval_parameters( ast::expressions::call *call,
