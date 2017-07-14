@@ -68,7 +68,7 @@ namespace mico {
         static
         bool valid_for_dec_( CharT c )
         {
-            return valid_for_dec( c ) || (c == gap_character);
+            return valid_for_dec( c ) || is_gap( c );
         }
 
         template <typename CharT>
@@ -85,7 +85,7 @@ namespace mico {
         static
         bool valid_for_hex_( CharT c )
         {
-            return valid_for_hex( c ) || (c == gap_character);
+            return valid_for_hex( c ) || is_gap( c );
         }
 
         static
@@ -111,7 +111,7 @@ namespace mico {
         static
         bool valid_for_( tokens::type t, char c )
         {
-            return valid_for(t, c) || (c == gap_character);
+            return valid_for(t, c) || is_gap( c );
         }
 
         static
@@ -144,7 +144,7 @@ namespace mico {
             int pos = 0;
 
             for( auto c: input ) {
-                if( c != gap_character ) {
+                if( !is_gap(c) ) {
                     if( valid_for(tt, c) ) {
                         res *= base_for( tt );
                         res += char2int( c );

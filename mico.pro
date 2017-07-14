@@ -18,7 +18,7 @@ HEADERS += \
     include/mico/parser.h \
     include/mico/ast.h \
     include/mico/operations.h \
-    include/mico/expressions.h \
+    include/mico/expressions/expressions.h \
     include/mico/statements.h \
     include/mico/eval/evaluator.h \
     include/mico/eval/tree_walking.h \
@@ -37,7 +37,9 @@ HEADERS += \
     include/mico/objects/error.h \
     include/mico/objects/return.h \
     include/mico/objects/boolean.h \
-    include/mico/objects/collectable.h
+    include/mico/objects/collectable.h \
+    include/mico/expressions/fn.h \
+    include/mico/expressions/detail.h
 
 DISTFILES += \
     drafts/tail_recursion.md \
