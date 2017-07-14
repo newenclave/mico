@@ -42,7 +42,10 @@ HEADERS += \
     include/mico/expressions/detail.h \
     include/mico/expressions/value.h \
     include/mico/eval/operation.h \
-    include/mico/eval/int_operation.h
+    include/mico/eval/int_operation.h \
+    include/mico/eval/float_operation.h \
+    include/mico/eval/bool_operation.h \
+    include/mico/eval/str_operation.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

@@ -41,6 +41,12 @@ namespace mico { namespace objects {
             return h(value_);
         }
 
+        static
+        sptr make( value_type val )
+        {
+            return std::make_shared<this_type>( std::move(val) );
+        }
+
         bool equal( const base *other ) const override
         {
             if( other->get_type( ) == get_type( ) ) {

@@ -21,12 +21,12 @@ namespace mico { namespace eval {
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
 
-
-
+        static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
             auto val = static_cast<value_type *>( obj.get( ) )->value( );
             auto uval = static_cast<std::uint64_t>(val);
+
             switch (pref->token( )) {
             case tokens::type::MINUS:
                 return value_type::make( -1 * val );
@@ -42,104 +42,146 @@ namespace mico { namespace eval {
                                                     "integers");
         }
 
-        objects::sptr eval_as_float( infix *inf,
-                                     objects::sptr lft, objects::sptr rgt )
+        static
+        objects::sptr eval_float( infix *inf, double lft, double rht )
         {
-            double lftv = static_cast<value_type *>(lft.get( ))->value( );
-            double rgtv = static_cast<float_type *>(rgt.get( ))->value( );
-
             switch (inf->token( )) {
             case tokens::type::MINUS:
-                return float_type::make( lftv  - rgtv );
+                return float_type::make( lft  - rht );
             case tokens::type::PLUS:
-                return float_type::make( lftv  + rgtv );
+                return float_type::make( lft  + rht );
             case tokens::type::ASTERISK:
-                return float_type::make( lftv  * rgtv );
+                return float_type::make( lft  * rht );
             case tokens::type::SLASH:
-                return float_type::make( lftv  / rgtv );
+                if( rht != 0 ) {
+                    return float_type::make( lft  / rht );
+                } else {
+                    return error_type::make( inf->pos( ),
+                                             "Division by zero. '/'" );
+                }
+
+            case tokens::type::LOGIC_AND:
+                return  bool_type::make( lft && rht );
+            case tokens::type::LOGIC_OR:
+                return  bool_type::make( lft || rht );
             case tokens::type::GT:
-                return  bool_type::make( lftv  > rgtv );
+                return  bool_type::make( lft  > rht );
             case tokens::type::LT:
-                return  bool_type::make( lftv  < rgtv );
+                return  bool_type::make( lft  < rht );
             case tokens::type::GT_EQ:
-                return  bool_type::make( lftv >= rgtv );
+                return  bool_type::make( lft >= rht );
             case tokens::type::LT_EQ:
-                return  bool_type::make( lftv <= rgtv );
+                return  bool_type::make( lft <= rht );
             case tokens::type::EQ:
-                return  bool_type::make( lftv == rgtv );
+                return  bool_type::make( lft == rht );
             case tokens::type::NOT_EQ:
-                return  bool_type::make( lftv != rgtv );
+                return  bool_type::make( lft != rht );
             default:
                 break;
             }
-            return error_type::make(inf->pos( ), "Infix pperation '",
+            return error_type::make(inf->pos( ), "Infix operation '",
                                     inf->token( ), "' is not defined for "
                                                     "float");
         }
 
-        objects::sptr eval_as_int( infix *inf,
-                                   objects::sptr lft, objects::sptr rgt )
+        static
+        objects::sptr eval_int( infix *inf, std::int64_t lft, std::int64_t rht )
         {
-            auto lftv = static_cast<value_type *>(lft.get( ))->value( );
-            auto rgtv = static_cast<value_type *>(rgt.get( ))->value( );
-
-            auto ulftv = lftv;
-            auto urgtv = rgtv;
+            auto ulft = static_cast<std::uint64_t>(lft);
+            auto urgt = static_cast<std::uint64_t>(rht);
 
             switch (inf->token( )) {
             case tokens::type::MINUS:
-                return value_type::make( lftv  - rgtv );
+                return value_type::make( lft  - rht );
             case tokens::type::PLUS:
-                return value_type::make( lftv  + rgtv );
+                return value_type::make( lft  + rht );
             case tokens::type::ASTERISK:
-                return value_type::make( lftv  * rgtv );
+                return value_type::make( lft  * rht );
             case tokens::type::SLASH:
-                return value_type::make( lftv  / rgtv );
+                if( rht != 0 ) {
+                    return value_type::make( lft  / rht );
+                } else {
+                    return error_type::make( inf->pos( ),
+                                             "Division by zero. '/'" );
+                }
             case tokens::type::PERCENT:
-                return value_type::make( lftv  % rgtv );
+                if( rht != 0 ) {
+                    return value_type::make( lft  % rht );
+                } else {
+                    return error_type::make( inf->pos( ),
+                                             "Division by zero. '%'" );
+                }
             case tokens::type::GT:
-                return  bool_type::make( lftv  > rgtv );
+                return  bool_type::make( lft  > rht );
             case tokens::type::LT:
-                return  bool_type::make( lftv  < rgtv );
+                return  bool_type::make( lft  < rht );
             case tokens::type::GT_EQ:
-                return  bool_type::make( lftv >= rgtv );
+                return  bool_type::make( lft >= rht );
             case tokens::type::LT_EQ:
-                return  bool_type::make( lftv <= rgtv );
+                return  bool_type::make( lft <= rht );
             case tokens::type::EQ:
-                return  bool_type::make( lftv == rgtv );
+                return  bool_type::make( lft == rht );
             case tokens::type::NOT_EQ:
-                return  bool_type::make( lftv != rgtv );
+                return  bool_type::make( lft != rht );
+            case tokens::type::LOGIC_AND:
+                return  bool_type::make( ulft && urgt );
+            case tokens::type::LOGIC_OR:
+                return  bool_type::make( ulft || urgt );
 
             case tokens::type::BIT_AND:
-                return  value_type::make( ulftv & urgtv );
+                return  value_type::make( ulft & urgt );
             case tokens::type::BIT_OR:
-                return  value_type::make( ulftv | urgtv );
+                return  value_type::make( ulft | urgt );
             case tokens::type::BIT_XOR:
-                return  value_type::make( ulftv ^ urgtv );
+                return  value_type::make( ulft ^ urgt );
             default:
                 break;
             }
-            return error_type::make(inf->pos( ), "Infix pperation '",
+            return error_type::make(inf->pos( ), "Infix operation '",
                                     inf->token( ), "' is not defined for "
                                                     "integers");
         }
 
-        objects::sptr eval_as_bool( infix *inf,
-                                    objects::sptr lft, objects::sptr rgt )
-        {
-            return error_type::make(inf->pos( ), "Infix pperation '",
-                                    inf->token( ), "' is not defined for "
-                                                    "boolean");
-        }
-
-        objects::sptr eval_infix( infix *inf, objects::sptr obj, eval_call )
+        static
+        objects::sptr eval_infix( infix *inf, objects::sptr obj, eval_call ev )
         {
             auto val = static_cast<value_type *>(obj.get( ))->value( );
-            auto uval = static_cast<std::uint64_t>(val);
 
-            return error_type::make(inf->pos( ), "Infix pperation '",
-                                    inf->token( ), "' is not defined for "
-                                                    "integers");
+            if( (inf->token( ) == tokens::type::LOGIC_AND) && (val == 0)) {
+                return bool_type::make( false );
+            }
+            if( (inf->token( ) == tokens::type::LOGIC_OR) && (val != 0)) {
+                return bool_type::make( true );
+            }
+
+            objects::sptr right = ev( inf->right( ).get( ) );
+            if( right->get_type( ) == objects::type::FAILURE ) {
+                return right;
+            }
+
+            switch (right->get_type( )) {
+            case objects::type::INTEGER: {
+                auto rval = static_cast<value_type *>(right.get( ))->value( );
+                return eval_int(inf, val, rval);
+            }
+            case objects::type::FLOAT: {
+                auto lval = static_cast<double>(val);
+                auto rval = static_cast<float_type *>(right.get( ))->value( );
+                return eval_float(inf, lval, rval);
+            }
+            case objects::type::BOOLEAN: {
+                auto rval = static_cast<bool_type *>(right.get( ))->value( );
+                return eval_int(inf, val, rval ? 1 : 0);
+            }
+            default:
+                break;
+            }
+
+            return error_type::make(inf->pos( ), "Infix operation ",
+                                    obj->get_type( )," '",
+                                    inf->token( ), "' ",
+                                    right->get_type( ),
+                                    " is not defined");
         }
 
     };

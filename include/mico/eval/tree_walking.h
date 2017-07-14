@@ -9,6 +9,9 @@
 #include "mico/tokens.h"
 #include "mico/environment.h"
 #include "mico/eval/int_operation.h"
+#include "mico/eval/bool_operation.h"
+#include "mico/eval/float_operation.h"
+#include "mico/eval/str_operation.h"
 
 namespace mico { namespace eval {
 
@@ -240,40 +243,25 @@ namespace mico { namespace eval {
             return false;
         }
 
-        objects::sptr produce_prefix_bang( ast::expressions::prefix *n,
-                                           environment::sptr env )
-        {
-            auto oper = unref(eval_impl( n->value( ), env ));
-            return oper ? get_bool( !obj2num<bool>( oper.get( ) ) )
-                        : get_null( );
-        }
-
-        objects::sptr produce_prefix_tilda( ast::expressions::prefix *n,
-                                            environment::sptr env )
-        {
-            auto oper = unref(eval_impl(n->value( ), env));
-            switch ( oper->get_type( ) ) {
-            case objects::type::INTEGER: {
-                auto o = obj_cast<objects::integer>(oper.get( ));
-                return get_signed( ~static_cast<std::int64_t>(o->value( )));
-            }
-            default:
-                break;
-            }
-            return error( n, "Invalid operand for '~'. ", oper->get_type( ) );
-        }
-
         objects::sptr eval_prefix( ast::node *n, environment::sptr env )
         {
             auto expr = static_cast<ast::expressions::prefix *>( n );
+            auto oper = unref(eval_impl(expr->value( ), env));
 
-            switch ( expr->token( ) ) {
-            case tokens::type::MINUS:
-                return produce_prefix_minus( expr, env );
-            case tokens::type::BANG:
-                return produce_prefix_bang( expr, env );
-            case tokens::type::TILDA:
-                return produce_prefix_tilda( expr, env );
+            using int_operation   = operation<objects::type::INTEGER>;
+            using float_operation = operation<objects::type::FLOAT>;
+            using bool_operation  = operation<objects::type::BOOLEAN>;
+            using str_operation   = operation<objects::type::STRING>;
+
+            switch (oper->get_type( )) {
+            case objects::type::INTEGER:
+                return int_operation::eval_prefix(expr, oper);
+            case objects::type::STRING:
+                return str_operation::eval_prefix(expr, oper);
+            case objects::type::BOOLEAN:
+                return bool_operation::eval_prefix(expr, oper);
+            case objects::type::FLOAT:
+                return float_operation::eval_prefix(expr, oper);
             default:
                 break;
             }
@@ -319,105 +307,6 @@ namespace mico { namespace eval {
                 break;
             }
             return get_null( );
-        }
-
-        template <typename NumericT>
-        objects::sptr get_num_infix_int( ast::expressions::infix *inf,
-                                         NumericT lft, NumericT rghg,
-                                         tokens::type oper )
-        {
-            auto ulft = static_cast<std::uint64_t>(lft);
-            auto urgt = static_cast<std::uint64_t>(rghg);
-
-            using ResT = objects::integer;
-            switch (oper) {
-            case tokens::type::SHIFT_LEFT:
-                return std::make_shared<ResT>( ulft << urgt );
-            case tokens::type::SHIFT_RIGHT:
-                return std::make_shared<ResT>( ulft >> urgt );
-            case tokens::type::BIT_OR:
-                return std::make_shared<ResT>( ulft  | urgt );
-            case tokens::type::BIT_XOR:
-                return std::make_shared<ResT>( ulft  ^ urgt );
-            case tokens::type::BIT_AND:
-                return std::make_shared<ResT>( ulft  & urgt );
-            case tokens::type::PLUS:
-                return std::make_shared<ResT>( lft   + rghg );
-            case tokens::type::MINUS:
-                return std::make_shared<ResT>( lft   - rghg );
-            case tokens::type::ASTERISK:
-                return std::make_shared<ResT>( lft   * rghg );
-            case tokens::type::SLASH:
-                if( rghg != 0 ) {
-                    return std::make_shared<ResT>( lft  / rghg );
-                } else {
-                    return objects::error::make( inf->pos( ),
-                            "Division by zero. '", oper, "'" );
-                }
-            case tokens::type::PERCENT:
-                if( rghg != 0 ) {
-                    return std::make_shared<ResT>( lft  % rghg );
-                } else {
-                    return objects::error::make( inf->pos( ),
-                            "Division by zero. '", oper, "'" );
-                }
-            case tokens::type::LT:
-                return               get_bool( lft  < rghg );
-            case tokens::type::GT:
-                return               get_bool( lft  > rghg );
-            case tokens::type::EQ:
-                return               get_bool( lft == rghg );
-            case tokens::type::NOT_EQ:
-                return               get_bool( lft != rghg );
-            case tokens::type::LT_EQ:
-                return               get_bool( lft <= rghg );
-            case tokens::type::GT_EQ:
-                return               get_bool( lft >= rghg );
-            default:
-                break;
-            }
-            return objects::error::make( inf->pos( ), "Operator '",
-                            oper, "' is not defined for intergers");
-        }
-
-        template <typename NumericT>
-        objects::sptr get_num_infix_float( ast::expressions::infix *inf,
-                                           NumericT lft, NumericT rghg,
-                                           tokens::type oper )
-        {
-            using ResT = objects::floating;
-            switch (oper) {
-            case tokens::type::PLUS:
-                return std::make_shared<ResT>( lft  + rghg );
-            case tokens::type::MINUS:
-                return std::make_shared<ResT>( lft  - rghg );
-            case tokens::type::ASTERISK:
-                return std::make_shared<ResT>( lft  * rghg );
-            case tokens::type::SLASH: {
-                if( rghg != 0 ) {
-                    return std::make_shared<ResT>( lft  / rghg );
-                } else {
-                    return objects::error::make( inf->pos( ),
-                            "Division by zero. '", oper, "'" );
-                }
-            }
-            case tokens::type::LT:
-                return               get_bool( lft  < rghg );
-            case tokens::type::GT:
-                return               get_bool( lft  > rghg );
-            case tokens::type::EQ:
-                return               get_bool( lft == rghg );
-            case tokens::type::NOT_EQ:
-                return               get_bool( lft != rghg );
-            case tokens::type::LT_EQ:
-                return               get_bool( lft <= rghg );
-            case tokens::type::GT_EQ:
-                return               get_bool( lft >= rghg );
-            default:
-                break;
-            }
-            return objects::error::make( inf->pos( ), "Operator '",
-                            oper, "' is not defined for floats");
         }
 
         objects::sptr infix_bool( bool lft, bool rght, tokens::type tt )
@@ -584,39 +473,24 @@ namespace mico { namespace eval {
                 return get_null( );
             }
 
+            auto inf_call = [this, env](ast::node *n ) {
+                return unref( eval_impl( n, env ) );
+            };
+
+            using int_operation   = operation<objects::type::INTEGER>;
+            using float_operation = operation<objects::type::FLOAT>;
+            using bool_operation  = operation<objects::type::BOOLEAN>;
+            using str_operation   = operation<objects::type::STRING>;
+
             switch (left->get_type( )) {
-            case objects::type::INTEGER: {
-                auto lval = obj2num<std::int64_t>(left.get( ));
-                auto right = unref(eval_impl(inf->right( ).get( ),
-                                                         env ) );
-                if( !right ) {
-                    /////////// bad right value
-                    return get_null( );;
-                }
-                auto robj = obj2num_obj<objects::integer>(right.get( ));
-                if( !robj ) {
-                    /////////// bad right value type
-                    return get_null( );;
-                }
-                return get_num_infix_int( inf, lval,
-                            obj2num<std::int64_t>(robj.get( )), inf->token( ));
-            }
-            case objects::type::FLOAT: {
-                auto lval = obj2num<double>(left.get( ));
-                auto right = unref(eval_impl(inf->right( ).get( ),
-                                                         env ) );
-                if( !right ) {
-                    /////////// bad right value
-                    return get_null( );;
-                }
-                auto robj = obj2num_obj<objects::floating>(right.get( ));
-                if( !robj ) {
-                    /////////// bad right value type
-                    return get_null( );;
-                }
-                return get_num_infix_float( inf, lval,
-                       obj2num<double>(robj.get( )), inf->token( ));
-            }
+            case objects::type::INTEGER:
+                return int_operation::eval_infix( inf, left, inf_call);
+            case objects::type::FLOAT:
+                return float_operation::eval_infix( inf, left, inf_call);
+            case objects::type::BOOLEAN:
+                return bool_operation::eval_infix( inf, left, inf_call);
+            case objects::type::STRING:
+                return str_operation::eval_infix( inf, left, inf_call);
             default:
                 break;
             }
