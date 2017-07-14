@@ -8,6 +8,7 @@
 #include "mico/statements.h"
 #include "mico/tokens.h"
 #include "mico/environment.h"
+#include "mico/eval/int_operation.h"
 
 namespace mico { namespace eval {
 

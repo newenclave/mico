@@ -16,6 +16,7 @@ namespace mico { namespace eval {
         using float_type = objects::derived<objects::type::FLOAT>;
         using value_type = objects::derived<objects::type::INTEGER>;
         using error_type = objects::derived<objects::type::FAILURE>;
+        using bool_type  = objects::derived<objects::type::BOOLEAN>;
 
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
@@ -24,11 +25,11 @@ namespace mico { namespace eval {
 
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto val = static_cast<value_type *>( obj.get( ) );
+            auto val = static_cast<value_type *>( obj.get( ) )->value( );
             auto uval = static_cast<std::uint64_t>(val);
             switch (pref->token( )) {
             case tokens::type::MINUS:
-                return value_type::make( -1 * val->value( ) );
+                return value_type::make( -1 * val );
             case tokens::type::TILDA:
                 return value_type::make( ~uval );
             case tokens::type::BANG:
@@ -41,38 +42,103 @@ namespace mico { namespace eval {
                                                     "integers");
         }
 
-        float_type::sptr eval_as_float( tokens::type tt,
-                                        objects::sptr lft, objects::sptr rgt )
+        objects::sptr eval_as_float( infix *inf,
+                                     objects::sptr lft, objects::sptr rgt )
         {
-            double lftv = static_cast<float_type *>(lft.get( ));
-            double rgtv = static_cast<float_type *>(rgt.get( ));
+            double lftv = static_cast<value_type *>(lft.get( ))->value( );
+            double rgtv = static_cast<float_type *>(rgt.get( ))->value( );
 
-            switch (tt) {
+            switch (inf->token( )) {
             case tokens::type::MINUS:
-                return float_type::make( lftv->value( ) - rgtv->value( ) );
+                return float_type::make( lftv  - rgtv );
             case tokens::type::PLUS:
-                return float_type::make( lftv->value( ) + rgtv->value( ) );
+                return float_type::make( lftv  + rgtv );
             case tokens::type::ASTERISK:
-                return float_type::make( lftv->value( ) * rgtv->value( ) );
+                return float_type::make( lftv  * rgtv );
             case tokens::type::SLASH:
-                return float_type::make( lftv->value( ) / rgtv->value( ) );
+                return float_type::make( lftv  / rgtv );
+            case tokens::type::GT:
+                return  bool_type::make( lftv  > rgtv );
+            case tokens::type::LT:
+                return  bool_type::make( lftv  < rgtv );
+            case tokens::type::GT_EQ:
+                return  bool_type::make( lftv >= rgtv );
+            case tokens::type::LT_EQ:
+                return  bool_type::make( lftv <= rgtv );
+            case tokens::type::EQ:
+                return  bool_type::make( lftv == rgtv );
+            case tokens::type::NOT_EQ:
+                return  bool_type::make( lftv != rgtv );
             default:
                 break;
             }
+            return error_type::make(inf->pos( ), "Infix pperation '",
+                                    inf->token( ), "' is not defined for "
+                                                    "float");
         }
 
-        objects::sptr eval_infix( infix *inf, objects::sptr, eval_call )
+        objects::sptr eval_as_int( infix *inf,
+                                   objects::sptr lft, objects::sptr rgt )
         {
-            auto val = static_cast<value_type *>( obj.get( ) );
-            auto uval = static_cast<std::uint64_t>(val);
+            auto lftv = static_cast<value_type *>(lft.get( ))->value( );
+            auto rgtv = static_cast<value_type *>(rgt.get( ))->value( );
+
+            auto ulftv = lftv;
+            auto urgtv = rgtv;
 
             switch (inf->token( )) {
+            case tokens::type::MINUS:
+                return value_type::make( lftv  - rgtv );
+            case tokens::type::PLUS:
+                return value_type::make( lftv  + rgtv );
+            case tokens::type::ASTERISK:
+                return value_type::make( lftv  * rgtv );
+            case tokens::type::SLASH:
+                return value_type::make( lftv  / rgtv );
+            case tokens::type::PERCENT:
+                return value_type::make( lftv  % rgtv );
+            case tokens::type::GT:
+                return  bool_type::make( lftv  > rgtv );
+            case tokens::type::LT:
+                return  bool_type::make( lftv  < rgtv );
+            case tokens::type::GT_EQ:
+                return  bool_type::make( lftv >= rgtv );
+            case tokens::type::LT_EQ:
+                return  bool_type::make( lftv <= rgtv );
+            case tokens::type::EQ:
+                return  bool_type::make( lftv == rgtv );
+            case tokens::type::NOT_EQ:
+                return  bool_type::make( lftv != rgtv );
 
-
+            case tokens::type::BIT_AND:
+                return  value_type::make( ulftv & urgtv );
+            case tokens::type::BIT_OR:
+                return  value_type::make( ulftv | urgtv );
+            case tokens::type::BIT_XOR:
+                return  value_type::make( ulftv ^ urgtv );
+            default:
+                break;
             }
+            return error_type::make(inf->pos( ), "Infix pperation '",
+                                    inf->token( ), "' is not defined for "
+                                                    "integers");
+        }
 
-            return error_type::make(pref->pos( ), "Infix pperation '",
-                                    pref->token( ), "' is not defined for "
+        objects::sptr eval_as_bool( infix *inf,
+                                    objects::sptr lft, objects::sptr rgt )
+        {
+            return error_type::make(inf->pos( ), "Infix pperation '",
+                                    inf->token( ), "' is not defined for "
+                                                    "boolean");
+        }
+
+        objects::sptr eval_infix( infix *inf, objects::sptr obj, eval_call )
+        {
+            auto val = static_cast<value_type *>(obj.get( ))->value( );
+            auto uval = static_cast<std::uint64_t>(val);
+
+            return error_type::make(inf->pos( ), "Infix pperation '",
+                                    inf->token( ), "' is not defined for "
                                                     "integers");
         }
 
