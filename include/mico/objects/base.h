@@ -151,6 +151,12 @@ namespace mico { namespace objects {
     }
 
     inline
+    std::ostream &operator << ( std::ostream &o, const objects::base &obj )
+    {
+        return o << obj.str( );
+    }
+
+    inline
     std::ostream &operator << ( std::ostream &o, type t )
     {
         return o << name::get(t);

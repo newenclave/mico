@@ -84,6 +84,15 @@ namespace mico { namespace objects {
             return derived<type::NULL_OBJ>::make( );
         }
 
+        bool equal( const objects::base *other ) const override
+        {
+            if( get_type( ) == other->get_type( ) ) {
+                auto ot = static_cast<const this_type *>(other);
+                return ot == this;
+            }
+            return false;
+        }
+
         virtual
         void init( environment::sptr )
         { }

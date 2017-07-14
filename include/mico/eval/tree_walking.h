@@ -23,17 +23,15 @@ namespace mico { namespace eval {
         objects::sptr error_operation_notfound( tokens::type tt,
                                                 const ast::node *n )
         {
-            std::ostringstream oss;
-            oss << "operation '" << tt << "' not found";
-            return objects::error::make( n->pos( ), oss.str( ) );
+            return objects::error::make( n->pos( ),
+                                         "operation '", tt, "' not found" );
         }
 
         objects::sptr error_index_inval( const ast::node *n,
                                          objects::sptr val )
         {
-            std::ostringstream oss;
-            oss << "invalid index for '" << val << "'";
-            return objects::error::make( n->pos( ), oss.str( ) );
+            return objects::error::make( n->pos( ),
+                                         "invalid index for '", val, "'" );
         }
 
         template <typename ...Args>
@@ -114,16 +112,22 @@ namespace mico { namespace eval {
         }
 
         static
+        objects::retutn_obj::sptr do_return( objects::sptr res )
+        {
+            return objects::retutn_obj::make( res );
+        }
+
+        static
         objects::boolean::sptr get_bool_true( )
         {
             static auto bobj = objects::boolean::make(true);
             return bobj;
         }
 
-        static
-        objects::retutn_obj::sptr do_return( objects::sptr res )
+
+        objects::boolean::sptr get_bool( bool b )
         {
-            return objects::retutn_obj::make( res );
+            return b ? get_bool_true( ) : get_bool_false( );
         }
 
         static
@@ -133,16 +137,12 @@ namespace mico { namespace eval {
             return bobj;
         }
 
-        objects::boolean::sptr eval_bool( ast::node *n )
+        objects::boolean::sptr get_bool( ast::node *n )
         {
             auto bstate = static_cast<ast::expressions::boolean *>(n);
             return bstate->value( ) ? get_bool_true( ) : get_bool_false( );
         }
 
-        objects::boolean::sptr eval_bool( bool b )
-        {
-            return b ? get_bool_true( ) : get_bool_false( );
-        }
 
         objects::integer::sptr eval_int( ast::node *n )
         {
@@ -243,7 +243,7 @@ namespace mico { namespace eval {
                                            environment::sptr env )
         {
             auto oper = unref(eval_impl( n->value( ), env ));
-            return oper ? eval_bool( !obj2num<bool>( oper.get( ) ) )
+            return oper ? get_bool( !obj2num<bool>( oper.get( ) ) )
                         : get_null( );
         }
 
@@ -291,7 +291,7 @@ namespace mico { namespace eval {
         {
             switch (oper->get_type( )) {
             case objects::type::BOOLEAN:
-                return eval_bool( obj2num<bool>(oper) );
+                return get_bool( obj2num<bool>(oper) );
             case objects::type::INTEGER:
                 return std::make_shared<NumObj>( obj2num<std::int64_t>(oper) );
             case objects::type::FLOAT:
@@ -316,17 +316,17 @@ namespace mico { namespace eval {
             case tokens::type::SLASH:
                 return std::make_shared<ResT>( lft /  rghg );
             case tokens::type::LT:
-                return               eval_bool( lft <  rghg );
+                return               get_bool( lft <  rghg );
             case tokens::type::GT:
-                return               eval_bool( lft >  rghg );
+                return               get_bool( lft >  rghg );
             case tokens::type::EQ:
-                return               eval_bool( lft == rghg );
+                return               get_bool( lft == rghg );
             case tokens::type::NOT_EQ:
-                return               eval_bool( lft != rghg );
+                return               get_bool( lft != rghg );
             case tokens::type::LT_EQ:
-                return               eval_bool( lft <= rghg );
+                return               get_bool( lft <= rghg );
             case tokens::type::GT_EQ:
-                return               eval_bool( lft >= rghg );
+                return               get_bool( lft >= rghg );
             default:
                 break;
             }
@@ -337,17 +337,17 @@ namespace mico { namespace eval {
         {
             switch (tt) {
             case tokens::type::LT:
-                return eval_bool( lft < rght );
+                return get_bool( lft < rght );
             case tokens::type::GT:
-                return eval_bool( lft > rght );
+                return get_bool( lft > rght );
             case tokens::type::LT_EQ:
-                return eval_bool( lft <= rght );
+                return get_bool( lft <= rght );
             case tokens::type::GT_EQ:
-                return eval_bool( lft >= rght );
+                return get_bool( lft >= rght );
             case tokens::type::EQ:
-                return eval_bool( lft == rght );
+                return get_bool( lft == rght );
             case tokens::type::NOT_EQ:
-                return eval_bool( lft != rght );
+                return get_bool( lft != rght );
             default:
                 break;
             }
@@ -366,17 +366,17 @@ namespace mico { namespace eval {
         {
             switch (tt) {
             case tokens::type::LT:
-                return eval_bool( lft < rght );
+                return get_bool( lft < rght );
             case tokens::type::GT:
-                return eval_bool( lft > rght );
+                return get_bool( lft > rght );
             case tokens::type::LT_EQ:
-                return eval_bool( lft <= rght );
+                return get_bool( lft <= rght );
             case tokens::type::GT_EQ:
-                return eval_bool( lft >= rght );
+                return get_bool( lft >= rght );
             case tokens::type::EQ:
-                return eval_bool( lft == rght );
+                return get_bool( lft == rght );
             case tokens::type::NOT_EQ:
-                return eval_bool( lft != rght );
+                return get_bool( lft != rght );
             case tokens::type::PLUS:
                 return std::make_shared<objects::string>(lft + rght);
             default:
@@ -455,6 +455,28 @@ namespace mico { namespace eval {
                           inf->left( ) );
         }
 
+        objects::sptr eval_equal( objects::base *lft, objects::base *rgh,
+                                  ast::expressions::infix *inf,
+                                  environment::sptr /*env*/ )
+        {
+            auto copmarable =
+                    (
+                        (lft->get_type( ) == rgh->get_type( ))
+                    &&  (lft->get_type( ) != objects::type::FUNCTION)
+                    &&  (lft->get_type( ) != objects::type::CONT_CALL)
+                    );
+
+            if( !copmarable ) {
+                return objects::error::make( inf->pos( ),
+                                         "Impossible to compare ",
+                                         inf->left( )->get_type( ),
+                                             " and ",
+                                         inf->right( )->get_type( ) );
+            }
+            bool eq = lft->equal( rgh );
+            return get_bool((inf->token( ) == tokens::type::EQ) ? eq : !eq);
+        }
+
         objects::sptr eval_infix( ast::node *n, environment::sptr env )
         {
             auto inf = static_cast<ast::expressions::infix *>(n);
@@ -506,16 +528,20 @@ namespace mico { namespace eval {
                 break;
             }
 
+            if((inf->token( ) == tokens::type::EQ) ||
+               (inf->token( ) == tokens::type::NOT_EQ) ) {
+                auto rght = unref(eval_impl( inf->right( ).get( ), env ) );
+                return eval_equal( left.get( ), rght.get( ), inf, env );
+            }
+
             switch ( inf->token( ) ) {
             case tokens::type::LT:
             case tokens::type::PLUS:
             case tokens::type::GT:
             case tokens::type::LT_EQ:
             case tokens::type::GT_EQ:
-            case tokens::type::EQ:
-            case tokens::type::NOT_EQ: {
-                auto rght = unref(eval_impl( inf->right( ).get( ),
-                                                         env ) );
+            {
+                auto rght = unref(eval_impl( inf->right( ).get( ), env ) );
                 return other_infix( left.get( ), rght.get( ), inf, env );
             }
             default:
@@ -959,7 +985,7 @@ namespace mico { namespace eval {
             case ast::type::EXPR:
                 res = eval_expression( n, env ); break;
             case ast::type::BOOLEAN:
-                res = eval_bool( n ); break;
+                res = get_bool( n ); break;
             case ast::type::INTEGER:
                 res = eval_int( n ); break;
             case ast::type::FLOAT:
