@@ -39,7 +39,8 @@ HEADERS += \
     include/mico/objects/boolean.h \
     include/mico/objects/collectable.h \
     include/mico/expressions/fn.h \
-    include/mico/expressions/detail.h
+    include/mico/expressions/detail.h \
+    include/mico/expressions/value.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

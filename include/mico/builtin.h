@@ -118,33 +118,33 @@ namespace mico {
     };
 
     struct puts {
-        objects::sptr operator ( )( objects::slist &p, environment::sptr )
+        objects::sptr operator ( )( objects::slist &pp, environment::sptr )
         {
             static const auto line = __LINE__;
             using objects::error;
 
-            if( p.size( ) < 1 ) {
-                return objects::error::make( tokens::position( line, 0),
-                                            "Not enough actual parameters for"
-                                            " 'puts'");
+            std::size_t count = 0;
+            for( auto &p: pp ) {
+                ++count;
+                if( p->get_type( ) == objects::type::STRING ) {
+                    auto s = static_cast<objects::string *>(p.get( ));
+                    std::cout << s->value( );
+                } else if(p->get_type( ) == objects::type::INTEGER ) {
+                    auto s = static_cast<objects::integer *>(p.get( ));
+                    std::cout << s->value( );
+                } else if(p->get_type( ) == objects::type::FLOAT ) {
+                    auto s = static_cast<objects::floating *>(p.get( ));
+                    std::cout << s->value( );
+                } else if(p->get_type( ) == objects::type::BOOLEAN ) {
+                    auto s = static_cast<objects::boolean *>(p.get( ));
+                    std::cout << std::boolalpha << s->value( );
+                } else {
+                    return error::make( tokens::position( line, 0),
+                                        "Invalid parameter ", count,
+                                        " for 'puts': ", p->get_type( ));
+                }
             }
-            if( p[0]->get_type( ) == objects::type::STRING ) {
-                auto s = static_cast<objects::string *>(p[0].get( ));
-                std::cout << s->value( ) << std::endl;
-            } else if(p[0]->get_type( ) == objects::type::INTEGER ) {
-                auto s = static_cast<objects::integer *>(p[0].get( ));
-                std::cout << s->value( ) << std::endl;
-            } else if(p[0]->get_type( ) == objects::type::FLOAT ) {
-                auto s = static_cast<objects::floating *>(p[0].get( ));
-                std::cout << s->value( ) << std::endl;
-            } else if(p[0]->get_type( ) == objects::type::BOOLEAN ) {
-                auto s = static_cast<objects::boolean *>(p[0].get( ));
-                std::cout << s->value( ) << std::endl;
-            } else {
-                return error::make( tokens::position( line, 0),
-                                    "Invalid parameter for 'puts': ",
-                                    p[0]->get_type( ));
-            }
+            std::cout << std::endl;
             return objects::null::make( );
         }
     };
