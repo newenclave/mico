@@ -112,6 +112,9 @@ namespace mico {
             leds_[token_type::NOT_EQ]    =
             leds_[token_type::LOGIC_OR]  =
             leds_[token_type::LOGIC_AND] =
+            leds_[token_type::BIT_OR]    =
+            leds_[token_type::BIT_XOR]   =
+            leds_[token_type::BIT_AND]   =
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
                     };
@@ -141,6 +144,9 @@ namespace mico {
                 { TT::GT_EQ,        OP::LESSGREATER },
                 { TT::LOGIC_OR,     OP::LOGIC_OR    },
                 { TT::LOGIC_AND,    OP::LOGIC_AND   },
+                { TT::BIT_OR,       OP::BIT_OR      },
+                { TT::BIT_XOR,      OP::BIT_XOR     },
+                { TT::BIT_AND,      OP::BIT_AND     },
                 { TT::PLUS,         OP::SUM         },
                 { TT::MINUS,        OP::SUM         },
                 { TT::SLASH,        OP::PRODUCT     },

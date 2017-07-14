@@ -46,6 +46,9 @@ namespace mico { namespace tokens {
         NOT_EQ,
         LOGIC_OR,
         LOGIC_AND,
+        BIT_OR,
+        BIT_XOR,
+        BIT_AND,
         LT,
         GT,
         LT_EQ,
@@ -114,6 +117,9 @@ namespace mico { namespace tokens {
             case type::NOT_EQ:      return "!=";
             case type::LOGIC_OR:    return "||";
             case type::LOGIC_AND:   return "&&";
+            case type::BIT_OR:      return "|";
+            case type::BIT_XOR:     return "^";
+            case type::BIT_AND:     return "&";
 
             case type::LT:          return "<";
             case type::GT:          return ">";
