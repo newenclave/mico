@@ -49,6 +49,8 @@ namespace mico { namespace tokens {
         BIT_OR,
         BIT_XOR,
         BIT_AND,
+        SHIFT_RIGHT,
+        SHIFT_LEFT,
         LT,
         GT,
         LT_EQ,
@@ -121,6 +123,8 @@ namespace mico { namespace tokens {
             case type::BIT_XOR:     return "^";
             case type::BIT_AND:     return "&";
 
+            case type::SHIFT_RIGHT: return ">>";
+            case type::SHIFT_LEFT:  return "<<";
             case type::LT:          return "<";
             case type::GT:          return ">";
             case type::LT_EQ:       return "<=";

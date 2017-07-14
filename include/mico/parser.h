@@ -98,23 +98,25 @@ namespace mico {
         void fill_leds( )
         {
             using EP = expression_uptr;
-            leds_[token_type::MINUS]     =
-            leds_[token_type::PLUS]      =
-            leds_[token_type::ASTERISK]  =
-            leds_[token_type::ASSIGN]    =
-            leds_[token_type::SLASH]     =
-            leds_[token_type::PERCENT]   =
-            leds_[token_type::LT]        =
-            leds_[token_type::GT]        =
-            leds_[token_type::LT_EQ]     =
-            leds_[token_type::GT_EQ]     =
-            leds_[token_type::EQ]        =
-            leds_[token_type::NOT_EQ]    =
-            leds_[token_type::LOGIC_OR]  =
-            leds_[token_type::LOGIC_AND] =
-            leds_[token_type::BIT_OR]    =
-            leds_[token_type::BIT_XOR]   =
-            leds_[token_type::BIT_AND]   =
+            leds_[token_type::MINUS]        =
+            leds_[token_type::PLUS]         =
+            leds_[token_type::ASTERISK]     =
+            leds_[token_type::ASSIGN]       =
+            leds_[token_type::SLASH]        =
+            leds_[token_type::PERCENT]      =
+            leds_[token_type::LT]           =
+            leds_[token_type::GT]           =
+            leds_[token_type::LT_EQ]        =
+            leds_[token_type::GT_EQ]        =
+            leds_[token_type::EQ]           =
+            leds_[token_type::NOT_EQ]       =
+            leds_[token_type::LOGIC_OR]     =
+            leds_[token_type::LOGIC_AND]    =
+            leds_[token_type::BIT_OR]       =
+            leds_[token_type::BIT_XOR]      =
+            leds_[token_type::BIT_AND]      =
+            leds_[token_type::SHIFT_LEFT]   =
+            leds_[token_type::SHIFT_RIGHT]  =
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
                     };
@@ -147,6 +149,8 @@ namespace mico {
                 { TT::BIT_OR,       OP::BIT_OR      },
                 { TT::BIT_XOR,      OP::BIT_XOR     },
                 { TT::BIT_AND,      OP::BIT_AND     },
+                { TT::SHIFT_LEFT,   OP::BIT_SHIFT   },
+                { TT::SHIFT_RIGHT,  OP::BIT_SHIFT   },
                 { TT::PLUS,         OP::SUM         },
                 { TT::MINUS,        OP::SUM         },
                 { TT::SLASH,        OP::PRODUCT     },

@@ -307,21 +307,13 @@ namespace mico { namespace eval {
                                          NumericT lft, NumericT rghg,
                                          tokens::type oper )
         {
-//            struct U {
-//                static
-//                std::uint64_t u(std::int64_t v)
-//                {
-//                    return static_cast<std::uint64_t>( v );
-//                }
-//                static
-//                std::int64_t s(std::uint64_t v)
-//                {
-//                    return static_cast<std::int64_t>( v );
-//                }
-//            };
 
             using ResT = objects::integer;
             switch (oper) {
+            case tokens::type::SHIFT_LEFT:
+                return std::make_shared<ResT>( lft << rghg );
+            case tokens::type::SHIFT_RIGHT:
+                return std::make_shared<ResT>( lft >> rghg );
             case tokens::type::BIT_OR:
                 return std::make_shared<ResT>( lft  | rghg );
             case tokens::type::BIT_XOR:

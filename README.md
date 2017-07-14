@@ -157,6 +157,28 @@ It's so funny to add something new =)
     a[0] = 1             // b = [[1, 0], [0, 0]]
 ```
 
+*   **Operators %, |, &, ^, &&, ||, >>, <<**
+```js
+
+    // ^  - xor
+    // %  - mod
+    // >> - shift left
+    // << - shift right
+
+    let bits = fn( value ) {
+        let impl = fn( val, acc ) {
+            if( val > 0 ) {
+                acc = acc + val % 2
+                impl( val >> 1, acc )
+            } else {
+                acc
+            }
+        }
+        impl( value, 0 )
+    }
+    bits(0xFFFFFFFFF) // => 36
+```
+
 Is not yet complete.
 
 ### ... have been done

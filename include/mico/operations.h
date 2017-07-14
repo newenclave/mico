@@ -16,6 +16,7 @@ namespace mico { namespace operations {
         BIT_AND,     // ^
         EQUALS,      // ==
         LESSGREATER, // > or <
+        BIT_SHIFT,   // >> or <<
         SUM,         // +
         PRODUCT,     // *
         PREFIX,      // -X or !X

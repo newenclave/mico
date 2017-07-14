@@ -240,4 +240,16 @@ let call = fn( ) {
 
 let call = fn( ) { let gg = fn(name) { let g = fn (name) { { false: fn( ) { "This is not true, " + name }, true: fn( )  { "This is true, " + name } } } g(name) } let f = gg("first") let a = fn(  ) { let b = f; return b; } return a }
 
+let bits = fn( value ) {
+    let impl = fn( val, acc ) {
+        if( val > 0 ) {
+            acc = acc + ( val % 2 )
+            impl( val >> 1, acc )
+        } else {
+            acc
+        }
+    }
+    impl( value, 0 )
+}
+
 */
