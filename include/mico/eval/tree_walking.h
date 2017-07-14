@@ -467,7 +467,7 @@ namespace mico { namespace eval {
                 return eval_assign( inf, env );
             }
 
-            auto left = unref(eval_impl(inf->left( ).get( ), env));
+            auto left = unref(eval_impl_tail(inf->left( ).get( ), env));
             if( !left ) {
                 /////////// bad left value
                 return get_null( );
