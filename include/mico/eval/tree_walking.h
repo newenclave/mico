@@ -8,10 +8,10 @@
 #include "mico/statements.h"
 #include "mico/tokens.h"
 #include "mico/environment.h"
-#include "mico/eval/int_operation.h"
-#include "mico/eval/bool_operation.h"
-#include "mico/eval/float_operation.h"
-#include "mico/eval/str_operation.h"
+#include "mico/eval/operations/integer.h"
+#include "mico/eval/operations/boolean.h"
+#include "mico/eval/operations/float.h"
+#include "mico/eval/operations/string.h"
 
 namespace mico { namespace eval {
 
@@ -571,7 +571,7 @@ namespace mico { namespace eval {
             auto fun = eval_impl(call->func( ), env);
             if( is_null( fun ) || !is_func( fun ) ) {
                 ///// TODO error call object
-                return error(n->pos( ), "It is not a callable object");
+                return error(n, "It is not a callable object");
             }
 
             objects::slist params;

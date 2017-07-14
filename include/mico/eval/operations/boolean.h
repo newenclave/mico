@@ -6,8 +6,8 @@
 #include "mico/tokens.h"
 #include "mico/objects/error.h"
 #include "mico/expressions/expressions.h"
-#include "mico/eval/float_operation.h"
-#include "mico/eval/int_operation.h"
+#include "mico/eval/operations/float.h"
+#include "mico/eval/operations/integer.h"
 
 namespace mico { namespace eval {
 
