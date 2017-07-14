@@ -176,7 +176,8 @@ It's so funny to add something new =)
         }
         impl( value, 0 )
     }
-    bits(0xFFFFFFFFF) // => 36
+    bits(0xFFFFFFFFF)               // => 36
+    bits(0b1111111000000001111111)  // => 14
 ```
 
 Is not yet complete.
