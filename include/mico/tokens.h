@@ -41,6 +41,7 @@ namespace mico { namespace tokens {
         BANG,
         ASTERISK,
         SLASH,
+        PERCENT,
         EQ,
         NOT_EQ,
         LT,
@@ -105,6 +106,8 @@ namespace mico { namespace tokens {
             case type::BANG:        return "!";
             case type::ASTERISK:    return "*";
             case type::SLASH:       return "/";
+            case type::PERCENT:     return "%";
+
             case type::EQ:          return "==";
             case type::NOT_EQ:      return "!=";
             case type::LT:          return "<";

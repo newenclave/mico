@@ -103,6 +103,7 @@ namespace mico {
             leds_[token_type::ASTERISK] =
             leds_[token_type::ASSIGN]   =
             leds_[token_type::SLASH]    =
+            leds_[token_type::PERCENT]  =
             leds_[token_type::LT]       =
             leds_[token_type::GT]       =
             leds_[token_type::LT_EQ]    =
@@ -139,6 +140,7 @@ namespace mico {
                 { TT::PLUS,     OP::SUM         },
                 { TT::MINUS,    OP::SUM         },
                 { TT::SLASH,    OP::PRODUCT     },
+                { TT::PERCENT,  OP::PRODUCT     },
                 { TT::ASTERISK, OP::PRODUCT     },
                 { TT::LPAREN,   OP::CALL        },
                 { TT::LBRACKET, OP::INDEX       },

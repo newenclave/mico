@@ -302,23 +302,37 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        template <typename ResT, typename NumericT>
-        objects::sptr get_num_infix( NumericT lft, NumericT rghg,
-                                     tokens::type oper )
+        template <typename NumericT>
+        objects::sptr get_num_infix_int( ast::expressions::infix *inf,
+                                         NumericT lft, NumericT rghg,
+                                         tokens::type oper )
         {
+            using ResT = objects::integer;
             switch (oper) {
             case tokens::type::PLUS:
-                return std::make_shared<ResT>( lft +  rghg );
+                return std::make_shared<ResT>( lft  + rghg );
             case tokens::type::MINUS:
-                return std::make_shared<ResT>( lft -  rghg );
+                return std::make_shared<ResT>( lft  - rghg );
             case tokens::type::ASTERISK:
-                return std::make_shared<ResT>( lft *  rghg );
+                return std::make_shared<ResT>( lft  * rghg );
             case tokens::type::SLASH:
-                return std::make_shared<ResT>( lft /  rghg );
+                if( rghg != 0 ) {
+                    return std::make_shared<ResT>( lft  / rghg );
+                } else {
+                    return objects::error::make( inf->pos( ),
+                            "Division by zero. '", oper, "'" );
+                }
+            case tokens::type::PERCENT:
+                if( rghg != 0 ) {
+                    return std::make_shared<ResT>( lft  % rghg );
+                } else {
+                    return objects::error::make( inf->pos( ),
+                            "Division by zero. '", oper, "'" );
+                }
             case tokens::type::LT:
-                return               get_bool( lft <  rghg );
+                return               get_bool( lft  < rghg );
             case tokens::type::GT:
-                return               get_bool( lft >  rghg );
+                return               get_bool( lft  > rghg );
             case tokens::type::EQ:
                 return               get_bool( lft == rghg );
             case tokens::type::NOT_EQ:
@@ -330,7 +344,48 @@ namespace mico { namespace eval {
             default:
                 break;
             }
-            return get_null( );
+            return objects::error::make( inf->pos( ), "Operator '",
+                            oper, "' is not defined for intergers");
+        }
+
+        template <typename NumericT>
+        objects::sptr get_num_infix_float( ast::expressions::infix *inf,
+                                           NumericT lft, NumericT rghg,
+                                           tokens::type oper )
+        {
+            using ResT = objects::floating;
+            switch (oper) {
+            case tokens::type::PLUS:
+                return std::make_shared<ResT>( lft  + rghg );
+            case tokens::type::MINUS:
+                return std::make_shared<ResT>( lft  - rghg );
+            case tokens::type::ASTERISK:
+                return std::make_shared<ResT>( lft  * rghg );
+            case tokens::type::SLASH: {
+                if( rghg != 0 ) {
+                    return std::make_shared<ResT>( lft  / rghg );
+                } else {
+                    return objects::error::make( inf->pos( ),
+                            "Division by zero. '", oper, "'" );
+                }
+            }
+            case tokens::type::LT:
+                return               get_bool( lft  < rghg );
+            case tokens::type::GT:
+                return               get_bool( lft  > rghg );
+            case tokens::type::EQ:
+                return               get_bool( lft == rghg );
+            case tokens::type::NOT_EQ:
+                return               get_bool( lft != rghg );
+            case tokens::type::LT_EQ:
+                return               get_bool( lft <= rghg );
+            case tokens::type::GT_EQ:
+                return               get_bool( lft >= rghg );
+            default:
+                break;
+            }
+            return objects::error::make( inf->pos( ), "Operator '",
+                            oper, "' is not defined for floats");
         }
 
         objects::sptr compare_bool( bool lft, bool rght, tokens::type tt )
@@ -505,7 +560,7 @@ namespace mico { namespace eval {
                     /////////// bad right value type
                     return get_null( );;
                 }
-                return get_num_infix<objects::integer>( lval,
+                return get_num_infix_int( inf, lval,
                             obj2num<std::int64_t>(robj.get( )), inf->token( ));
             }
             case objects::type::FLOAT: {
@@ -521,7 +576,7 @@ namespace mico { namespace eval {
                     /////////// bad right value type
                     return get_null( );;
                 }
-                return get_num_infix<objects::floating>( lval,
+                return get_num_infix_float( inf, lval,
                        obj2num<double>(robj.get( )), inf->token( ));
             }
             default:
