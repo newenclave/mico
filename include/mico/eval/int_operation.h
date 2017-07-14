@@ -20,6 +20,8 @@ namespace mico { namespace eval {
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
 
+
+
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
             auto val = static_cast<value_type *>( obj.get( ) );
@@ -39,12 +41,35 @@ namespace mico { namespace eval {
                                                     "integers");
         }
 
-        objects::sptr eval_infix( infix *, objects::sptr, eval_call )
+        float_type::sptr eval_as_float( tokens::type tt,
+                                        objects::sptr lft, objects::sptr rgt )
+        {
+            double lftv = static_cast<float_type *>(lft.get( ));
+            double rgtv = static_cast<float_type *>(rgt.get( ));
+
+            switch (tt) {
+            case tokens::type::MINUS:
+                return float_type::make( lftv->value( ) - rgtv->value( ) );
+            case tokens::type::PLUS:
+                return float_type::make( lftv->value( ) + rgtv->value( ) );
+            case tokens::type::ASTERISK:
+                return float_type::make( lftv->value( ) * rgtv->value( ) );
+            case tokens::type::SLASH:
+                return float_type::make( lftv->value( ) / rgtv->value( ) );
+            default:
+                break;
+            }
+        }
+
+        objects::sptr eval_infix( infix *inf, objects::sptr, eval_call )
         {
             auto val = static_cast<value_type *>( obj.get( ) );
             auto uval = static_cast<std::uint64_t>(val);
 
+            switch (inf->token( )) {
 
+
+            }
 
             return error_type::make(pref->pos( ), "Infix pperation '",
                                     pref->token( ), "' is not defined for "
