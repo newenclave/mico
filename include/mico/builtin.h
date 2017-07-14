@@ -92,8 +92,8 @@ namespace mico {
         }
     };
 
-    struct gc_show {
-        gc_show( environment::sptr e )
+    struct env_show {
+        env_show( environment::sptr e )
             :env(e)
         { }
 
@@ -153,10 +153,10 @@ namespace mico {
         static
         void init( environment::sptr env )
         {
-            env->set( "len",     common::make( env, len { } ) );
-            env->set( "puts",    common::make( env, puts { } ) );
+            env->set( "len",    common::make( env, len { } ) );
+            env->set( "puts",   common::make( env, puts { } ) );
             env->set( "copy",   common::make( env, copy { } ) );
-            env->set( "gc_show", common::make( env, gc_show(env) ) );
+            env->set( "env",    common::make( env, env_show(env) ) );
         }
     };
 
