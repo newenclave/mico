@@ -388,7 +388,7 @@ namespace mico { namespace eval {
                             oper, "' is not defined for floats");
         }
 
-        objects::sptr compare_bool( bool lft, bool rght, tokens::type tt )
+        objects::sptr infix_bool( bool lft, bool rght, tokens::type tt )
         {
             switch (tt) {
             case tokens::type::LT:
@@ -403,6 +403,10 @@ namespace mico { namespace eval {
                 return get_bool( lft == rght );
             case tokens::type::NOT_EQ:
                 return get_bool( lft != rght );
+            case tokens::type::LOGIC_OR:
+                return get_bool( lft || rght );
+            case tokens::type::LOGIC_AND:
+                return get_bool( lft && rght );
             default:
                 break;
             }
@@ -461,7 +465,7 @@ namespace mico { namespace eval {
                 auto rval = obj2num_obj<objects::boolean>( rgh );
                 if( !is_null( rval ) ) {
                     auto bval = static_cast<objects::boolean *>(rval.get( ));
-                    return compare_bool( lval->value( ), bval->value( ),
+                    return infix_bool( lval->value( ), bval->value( ),
                                          inf->token( ) );
                 } else {
                     return error_operation_notfound( inf->token( ), inf );
@@ -536,6 +540,8 @@ namespace mico { namespace eval {
         {
             auto inf = static_cast<ast::expressions::infix *>(n);
 
+            /// need to do some optimization for OR, AND operation
+
             if( inf->token( ) == tokens::type::ASSIGN ) {
                 return eval_assign( inf, env );
             }
@@ -595,6 +601,8 @@ namespace mico { namespace eval {
             case tokens::type::GT:
             case tokens::type::LT_EQ:
             case tokens::type::GT_EQ:
+            case tokens::type::LOGIC_AND:
+            case tokens::type::LOGIC_OR:
             {
                 auto rght = unref(eval_impl( inf->right( ).get( ), env ) );
                 return other_infix( left.get( ), rght.get( ), inf, env );

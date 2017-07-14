@@ -98,18 +98,20 @@ namespace mico {
         void fill_leds( )
         {
             using EP = expression_uptr;
-            leds_[token_type::MINUS]    =
-            leds_[token_type::PLUS]     =
-            leds_[token_type::ASTERISK] =
-            leds_[token_type::ASSIGN]   =
-            leds_[token_type::SLASH]    =
-            leds_[token_type::PERCENT]  =
-            leds_[token_type::LT]       =
-            leds_[token_type::GT]       =
-            leds_[token_type::LT_EQ]    =
-            leds_[token_type::GT_EQ]    =
-            leds_[token_type::EQ]       =
-            leds_[token_type::NOT_EQ]   =
+            leds_[token_type::MINUS]     =
+            leds_[token_type::PLUS]      =
+            leds_[token_type::ASTERISK]  =
+            leds_[token_type::ASSIGN]    =
+            leds_[token_type::SLASH]     =
+            leds_[token_type::PERCENT]   =
+            leds_[token_type::LT]        =
+            leds_[token_type::GT]        =
+            leds_[token_type::LT_EQ]     =
+            leds_[token_type::GT_EQ]     =
+            leds_[token_type::EQ]        =
+            leds_[token_type::NOT_EQ]    =
+            leds_[token_type::LOGIC_OR]  =
+            leds_[token_type::LOGIC_AND] =
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
                     };
@@ -130,20 +132,22 @@ namespace mico {
             using OP = operations::precedence;
 
             static const std::map<TT, OP> val = {
-                { TT::ASSIGN,   OP::ASSIGN      },
-                { TT::EQ,       OP::EQUALS      },
-                { TT::NOT_EQ,   OP::EQUALS      },
-                { TT::LT,       OP::LESSGREATER },
-                { TT::GT,       OP::LESSGREATER },
-                { TT::LT_EQ,    OP::LESSGREATER },
-                { TT::GT_EQ,    OP::LESSGREATER },
-                { TT::PLUS,     OP::SUM         },
-                { TT::MINUS,    OP::SUM         },
-                { TT::SLASH,    OP::PRODUCT     },
-                { TT::PERCENT,  OP::PRODUCT     },
-                { TT::ASTERISK, OP::PRODUCT     },
-                { TT::LPAREN,   OP::CALL        },
-                { TT::LBRACKET, OP::INDEX       },
+                { TT::ASSIGN,       OP::ASSIGN      },
+                { TT::EQ,           OP::EQUALS      },
+                { TT::NOT_EQ,       OP::EQUALS      },
+                { TT::LT,           OP::LESSGREATER },
+                { TT::GT,           OP::LESSGREATER },
+                { TT::LT_EQ,        OP::LESSGREATER },
+                { TT::GT_EQ,        OP::LESSGREATER },
+                { TT::LOGIC_OR,     OP::LOGIC_OR    },
+                { TT::LOGIC_AND,    OP::LOGIC_AND   },
+                { TT::PLUS,         OP::SUM         },
+                { TT::MINUS,        OP::SUM         },
+                { TT::SLASH,        OP::PRODUCT     },
+                { TT::PERCENT,      OP::PRODUCT     },
+                { TT::ASTERISK,     OP::PRODUCT     },
+                { TT::LPAREN,       OP::CALL        },
+                { TT::LBRACKET,     OP::INDEX       },
             };
 
             auto f = val.find( tt );

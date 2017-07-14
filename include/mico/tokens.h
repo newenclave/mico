@@ -44,6 +44,8 @@ namespace mico { namespace tokens {
         PERCENT,
         EQ,
         NOT_EQ,
+        LOGIC_OR,
+        LOGIC_AND,
         LT,
         GT,
         LT_EQ,
@@ -110,6 +112,9 @@ namespace mico { namespace tokens {
 
             case type::EQ:          return "==";
             case type::NOT_EQ:      return "!=";
+            case type::LOGIC_OR:    return "||";
+            case type::LOGIC_AND:   return "&&";
+
             case type::LT:          return "<";
             case type::GT:          return ">";
             case type::LT_EQ:       return "<=";

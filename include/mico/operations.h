@@ -8,6 +8,8 @@ namespace mico { namespace operations {
     enum class precedence {
         LOWEST,
         ASSIGN,      // var = val
+        LOGIC_OR,    // ||
+        LOGIC_AND,   // &&
         EQUALS,      // ==
         LESSGREATER, // > or <
         SUM,         // +
