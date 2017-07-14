@@ -157,13 +157,14 @@ It's so funny to add something new =)
     a[0] = 1             // b = [[1, 0], [0, 0]]
 ```
 
-*   **Operators %, |, &, ^, &&, ||, >>, <<**
+*   **Operators %, |, &, ^, &&, ||, >>, <<, ~**
 ```js
 
     // ^  - xor
     // %  - mod
     // >> - shift left
     // << - shift right
+    // ~  - bit not
 
     let bits = fn( value ) {
         let impl = fn( val, acc ) {

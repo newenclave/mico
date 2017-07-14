@@ -76,6 +76,7 @@ namespace mico {
 
             nuds_[token_type::MINUS] =
             nuds_[token_type::BANG]  =
+            nuds_[token_type::TILDA]  =
                     [this]( ) {
                         return parse_prefix( );
                     };

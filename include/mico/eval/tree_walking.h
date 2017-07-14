@@ -247,6 +247,21 @@ namespace mico { namespace eval {
                         : get_null( );
         }
 
+        objects::sptr produce_prefix_tilda( ast::expressions::prefix *n,
+                                            environment::sptr env )
+        {
+            auto oper = unref(eval_impl(n->value( ), env));
+            switch ( oper->get_type( ) ) {
+            case objects::type::INTEGER: {
+                auto o = obj_cast<objects::integer>(oper.get( ));
+                return get_signed( ~static_cast<std::int64_t>(o->value( )));
+            }
+            default:
+                break;
+            }
+            return error( n, "Invalid operand for '~'. ", oper->get_type( ) );
+        }
+
         objects::sptr eval_prefix( ast::node *n, environment::sptr env )
         {
             auto expr = static_cast<ast::expressions::prefix *>( n );
@@ -256,11 +271,14 @@ namespace mico { namespace eval {
                 return produce_prefix_minus( expr, env );
             case tokens::type::BANG:
                 return produce_prefix_bang( expr, env );
+            case tokens::type::TILDA:
+                return produce_prefix_tilda( expr, env );
             default:
                 break;
             }
 
-            return nullptr;
+            return error( n, "Invalid prefix function '",
+                          expr->token( ), "'" );
         }
 
         template <typename Res>
@@ -307,25 +325,27 @@ namespace mico { namespace eval {
                                          NumericT lft, NumericT rghg,
                                          tokens::type oper )
         {
+            auto ulft = static_cast<std::uint64_t>(lft);
+            auto urgt = static_cast<std::uint64_t>(rghg);
 
             using ResT = objects::integer;
             switch (oper) {
             case tokens::type::SHIFT_LEFT:
-                return std::make_shared<ResT>( lft << rghg );
+                return std::make_shared<ResT>( ulft << urgt );
             case tokens::type::SHIFT_RIGHT:
-                return std::make_shared<ResT>( lft >> rghg );
+                return std::make_shared<ResT>( ulft >> urgt );
             case tokens::type::BIT_OR:
-                return std::make_shared<ResT>( lft  | rghg );
+                return std::make_shared<ResT>( ulft  | urgt );
             case tokens::type::BIT_XOR:
-                return std::make_shared<ResT>( lft  ^ rghg );
+                return std::make_shared<ResT>( ulft  ^ urgt );
             case tokens::type::BIT_AND:
-                return std::make_shared<ResT>( lft  & rghg );
+                return std::make_shared<ResT>( ulft  & urgt );
             case tokens::type::PLUS:
-                return std::make_shared<ResT>( lft  + rghg );
+                return std::make_shared<ResT>( lft   + rghg );
             case tokens::type::MINUS:
-                return std::make_shared<ResT>( lft  - rghg );
+                return std::make_shared<ResT>( lft   - rghg );
             case tokens::type::ASTERISK:
-                return std::make_shared<ResT>( lft  * rghg );
+                return std::make_shared<ResT>( lft   * rghg );
             case tokens::type::SLASH:
                 if( rghg != 0 ) {
                     return std::make_shared<ResT>( lft  / rghg );
