@@ -23,7 +23,7 @@ namespace mico { namespace objects {
         REFERENCE,
         RETURN,
         FUNCTION,
-        CONT_CALL,
+        TAIL_CALL,
         BUILTIN,
         FAILURE,
     };
@@ -44,7 +44,7 @@ namespace mico { namespace objects {
             case type::RETURN     : return "OBJ_RETURN";
             case type::FUNCTION   : return "OBJ_FUNCTION";
             case type::BUILTIN    : return "OBJ_BUILTIN";
-            case type::CONT_CALL  : return "OBJ_CONT_CALL";
+            case type::TAIL_CALL  : return "OBJ_TAIL_CALL";
             case type::FAILURE    : return "OBJ_FAILURE";
             }
             return "<invalid>";

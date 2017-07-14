@@ -75,7 +75,8 @@ namespace mico { namespace eval {
         }
 
         static
-        objects::sptr eval_infix( infix *inf, objects::sptr obj, eval_call ev )
+        objects::sptr eval_infix( infix *inf, objects::sptr obj,
+                                  eval_call ev, environment::sptr /* env */)
         {
             auto val = static_cast<bool_type *>(obj.get( ))->value( );
 

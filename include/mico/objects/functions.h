@@ -101,9 +101,9 @@ namespace mico { namespace objects {
     };
 
     template <>
-    class derived<type::CONT_CALL>: public collectable<type::CONT_CALL> {
+    class derived<type::TAIL_CALL>: public collectable<type::TAIL_CALL> {
 
-        using this_type = derived<type::CONT_CALL>;
+        using this_type = derived<type::TAIL_CALL>;
     public:
         using sptr = std::shared_ptr<this_type>;
 

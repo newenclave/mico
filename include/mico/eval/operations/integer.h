@@ -6,17 +6,22 @@
 #include "mico/objects/null.h"
 #include "mico/tokens.h"
 #include "mico/objects/error.h"
+#include "mico/objects/functions.h"
 #include "mico/expressions/expressions.h"
+
+#include "mico/ast.h"
 
 namespace mico { namespace eval {
 
     template <>
     struct operation<objects::type::INTEGER> {
 
-        using float_type = objects::derived<objects::type::FLOAT>;
-        using value_type = objects::derived<objects::type::INTEGER>;
-        using error_type = objects::derived<objects::type::FAILURE>;
-        using bool_type  = objects::derived<objects::type::BOOLEAN>;
+        using float_type    = objects::derived<objects::type::FLOAT>;
+        using value_type    = objects::derived<objects::type::INTEGER>;
+        using error_type    = objects::derived<objects::type::FAILURE>;
+        using bool_type     = objects::derived<objects::type::BOOLEAN>;
+        using builtin_type  = objects::derived<objects::type::BUILTIN>;
+        using function_type = objects::derived<objects::type::FUNCTION>;
 
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
@@ -143,7 +148,43 @@ namespace mico { namespace eval {
         }
 
         static
-        objects::sptr eval_infix( infix *inf, objects::sptr obj, eval_call ev )
+        objects::sptr eval_builtin( objects::sptr obj, objects::sptr call,
+                                    environment::sptr env)
+        {
+            objects::slist par { obj };
+            auto call_env = environment::make( env );
+            return std::make_shared<objects::tail_call>( call, std::move(par),
+                                                         call_env );
+        }
+
+        static
+        objects::sptr eval_func( infix *inf,
+                                 objects::sptr obj, objects::sptr call,
+                                 environment::sptr env)
+        {
+            auto func = static_cast<function_type *>(call.get( ));
+            auto call_env = environment::make( func->env( ) );
+            if( func->params( ).size( ) != 1 ) {
+                return error_type::make(inf->pos( ),
+                                        "Invalid parameters count. ",
+                                        "Must be 1");
+            }
+
+            for( auto &p: func->params( ) ) {
+                if( p->get_type( ) != ast::type::IDENT ) {
+                    return error_type::make( inf->pos( ),
+                                             "Invalid parameter type.",
+                                             p->get_type( ));
+                }
+                call_env->set( p->str( ), obj );
+            }
+            return std::make_shared<objects::tail_call>( call, objects::slist(),
+                                                         call_env );
+        }
+
+        static
+        objects::sptr eval_infix( infix *inf, objects::sptr obj,
+                                  eval_call ev, environment::sptr env  )
         {
             auto val = static_cast<value_type *>(obj.get( ))->value( );
 
@@ -173,6 +214,10 @@ namespace mico { namespace eval {
                 auto rval = static_cast<bool_type *>(right.get( ))->value( );
                 return eval_int(inf, val, rval ? 1 : 0);
             }
+            case objects::type::BUILTIN:
+                return eval_builtin( obj, right, env);
+            case objects::type::FUNCTION:
+                return eval_func( inf, obj, right, env);
             default:
                 break;
             }

@@ -20,7 +20,7 @@ namespace mico { namespace objects {
     using string     = derived<type::STRING>;
     using function   = derived<type::FUNCTION>;
     using builtin    = derived<type::BUILTIN>;
-    using cont_call  = derived<type::CONT_CALL>;
+    using tail_call  = derived<type::TAIL_CALL>;
     using retutn_obj = derived<type::RETURN>;
     using boolean    = derived<type::BOOLEAN>;
     using integer    = derived<type::INTEGER>;

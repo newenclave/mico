@@ -174,8 +174,8 @@ namespace mico { namespace eval {
                 return static_cast<objects::function *>(o.get( ))->env( );
             case objects::type::BUILTIN:
                 return static_cast<objects::builtin *>(o.get( ))->env( );
-            case objects::type::CONT_CALL:
-                return static_cast<objects::cont_call *>(o.get( ))->env( );
+            case objects::type::TAIL_CALL:
+                return static_cast<objects::tail_call *>(o.get( ))->env( );
             }
             return environment::sptr( );
         }
@@ -443,7 +443,7 @@ namespace mico { namespace eval {
                     (
                         (lft->get_type( ) == rgh->get_type( ))
                     &&  (lft->get_type( ) != objects::type::FUNCTION)
-                    &&  (lft->get_type( ) != objects::type::CONT_CALL)
+                    &&  (lft->get_type( ) != objects::type::TAIL_CALL)
                     );
 
             if( !copmarable ) {
@@ -484,13 +484,13 @@ namespace mico { namespace eval {
 
             switch (left->get_type( )) {
             case objects::type::INTEGER:
-                return int_operation::eval_infix( inf, left, inf_call);
+                return int_operation::eval_infix( inf, left, inf_call, env);
             case objects::type::FLOAT:
-                return float_operation::eval_infix( inf, left, inf_call);
+                return float_operation::eval_infix( inf, left, inf_call, env);
             case objects::type::BOOLEAN:
-                return bool_operation::eval_infix( inf, left, inf_call);
+                return bool_operation::eval_infix( inf, left, inf_call, env);
             case objects::type::STRING:
-                return str_operation::eval_infix( inf, left, inf_call);
+                return str_operation::eval_infix( inf, left, inf_call, env);
             default:
                 break;
             }
@@ -579,13 +579,13 @@ namespace mico { namespace eval {
             if( !new_env ) {
                 return get_null( );
             }
-            return std::make_shared<objects::cont_call>(fun, params, new_env);
+            return std::make_shared<objects::tail_call>(fun, params, new_env);
         }
 
         objects::sptr eval_tail( objects::sptr obj )
         {
-            using call_type = objects::cont_call;
-            while(obj->get_type( ) == objects::type::CONT_CALL ) {
+            using call_type = objects::tail_call;
+            while(obj->get_type( ) == objects::type::TAIL_CALL ) {
                 auto call = static_cast<call_type *>(obj.get( ));
                 auto call_type = call->value( )->get_type( );
                 if( call_type == objects::type::FUNCTION ) {
