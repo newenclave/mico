@@ -10,6 +10,8 @@
 #include "mico/eval/tree_walking.h"
 #include "mico/repl.h"
 
+#include <stdio.h>
+
 int run_repl( )
 {
     mico::repl::run( );

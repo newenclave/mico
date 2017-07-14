@@ -135,8 +135,11 @@ namespace mico {
                 auto s = static_cast<objects::integer *>(p[0].get( ));
                 std::cout << s->value( ) << std::endl;
             } else if(p[0]->get_type( ) == objects::type::FLOAT ) {
-                    auto s = static_cast<objects::floating *>(p[0].get( ));
-                    std::cout << s->value( ) << std::endl;
+                auto s = static_cast<objects::floating *>(p[0].get( ));
+                std::cout << s->value( ) << std::endl;
+            } else if(p[0]->get_type( ) == objects::type::BOOLEAN ) {
+                auto s = static_cast<objects::boolean *>(p[0].get( ));
+                std::cout << s->value( ) << std::endl;
             } else {
                 return error::make( tokens::position( line, 0),
                                     "Invalid parameter for 'puts': ",

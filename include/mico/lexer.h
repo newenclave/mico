@@ -198,7 +198,7 @@ namespace mico {
             for( ;begin != end; ++begin ) {
                 if( chk( *begin ) ) {
                     res.push_back( *begin );
-                } else if( *begin != '_' ) {
+                } else if( !numeric::is_gap(*begin) ) {
                     break;
                 }
             }
@@ -209,7 +209,7 @@ namespace mico {
                 for( ;begin != end; ++begin ) {
                     if( chk( *begin ) ) {
                         res.push_back( *begin );
-                    } else if( *begin != '_' ) {
+                    } else if( !numeric::is_gap(*begin) ) {
                         break;
                     }
                 }
@@ -224,7 +224,7 @@ namespace mico {
                 for( ;begin != end; ++begin ) {
                     if( chk( *begin ) ) {
                         res.push_back( *begin );
-                    } else if( *begin != '_' ) {
+                    } else if( !numeric::is_gap(*begin) ) {
                         break;
                     }
                 }

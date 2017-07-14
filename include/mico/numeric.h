@@ -31,6 +31,13 @@ namespace mico {
 
         template <typename CharT>
         static
+        bool is_gap( CharT c )
+        {
+            return c == gap_character;
+        }
+
+        template <typename CharT>
+        static
         bool valid_for_bin( CharT c )
         {
             return ('0' == c) || (c == '1');
@@ -186,14 +193,14 @@ namespace mico {
             int    c = 0;
 
             while( (s != end) && valid_for_dec_(c = *s++) ) {
-                if( c != gap_character ) {
+                if( !is_gap(c) ) {
                     a = a * 10.0 + (c - '0');
                 }
             }
 
             if( c == '.' ) {
                 while( (s != end) && valid_for_dec_(c = *s++)) {
-                    if( c != gap_character ) {
+                    if( !is_gap(c) ) {
                         a = a*10.0 + (c - '0');
                         e = e-1;
                     }
@@ -213,7 +220,7 @@ namespace mico {
                 }
 
                 while( valid_for_dec_( c ) ) {
-                    if( c == gap_character ) {
+                    if( is_gap(c) ) {
                         c = *s++;
                     }
                     i = i * 10 + (c - '0');

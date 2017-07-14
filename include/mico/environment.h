@@ -171,16 +171,6 @@ namespace mico {
             drop( );
         }
 
-        sptr parent( )
-        {
-            return parent_.lock( );
-        }
-
-        const sptr parent( ) const
-        {
-            return parent_.lock( );
-        }
-
         void drop( )
         {
             if( !marked_ ) {
@@ -191,6 +181,17 @@ namespace mico {
                 }
             }
         }
+
+        sptr parent( )
+        {
+            return parent_.lock( );
+        }
+
+        const sptr parent( ) const
+        {
+            return parent_.lock( );
+        }
+
 
         // lowest common ancestor
         static
