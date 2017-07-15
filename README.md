@@ -7,7 +7,7 @@ Monkey the language interpreter implementation done with C++. https://interprete
 "Mico" is an implementation but of course it has some difference.
 It's so funny to add something new =)
 
-*   **tail call optimization.**
+##### tail call optimization.
     I hope Thorsten will add this thing to the book soon.
 ```js
     let spin = fn( count ) {
@@ -29,21 +29,21 @@ It's so funny to add something new =)
     spin( 10000 ) /// Oops. Stack overflow is here
 ```
 
-*   **line number for the tokens.**
+##### line number for the tokens.
     Yeap. Now I can see where an error happens.
 ```js
     let test_val = someUnknownCall()
     error: [1:15] Identifier not found 'someUnknownCall'
 ```
 
-*   **Floating point** numbers
+##### Floating point numbers
 ```js
     let t = 0.0001          // t = 0.0001
     let r = 1e100           // r = 1e+100
     let test = .55 / .11    // test = 5
 ```
 
-*   **Number formats**.
+##### Number formats.
     It's possible to add DEC, OCT, TER, BIN and HEX number
 ```D
     123456         // decimal
@@ -53,7 +53,7 @@ It's so funny to add something new =)
     0xDEADBEEF     // hex 3735928559
 ```
 
-*   **Number's gap symbol** `_`
+##### Number's gap symbol `_`
 ```D
     1_123_456          // decimal
     01_234_567         // oct 342391
@@ -63,7 +63,8 @@ It's so funny to add something new =)
     0.000_000_000_1    // float 1e-10
 ```
 
-*   **Assignment operator** `=`
+##### Assignment operator `=`
+
 ```js
     let a = 0
     a = 100             // a = 100
@@ -88,7 +89,9 @@ It's so funny to add something new =)
     m["three"] = 3 // m["three"] returns a reference object
                    // and then assign the operator changes the value
 ```
-*   **elif** branch to **ifelse**
+
+##### **elif** branch to **ifelse**
+
     Well...there is nothing to explain here =)
 ```js
     let result = if( x < 0 ) {
@@ -103,7 +106,10 @@ It's so funny to add something new =)
                    "too big!"
                  }
 ```
-*   **Hashes (i.e. tables) and Arrays** can be the keys for the other Hashes
+
+##### Hashes (i.e. tables) and Arrays
+
+    Can be the keys for the other Hashes
 ```js
     // should work!
     let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
@@ -128,7 +134,7 @@ It's so funny to add something new =)
     t[point(1, 100, 200)] // returns false
 ```
 ###### Assignment arrays' elements
-*   **Assignment arrays' elements**
+
     There are some tricks.
 ```js
     let a = [0,0] // ok. here we have a value `a` that binds an array [0,0]
@@ -157,7 +163,8 @@ It's so funny to add something new =)
     a[0] = 1             // b = [[1, 0], [0, 0]]
 ```
 
-*   **Operators %, |, &, ^, &&, ||, >>, <<, ~**
+##### Operators %, |, &, ^, &&, ||, >>, <<, ~
+
 ```js
 
     // ^  - xor
@@ -181,9 +188,8 @@ It's so funny to add something new =)
     bits(0b1111111000000001111111)  // => 14
 ```
 
-###### Function call rules
+##### Function call rules
 
-*   **Function call rules**.
     A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
 
 ```js
