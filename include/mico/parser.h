@@ -74,9 +74,10 @@ namespace mico {
                         return parse_array( );
                     };
 
-            nuds_[token_type::MINUS] =
-            nuds_[token_type::BANG]  =
-            nuds_[token_type::TILDA]  =
+            nuds_[token_type::MINUS]    =
+            nuds_[token_type::BANG]     =
+            nuds_[token_type::TILDA]    =
+            nuds_[token_type::ASTERISK] =
                     [this]( ) {
                         return parse_prefix( );
                     };

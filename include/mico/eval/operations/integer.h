@@ -2,12 +2,8 @@
 #define MICO_EVAL_INT_OPRATIONS_H
 
 #include "mico/eval/operation.h"
-#include "mico/objects/numbers.h"
-#include "mico/objects/null.h"
 #include "mico/tokens.h"
-#include "mico/objects/error.h"
-#include "mico/objects/functions.h"
-#include "mico/expressions/expressions.h"
+#include "mico/eval/operations/common_operations.h"
 
 #include "mico/ast.h"
 
@@ -26,10 +22,14 @@ namespace mico { namespace eval {
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
 
+        static const objects::type type_value = objects::type::INTEGER;
+        static const objects::type float_type_value = objects::type::FLOAT;
+        static const objects::type bool_type_value = objects::type::BOOLEAN;
+
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto val = static_cast<value_type *>( obj.get( ) )->value( );
+            auto val = objects::cast_int( obj.get( ) )->value( );
             auto uval = static_cast<std::uint64_t>(val);
 
             switch (pref->token( )) {
@@ -153,13 +153,11 @@ namespace mico { namespace eval {
         }
 
         static
-        objects::sptr eval_builtin( objects::sptr obj, objects::sptr call,
+        objects::sptr eval_builtin( infix *inf,
+                                    objects::sptr obj, objects::sptr call,
                                     environment::sptr env)
         {
-            objects::slist par { obj };
-            auto call_env = environment::make( env );
-            return std::make_shared<objects::tail_call>( call, std::move(par),
-                                                         call_env );
+            return common_operations::eval_builtin( inf, obj, call, env );
         }
 
         static
@@ -167,31 +165,14 @@ namespace mico { namespace eval {
                                  objects::sptr obj, objects::sptr call,
                                  environment::sptr env)
         {
-            auto func = static_cast<function_type *>(call.get( ));
-            auto call_env = environment::make( func->env( ) );
-            if( func->params( ).size( ) != 1 ) {
-                return error_type::make(inf->pos( ),
-                                        "Invalid parameters count. ",
-                                        "Must be 1");
-            }
-
-            for( auto &p: func->params( ) ) {
-                if( p->get_type( ) != ast::type::IDENT ) {
-                    return error_type::make( inf->pos( ),
-                                             "Invalid parameter type.",
-                                             p->get_type( ));
-                }
-                call_env->set( p->str( ), obj );
-            }
-            return std::make_shared<objects::tail_call>( call, objects::slist(),
-                                                         call_env );
+            return common_operations::eval_func( inf, obj, call, env );
         }
 
         static
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-            auto val = static_cast<value_type *>(obj.get( ))->value( );
+            auto val = objects::cast_int(obj.get( ))->value( );
 
             if( (inf->token( ) == tokens::type::LOGIC_AND) && (val == 0)) {
                 return bool_type::make( false );
@@ -207,22 +188,28 @@ namespace mico { namespace eval {
 
             switch (right->get_type( )) {
             case objects::type::INTEGER: {
-                auto rval = static_cast<value_type *>(right.get( ))->value( );
+                auto rval = objects::cast_int(right.get( ))->value( );
                 return eval_int(inf, val, rval);
             }
             case objects::type::FLOAT: {
                 auto lval = static_cast<double>(val);
-                auto rval = static_cast<float_type *>(right.get( ))->value( );
+                auto rval = objects::cast_float(right.get( ))->value( );
                 return eval_float(inf, lval, rval);
             }
             case objects::type::BOOLEAN: {
-                auto rval = static_cast<bool_type *>(right.get( ))->value( );
+                auto rval = objects::cast_bool(right.get( ))->value( );
                 return eval_int(inf, val, rval ? 1 : 0);
             }
             case objects::type::BUILTIN:
-                return eval_builtin( obj, right, env);
+                if(inf->token( ) == tokens::type::BIT_OR) {
+                    return eval_builtin( inf, obj, right, env);
+                }
+                break;
             case objects::type::FUNCTION:
-                return eval_func( inf, obj, right, env);
+                if(inf->token( ) == tokens::type::BIT_OR) {
+                    return eval_func( inf, obj, right, env);
+                }
+                break;
             default:
                 break;
             }

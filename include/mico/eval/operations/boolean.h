@@ -2,12 +2,11 @@
 #define MICO_EVAL_BOOL_OPERATION_H
 
 #include "mico/eval/operation.h"
-#include "mico/objects/numbers.h"
 #include "mico/tokens.h"
-#include "mico/objects/error.h"
 #include "mico/expressions/expressions.h"
 #include "mico/eval/operations/float.h"
 #include "mico/eval/operations/integer.h"
+#include "mico/eval/operations/common_operations.h"
 
 namespace mico { namespace eval {
 
@@ -23,7 +22,7 @@ namespace mico { namespace eval {
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto val = static_cast<bool_type *>( obj.get( ) )->value( );
+            auto val = objects::cast_bool( obj.get( ) )->value( );
 
             if( pref->token( ) == tokens::type::BANG ) {
                 return bool_type::make( !val );
@@ -76,7 +75,7 @@ namespace mico { namespace eval {
 
         static
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
-                                  eval_call ev, environment::sptr /* env */)
+                                  eval_call ev, environment::sptr env )
         {
             auto val = static_cast<bool_type *>(obj.get( ))->value( );
 
@@ -95,17 +94,29 @@ namespace mico { namespace eval {
 
             switch (right->get_type( )) {
             case objects::type::INTEGER: {
-                auto rval = static_cast<int_type *>(right.get( ))->value( );
+                auto rval = objects::cast_int(right.get( ))->value( );
                 return eval_int(inf, val ? 1 : 0, rval);
             }
             case objects::type::FLOAT: {
-                auto rval = static_cast<float_type *>(right.get( ))->value( );
+                auto rval = objects::cast_float(right.get( ))->value( );
                 return eval_float(inf, val ? 1.0 : 0.0, rval);
             }
             case objects::type::BOOLEAN: {
-                auto rval = static_cast<bool_type *>(right.get( ))->value( );
+                auto rval = objects::cast_bool(right.get( ))->value( );
                 return eval_bool(inf, val, rval);
             }
+            case objects::type::BUILTIN:
+                if(inf->token( ) == tokens::type::BIT_OR) {
+                    return common_operations::eval_builtin( inf, obj,
+                                                            right, env);
+                }
+                break;
+            case objects::type::FUNCTION:
+                if(inf->token( ) == tokens::type::BIT_OR) {
+                    return common_operations::eval_func( inf, obj,
+                                                         right, env);
+                }
+                break;
             default:
                 break;
             }

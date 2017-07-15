@@ -14,6 +14,8 @@ namespace mico { namespace objects {
         using this_type = derived<type::ARRAY>;
     public:
 
+        static const type type_value = type::ARRAY;
+
         using sptr = std::shared_ptr<this_type>;
         using cont = derived<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;

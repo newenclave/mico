@@ -30,6 +30,36 @@ namespace mico { namespace objects {
     using table      = derived<type::TABLE>;
     using error      = derived<type::FAILURE>;
 
+#define MICO_DEFINE_CAST_FUNC( CallPrefix, TypeName )                   \
+    template <typename Obj>                                             \
+    inline                                                              \
+    derived<TypeName> *cast_##CallPrefix( Obj *val )                    \
+    {                                                                   \
+        return static_cast<derived<TypeName> *>(val);                   \
+    }                                                                   \
+    template <typename Obj>                                             \
+    inline                                                              \
+    derived<TypeName> *cast_##CallPrefix( std::shared_ptr<Obj> val )    \
+    {                                                                   \
+        return static_cast<derived<TypeName> *>(val.get( ));            \
+    }
+
+MICO_DEFINE_CAST_FUNC( null,        type::NULL_OBJ  )
+MICO_DEFINE_CAST_FUNC( int,         type::INTEGER   )
+MICO_DEFINE_CAST_FUNC( float,       type::FLOAT     )
+MICO_DEFINE_CAST_FUNC( bool,        type::BOOLEAN   )
+MICO_DEFINE_CAST_FUNC( string,      type::STRING    )
+MICO_DEFINE_CAST_FUNC( table,       type::TABLE     )
+MICO_DEFINE_CAST_FUNC( array,       type::ARRAY     )
+MICO_DEFINE_CAST_FUNC( func,        type::FUNCTION  )
+MICO_DEFINE_CAST_FUNC( builtin,     type::BUILTIN   )
+MICO_DEFINE_CAST_FUNC( tail_call,   type::TAIL_CALL )
+MICO_DEFINE_CAST_FUNC( return,      type::RETURN    )
+MICO_DEFINE_CAST_FUNC( error,       type::FAILURE   )
+MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
+
+#undef MICO_DEFINE_CAST_FUNC
+
 }}
 
 #endif // OBJECTS_H

@@ -1,11 +1,8 @@
-#ifndef MICO_EVL_STR_OPERATION_H
-#define MICO_EVL_STR_OPERATION_H
+#ifndef MICO_EVAL_STR_OPERATION_H
+#define MICO_EVAL_STR_OPERATION_H
 
 #include "mico/tokens.h"
-#include "mico/objects/error.h"
-#include "mico/objects/string.h"
-#include "mico/objects/numbers.h"
-#include "mico/expressions/expressions.h"
+#include "mico/eval/operations/common_operations.h"
 
 namespace mico { namespace eval {
 
@@ -20,7 +17,7 @@ namespace mico { namespace eval {
         using infix      = ast::expressions::infix;
 
         static
-        objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
+        objects::sptr eval_prefix( prefix *pref, objects::sptr /*obj*/ )
         {
             return error_type::make(pref->pos( ), "Prefix operator '",
                                     pref->token( ), "' is not defined for "
@@ -81,9 +78,9 @@ namespace mico { namespace eval {
 
         static
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
-                                  eval_call ev, environment::sptr /* env */ )
+                                  eval_call ev, environment::sptr env  )
         {
-            auto val = static_cast<str_type *>(obj.get( ));
+            auto val = objects::cast_string(obj.get( ));
 
             objects::sptr right = ev( inf->right( ).get( ) );
             if( right->get_type( ) == objects::type::FAILURE ) {
@@ -91,13 +88,25 @@ namespace mico { namespace eval {
             }
             switch (right->get_type( )) {
             case objects::type::STRING: {
-                auto rght = static_cast<str_type *>(right.get( ));
+                auto rght = objects::cast_string(right.get( ));
                 return eval_str( inf, val->value( ), rght->value( ) );
             }
             case objects::type::INTEGER: {
-                auto rght = static_cast<int_type *>(right.get( ));
+                auto rght = objects::cast_int(right.get( ));
                 return eval_int( inf, val->value( ), rght->value( ) );
             }
+            case objects::type::BUILTIN:
+                if(inf->token( ) == tokens::type::BIT_OR) {
+                    return common_operations::eval_builtin( inf, obj,
+                                                            right, env);
+                }
+                break;
+            case objects::type::FUNCTION:
+                if(inf->token( ) == tokens::type::BIT_OR) {
+                    return common_operations::eval_func( inf, obj,
+                                                         right, env);
+                }
+                break;
             }
             return error_type::make(inf->pos( ), "Infix operation ",
                                     obj->get_type( )," '",

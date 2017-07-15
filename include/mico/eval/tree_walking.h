@@ -12,6 +12,7 @@
 #include "mico/eval/operations/boolean.h"
 #include "mico/eval/operations/float.h"
 #include "mico/eval/operations/string.h"
+#include "mico/eval/operations/tables.h"
 
 namespace mico { namespace eval {
 
@@ -171,11 +172,11 @@ namespace mico { namespace eval {
         {
             switch (o->get_type( )) {
             case objects::type::FUNCTION:
-                return static_cast<objects::function *>(o.get( ))->env( );
+                return objects::cast_func(o.get( ))->env( );
             case objects::type::BUILTIN:
-                return static_cast<objects::builtin *>(o.get( ))->env( );
+                return objects::cast_builtin(o.get( ))->env( );
             case objects::type::TAIL_CALL:
-                return static_cast<objects::tail_call *>(o.get( ))->env( );
+                return objects::cast_tail_call(o.get( ))->env( );
             }
             return environment::sptr( );
         }
@@ -252,6 +253,7 @@ namespace mico { namespace eval {
             using float_operation = operation<objects::type::FLOAT>;
             using bool_operation  = operation<objects::type::BOOLEAN>;
             using str_operation   = operation<objects::type::STRING>;
+            using table_operation = operation<objects::type::TABLE>;
 
             switch (oper->get_type( )) {
             case objects::type::INTEGER:
@@ -262,6 +264,8 @@ namespace mico { namespace eval {
                 return bool_operation::eval_prefix(expr, oper);
             case objects::type::FLOAT:
                 return float_operation::eval_prefix(expr, oper);
+            case objects::type::TABLE:
+                return table_operation::eval_prefix(expr, oper);
             default:
                 break;
             }
@@ -275,16 +279,15 @@ namespace mico { namespace eval {
         {
             switch (oper->get_type( )) {
             case objects::type::BOOLEAN: {
-                auto val = static_cast<objects::boolean *>(oper)->value( )
-                         ? 1 : 0;
+                auto val = objects::cast_bool(oper)->value( ) ? 1 : 0;
                 return static_cast<Res>( val );
             }
             case objects::type::INTEGER: {
-                auto val = static_cast<objects::integer *>(oper)->value( );
+                auto val = objects::cast_int(oper)->value( );
                 return static_cast<Res>( val );
             }
             case objects::type::FLOAT: {
-                auto val = static_cast<objects::floating *>(oper)->value( );
+                auto val = objects::cast_float(oper)->value( );
                 return static_cast<Res>( val );
             }
             default:
@@ -373,8 +376,8 @@ namespace mico { namespace eval {
             switch ( lft->get_type( ) ) {
             case objects::type::STRING: {
                 if( rgh->get_type( ) == objects::type::STRING ) {
-                    auto lval = static_cast<objects::string *>(lft);
-                    auto rval = static_cast<objects::string *>(rgh);
+                    auto lval = objects::cast_string(lft);
+                    auto rval = objects::cast_string(rgh);
                     return infix_string( lval->value( ), rval->value( ),
                                          inf->token( ) );
                 } else {
@@ -382,10 +385,10 @@ namespace mico { namespace eval {
                 }
             }
             case objects::type::BOOLEAN: {
-                auto lval = static_cast<objects::boolean *>(lft);
+                auto lval = objects::cast_bool(lft);
                 auto rval = obj2num_obj<objects::boolean>( rgh );
                 if( !is_null( rval ) ) {
-                    auto bval = static_cast<objects::boolean *>(rval.get( ));
+                    auto bval = objects::cast_bool(rval.get( ));
                     return infix_bool( lval->value( ), bval->value( ),
                                          inf->token( ) );
                 } else {
@@ -481,6 +484,7 @@ namespace mico { namespace eval {
             using float_operation = operation<objects::type::FLOAT>;
             using bool_operation  = operation<objects::type::BOOLEAN>;
             using str_operation   = operation<objects::type::STRING>;
+            using table_operation = operation<objects::type::TABLE>;
 
             switch (left->get_type( )) {
             case objects::type::INTEGER:
@@ -491,6 +495,8 @@ namespace mico { namespace eval {
                 return bool_operation::eval_infix( inf, left, inf_call, env);
             case objects::type::STRING:
                 return str_operation::eval_infix( inf, left, inf_call, env);
+            case objects::type::TABLE:
+                return table_operation::eval_infix( inf, left, inf_call, env);
             default:
                 break;
             }

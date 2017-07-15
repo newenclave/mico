@@ -15,6 +15,8 @@ namespace mico { namespace objects {
 
         using this_type = derived<type::FAILURE>;
     public:
+
+        static const type type_value = type::FAILURE;
         using sptr = std::shared_ptr<this_type>;
 
         using value_type = std::string;

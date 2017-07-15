@@ -13,6 +13,8 @@ namespace mico { namespace objects {
         using this_type = derived<type::REFERENCE>;
     public:
 
+        static const type type_value = type::REFERENCE;
+
         using sptr = std::shared_ptr<this_type>;
         using value_type = objects::sptr;
 

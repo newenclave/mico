@@ -45,7 +45,9 @@ HEADERS += \
     include/mico/eval/operations/float.h \
     include/mico/eval/operations/integer.h \
     include/mico/eval/operations/string.h \
-    include/mico/eval/operation.h
+    include/mico/eval/operation.h \
+    include/mico/eval/operations/common_operations.h \
+    include/mico/eval/operations/tables.h
 
 DISTFILES += \
     drafts/tail_recursion.md \
@@ -53,3 +55,5 @@ DISTFILES += \
 
 
 #DEFINES += DEBUG=1
+
+DEFINES += CHECK_CASTS=1

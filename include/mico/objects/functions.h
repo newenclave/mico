@@ -10,6 +10,7 @@ namespace mico { namespace objects {
     class derived<type::FUNCTION>: public collectable<type::FUNCTION> {
         using this_type = derived<type::FUNCTION>;
     public:
+        static const type type_value = type::FUNCTION;
         using sptr = std::shared_ptr<this_type>;
 
         derived( std::shared_ptr<environment> e,
@@ -65,6 +66,8 @@ namespace mico { namespace objects {
     class derived<type::BUILTIN>: public collectable<type::BUILTIN> {
         using this_type = derived<type::BUILTIN>;
     public:
+        static const type type_value = type::BUILTIN;
+
         using sptr = std::shared_ptr<this_type>;
 
         derived( std::shared_ptr<environment> e )
@@ -105,6 +108,7 @@ namespace mico { namespace objects {
 
         using this_type = derived<type::TAIL_CALL>;
     public:
+        static const type type_value = type::TAIL_CALL;
         using sptr = std::shared_ptr<this_type>;
 
         derived(objects::sptr obj, objects::slist p, environment::sptr e)
@@ -123,6 +127,19 @@ namespace mico { namespace objects {
         objects::sptr value( )
         {
             return obj_;
+        }
+
+
+        static
+        sptr make( objects::sptr obj, objects::slist p, environment::sptr e )
+        {
+            return std::make_shared<this_type>( obj, std::move(p), e );
+        }
+
+        static
+        sptr make( objects::sptr obj, environment::sptr e )
+        {
+            return std::make_shared<this_type>( obj, objects::slist { }, e );
         }
 
         objects::slist &params( )

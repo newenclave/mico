@@ -8,6 +8,8 @@ namespace mico { namespace objects {
     class derived<type::NULL_OBJ>: public typed_base<type::NULL_OBJ> {
         using this_type = derived<type::NULL_OBJ>;
     public:
+
+        static const type type_value = type::NULL_OBJ;
         using sptr = std::shared_ptr<this_type>;
         std::string str( ) const
         {

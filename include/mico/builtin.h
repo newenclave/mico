@@ -78,13 +78,13 @@ namespace mico {
             auto dat = params[0];
 
             if( dat->get_type( ) == objects::type::STRING ) {
-                auto s = static_cast<objects::string *>(dat.get( ));
+                auto s = objects::cast_string(dat.get( ));
                 return integer::make( s->value( ).size( ));
             } else if( dat->get_type( ) == objects::type::ARRAY ) {
-                auto s = static_cast<objects::array *>(dat.get( ));
+                auto s = objects::cast_array(dat.get( ));
                 return integer::make( s->value( ).size( ));
             } else if( dat->get_type( ) == objects::type::TABLE ) {
-                auto s = static_cast<objects::table *>(dat.get( ));
+                auto s = objects::cast_table(dat.get( ));
                 return integer::make( s->value( ).size( ));
             }
             return error::make( tokens::position( line, 0),
@@ -127,16 +127,16 @@ namespace mico {
             for( auto &p: pp ) {
                 ++count;
                 if( p->get_type( ) == objects::type::STRING ) {
-                    auto s = static_cast<objects::string *>(p.get( ));
+                    auto s = objects::cast_string(p.get( ));
                     std::cout << s->value( );
                 } else if(p->get_type( ) == objects::type::INTEGER ) {
-                    auto s = static_cast<objects::integer *>(p.get( ));
+                    auto s = objects::cast_int(p.get( ));
                     std::cout << s->value( );
                 } else if(p->get_type( ) == objects::type::FLOAT ) {
-                    auto s = static_cast<objects::floating *>(p.get( ));
+                    auto s = objects::cast_float(p.get( ));
                     std::cout << s->value( );
                 } else if(p->get_type( ) == objects::type::BOOLEAN ) {
-                    auto s = static_cast<objects::boolean *>(p.get( ));
+                    auto s = objects::cast_bool(p.get( ));
                     std::cout << std::boolalpha << s->value( );
                 } else {
                     return error::make( tokens::position( line, 0),

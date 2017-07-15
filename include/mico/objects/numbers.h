@@ -23,6 +23,8 @@ namespace mico { namespace objects {
     class derived: public typed_base<TN>  {
         using this_type = derived<TN>;
     public:
+
+        static const type type_value = TN;
         using sptr = std::shared_ptr<this_type>;
 
         static const type type_name = TN;

@@ -10,6 +10,8 @@ namespace mico { namespace objects {
     class derived<type::RETURN>: public typed_base<type::RETURN> {
         using this_type = derived<type::RETURN>;
     public:
+        static const type type_value = type::RETURN;
+
         using sptr = std::shared_ptr<this_type>;
 
         using value_type = objects::sptr;

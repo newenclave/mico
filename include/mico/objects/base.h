@@ -51,15 +51,6 @@ namespace mico { namespace objects {
         }
     };
 
-    struct cast {
-        template <typename ToT, typename FromT>
-        static
-        ToT *to( FromT *obj )
-        {
-            return static_cast<ToT *>(obj);
-        }
-    };
-
     struct base {
         virtual ~base( ) = default;
         virtual type get_type( ) const = 0;
@@ -143,6 +134,29 @@ namespace mico { namespace objects {
     using slist = std::vector<sptr>;
     using ulist = std::vector<uptr>;
 
+    template <type ToT, typename Obj>
+    inline
+    derived<ToT> *cast( Obj *val )
+    {
+#if defined(CHECK_CASTS)
+        if( ToT != val->get_type( ) ) {
+            throw  std::runtime_error( "Bad object* cast" );
+        }
+#endif
+        return static_cast<derived<ToT> *>(val);
+    }
+
+    template <type ToT, typename Obj>
+    inline
+    derived<ToT> *cast( std::shared_ptr<Obj> val )
+    {
+#if defined(CHECK_CASTS)
+        if( ToT != val->get_type( ) ) {
+            throw  std::runtime_error( "Bad shared<object> cast" );
+        }
+#endif
+        return static_cast<derived<ToT> *>(val.get( ));
+    }
 
     inline
     std::ostream &operator << ( std::ostream &o, const objects::sptr &obj )

@@ -14,6 +14,7 @@ namespace mico { namespace objects {
 
     public:
 
+        static const type type_value = type::BOOLEAN;
         using sptr = std::shared_ptr<this_type>;
 
         derived( bool v )

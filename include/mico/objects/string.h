@@ -14,6 +14,8 @@ namespace mico { namespace objects {
 
     public:
 
+        static const type type_value = type::STRING;
+
         using sptr = std::shared_ptr<this_type>;
         using value_type = std::string;
 

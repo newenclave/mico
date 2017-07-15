@@ -20,10 +20,28 @@ namespace mico { namespace eval {
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
 
+        static const objects::type type_value = objects::type::FLOAT;
+
+        static
+        objects::sptr eval_builtin( infix *inf,
+                                    objects::sptr obj, objects::sptr call,
+                                    environment::sptr env)
+        {
+            return common_operations::eval_builtin( inf, obj, call, env );
+        }
+
+        static
+        objects::sptr eval_func( infix *inf,
+                                 objects::sptr obj, objects::sptr call,
+                                 environment::sptr env)
+        {
+            return common_operations::eval_func( inf, obj, call, env );
+        }
+
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto val = static_cast<value_type *>( obj.get( ) )->value( );
+            auto val = objects::cast_float( obj.get( ) )->value( );
             switch (pref->token( )) {
             case tokens::type::MINUS:
                 return value_type::make( -1 * val );
@@ -32,9 +50,9 @@ namespace mico { namespace eval {
             default:
                 break;
             }
-            return error_type::make(pref->pos( ), "Prefix operator '",
-                                    pref->token( ), "' is not defined for "
-                                                    "floats");
+            return error_type::make( pref->pos( ), "Prefix operator '",
+                                     pref->token( ), "' is not defined for "
+                                                     "floats" );
         }
 
         static
@@ -46,9 +64,9 @@ namespace mico { namespace eval {
 
         static
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
-                                  eval_call ev, environment::sptr /* env */ )
+                                  eval_call ev, environment::sptr env )
         {
-            auto val = static_cast<value_type *>(obj.get( ))->value( );
+            auto val = objects::cast<type_value>(obj.get( ))->value( );
 
             if( (inf->token( ) == tokens::type::LOGIC_AND) && (val == 0)) {
                 return bool_type::make( false );
@@ -64,18 +82,28 @@ namespace mico { namespace eval {
 
             switch (right->get_type( )) {
             case objects::type::INTEGER: {
-                auto rval = static_cast<int_type *>(right.get( ))->value( );
+                auto rval = objects::cast_int(right.get( ))->value( );
                 auto rdval = static_cast<double>( rval );
                 return eval_float( inf, val, rdval );
             }
             case objects::type::FLOAT: {
-                auto rval = static_cast<value_type *>(right.get( ))->value( );
+                auto rval = objects::cast_float(right.get( ))->value( );
                 return eval_float(inf, val, rval);
             }
             case objects::type::BOOLEAN: {
-                auto rval = static_cast<bool_type *>(right.get( ))->value( );
+                auto rval = objects::cast_bool(right.get( ))->value( );
                 return eval_float( inf, val, rval ? 1.0 : 0.0);
             }
+            case objects::type::BUILTIN:
+                if(inf->token( ) == tokens::type::BIT_OR) {
+                    return eval_builtin( inf, obj, right, env);
+                }
+                break;
+            case objects::type::FUNCTION:
+                if(inf->token( ) == tokens::type::BIT_OR) {
+                    return eval_func( inf, obj, right, env);
+                }
+                break;
             default:
                 break;
             }
