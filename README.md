@@ -7,8 +7,9 @@ Monkey the language interpreter implementation done with C++. https://interprete
 "Mico" is an implementation but of course it has some difference.
 It's so funny to add something new =)
 
-##### tail call optimization.
-    I hope Thorsten will add this thing to the book soon.
+##### Tail call optimization.
+
+I hope Thorsten will add this thing to the book soon.
 ```js
     let spin = fn( count ) {
         if( count > 0 ) {
