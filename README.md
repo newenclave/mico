@@ -127,7 +127,7 @@ It's so funny to add something new =)
     // `t` = {{"x": 1, "y": 100, "z": 200}: false}
     t[point(1, 100, 200)] // returns false
 ```
-###### aae
+###### Assignment arrays' elements
 *   **Assignment arrays' elements**
     There are some tricks.
 ```js
