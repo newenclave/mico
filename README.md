@@ -184,7 +184,7 @@ It's so funny to add something new =)
 ###### Function call rules
 
 *   **Function call rules**.
-    A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M`  parameters. In the case in wich the function is called with 0 parameters it returs self. Hello, OCaml
+    A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
 
 ```js
     let sum1 = fn(a,b,c) { a + b + c }
