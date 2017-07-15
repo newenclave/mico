@@ -47,7 +47,8 @@ HEADERS += \
     include/mico/eval/operations/string.h \
     include/mico/eval/operation.h \
     include/mico/eval/operations/common_operations.h \
-    include/mico/eval/operations/tables.h
+    include/mico/eval/operations/tables.h \
+    include/mico/eval/operations/arrays.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

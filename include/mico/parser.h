@@ -422,7 +422,7 @@ namespace mico {
 
             std::int64_t id = 0;
 
-            if( is_peek( token_type::RBRACE ) ) {
+            if( expect_peek( token_type::RBRACE, false ) ) {
                 return res;
             } else {
                 advance( );
