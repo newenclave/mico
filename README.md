@@ -30,7 +30,7 @@ It's so funny to add something new =)
 ```
 
 ##### line number for the tokens.
-    Yeap. Now I can see where an error happens.
+Yeap. Now I can see where an error happens.
 ```js
     let test_val = someUnknownCall()
     error: [1:15] Identifier not found 'someUnknownCall'
@@ -82,9 +82,9 @@ It's so funny to add something new =)
     // a = [0, 0, 0, 0, 0]
 ```
 
-*   **Reference object**
-    The object that contains another object.
-    Now I can change the values in arrays, tables (hashes) and the environment
+##### Reference object**
+The object that contains another object.
+Now I can change the values in arrays, tables (hashes) and the environment
 ```js
     m["three"] = 3 // m["three"] returns a reference object
                    // and then assign the operator changes the value
@@ -92,7 +92,7 @@ It's so funny to add something new =)
 
 ##### **elif** branch to **ifelse**
 
-    Well...there is nothing to explain here =)
+ Well...there is nothing to explain here =)
 ```js
     let result = if( x < 0 ) {
                    "too small!"
@@ -109,7 +109,7 @@ It's so funny to add something new =)
 
 ##### Hashes (i.e. tables) and Arrays
 
-    Can be the keys for the other Hashes
+Can be the keys for the other Hashes
 ```js
     // should work!
     let point = fn( x, y, z ) { {"x": x, "y": y, "z": z} }
@@ -135,7 +135,7 @@ It's so funny to add something new =)
 ```
 ###### Assignment arrays' elements
 
-    There are some tricks.
+There are some tricks.
 ```js
     let a = [0,0] // ok. here we have a value `a` that binds an array [0,0]
     let b = [a, a] // wow wow wow! Here we put the array `a` to another array
@@ -190,7 +190,7 @@ It's so funny to add something new =)
 
 ##### Function call rules
 
-    A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
+A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
 
 ```js
     let sum1 = fn(a,b,c) { a + b + c }
@@ -202,7 +202,8 @@ It's so funny to add something new =)
     sum1(1)(2)(3)       // => 6; equal to sum(1, 2, 3)
 ```
 
-*   **Pipe operator for function**. The pipe operator `|` is a shortcat for the `call` operator. The left side of the operator  is passed to the right side. In this case the right side must be a function (builtin or not).
+##### Pipe operator for function.
+The pipe operator `|` is a shortcat for the `call` operator. The left side of the operator  is passed to the right side. In this case the right side must be a function (builtin or not).
 ```js
     let sum = fn(a,b) { a + b }
     let hello = sum("Hello, ")      // fn( a ) { "Hello, " + a }
@@ -211,7 +212,6 @@ It's so funny to add something new =)
     "world!"|sum("Hello, ")|len     // len(sum("Hello, ", "world!")) => 13
 
 ```
-
 
 Is not yet complete.
 
