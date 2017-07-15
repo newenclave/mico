@@ -24,14 +24,18 @@ namespace mico { namespace eval { namespace operations {
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-            common::reference<objects::type::STRING> ref(obj);
-            obj = ref.shared_unref( );
+            obj = objects::reference::unref( obj );
 
-            objects::sptr right = ev( inf->right( ).get( ) );
-            if( right->get_type( ) == objects::type::FAILURE ) {
-                return right;
+            if( inf->token( ) == tokens::type::BIT_OR ) {
+                objects::sptr right = ev( inf->right( ).get( ) );
+                if( right->get_type( ) == objects::type::FAILURE ) {
+                    return right;
+                }
+                return common::common_infix( inf, obj, right, env );
             }
-            return common::common_infix( inf, obj, right, env );
+            return error_type::make(inf->pos( ), "Infix operation '",
+                                    inf->token( ), "' is not defined for "
+                                                   "functions");
         }
     };
 

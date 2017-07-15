@@ -416,24 +416,35 @@ namespace mico { namespace eval {
             using array_operation = OP<objects::type::ARRAY>;
             using func_operation  = OP<objects::type::FUNCTION>;
 
+            objects::sptr res;
             switch (left->get_type( )) {
             case objects::type::INTEGER:
-                return int_operation::eval_infix( inf, left, inf_call, env);
+                res = int_operation::eval_infix( inf, left, inf_call, env);
+                break;
             case objects::type::FLOAT:
-                return float_operation::eval_infix( inf, left, inf_call, env);
+                res = float_operation::eval_infix( inf, left, inf_call, env);
+                break;
             case objects::type::BOOLEAN:
-                return bool_operation::eval_infix( inf, left, inf_call, env);
+                res = bool_operation::eval_infix( inf, left, inf_call, env);
+                break;
             case objects::type::STRING:
-                return str_operation::eval_infix( inf, left, inf_call, env);
+                res = str_operation::eval_infix( inf, left, inf_call, env);
+                break;
             case objects::type::TABLE:
-                return table_operation::eval_infix( inf, left, inf_call, env);
+                res = table_operation::eval_infix( inf, left, inf_call, env);
+                break;
             case objects::type::ARRAY:
-                return array_operation::eval_infix( inf, left, inf_call, env);
+                res = array_operation::eval_infix( inf, left, inf_call, env);
+                break;
             case objects::type::FUNCTION:
             case objects::type::BUILTIN:
-                return func_operation::eval_infix( inf, left, inf_call, env);
+                res = func_operation::eval_infix( inf, left, inf_call, env);
+                break;
             default:
                 break;
+            }
+            if( res ) {
+                return eval_tail( res );
             }
 
             return error_operation_notfound( inf->token( ), inf );
@@ -512,7 +523,6 @@ namespace mico { namespace eval {
                 } else if( call_type == objects::type::BUILTIN ) {
                     auto fun = objects::cast_builtin(call->value( ).get( ));
                     obj = fun->call( call->params( ), call->env( ) );
-
                 }
                 if( is_return( obj ) ) {
                     return obj;
@@ -557,7 +567,6 @@ namespace mico { namespace eval {
 
                 auto next = eval_impl( stmt.get( ), env );
                 last = next;
-                //last = eval_tail(next);
                 if( is_return( next ) || is_fail( next ) ) {
                     return last;
                 }
