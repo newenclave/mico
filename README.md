@@ -30,7 +30,7 @@ I hope Thorsten will add this thing to the book soon.
     spin( 10000 ) /// Oops. Stack overflow is here
 ```
 
-##### line number for the tokens.
+##### * Line number for the tokens.
 Yeap. Now I can see where an error happens.
 ```js
     let test_val = someUnknownCall()
