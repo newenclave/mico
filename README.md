@@ -181,6 +181,8 @@ It's so funny to add something new =)
     bits(0b1111111000000001111111)  // => 14
 ```
 
+###### Function call rules
+
 *   **Function call rules**.
     A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M`  parameters. In the case in wich the function is called with 0 parameters it returs self. Hello, OCaml
 
