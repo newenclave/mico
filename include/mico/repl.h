@@ -11,7 +11,52 @@
 
 namespace mico {
 
+    static const std::string LOGO =
+            "Hello! This is the Monkey programming language.\n"
+            "Mico implementation.\n"
+            "See https://interpreterbook.com/\n"
+            ""
+            "           __,__           \n"
+            "  .--.  .-\"     \"-.  .--.  \n"
+            " / .. \\/  .-. .-.  \\/ .. \\ \n"
+            "| |  '|  /   Y   \\  |'  | |\n"
+            "| \\   \\  \\ 0 | 0 /  /   / |\n"
+            " \\ '- ,\\.-\"\"\"\"\"\"\"-./, -' / \n"
+            "  ''-' /_   ^ ^   _\\ '-''  \n"
+            "      |  \\._   _./  |      \n"
+            "      \\   \\ '~' /   /      \n"
+            "       '._ '-=-' _.'       \n"
+            "          '-----'          \n";
+
+
     struct repl {
+
+        static
+        std::ostream &logo( std::ostream &o )
+        {
+            using namespace etool::console::ccout;
+            o << "Hello! This is the Monkey programming language.\n";
+            o << "Mico implementation.\n";
+            o << "See " << blue <<  "https://interpreterbook.com/\n";
+            o << yellow;
+            o <<  "           __,__           \n"             ;
+            o <<  "  .--.  .-\"     \"-.  .--.  \n"           ;
+            o <<  " / .. \\/  .-. .-.  \\/ .. \\ \n"          ;
+            o <<  "| |  '|  /   Y   \\  |'  | |\n"            ;
+            o <<  "| \\   \\  \\ "
+                << blue << "0" << yellow
+                <<  " | "
+                << blue << "0" << yellow
+                << " /  /   / |\n"          ;
+            o <<  " \\ '- ,\\.-\"\"\"\"\"\"\"-./, -' / \n"    ;
+            o <<  "  ''-' /_   ^ ^   _\\ '-''  \n"            ;
+            o <<  "      |  \\._   _./  |      \n"            ;
+            o <<  "      \\   \\ '~' /   /      \n"           ;
+            o <<  "       '._ '-=-' _.'       \n"             ;
+            o <<  "          '-----'          \n"             ;
+            o << none;
+            return o;
+        }
 
         static
         void run( )
@@ -20,7 +65,7 @@ namespace mico {
             auto env = environment::make( );
             builtin::init( env );
             std::string data;
-            std::cout << ">>> ";
+            std::cout << logo << ">>> ";
             while( true ) {
                 std::string tmp;
                 std::getline( std::cin, tmp );
