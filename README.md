@@ -46,7 +46,8 @@ Yeap. Now I can see where an error happens.
 ```
 
 #### * Number formats.
-    It's possible to add DEC, OCT, TER, BIN and HEX number
+
+It's possible to add DEC, OCT, TER, BIN and HEX number
 ```D
     123456         // decimal
     01234567       // oct 342391
