@@ -11,7 +11,6 @@ It's so funny to add something new =)
 
 #### * Tail call optimization.
 
-I hope Thorsten will add this thing to the book soon.
 ```js
     let spin = fn( count ) {
         if( count > 0 ) {
