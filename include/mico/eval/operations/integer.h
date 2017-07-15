@@ -3,11 +3,11 @@
 
 #include "mico/eval/operation.h"
 #include "mico/tokens.h"
-#include "mico/eval/operations/common_operations.h"
+#include "mico/eval/operations/common.h"
 
 #include "mico/ast.h"
 
-namespace mico { namespace eval {
+namespace mico { namespace eval { namespace operations {
 
     template <>
     struct operation<objects::type::INTEGER> {
@@ -29,12 +29,14 @@ namespace mico { namespace eval {
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto val = objects::cast_int( obj.get( ) )->value( );
-            auto uval = static_cast<std::uint64_t>(val);
+            common::reference<objects::type::INTEGER> ref(obj);
+
+            auto val = ref.unref( );
+            auto uval = static_cast<std::uint64_t>(val->value( ));
 
             switch (pref->token( )) {
             case tokens::type::MINUS:
-                return value_type::make( -1 * val );
+                return value_type::make( -1 * val->value( ) );
             case tokens::type::TILDA:
                 return value_type::make( ~uval );
             case tokens::type::BANG:
@@ -157,7 +159,7 @@ namespace mico { namespace eval {
                                     objects::sptr obj, objects::sptr call,
                                     environment::sptr env)
         {
-            return common_operations::eval_builtin( inf, obj, call, env );
+            return common::eval_builtin( inf, obj, call, env );
         }
 
         static
@@ -165,14 +167,15 @@ namespace mico { namespace eval {
                                  objects::sptr obj, objects::sptr call,
                                  environment::sptr env)
         {
-            return common_operations::eval_func( inf, obj, call, env );
+            return common::eval_func( inf, obj, call, env );
         }
 
         static
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-            auto val = objects::cast_int(obj.get( ))->value( );
+            common::reference<objects::type::INTEGER> ref(obj);
+            auto val = ref.unref( )->value( );
 
             if( (inf->token( ) == tokens::type::LOGIC_AND) && (val == 0)) {
                 return bool_type::make( false );
@@ -200,18 +203,8 @@ namespace mico { namespace eval {
                 auto rval = objects::cast_bool(right.get( ))->value( );
                 return eval_int(inf, val, rval ? 1 : 0);
             }
-            case objects::type::BUILTIN:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return eval_builtin( inf, obj, right, env);
-                }
-                break;
-            case objects::type::FUNCTION:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return eval_func( inf, obj, right, env);
-                }
-                break;
             default:
-                break;
+                return common::common_infix( inf, obj, right, env );
             }
 
             return error_type::make(inf->pos( ), "Infix operation ",
@@ -223,7 +216,7 @@ namespace mico { namespace eval {
 
     };
 
-}}
+}}}
 
 
 #endif // INT_OPRATIONS_H

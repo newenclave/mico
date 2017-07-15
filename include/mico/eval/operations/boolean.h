@@ -6,9 +6,9 @@
 #include "mico/expressions/expressions.h"
 #include "mico/eval/operations/float.h"
 #include "mico/eval/operations/integer.h"
-#include "mico/eval/operations/common_operations.h"
+#include "mico/eval/operations/common.h"
 
-namespace mico { namespace eval {
+namespace mico { namespace eval { namespace operations {
 
     template <>
     struct operation<objects::type::BOOLEAN> {
@@ -22,7 +22,8 @@ namespace mico { namespace eval {
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto val = objects::cast_bool( obj.get( ) )->value( );
+            common::reference<objects::type::BOOLEAN> ref(obj);
+            auto val = ref.unref( )->value( );
 
             if( pref->token( ) == tokens::type::BANG ) {
                 return bool_type::make( !val );
@@ -77,7 +78,8 @@ namespace mico { namespace eval {
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env )
         {
-            auto val = static_cast<bool_type *>(obj.get( ))->value( );
+            common::reference<objects::type::BOOLEAN> ref(obj);
+            auto val = ref.unref( )->value( );
 
             if( (inf->token( ) == tokens::type::LOGIC_AND) && !val ) {
                 return bool_type::make( false );
@@ -105,20 +107,8 @@ namespace mico { namespace eval {
                 auto rval = objects::cast_bool(right.get( ))->value( );
                 return eval_bool(inf, val, rval);
             }
-            case objects::type::BUILTIN:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return common_operations::eval_builtin( inf, obj,
-                                                            right, env);
-                }
-                break;
-            case objects::type::FUNCTION:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return common_operations::eval_func( inf, obj,
-                                                         right, env);
-                }
-                break;
             default:
-                break;
+                return common::common_infix( inf, obj, right, env );
             }
 
             return error_type::make(inf->pos( ), "Infix operation ",
@@ -130,6 +120,6 @@ namespace mico { namespace eval {
         }
     };
 
-}}
+}}}
 
 #endif // BOOL_OPERATION_H

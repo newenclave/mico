@@ -13,6 +13,7 @@
 #include "mico/objects/error.h"
 #include "mico/objects/boolean.h"
 #include "mico/objects/return.h"
+#include "mico/objects/base.h"
 
 namespace mico { namespace objects {
 
@@ -31,17 +32,15 @@ namespace mico { namespace objects {
     using error      = derived<type::FAILURE>;
 
 #define MICO_DEFINE_CAST_FUNC( CallPrefix, TypeName )                   \
-    template <typename Obj>                                             \
     inline                                                              \
-    derived<TypeName> *cast_##CallPrefix( Obj *val )                    \
+    derived<TypeName> *cast_##CallPrefix( base *val )                   \
     {                                                                   \
-        return static_cast<derived<TypeName> *>(val);                   \
+        return objects::cast<TypeName>(val);                            \
     }                                                                   \
-    template <typename Obj>                                             \
     inline                                                              \
-    derived<TypeName> *cast_##CallPrefix( std::shared_ptr<Obj> val )    \
+    std::shared_ptr<derived<TypeName> > cast_##CallPrefix( sptr val )   \
     {                                                                   \
-        return static_cast<derived<TypeName> *>(val.get( ));            \
+        return objects::cast<TypeName>( val );                          \
     }
 
 MICO_DEFINE_CAST_FUNC( null,        type::NULL_OBJ  )

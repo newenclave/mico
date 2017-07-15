@@ -13,6 +13,8 @@
 #include "mico/eval/operations/float.h"
 #include "mico/eval/operations/string.h"
 #include "mico/eval/operations/tables.h"
+#include "mico/eval/operations/arrays.h"
+#include "mico/eval/operations/function.h"
 
 namespace mico { namespace eval {
 
@@ -22,6 +24,8 @@ namespace mico { namespace eval {
         using error_list = std::vector<std::string>;
     private:
 
+        template <objects::type T>
+        using OP = operations::operation<T>;
 
         ////////////// errors /////////////
 
@@ -234,28 +238,36 @@ namespace mico { namespace eval {
 
         bool is_bool( objects::base *oper )
         {
-            switch (oper->get_type( ) ) {
-            case objects::type::INTEGER:
-            case objects::type::FLOAT:
-            case objects::type::BOOLEAN:
-            case objects::type::NULL_OBJ:
-                return true;
-            }
-            return false;
+            return (oper->get_type( ) == objects::type::INTEGER )
+                || (oper->get_type( ) == objects::type::FLOAT )
+                || (oper->get_type( ) == objects::type::BOOLEAN )
+                || (oper->get_type( ) == objects::type::NULL_OBJ )
+                 ;
         }
 
         objects::sptr eval_prefix( ast::node *n, environment::sptr env )
         {
             auto expr = static_cast<ast::expressions::prefix *>( n );
-            auto oper = unref(eval_impl(expr->value( ), env));
+            auto oper = eval_impl(expr->value( ), env);
 
-            using int_operation   = operation<objects::type::INTEGER>;
-            using float_operation = operation<objects::type::FLOAT>;
-            using bool_operation  = operation<objects::type::BOOLEAN>;
-            using str_operation   = operation<objects::type::STRING>;
-            using table_operation = operation<objects::type::TABLE>;
+            if( is_fail(oper) ) {
+                return oper;
+            }
 
-            switch (oper->get_type( )) {
+            using int_operation   = OP<objects::type::INTEGER>;
+            using float_operation = OP<objects::type::FLOAT>;
+            using bool_operation  = OP<objects::type::BOOLEAN>;
+            using str_operation   = OP<objects::type::STRING>;
+            using table_operation = OP<objects::type::TABLE>;
+            using array_operation = OP<objects::type::ARRAY>;
+            using func_operation  = OP<objects::type::FUNCTION>;
+
+            objects::type opertype = oper->get_type( );
+            if( opertype == objects::type::REFERENCE ) {
+                opertype = objects::cast_ref( oper )->value( )->get_type( );
+            }
+
+            switch ( opertype ) {
             case objects::type::INTEGER:
                 return int_operation::eval_prefix(expr, oper);
             case objects::type::STRING:
@@ -266,6 +278,11 @@ namespace mico { namespace eval {
                 return float_operation::eval_prefix(expr, oper);
             case objects::type::TABLE:
                 return table_operation::eval_prefix(expr, oper);
+            case objects::type::ARRAY:
+                return array_operation::eval_prefix(expr, oper);
+            case objects::type::BUILTIN:
+            case objects::type::FUNCTION:
+                return func_operation::eval_prefix(expr, oper);
             default:
                 break;
             }
@@ -312,93 +329,9 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
-        objects::sptr infix_bool( bool lft, bool rght, tokens::type tt )
-        {
-            switch (tt) {
-            case tokens::type::LT:
-                return get_bool( lft < rght );
-            case tokens::type::GT:
-                return get_bool( lft > rght );
-            case tokens::type::LT_EQ:
-                return get_bool( lft <= rght );
-            case tokens::type::GT_EQ:
-                return get_bool( lft >= rght );
-            case tokens::type::EQ:
-                return get_bool( lft == rght );
-            case tokens::type::NOT_EQ:
-                return get_bool( lft != rght );
-            case tokens::type::LOGIC_OR:
-                return get_bool( lft || rght );
-            case tokens::type::LOGIC_AND:
-                return get_bool( lft && rght );
-            default:
-                break;
-            }
-            /// invalid operation for boollean;
-            return get_null( );
-        }
-
         environment::sptr make_env( environment::sptr parent )
         {
             return environment::make(parent);
-        }
-
-        objects::sptr infix_string( const std::string &lft,
-                                    const std::string &rght,
-                                    tokens::type tt )
-        {
-            switch (tt) {
-            case tokens::type::LT:
-                return get_bool( lft < rght );
-            case tokens::type::GT:
-                return get_bool( lft > rght );
-            case tokens::type::LT_EQ:
-                return get_bool( lft <= rght );
-            case tokens::type::GT_EQ:
-                return get_bool( lft >= rght );
-            case tokens::type::EQ:
-                return get_bool( lft == rght );
-            case tokens::type::NOT_EQ:
-                return get_bool( lft != rght );
-            case tokens::type::PLUS:
-                return std::make_shared<objects::string>(lft + rght);
-            default:
-                break;
-            }
-            /// invalid operation for string;
-            return get_null( );
-        }
-
-        objects::sptr other_infix( objects::base *lft, objects::base *rgh,
-                                   ast::expressions::infix *inf,
-                                   environment::sptr /*env*/ )
-        {
-            switch ( lft->get_type( ) ) {
-            case objects::type::STRING: {
-                if( rgh->get_type( ) == objects::type::STRING ) {
-                    auto lval = objects::cast_string(lft);
-                    auto rval = objects::cast_string(rgh);
-                    return infix_string( lval->value( ), rval->value( ),
-                                         inf->token( ) );
-                } else {
-                    return error_operation_notfound( inf->token( ), inf );
-                }
-            }
-            case objects::type::BOOLEAN: {
-                auto lval = objects::cast_bool(lft);
-                auto rval = obj2num_obj<objects::boolean>( rgh );
-                if( !is_null( rval ) ) {
-                    auto bval = objects::cast_bool(rval.get( ));
-                    return infix_bool( lval->value( ), bval->value( ),
-                                         inf->token( ) );
-                } else {
-                    return error_operation_notfound( inf->token( ), inf );
-                }
-            }
-            default:
-                break;
-            }
-            return get_null( );
         }
 
         objects::sptr eval_assign( ast::expressions::infix *inf,
@@ -480,11 +413,13 @@ namespace mico { namespace eval {
                 return unref( eval_impl( n, env ) );
             };
 
-            using int_operation   = operation<objects::type::INTEGER>;
-            using float_operation = operation<objects::type::FLOAT>;
-            using bool_operation  = operation<objects::type::BOOLEAN>;
-            using str_operation   = operation<objects::type::STRING>;
-            using table_operation = operation<objects::type::TABLE>;
+            using int_operation   = OP<objects::type::INTEGER>;
+            using float_operation = OP<objects::type::FLOAT>;
+            using bool_operation  = OP<objects::type::BOOLEAN>;
+            using str_operation   = OP<objects::type::STRING>;
+            using table_operation = OP<objects::type::TABLE>;
+            using array_operation = OP<objects::type::ARRAY>;
+            using func_operation  = OP<objects::type::FUNCTION>;
 
             switch (left->get_type( )) {
             case objects::type::INTEGER:
@@ -497,33 +432,16 @@ namespace mico { namespace eval {
                 return str_operation::eval_infix( inf, left, inf_call, env);
             case objects::type::TABLE:
                 return table_operation::eval_infix( inf, left, inf_call, env);
+            case objects::type::ARRAY:
+                return array_operation::eval_infix( inf, left, inf_call, env);
+            case objects::type::FUNCTION:
+            case objects::type::BUILTIN:
+                return func_operation::eval_infix( inf, left, inf_call, env);
             default:
                 break;
             }
 
-            if((inf->token( ) == tokens::type::EQ) ||
-               (inf->token( ) == tokens::type::NOT_EQ) ) {
-                auto rght = unref(eval_impl( inf->right( ).get( ), env ) );
-                return eval_equal( left.get( ), rght.get( ), inf, env );
-            }
-
-            switch ( inf->token( ) ) {
-            case tokens::type::LT:
-            case tokens::type::PLUS:
-            case tokens::type::GT:
-            case tokens::type::LT_EQ:
-            case tokens::type::GT_EQ:
-            case tokens::type::LOGIC_AND:
-            case tokens::type::LOGIC_OR:
-            {
-                auto rght = unref(eval_impl( inf->right( ).get( ), env ) );
-                return other_infix( left.get( ), rght.get( ), inf, env );
-            }
-            default:
-                return error_operation_notfound( inf->token( ), inf );
-            }
-
-            return get_null( );
+            return error_operation_notfound( inf->token( ), inf );
         }
 
         environment::sptr create_call_env( ast::expressions::call *call,
@@ -941,7 +859,7 @@ namespace mico { namespace eval {
                 if( is_fail( val ) ) {
                     return val;
                 }
-                res->insert( env.get( ), key, val );
+                res->set( env.get( ), key, val );
             }
 
             return res;

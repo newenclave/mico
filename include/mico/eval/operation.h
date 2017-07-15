@@ -8,7 +8,7 @@
 #include "mico/ast.h"
 #include "mico/tokens.h"
 
-namespace mico { namespace eval {
+namespace mico { namespace eval { namespace operations {
 
     using eval_call = std::function<objects::sptr (ast::node *)>;
 
@@ -19,6 +19,6 @@ namespace mico { namespace eval {
      *  objects::sptr eval_infix( tokens::type, objects::sptr,
      *                            ast::node *, eval_call );
     */
-}}
+}}}
 
 #endif // OPERATION_H

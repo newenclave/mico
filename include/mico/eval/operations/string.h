@@ -2,9 +2,9 @@
 #define MICO_EVAL_STR_OPERATION_H
 
 #include "mico/tokens.h"
-#include "mico/eval/operations/common_operations.h"
+#include "mico/eval/operations/common.h"
 
-namespace mico { namespace eval {
+namespace mico { namespace eval { namespace operations {
 
     template <>
     struct operation<objects::type::STRING> {
@@ -80,7 +80,8 @@ namespace mico { namespace eval {
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-            auto val = objects::cast_string(obj.get( ));
+            common::reference<objects::type::STRING> ref(obj);
+            auto val = ref.unref( );
 
             objects::sptr right = ev( inf->right( ).get( ) );
             if( right->get_type( ) == objects::type::FAILURE ) {
@@ -95,18 +96,8 @@ namespace mico { namespace eval {
                 auto rght = objects::cast_int(right.get( ));
                 return eval_int( inf, val->value( ), rght->value( ) );
             }
-            case objects::type::BUILTIN:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return common_operations::eval_builtin( inf, obj,
-                                                            right, env);
-                }
-                break;
-            case objects::type::FUNCTION:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return common_operations::eval_func( inf, obj,
-                                                         right, env);
-                }
-                break;
+            default:
+                return common::common_infix( inf, obj, right, env );
             }
             return error_type::make(inf->pos( ), "Infix operation ",
                                     obj->get_type( )," '",
@@ -115,6 +106,6 @@ namespace mico { namespace eval {
                                     " is not defined");
         }
     };
-}}
+}}}
 
 #endif // STR_OPERATION_H

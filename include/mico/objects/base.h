@@ -13,19 +13,19 @@ namespace mico {
 namespace mico { namespace objects {
 
     enum class type {
-        NULL_OBJ = 0,
-        BOOLEAN,
-        INTEGER,
-        FLOAT,
-        STRING,
-        TABLE,
-        ARRAY,
-        REFERENCE,
-        RETURN,
-        FUNCTION,
-        TAIL_CALL,
-        BUILTIN,
-        FAILURE,
+        NULL_OBJ    =  0,
+        BOOLEAN     =  1,
+        INTEGER     =  2,
+        FLOAT       =  3,
+        STRING      =  4,
+        TABLE       =  5,
+        ARRAY       =  6,
+        REFERENCE   =  7,
+        RETURN      =  8,
+        FUNCTION    =  9,
+        TAIL_CALL   = 10,
+        BUILTIN     = 11,
+        FAILURE     = 12,
     };
 
     struct name {
@@ -134,9 +134,9 @@ namespace mico { namespace objects {
     using slist = std::vector<sptr>;
     using ulist = std::vector<uptr>;
 
-    template <type ToT, typename Obj>
+    template <type ToT>
     inline
-    derived<ToT> *cast( Obj *val )
+    derived<ToT> *cast( base *val )
     {
 #if defined(CHECK_CASTS)
         if( ToT != val->get_type( ) ) {
@@ -146,16 +146,16 @@ namespace mico { namespace objects {
         return static_cast<derived<ToT> *>(val);
     }
 
-    template <type ToT, typename Obj>
+    template <type ToT>
     inline
-    derived<ToT> *cast( std::shared_ptr<Obj> val )
+    std::shared_ptr<derived<ToT> > cast( sptr &val )
     {
 #if defined(CHECK_CASTS)
         if( ToT != val->get_type( ) ) {
             throw  std::runtime_error( "Bad shared<object> cast" );
         }
 #endif
-        return static_cast<derived<ToT> *>(val.get( ));
+        return std::shared_ptr<derived<ToT> >(val, cast<ToT>(val.get( ) ) );
     }
 
     inline

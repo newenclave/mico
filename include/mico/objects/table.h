@@ -66,11 +66,20 @@ namespace mico { namespace objects {
             return value_;
         }
 
-        bool insert( const environment *env,
-                     objects::sptr key, objects::sptr val )
+        bool set( const environment *env, objects::sptr key, objects::sptr val )
         {
             value_[key->clone( )] = cont::make(env, val);
             return true;
+        }
+
+        bool insert( const environment *env,
+                     objects::sptr key, objects::sptr val )
+        {
+            auto f = value_.find( key );
+            if( f == value_.end( ) ) {
+                return set( env, key, val );
+            }
+            return false;
         }
 
         std::uint64_t hash( ) const override

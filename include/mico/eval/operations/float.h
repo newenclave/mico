@@ -7,7 +7,7 @@
 #include "mico/expressions/expressions.h"
 #include "mico/eval/operations/integer.h"
 
-namespace mico { namespace eval {
+namespace mico { namespace eval { namespace operations {
 
     template <>
     struct operation<objects::type::FLOAT> {
@@ -27,7 +27,7 @@ namespace mico { namespace eval {
                                     objects::sptr obj, objects::sptr call,
                                     environment::sptr env)
         {
-            return common_operations::eval_builtin( inf, obj, call, env );
+            return common::eval_builtin( inf, obj, call, env );
         }
 
         static
@@ -35,13 +35,15 @@ namespace mico { namespace eval {
                                  objects::sptr obj, objects::sptr call,
                                  environment::sptr env)
         {
-            return common_operations::eval_func( inf, obj, call, env );
+            return common::eval_func( inf, obj, call, env );
         }
 
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto val = objects::cast_float( obj.get( ) )->value( );
+            common::reference<objects::type::FLOAT> ref(obj);
+            auto val = ref.unref( )->value( );
+
             switch (pref->token( )) {
             case tokens::type::MINUS:
                 return value_type::make( -1 * val );
@@ -66,7 +68,9 @@ namespace mico { namespace eval {
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env )
         {
-            auto val = objects::cast<type_value>(obj.get( ))->value( );
+            common::reference<objects::type::FLOAT> ref(obj);
+
+            auto val = ref.unref( )->value( );
 
             if( (inf->token( ) == tokens::type::LOGIC_AND) && (val == 0)) {
                 return bool_type::make( false );
@@ -94,18 +98,8 @@ namespace mico { namespace eval {
                 auto rval = objects::cast_bool(right.get( ))->value( );
                 return eval_float( inf, val, rval ? 1.0 : 0.0);
             }
-            case objects::type::BUILTIN:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return eval_builtin( inf, obj, right, env);
-                }
-                break;
-            case objects::type::FUNCTION:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return eval_func( inf, obj, right, env);
-                }
-                break;
             default:
-                break;
+                return common::common_infix( inf, obj, right, env );
             }
 
             return error_type::make(inf->pos( ), "Infix operation ",
@@ -117,6 +111,6 @@ namespace mico { namespace eval {
         }
     };
 
-}}
+}}}
 
 #endif // FLOAT_OPERATION_H

@@ -2,9 +2,10 @@
 #define MICO_EVAL_TABLES_H
 
 #include "mico/tokens.h"
-#include "mico/eval/operations/common_operations.h"
+#include "mico/eval/operations/common.h"
 
-namespace mico { namespace eval {
+namespace mico { namespace eval { namespace operations {
+
     template <>
     struct operation<objects::type::TABLE> {
 
@@ -19,7 +20,9 @@ namespace mico { namespace eval {
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto tt = objects::cast_table(obj);
+            common::reference<objects::type::TABLE> ref(obj);
+            auto tt = ref.unref( );
+
             if( pref->token( ) == tokens::type::ASTERISK ) {
                 return int_type::make( tt->value( ).size( ) );
             }
@@ -29,7 +32,8 @@ namespace mico { namespace eval {
         }
 
         static
-        objects::sptr eval_table( objects::sptr lft, objects::sptr rght )
+        objects::sptr eval_table( environment::sptr env,
+                                  objects::sptr lft, objects::sptr rght )
         {
             auto ltable = objects::cast_table(lft);
             auto rtable = objects::cast_table(rght);
@@ -38,7 +42,7 @@ namespace mico { namespace eval {
             auto restabe = objects::cast_table(res);
 
             for( auto &v: rtable->value( ) ) {
-                restabe->value( ).insert( v );
+                restabe->insert( env.get( ), v.first, v.second->value( ) );
             }
 
             return res;
@@ -48,7 +52,10 @@ namespace mico { namespace eval {
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-            using CO = common_operations;
+            common::reference<objects::type::TABLE> ref(obj);
+            obj = ref.shared_unref( );
+            using CO = common;
+
             objects::sptr right = ev( inf->right( ).get( ) );
             if( right->get_type( ) == objects::type::FAILURE ) {
                 return right;
@@ -56,20 +63,12 @@ namespace mico { namespace eval {
 
             switch (right->get_type( )) {
             case objects::type::TABLE:
-//                if( inf->token( ) == tokens::type::PLUS ) {
-//                    return eval_table( obj, right );
-//                }
-                break;
-            case objects::type::BUILTIN:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return CO::eval_builtin( inf, obj, right, env);
+                if( inf->token( ) == tokens::type::PLUS ) {
+                    return eval_table( env, obj, right );
                 }
                 break;
-            case objects::type::FUNCTION:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return CO::eval_func( inf, obj, right, env);
-                }
-                break;
+            default:
+                return common::common_infix( inf, obj, right, env );
             }
 
             return error_type::make(inf->pos( ), "Infix operation ",
@@ -80,6 +79,7 @@ namespace mico { namespace eval {
         }
 
     };
-}}
+
+}}}
 
 #endif // TABLES_H

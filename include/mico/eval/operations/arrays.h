@@ -2,9 +2,9 @@
 #define MICO_EVAL_ARRAYS_H
 
 #include "mico/tokens.h"
-#include "mico/eval/operations/common_operations.h"
+#include "mico/eval/operations/common.h"
 
-namespace mico { namespace eval {
+namespace mico { namespace eval { namespace operations {
 
     template <>
     struct operation<objects::type::ARRAY> {
@@ -17,7 +17,9 @@ namespace mico { namespace eval {
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            auto tt = objects::cast_array(obj);
+            common::reference<objects::type::ARRAY> ref(obj);
+            auto tt = ref.unref( );
+
             if( pref->token( ) == tokens::type::ASTERISK ) {
                 return int_type::make( tt->value( ).size( ) );
             }
@@ -27,26 +29,30 @@ namespace mico { namespace eval {
         }
 
         static
-        objects::sptr eval_array( objects::sptr lft, objects::sptr rght )
+        objects::sptr eval_array( environment::sptr env,
+                                  objects::sptr lft, objects::sptr rght )
         {
-//            auto ltable = objects::cast_array(lft);
-//            auto rtable = objects::cast_array(rght);
+            auto ltable = objects::cast_array(lft);
+            auto rtable = objects::cast_array(rght);
 
-//            auto res = ltable->clone( );
-//            auto restabe = objects::cast_array(res);
+            auto res = ltable->clone( );
+            auto restabe = objects::cast_array(res);
 
-//            for( auto &v: rtable->value( ) ) {
-//                restabe->push( v );
-//            }
+            for( auto &v: rtable->value( ) ) {
+                restabe->push( env.get( ), v->value( ) );
+            }
 
-//            return res;
+            return res;
         }
 
         static
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-            using CO = common_operations;
+            using CO = common;
+            common::reference<objects::type::ARRAY> ref(obj);
+            obj = ref.shared_unref( );
+
             objects::sptr right = ev( inf->right( ).get( ) );
             if( right->get_type( ) == objects::type::FAILURE ) {
                 return right;
@@ -54,20 +60,12 @@ namespace mico { namespace eval {
 
             switch (right->get_type( )) {
             case objects::type::ARRAY:
-//                if( inf->token( ) == tokens::type::PLUS ) {
-//                    return eval_array( obj, right );
-//                }
-                break;
-            case objects::type::BUILTIN:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return CO::eval_builtin( inf, obj, right, env);
+                if( inf->token( ) == tokens::type::PLUS ) {
+                    return eval_array( env, obj, right );
                 }
                 break;
-            case objects::type::FUNCTION:
-                if(inf->token( ) == tokens::type::BIT_OR) {
-                    return CO::eval_func( inf, obj, right, env);
-                }
-                break;
+            default:
+                return common::common_infix( inf, obj, right, env );
             }
 
             return error_type::make(inf->pos( ), "Infix operation ",
@@ -79,6 +77,6 @@ namespace mico { namespace eval {
 
     };
 
-}}
+}}}
 
 #endif // ARRAYS_H
