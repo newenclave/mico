@@ -199,9 +199,11 @@ It's so funny to add something new =)
 *   **Pipe operator for function**. The pipe operator `|` is a shortcat for calling function. The left side of the operator  is passed to the right side. In this case the right side must be a function (builtin or not).
 ```js
     let sum = fn(a,b) { a + b }
+    let hello = sum("Hello, ")      // fn( a ) { "Hello, " + a }
     "Hello, world!"|len             // => 13
-    "world!"|sum("Hello, ")         // sum("Hello, ", "world!") => "Hello, world!"
+    "world!"|hello                  // sum("Hello, ", "world!") => "Hello, world!"
     "world!"|sum("Hello, ")|len     // len(sum("Hello, ", "world!")) => 13
+
 ```
 
 
