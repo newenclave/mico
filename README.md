@@ -196,7 +196,7 @@ It's so funny to add something new =)
     sum1(1)(2)(3)       // => 6; equal to sum(1, 2, 3)
 ```
 
-*   **Pipe operator for function**. The pipe operator `|` is a shortcat for calling function. The left side of the operator passes to the right side. In this case the right side must be a function (builtin or not).
+*   **Pipe operator for function**. The pipe operator `|` is a shortcat for calling function. The left side of the operator  is passed to the right side. In this case the right side must be a function (builtin or not).
 ```js
     let sum = fn(a,b) { a + b }
     "Hello, world!"|len             // => 13
