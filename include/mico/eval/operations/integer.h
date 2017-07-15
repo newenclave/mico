@@ -116,6 +116,11 @@ namespace mico { namespace eval {
                     return error_type::make( inf->pos( ),
                                              "Division by zero. '%'" );
                 }
+            case tokens::type::SHIFT_LEFT:
+                return  value_type::make( ulft << urgt );
+            case tokens::type::SHIFT_RIGHT:
+                return  value_type::make( ulft >> urgt );
+
             case tokens::type::GT:
                 return  bool_type::make( lft  > rht );
             case tokens::type::LT:
