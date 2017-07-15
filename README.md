@@ -74,9 +74,7 @@ It's possible to add DEC, OCT, TER, BIN and HEX number
     b = 0               // error: [1:0] Identifier not found: 'b'
     let m = [1, 2, 4]
     m[2] = 3            // m = [1, 2, 3]
-    let m = {"one":1,
-             "two":2,
-             "three":4}
+    let m = { "one":1, "two":2, "three":4 }
     m["three"] = 3      // { "three":3, "two":2, "one":1 }
 
     // assignment is a `right arm` operator.
