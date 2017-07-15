@@ -3,7 +3,7 @@
 
 #include "mico/eval/operation.h"
 #include "mico/tokens.h"
-#include "mico/expressions/expressions.h"
+#include "mico/expressions.h"
 #include "mico/eval/operations/float.h"
 #include "mico/eval/operations/integer.h"
 #include "mico/eval/operations/common.h"

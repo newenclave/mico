@@ -54,7 +54,6 @@ namespace mico { namespace eval { namespace operations {
         {
             common::reference<objects::type::TABLE> ref(obj);
             obj = ref.shared_unref( );
-            using CO = common;
 
             objects::sptr right = ev( inf->right( ).get( ) );
             if( right->get_type( ) == objects::type::FAILURE ) {

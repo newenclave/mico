@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "mico/eval/evaluator.h"
-#include "mico/expressions/expressions.h"
+#include "mico/expressions.h"
 #include "mico/statements.h"
 #include "mico/tokens.h"
 #include "mico/environment.h"
@@ -487,6 +487,7 @@ namespace mico { namespace eval {
                 }
                 return new_env;
             }
+            return env;
         }
 
         objects::sptr get_cont_call( ast::node *n, environment::sptr env )

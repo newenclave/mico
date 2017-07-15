@@ -18,7 +18,7 @@ HEADERS += \
     include/mico/parser.h \
     include/mico/ast.h \
     include/mico/operations.h \
-    include/mico/expressions/expressions.h \
+    include/mico/expressions.h \
     include/mico/statements.h \
     include/mico/eval/evaluator.h \
     include/mico/eval/tree_walking.h \
@@ -49,7 +49,17 @@ HEADERS += \
     include/mico/eval/operations/common.h \
     include/mico/eval/operations/tables.h \
     include/mico/eval/operations/arrays.h \
-    include/mico/eval/operations/function.h
+    include/mico/eval/operations/function.h \
+    include/mico/expressions/array.h \
+    include/mico/expressions/ident.h \
+    include/mico/expressions/string.h \
+    include/mico/expressions/prefix.h \
+    include/mico/expressions/infix.h \
+    include/mico/expressions/none.h \
+    include/mico/expressions/index.h \
+    include/mico/expressions/call.h \
+    include/mico/expressions/ifelse.h \
+    include/mico/expressions/table.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

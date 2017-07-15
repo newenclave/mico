@@ -4,7 +4,7 @@
 #include "mico/tokens.h"
 #include "mico/objects/error.h"
 #include "mico/objects/numbers.h"
-#include "mico/expressions/expressions.h"
+#include "mico/expressions.h"
 #include "mico/eval/operations/integer.h"
 
 namespace mico { namespace eval { namespace operations {

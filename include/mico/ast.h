@@ -8,6 +8,12 @@
 
 #include "mico/tokens.h"
 
+#ifdef __clang__
+#   pragma clang diagnostic ignored "-Wswitch"
+#elif defined __GNUC__
+#  pragma GCC diagnostic ignored "-Wswitch"
+#endif
+
 namespace mico { namespace ast {
 
     enum class type {

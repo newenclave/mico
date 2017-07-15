@@ -4,7 +4,7 @@
 #include "mico/objects/base.h"
 #include "mico/environment.h"
 #include "mico/statements.h"
-#include "mico/expressions/expressions.h"
+#include "mico/expressions.h"
 
 namespace mico { namespace objects {
 

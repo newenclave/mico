@@ -8,7 +8,7 @@
 #include "mico/lexer.h"
 #include "mico/operations.h"
 #include "mico/ast.h"
-#include "mico/expressions/expressions.h"
+#include "mico/expressions.h"
 #include "mico/statements.h"
 
 namespace mico {

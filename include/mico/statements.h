@@ -2,7 +2,7 @@
 #define MICO_STATEMENTS_H
 
 #include "mico/ast.h"
-#include "mico/expressions/expressions.h"
+#include "mico/expressions.h"
 
 namespace mico { namespace ast { namespace statements {
 

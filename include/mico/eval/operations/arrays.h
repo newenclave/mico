@@ -49,7 +49,6 @@ namespace mico { namespace eval { namespace operations {
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-            using CO = common;
             common::reference<objects::type::ARRAY> ref(obj);
             obj = ref.shared_unref( );
 
