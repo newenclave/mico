@@ -109,13 +109,28 @@ namespace mico { namespace eval { namespace operations {
         {
             auto func = objects::cast_func(call.get( ));
             auto call_env = environment::make( func->env( ) );
-            if( func->params( ).size( ) != 1 ) {
-                return error_type::make(inf->pos( ),
-                                        "Invalid parameters count. ",
-                                        "Must be 1");
+
+            if( func->param_size( ) == 0 ) {
+                return error_type::make( inf->pos( ),
+                                        "Function does not accept parameters");
             }
 
-            for( auto &p: func->params( ) ) {
+            if( func->param_size( ) > 1 ) {
+                auto new_env = environment::make(func->env( ));
+                auto &p( *func->begin( ) );
+
+                if( p->get_type( ) == ast::type::IDENT ) {
+                    auto n = static_cast<ast::expressions::ident *>(p.get( ));
+                    new_env->set( n->value( ), obj );
+                } else {
+                    return error_type::make(inf->pos( ),
+                                            "Invalid argument ", 1,
+                                             p->str( ) );
+                }
+                return objects::function::make( new_env, *func, 1 );
+            }
+
+            for( auto &p: *func ) {
                 if( p->get_type( ) != ast::type::IDENT ) {
                     return error_type::make( inf->pos( ),
                                              "Invalid parameter type.",

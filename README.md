@@ -181,6 +181,27 @@ It's so funny to add something new =)
     bits(0b1111111000000001111111)  // => 14
 ```
 
+*   **Function call rules**.
+    A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M`  parameters. In the case in wich the function is called with 0 parameters it returs self. Hello, OCaml
+
+```js
+    let sum1 = fn(a,b,c) { a + b + c }
+    let sum2 = sum1(1) // => fn(a, b) { 1 + a + b }
+    let sum3 = sum2(2) // => fn(a) { 1 + 2 + a }
+    sum2(10, 20) // => 31
+    sum3(1000)   // => 1003
+    sum1( )      // => fn(a,b,c) { a + b + c }
+```
+
+*   **Pipe operator for function**. The pipe operator `|` is a shortcat for calling function. The left side of the operator passes to the right side. In this case the right side must be a function (builtin or not).
+```js
+    let sum = fn(a,b) { a + b }
+    "Hello, world!"|len             // => 13
+    "world!"|sum("Hello, ")         // sum("Hello, ", "world!") => "Hello, world!"
+    "world!"|sum("Hello, ")|len     // len(sum("Hello, ", "world!")) => 13
+```
+
+
 Is not yet complete.
 
 ### ... have been done

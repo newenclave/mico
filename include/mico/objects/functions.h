@@ -13,12 +13,16 @@ namespace mico { namespace objects {
         static const type type_value = type::FUNCTION;
         using sptr = std::shared_ptr<this_type>;
 
+        using param_iterator = ast::expression_list::iterator;
+
         derived( std::shared_ptr<environment> e,
-                  std::shared_ptr<ast::expression_list> par,
-                  std::shared_ptr<ast::statement_list> st )
+                 std::shared_ptr<ast::expression_list> par,
+                 std::shared_ptr<ast::statement_list> st,
+                 std::size_t start = 0)
             :collectable(e)
             ,params_(par)
             ,body_(st)
+            ,start_param_(start)
         { }
 
         ~derived( )
@@ -27,23 +31,50 @@ namespace mico { namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << "fn(" << params_->size( ) << ")";
+            if( start_param_ == 0  ) {
+                oss << "fn(" << param_size( ) << ")";
+            } else {
+                oss << "fn(" << start_param_ << ":" << params_->size( ) << ")";
+            }
             return oss.str( );
-        }
-
-        ast::expression_list &params( )
-        {
-            return *params_;
-        }
-
-        const ast::expression_list &params( ) const
-        {
-            return *params_;
         }
 
         const ast::statement_list &body( ) const
         {
             return *body_;
+        }
+
+        static
+        sptr make( std::shared_ptr<environment> e,
+                   std::shared_ptr<ast::expression_list> par,
+                   std::shared_ptr<ast::statement_list> st,
+                   std::size_t start = 0 )
+        {
+            return std::make_shared<derived>( e, par, st, start );
+        }
+
+        static
+        sptr make( std::shared_ptr<environment> e,
+                   this_type &other, std::size_t start )
+        {
+            return std::make_shared<derived>( e, other.params_,
+                                              other.body_,
+                                              start + other.start_param_ );
+        }
+
+        param_iterator begin( )
+        {
+            return params_->begin( ) + start_param_;
+        }
+
+        param_iterator end( )
+        {
+            return params_->end( );
+        }
+
+        std::size_t param_size( ) const
+        {
+            return params_->size( ) - start_param_;
         }
 
         ast::statement_list &body( )
@@ -53,13 +84,15 @@ namespace mico { namespace objects {
 
         std::shared_ptr<base> clone( ) const override
         {
-            return std::make_shared<this_type>( env( ), params_, body_ );
+            return std::make_shared<this_type>( env( ), params_, body_,
+                                                start_param_ );
         }
 
     private:
 
         std::shared_ptr<ast::expression_list> params_;
         std::shared_ptr<ast::statement_list>  body_;
+        std::size_t start_param_ = 0;
     };
 
     template <>

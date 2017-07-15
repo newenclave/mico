@@ -6,10 +6,12 @@
 #include <vector>
 #include <algorithm>
 
+#if defined(DISABLE_SWITCH_WARNINGS)
 #ifdef __clang__
 #   pragma clang diagnostic ignored "-Wswitch"
 #elif defined __GNUC__
 #  pragma GCC diagnostic ignored "-Wswitch"
+#endif
 #endif
 
 namespace mico {

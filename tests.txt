@@ -263,4 +263,12 @@ let bits = fn( value ) {
     impl( value, 0 )
 }
 
+let test = fn(x, y) {
+    return x + y
+}
+
+let sum = fn(a, b, c) {
+    a + b + c
+}
+
 */

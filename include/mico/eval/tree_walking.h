@@ -57,15 +57,10 @@ namespace mico { namespace eval {
             return nobj;
         }
 
-        template <typename ToT, typename FromT>
-        ToT *obj_cast( FromT *obj )
+        template <objects::type ToT, typename FromT>
+        objects::derived<ToT> *obj_cast( FromT *obj )
         {
-#ifdef DEBUG
-//            if(objects::<ToT>::type_name == obj->get_type( )) {
-//                throw std::runtime_error("Invalid type conversion;");
-//            }
-#endif
-            return static_cast<ToT *>(obj);
+            return objects::cast<ToT>(obj);
         }
 
         static
@@ -188,7 +183,7 @@ namespace mico { namespace eval {
         objects::sptr extract_return( objects::sptr obj )
         {
             if( obj->get_type( ) == objects::type::RETURN ) {
-                auto ret = obj_cast<objects::retutn_obj>(obj.get( ));
+                auto ret = obj_cast<objects::type::RETURN>(obj.get( ));
                 return ret->value( );
             } else {
                 return obj;
@@ -223,11 +218,11 @@ namespace mico { namespace eval {
             auto oper = unref(eval_impl(n->value( ), env));
             switch ( oper->get_type( ) ) {
             case objects::type::INTEGER: {
-                auto o = obj_cast<objects::integer>(oper.get( ));
+                auto o = obj_cast<objects::type::INTEGER>(oper.get( ));
                 return get_signed( -1 * static_cast<std::int64_t>(o->value( )));
             }
             case objects::type::FLOAT: {
-                auto o = obj_cast<objects::floating>(oper.get( ));
+                auto o = obj_cast<objects::type::FLOAT>(oper.get( ));
                 return eval_float( -1.0 * o->value( ) );
             }
             default:
@@ -358,7 +353,7 @@ namespace mico { namespace eval {
             } else {
                 auto lft = eval_impl_tail( inf->left( ).get( ), env );
                 if( lft->get_type( ) == objects::type::REFERENCE ) {
-                    auto cont = obj_cast<objects::reference>(lft.get( ));
+                    auto cont = objects::cast_ref(lft.get( ));
                     auto rght = eval_impl_tail(inf->right( ).get( ), env);
                     if( is_fail( rght ) ) {
                         return rght;
@@ -454,16 +449,12 @@ namespace mico { namespace eval {
             using ident_type = ast::expressions::ident;
 
             if( fun->get_type( ) == objects::type::FUNCTION ) {
-                auto vfun = obj_cast<objects::function>(fun);
+                auto vfun = objects::cast_func(fun);
 
                 auto new_env = environment::make(vfun->env( ));
 
-                if( call->params( ).size( ) != vfun->params( ).size( ) ) {
-                    //// TODO bad params count
-                    return nullptr;
-                }
                 size_t id = 0;
-                for( auto &p: vfun->params( ) ) {
+                for( auto &p: *vfun ) {
                     if( p->get_type( ) == ast::type::IDENT ) {
                         auto n = static_cast<ident_type *>(p.get( ));
                         auto v = unref(
@@ -478,7 +469,7 @@ namespace mico { namespace eval {
                 return new_env;
             } else if( fun->get_type( ) == objects::type::BUILTIN ) {
 
-                auto vfun = obj_cast<objects::builtin>(fun);
+                auto vfun = objects::cast_builtin(fun);
                 auto new_env = environment::make(vfun->env( ));
 
                 for( auto &cp: call->params( ) ) {
@@ -514,14 +505,12 @@ namespace mico { namespace eval {
                 auto call = static_cast<call_type *>(obj.get( ));
                 auto call_type = call->value( )->get_type( );
                 if( call_type == objects::type::FUNCTION ) {
-                    auto fun = obj_cast<objects::function>
-                                        (call->value( ).get( ));
+                    auto fun = objects::cast_func(call->value( ).get( ));
                     environment::scoped s( call->env( ) );
                     fun->env( )->GC( );
                     obj = eval_scope_impl( fun->body( ), call->env( ) );
                 } else if( call_type == objects::type::BUILTIN ) {
-                    auto fun = obj_cast<objects::builtin>
-                                        (call->value( ).get( ));
+                    auto fun = objects::cast_builtin(call->value( ).get( ));
                     obj = fun->call( call->params( ), call->env( ) );
 
                 }
@@ -591,7 +580,7 @@ namespace mico { namespace eval {
                     /////////// TODO bad result type for cond
                     return get_null( );
                 }
-                auto bres = obj_cast<objects::boolean>(res.get( ));
+                auto bres = objects::cast_bool(res.get( ));
                 if( bres->value( ) ) {
                     environment::scoped s(make_env(env));
                     auto eval_states = eval_scope_impl( i.states, s.env( ));
@@ -678,15 +667,15 @@ namespace mico { namespace eval {
 
             if( val->get_type( ) == objects::type::STRING ) {
 
-                auto str = obj_cast<objects::string>( val.get( ) );
+                auto str = objects::cast_string( val.get( ) );
                 auto id = eval_impl_tail( idx->param( ), env );
                 std::size_t index = str->value( ).size( );
 
                 if( id->get_type( ) == objects::type::INTEGER ) {
-                    auto iid = obj_cast<objects::integer>( id.get( ) );
+                    auto iid = objects::cast_int( id.get( ) );
                     index = static_cast<std::size_t>(iid->value( ));
                 } else if( id->get_type( ) == objects::type::FLOAT ) {
-                    auto iid = obj_cast<objects::floating>( id.get( ) );
+                    auto iid = objects::cast_float( id.get( ) );
                     index = static_cast<std::size_t>(iid->value( ));
                 } else {
                     return error( idx->param( ), idx->param( ),
@@ -701,15 +690,15 @@ namespace mico { namespace eval {
 
             } else if(val->get_type( ) == objects::type::ARRAY) {
 
-                auto arr = obj_cast<objects::array>( val.get( ) );
+                auto arr = objects::cast_array( val.get( ) );
                 auto id = eval_impl_tail( idx->param( ), env );
                 std::int64_t index = arr->value( ).size( );
 
                 if( id->get_type( ) == objects::type::INTEGER ) {
-                    auto iid = obj_cast<objects::integer>( id.get( ) );
+                    auto iid = objects::cast_int( id.get( ) );
                     index = static_cast<decltype(index)>(iid->value( ));
                 } else if( id->get_type( ) == objects::type::FLOAT ) {
-                    auto iid = obj_cast<objects::floating>( id.get( ) );
+                    auto iid = objects::cast_float( id.get( ) );
                     index = static_cast<decltype(index)>(iid->value( ));
                 } else {
                     return error( idx->param( ), idx->param( ),
@@ -724,7 +713,7 @@ namespace mico { namespace eval {
 
             } else if(val->get_type( ) == objects::type::TABLE) {
 
-                auto arr = obj_cast<objects::table>( val.get( ) );
+                auto arr = objects::cast_table( val.get( ) );
                 auto id = unref(eval_impl( idx->param( ), env ));
 
                 if( is_fail( id ) ) {
@@ -762,6 +751,48 @@ namespace mico { namespace eval {
             return res;
         }
 
+        objects::sptr check_args_count( ast::expressions::call *call,
+                                        objects::base *fun,
+                                        environment::sptr env )
+        {
+            using ident_type = ast::expressions::ident;
+
+            if( fun->get_type( ) == objects::type::FUNCTION ) {
+                auto vfun = objects::cast_func(fun);
+
+                std::size_t call_params = call->params( ).size( );
+                if( call_params < vfun->param_size( ) ) {
+
+                    if( call_params == 0 ) {
+                        return get_null( );
+                    }
+
+                    auto new_env = environment::make(vfun->env( ));
+
+                    for( std::size_t i = 0; i < call_params; ++i ) {
+
+                        auto &p(*(vfun->begin( ) + i));
+
+                        auto &c(call->params( ) [i]);
+
+                        auto ptype = p->get_type( );
+
+                        if( ptype == ast::type::IDENT ) {
+                            auto n = static_cast<ident_type *>(p.get( ));
+                            auto v = unref(eval_impl_tail( c.get( ),env ) );
+                            new_env->set(n->value( ), v);
+                        } else {
+                            return error(call, "Invalid argument ", i,
+                                         p->str( ) );
+                        }
+                    }
+                    return objects::function::make( new_env, *vfun,
+                                                    call_params );
+                }
+            }
+            return nullptr;
+        }
+
         objects::sptr eval_call_impl( ast::node *n,
                                       environment::sptr env,
                                       environment::sptr &/*work_env*/ )
@@ -779,9 +810,15 @@ namespace mico { namespace eval {
 
             if( fun->get_type( ) == objects::type::FUNCTION ) {
 
-                auto vfun = obj_cast<objects::function>(fun.get( ));
+                auto vfun = objects::cast_func(fun.get( ));
 
                 vfun->env( )->GC( );
+
+                auto chkd = check_args_count( call, fun.get( ), env );
+
+                if( chkd ) {
+                    return is_null(chkd) ? fun : chkd;
+                }
 
                 objects::slist params;
 
@@ -794,7 +831,7 @@ namespace mico { namespace eval {
 
                 auto res = eval_scope( vfun->body( ), s.env( ) );
                 while( is_return( res ) ) {
-                    auto r = obj_cast<objects::retutn_obj>(res.get( ));
+                    auto r = objects::cast_return(res.get( ));
                     res = eval_tail( r->value( ) );
                 }
 
@@ -802,7 +839,7 @@ namespace mico { namespace eval {
 
             } else if( fun->get_type( ) == objects::type::BUILTIN ) {
                 environment::scoped s(make_env( env ));
-                auto vfun = obj_cast<objects::builtin>(fun.get( ));
+                auto vfun = objects::cast_builtin(fun.get( ));
                 vfun->init( s.env( ) );
                 auto params = eval_parameters(call, s.env( ));
                 if( params.size( ) == 1 && is_fail( params[0] ) ) {
