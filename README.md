@@ -7,7 +7,7 @@ Monkey the language interpreter implementation done with C++. https://interprete
 "Mico" is an implementation but of course it has some difference.
 It's so funny to add something new =)
 
-##### Tail call optimization.
+#### * Tail call optimization.
 
 I hope Thorsten will add this thing to the book soon.
 ```js
@@ -30,21 +30,21 @@ I hope Thorsten will add this thing to the book soon.
     spin( 10000 ) /// Oops. Stack overflow is here
 ```
 
-##### * Line number for the tokens.
+#### * Line number for the tokens.
 Yeap. Now I can see where an error happens.
 ```js
     let test_val = someUnknownCall()
     error: [1:15] Identifier not found 'someUnknownCall'
 ```
 
-##### Floating point numbers
+#### * Floating point numbers
 ```js
     let t = 0.0001          // t = 0.0001
     let r = 1e100           // r = 1e+100
     let test = .55 / .11    // test = 5
 ```
 
-##### Number formats.
+#### * Number formats.
     It's possible to add DEC, OCT, TER, BIN and HEX number
 ```D
     123456         // decimal
@@ -54,7 +54,7 @@ Yeap. Now I can see where an error happens.
     0xDEADBEEF     // hex 3735928559
 ```
 
-##### Number's gap symbol `_`
+#### * Number's gap symbol `_`
 ```D
     1_123_456          // decimal
     01_234_567         // oct 342391
@@ -64,7 +64,7 @@ Yeap. Now I can see where an error happens.
     0.000_000_000_1    // float 1e-10
 ```
 
-##### Assignment operator `=`
+#### * Assignment operator `=`
 
 ```js
     let a = 0
@@ -83,7 +83,7 @@ Yeap. Now I can see where an error happens.
     // a = [0, 0, 0, 0, 0]
 ```
 
-##### Reference object**
+#### * Reference object**
 The object that contains another object.
 Now I can change the values in arrays, tables (hashes) and the environment
 ```js
@@ -91,7 +91,7 @@ Now I can change the values in arrays, tables (hashes) and the environment
                    // and then assign the operator changes the value
 ```
 
-##### **elif** branch to **ifelse**
+#### * **elif** branch to **ifelse**
 
  Well...there is nothing to explain here =)
 ```js
@@ -108,7 +108,7 @@ Now I can change the values in arrays, tables (hashes) and the environment
                  }
 ```
 
-##### Hashes (i.e. tables) and Arrays
+#### * Hashes (i.e. tables) and Arrays
 
 Can be the keys for the other Hashes
 ```js
@@ -134,7 +134,7 @@ Can be the keys for the other Hashes
     // `t` = {{"x": 1, "y": 100, "z": 200}: false}
     t[point(1, 100, 200)] // returns false
 ```
-###### Assignment arrays' elements
+#### * Assignment arrays' elements
 
 There are some tricks.
 ```js
@@ -164,7 +164,7 @@ There are some tricks.
     a[0] = 1             // b = [[1, 0], [0, 0]]
 ```
 
-##### Operators %, |, &, ^, &&, ||, >>, <<, ~
+#### * Operators %, |, &, ^, &&, ||, >>, <<, ~
 
 ```js
 
@@ -189,7 +189,7 @@ There are some tricks.
     bits(0b1111111000000001111111)  // => 14
 ```
 
-##### Function call rules
+#### * Function call rules
 
 A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
 
@@ -203,7 +203,7 @@ A function that accepts N parameters can be called with `M` = `0..N-1` parameter
     sum1(1)(2)(3)       // => 6; equal to sum(1, 2, 3)
 ```
 
-##### Pipe operator for function.
+#### * Pipe operator for function.
 The pipe operator `|` is a shortcat for the `call` operator. The left side of the operator  is passed to the right side. In this case the right side must be a function (builtin or not).
 ```js
     let sum = fn(a,b) { a + b }
