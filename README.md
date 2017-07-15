@@ -1,6 +1,8 @@
-# mico
+# Mico
 
 Monkey the language interpreter implementation done with C++. https://interpreterbook.com/
+
+[logo]:https://github.com/newenclave/mico/repl.png "Terminal"
 
 ## Difference
 
