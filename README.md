@@ -186,11 +186,12 @@ It's so funny to add something new =)
 
 ```js
     let sum1 = fn(a,b,c) { a + b + c }
-    let sum2 = sum1(1) // => fn(a, b) { 1 + a + b }
-    let sum3 = sum2(2) // => fn(a) { 1 + 2 + a }
-    sum2(10, 20) // => 31
-    sum3(1000)   // => 1003
-    sum1( )      // => fn(a,b,c) { a + b + c }
+    let sum2 = sum1(1)  // => fn(a, b) { 1 + a + b }
+    let sum3 = sum2(2)  // => fn(a) { 1 + 2 + a }
+    sum2(10, 20)        // => 31
+    sum3(1000)          // => 1003
+    sum1( )             // => fn(a,b,c) { a + b + c }
+    sum1(1)(2)(3)       // => 6; equal to sum(1, 2, 3)
 ```
 
 *   **Pipe operator for function**. The pipe operator `|` is a shortcat for calling function. The left side of the operator passes to the right side. In this case the right side must be a function (builtin or not).
