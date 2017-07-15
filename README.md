@@ -2,7 +2,7 @@
 
 Monkey the language interpreter implementation done with C++. https://interpreterbook.com/
 
-[logo]:https://github.com/newenclave/mico/blob/master/repl.png "Terminal"
+[logo] :https://github.com/newenclave/mico/blob/master/repl.png "Terminal"
 
 ## Difference
 
