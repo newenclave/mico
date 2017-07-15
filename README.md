@@ -83,7 +83,7 @@ Yeap. Now I can see where an error happens.
     // a = [0, 0, 0, 0, 0]
 ```
 
-#### * Reference object**
+#### * Reference object
 The object that contains another object.
 Now I can change the values in arrays, tables (hashes) and the environment
 ```js
