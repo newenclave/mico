@@ -190,7 +190,7 @@ There are some tricks.
 
 #### * Function call rules
 
-A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
+Partial application. A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
 
 ```js
     let sum1 = fn(a,b,c) { a + b + c }
