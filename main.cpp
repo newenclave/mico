@@ -11,6 +11,7 @@
 #include "mico/repl.h"
 
 #include <stdio.h>
+#include <thread>
 
 int run_repl( )
 {
@@ -29,8 +30,6 @@ void run_file( )
 int main_lex( );
 
 int main( int argc, char * argv[ ]  )
-{
-
-    return run_repl( );
+{    return run_repl( );
 }
 
