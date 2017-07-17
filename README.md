@@ -206,6 +206,11 @@ Partial application. A function that accepts N parameters can be called with `M`
 
     let old_sum = *sum3 // now old_sum is equal to sum1 i.e. fn(a,b,c) { a + b + c }
     old_sum(1,2,3)      // oh, yeah, => sum(1, 2, 3) => 6
+
+    /// we can rebind the argument for a function
+
+    let sum3 = (*sum3)(100, 100) /// now sum3 is fn(a) { 100 + 100 + a }
+    sum3(100)                    /// => 300
 ```
 
 #### * Pipe operator for function.
