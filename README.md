@@ -212,7 +212,8 @@ Partial application. A function that accepts N parameters can be called with `M`
     let sum3 = (*sum3)(100, 100) /// now sum3 is fn(a) { 100 + 100 + a }
                                  /// here we use (*sum3) in the parentheses because `*`
                                  /// has lower precedence then `call` operator `()`
-    sum3(100)                    /// => 300
+
+    sum3(100)  /// => 300
 ```
 
 #### * Pipe operator for function.
