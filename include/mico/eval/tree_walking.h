@@ -502,6 +502,13 @@ namespace mico { namespace eval {
             }
 
             objects::slist params;
+
+            auto chkd = check_args_count( call, fun.get( ), env );
+
+            if( chkd ) {
+                return is_null(chkd) ? fun : chkd;
+            }
+
             auto new_env = create_call_env( call, fun.get( ), env, params );
             if( !new_env ) {
                 return get_null( );

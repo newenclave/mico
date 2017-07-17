@@ -231,6 +231,12 @@ The pipe operator `|` is a shortcat for the `call` operator. The left side of th
     "world!"|hello                  // sum("Hello, ", "world!") => "Hello, world!"
     "world!"|sum("Hello, ")|len     // len(sum("Hello, ", "world!")) => 13
 
+    /// check this out =)
+    let x = 10
+    "world!" | if(x > 0){hello} else {sum("Goodbay, ")} // => Hello, world!
+    x = 0
+    "world!" | if(x > 0){hello} else {sum("Goodbay, ")} // => Goodbay, world!
+
 ```
 
 Is not yet complete.
