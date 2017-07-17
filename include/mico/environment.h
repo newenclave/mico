@@ -330,7 +330,7 @@ namespace mico {
             }
         }
 
-        void GC( bool deep = true )
+        void run_GC( bool deep )
         {
             auto b = children( ).begin( );
             auto e = children( ).end( );
@@ -340,7 +340,7 @@ namespace mico {
                     b = children( ).erase( b );
                 } else {
                     if( deep ) {
-                        (*b)->GC( );
+                        (*b)->run_GC( deep );
                     }
                     ++b;
                 }

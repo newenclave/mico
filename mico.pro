@@ -3,8 +3,7 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.cpp \
-    test.cpp
+SOURCES += main.cpp
 
 INCLUDEPATH += etool/include \
                catch         \

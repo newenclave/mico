@@ -12,24 +12,6 @@
 
 namespace mico {
 
-    static const std::string LOGO =
-            "Hello! This is the Monkey programming language.\n"
-            "Mico implementation.\n"
-            "See https://interpreterbook.com/\n"
-            ""
-            "           __,__           \n"
-            "  .--.  .-\"     \"-.  .--.  \n"
-            " / .. \\/  .-. .-.  \\/ .. \\ \n"
-            "| |  '|  /   Y   \\  |'  | |\n"
-            "| \\   \\  \\ 0 | 0 /  /   / |\n"
-            " \\ '- ,\\.-\"\"\"\"\"\"\"-./, -' / \n"
-            "  ''-' /_   ^ ^   _\\ '-''  \n"
-            "      |  \\._   _./  |      \n"
-            "      \\   \\ '~' /   /      \n"
-            "       '._ '-=-' _.'       \n"
-            "          '-----'          \n";
-
-
     struct repl {
 
         static
@@ -76,7 +58,7 @@ namespace mico {
                         //std::cout << prog.str( ) << "\n";
                         mico::eval::tree_walking tv;
                         if( prog.states( ).size( ) > 0 ) {
-                            st.env( )->GC( );
+                            st.GC( );
                             auto obj = tv.eval( &prog, st.env( ) );
                             if( obj->get_type( ) != objects::type::NULL_OBJ ) {
                                 bool failed =

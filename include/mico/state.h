@@ -25,7 +25,13 @@ namespace mico {
             return env_;
         }
 
+        void GC( )
+        {
+            env( )->run_GC( gc_deep_ );
+        }
+
     private:
+        bool              gc_deep_ = true;
         environment::sptr env_;
     };
 }

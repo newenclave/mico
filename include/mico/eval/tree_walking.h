@@ -7,7 +7,7 @@
 #include "mico/expressions.h"
 #include "mico/statements.h"
 #include "mico/tokens.h"
-#include "mico/environment.h"
+#include "mico/state.h"
 #include "mico/eval/operations/integer.h"
 #include "mico/eval/operations/boolean.h"
 #include "mico/eval/operations/float.h"
@@ -518,7 +518,7 @@ namespace mico { namespace eval {
                 if( call_type == objects::type::FUNCTION ) {
                     auto fun = objects::cast_func(call->value( ).get( ));
                     environment::scoped s( call->env( ) );
-                    fun->env( )->GC( );
+                    fun->env( )->get_state( ).GC( );
                     obj = eval_scope_impl( fun->body( ), call->env( ) );
                 } else if( call_type == objects::type::BUILTIN ) {
                     auto fun = objects::cast_builtin(call->value( ).get( ));
@@ -821,7 +821,7 @@ namespace mico { namespace eval {
 
                 auto vfun = objects::cast_func(fun.get( ));
 
-                vfun->env( )->GC( );
+                vfun->env( )->get_state( ).GC( );
 
                 auto chkd = check_args_count( call, fun.get( ), env );
 
