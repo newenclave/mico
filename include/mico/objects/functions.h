@@ -62,6 +62,19 @@ namespace mico { namespace objects {
                                               start + other.start_param_ );
         }
 
+        static
+        sptr make_from_partial( this_type::sptr other )
+        {
+            if( other->start_param_ != 0 ) {
+                if( auto p = other->env( ) ) {
+                    return std::make_shared<derived>( p->parent( ),
+                                                      other->params_,
+                                                      other->body_, 0 );
+                }
+            }
+            return other;
+        }
+
         param_iterator begin( )
         {
             return params_->begin( ) + start_param_;

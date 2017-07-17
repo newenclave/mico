@@ -200,6 +200,12 @@ Partial application. A function that accepts N parameters can be called with `M`
     sum3(1000)          // => 1003
     sum1( )             // => fn(a,b,c) { a + b + c }
     sum1(1)(2)(3)       // => 6; equal to sum(1, 2, 3)
+
+    /// function can be got back from its partial form
+    /// just use prefix asterisk `*` for this.
+
+    let old_sum = *sum3 // now old_sum is equal to sum1 i.e. fn(a,b,c) { a + b + c }
+    old_sum(1,2,3)      // oh, yeah, => sum(1, 2, 3) => 6
 ```
 
 #### * Pipe operator for function.

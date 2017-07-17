@@ -13,8 +13,16 @@ namespace mico { namespace eval { namespace operations {
         using infix      = ast::expressions::infix;
 
         static
-        objects::sptr eval_prefix( prefix *pref, objects::sptr /*obj*/ )
+        objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
+            if( pref->token( ) == tokens::type::ASTERISK ) {
+                auto unref = objects::reference::unref( obj );
+                if( unref->get_type( ) == objects::type::FUNCTION ) {
+                    auto func = objects::cast_func( unref );
+                    return objects::function::make_from_partial( func );
+                }
+                return obj;
+            }
             return error_type::make(pref->pos( ), "Prefix operator '",
                                     pref->token( ), "' is not defined for "
                                                     "function");
