@@ -9,7 +9,6 @@
 
 #include "mico/objects/base.h"
 #include "mico/objects/reference.h"
-#include "mico/state.h"
 
 #include "etool/console/colors.h"
 
@@ -20,6 +19,8 @@ namespace mico {
 #if DEBUG
     static int c = 0;
 #endif
+
+    struct state;
 
     class environment: public std::enable_shared_from_this<environment> {
 
@@ -65,8 +66,8 @@ namespace mico {
             sptr env_;
         };
 
-        environment( key )
-            :state_(std::make_shared<state>( ))
+        environment( state *st, key )
+            :state_(st)
         {
 #if DEBUG
             std::cout << ++c << "\n";
@@ -99,9 +100,9 @@ namespace mico {
         }
 
         static
-        sptr make( )
+        sptr make( state *st )
         {
-            return std::make_shared<environment>( key( ) );
+            return std::make_shared<environment>( st, key( ) );
         }
 
         static
@@ -349,7 +350,7 @@ namespace mico {
 
     private:
 
-        state::sptr     state_;
+        state          *state_;
         wptr            parent_;
         children_type   children_;
         data_map        data_;
