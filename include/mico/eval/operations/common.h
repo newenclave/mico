@@ -123,9 +123,9 @@ namespace mico { namespace eval { namespace operations {
                     auto n = static_cast<ast::expressions::ident *>(p.get( ));
                     new_env->set( n->value( ), obj );
                 } else {
-                    return error_type::make(inf->pos( ),
-                                            "Invalid argument ", 1,
-                                             p->str( ) );
+                    return error_type::make( inf->pos( ),
+                                             "Invalid argument ", 1,
+                                              p->str( ) );
                 }
                 return objects::function::make( new_env, *func, 1 );
             }

@@ -25,9 +25,9 @@ namespace mico {
             return env_;
         }
 
-        void GC( )
+        void GC( environment::sptr where )
         {
-            env( )->run_GC( gc_deep_ );
+            where->run_GC( gc_deep_ );
         }
 
     private:
