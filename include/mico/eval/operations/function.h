@@ -19,7 +19,9 @@ namespace mico { namespace eval { namespace operations {
                 auto unref = objects::reference::unref( obj );
                 if( unref->get_type( ) == objects::type::FUNCTION ) {
                     auto func = objects::cast_func( unref );
-                    return objects::function::make_from_partial( func );
+                    if( func->is_part( ) ) {
+                        return objects::function::make_from_partial( func );
+                    }
                 }
                 return obj;
             }

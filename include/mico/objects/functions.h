@@ -75,6 +75,11 @@ namespace mico { namespace objects {
             return other;
         }
 
+        bool is_part( ) const
+        {
+            return start_param_ != 0;
+        }
+
         param_iterator begin( )
         {
             return params_->begin( ) + start_param_;
