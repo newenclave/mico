@@ -221,6 +221,15 @@ Partial application. A function that accepts N parameters can be called with `M`
 
     /// and what if ...
     *sum1 /// well, it doesn't make sense and the operator returns its operand.
+
+    /// another example
+    let get_sum = fn( n ) {
+        let impl = fn( a, b ) { a + b }
+        impl( n ) // returns a function that accepts 1 argument
+    }
+    let s = get_sum(10) // now s id fn( a ) { 10 + a }
+    (*s)(20, 30)         // ok. fn( a, b ) { a + b } is called => 50
+
 ```
 
 #### * Pipe operator for function.

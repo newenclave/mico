@@ -270,4 +270,11 @@ let sum = fn(a, b, c) {
     a + b + c
 }
 
+let get_sum = fn( n ) {
+    let impl = fn( a, b ) { a + b }
+    impl( n )
+}
+let s = get_sum(10)
+(*s)(20, 30)
+
 */
