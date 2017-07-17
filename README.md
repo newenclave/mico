@@ -238,14 +238,15 @@ The pipe operator `|` is a shortcat for the `call` operator. The left side of th
     let sum = fn(a,b) { a + b }
     let hello = sum("Hello, ")      // fn( a ) { "Hello, " + a }
     "Hello, world!"|len             // => 13
-    "world!"|hello                  // sum("Hello, ", "world!") => "Hello, world!"
-    "world!"|sum("Hello, ")|len     // len(sum("Hello, ", "world!")) => 13
+    "world!" |hello                  // sum("Hello, ", "world!") => "Hello, world!"
+    "world!" |sum("Hello, ")|len     // len(sum("Hello, ", "world!")) => 13
 
     /// check this out =)
     let x = 10
-    "world!" | if(x > 0){hello} else {(*hello)("Goodbay, ")} // => Hello, world!
-    x = 0
-    "world!" | if(x > 0){hello} else {(*hello)("Goodbay, ")} // => Goodbay, world!
+    "world!" |if(x > 0){hello} else {(*hello)("Goodbay, ")} // => Hello, world!
+    ......
+    let x = 0
+    "world!" |if(x > 0){hello} else {(*hello)("Goodbay, ")} // => Goodbay, world!
 
 ```
 
