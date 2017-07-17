@@ -191,6 +191,11 @@ There are some tricks.
     /// `&&` doesn't eval its right side if its left side is `false`
     /// `||` does the same thing. It returns `true` if its left side is `true`
 
+    if( 10 > 100 && "100" < 100 ) { 0.005 } else { 0.0 } // ok. returns 0.0
+
+    if( 10 > 100 || "100" < 100 ) { 0.005 } else { 0.0 }
+    // error: [1:22] Infix operation '<' is not defined for string and integer
+
 ```
 
 #### * Function call rules

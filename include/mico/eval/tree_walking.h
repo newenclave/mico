@@ -588,14 +588,12 @@ namespace mico { namespace eval {
 
             for( auto &i: ifblock->ifs(  ) ) {
                 auto cond = unref(eval_impl( i.cond.get( ), env ));
-                if( is_null( cond ) ) {
-                    /////////// TODO bad condition in if
-                    return get_null( );
+                if( is_fail( cond ) ) {
+                    return cond;
                 }
                 auto res = obj2num_obj<objects::boolean>( cond.get( ) );
-                if( is_null( res ) ) {
-                    /////////// TODO bad result type for cond
-                    return get_null( );
+                if( is_fail( res ) ) {
+                    return res;
                 }
                 auto bres = objects::cast_bool(res.get( ));
                 if( bres->value( ) ) {
