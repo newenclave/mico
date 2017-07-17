@@ -227,7 +227,7 @@ Partial application. A function that accepts N parameters can be called with `M`
         let impl = fn( a, b ) { a + b }
         impl( n ) // returns a function that accepts 1 argument
     }
-    let s = get_sum(10) // now s id fn( a ) { 10 + a }
+    let s = get_sum(10) // now s is fn( a ) { 10 + a }
     (*s)(20, 30)         // ok. fn( a, b ) { a + b } is called => 50
 
 ```
