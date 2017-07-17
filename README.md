@@ -210,6 +210,8 @@ Partial application. A function that accepts N parameters can be called with `M`
     /// we can rebind the argument for a function
 
     let sum3 = (*sum3)(100, 100) /// now sum3 is fn(a) { 100 + 100 + a }
+                                 /// here we use (*sum3) in the parens because `*`
+                                 /// has lower precedence then `call` operator `()`
     sum3(100)                    /// => 300
 ```
 
