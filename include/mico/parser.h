@@ -51,13 +51,13 @@ namespace mico {
         void fill_nuds( )
         {
             nuds_[token_type::IDENT]  = [this]( ) { return parse_ident( ); };
-            nuds_[token_type::STRING] = [this]( ) { return parse_string( ); };
+            nuds_[token_type::STRING] = [this]( ) { return parse_string( );};
             nuds_[token_type::FLOAT]  = [this]( ) { return parse_float( ); };
             nuds_[token_type::LPAREN] = [this]( ) { return parse_paren( ); };
 
             nuds_[token_type::BOOL_TRUE]  = [this]( ) { return parse_bool( ); };
             nuds_[token_type::BOOL_FALSE] = [this]( ) { return parse_bool( ); };
-            nuds_[token_type::IF]         = [this]( ) { return parse_if( ); };
+            nuds_[token_type::IF]         = [this]( ) { return parse_if( );   };
 
             nuds_[token_type::FUNCTION]   =
                     [this]( ) {
