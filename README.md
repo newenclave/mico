@@ -186,6 +186,11 @@ There are some tricks.
     }
     bits(0xFFFFFFFFF)               // => 36
     bits(0b1111111000000001111111)  // => 14
+
+    /// operators `&&` and `||` are lazy
+    /// `&&` doesn't eval its left side is `false`
+    /// `||` does the same thing. It returns `true` if  its left side is `true`
+
 ```
 
 #### * Function call rules

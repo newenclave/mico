@@ -97,7 +97,7 @@ namespace mico {
         }
 
         template <typename ItrT>
-        static ItrT skip_comment( ItrT b, ItrT end, state */*lstate*/  )
+        static ItrT skip_comment( ItrT b, ItrT end, state * /*lstate*/  )
         {
             while( b != end && !idents::is_newline(*b) ) {
                 ++b;
