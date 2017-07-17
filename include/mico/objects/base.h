@@ -6,6 +6,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "mico/ast.h"
+
 #if defined(DISABLE_SWITCH_WARNINGS)
 #ifdef __clang__
 #   pragma clang diagnostic ignored "-Wswitch"
@@ -120,6 +122,12 @@ namespace mico { namespace objects {
         std::size_t marked( ) const
         {
             return 0;
+        }
+
+        virtual
+        ast::node::uptr to_ast( ) const
+        {
+            return nullptr;
         }
 
         virtual std::shared_ptr<base> clone( ) const = 0;

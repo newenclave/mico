@@ -116,6 +116,11 @@ namespace mico { namespace objects {
             return res;
         }
 
+        ast::node::uptr to_ast( ) const override
+        {
+            return nullptr;
+        }
+
     private:
         value_type  value_;
     };

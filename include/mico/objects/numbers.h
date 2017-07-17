@@ -17,6 +17,12 @@ namespace mico { namespace objects {
     template <>
     struct type2object<type::INTEGER> {
         using native_type = std::int64_t;
+        static
+        ast::node::uptr to_ast( native_type )
+        {
+            return ;
+        }
+
     };
 
     template <type TN>
@@ -77,6 +83,12 @@ namespace mico { namespace objects {
         std::shared_ptr<base> clone( ) const override
         {
             return make( value_ );
+        }
+
+        ast::node::uptr to_ast( ) const override
+        {
+
+            return nullptr;
         }
 
     private:

@@ -66,6 +66,10 @@ namespace mico { namespace ast {
     };
 
     struct node {
+
+        using sptr = std::shared_ptr<node>;
+        using uptr = std::unique_ptr<node>;
+
         virtual ~node( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
