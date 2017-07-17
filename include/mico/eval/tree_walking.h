@@ -492,7 +492,7 @@ namespace mico { namespace eval {
             return env;
         }
 
-        objects::sptr get_cont_call( ast::node *n, environment::sptr env )
+        objects::sptr create_tail_call( ast::node *n, environment::sptr env )
         {
             auto call = static_cast<ast::expressions::call *>( n );
             auto fun = eval_impl(call->func( ), env);
@@ -559,7 +559,8 @@ namespace mico { namespace eval {
                 if(stmt->get_type( ) == ast::type::RETURN) {
                     auto expr = static_cast<return_type *>( stmt.get( ) );
                     if( is_function_call( expr->value( ) ) ) {
-                        return do_return(get_cont_call( expr->value( ), env ) );
+                        return do_return(create_tail_call( expr->value( ),
+                                                           env ) );
                     }
                 }
 
@@ -567,7 +568,7 @@ namespace mico { namespace eval {
                     if(stmt->get_type( ) == ast::type::EXPR) {
                         auto expr = static_cast<expression_type *>(stmt.get( ));
                         if( is_function_call( expr->value( ).get( ) ) ) {
-                            return get_cont_call(expr->value( ).get( ), env);
+                            return create_tail_call(expr->value( ).get( ), env);
                         }
                     }
                 }
