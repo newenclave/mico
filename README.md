@@ -205,7 +205,7 @@ Partial application. A function that accepts N parameters can be called with `M`
     /// just use prefix asterisk `*` for this.
 
     let old_sum = *sum3 // now old_sum is equal to sum1 i.e. fn(a,b,c) { a + b + c }
-    old_sum(1,2,3)      // oh, yeah, => sum(1, 2, 3) => 6
+    old_sum(1,2,3)      // oh, yeah, => sum1(1, 2, 3) => 6
 
     /// we can rebind the argument for a function
 
