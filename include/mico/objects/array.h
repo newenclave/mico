@@ -6,6 +6,7 @@
 #include "mico/objects/reference.h"
 #include "mico/objects/null.h"
 #include "mico/objects/collectable.h"
+#include "mico/expressions.h"
 
 namespace mico { namespace objects {
 
@@ -20,6 +21,7 @@ namespace mico { namespace objects {
         using cont = derived<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;
         using value_type = std::deque<cont_sptr>;
+        using ast_type   = ast::expressions::array;
 
         derived( environment::sptr env )
             :collectable<type::ARRAY>(env)
@@ -116,9 +118,19 @@ namespace mico { namespace objects {
             return res;
         }
 
-        ast::node::uptr to_ast( ) const override
+        ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            return nullptr;
+            auto res = ast_type::uptr( new ast_type );
+            res->set_pos( pos );
+            for( auto &v: value( ) ) {
+                auto next = v->value( )->to_ast( pos );
+                if( next->is_expression( ) ) {
+                    ast::expression::uptr r
+                            (static_cast<ast::expression *>(next.release( ) ) );
+                    res->value( ).emplace_back( std::move(r) );
+                }
+            }
+            return res;
         }
 
     private:

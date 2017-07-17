@@ -27,7 +27,7 @@ namespace mico { namespace ast { namespace expressions {
                 if( !first ) {
                     oss << ", ";
                 } else {
-                    first = true;
+                    first = false;
                 }
                 oss << e->str( );
             }
@@ -43,6 +43,18 @@ namespace mico { namespace ast { namespace expressions {
         value_type &value( )
         {
             return value_;
+        }
+
+        node::uptr clone( ) const override
+        {
+            uptr res(new this_type);
+            for( auto &exp: value_ ) {
+                auto clone = exp->clone( );
+                expression::uptr cexpt
+                        ( static_cast<expression *>(clone.release( ) ) );
+                res->value( ).emplace_back( std::move(cexpt) );
+            }
+            return res;
         }
 
     private:

@@ -6,6 +6,7 @@
 #include "mico/objects/reference.h"
 #include "mico/objects/null.h"
 #include "mico/objects/collectable.h"
+#include "mico/expressions.h"
 
 namespace mico { namespace objects {
 
@@ -33,9 +34,10 @@ namespace mico { namespace objects {
     public:
 
         static const type type_value = type::TABLE;
-        using sptr = std::shared_ptr<this_type>;
-        using cont = derived<type::REFERENCE>;
+        using sptr      = std::shared_ptr<this_type>;
+        using cont      = derived<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;
+        using ast_type  = ast::expressions::table;
 
         using value_type = std::unordered_map<objects::sptr, cont_sptr,
                                               hash_helper, equal_helper>;
@@ -145,6 +147,27 @@ namespace mico { namespace objects {
                                      v.second->value( )->clone( ) );
                 res->value( ).insert( std::make_pair(kc, vc) );
             }
+            return res;
+        }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            auto res = ast_type::uptr( new ast_type );
+            res->set_pos( pos );
+            for( auto &v: value( ) ) {
+
+                auto frst = v.first->to_ast( pos );
+                auto scnd = v.second->value( )->to_ast( pos );
+
+                if( frst->is_expression( ) && scnd->is_expression( ) ) {
+                    ast::expression::uptr f
+                            (static_cast<ast::expression *>(frst.release( ) ) );
+                    ast::expression::uptr s
+                            (static_cast<ast::expression *>(scnd.release( ) ) );
+                    res->value( ).emplace_back( std::move(f), std::move(s) );
+                }
+            }
+
             return res;
         }
 

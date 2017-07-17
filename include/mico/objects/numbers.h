@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include "mico/objects/base.h"
+#include "mico/expressions/value.h"
 
 namespace mico { namespace objects {
 
@@ -12,17 +13,23 @@ namespace mico { namespace objects {
     template <>
     struct type2object<type::FLOAT> {
         using native_type = double;
+        static const ast::type ast_type = ast::type::FLOAT;
+        static
+        ast::node::uptr to_ast( native_type val )
+        {
+            return ast::node::uptr(new ast::expressions::detail<ast_type>(val));
+        }
     };
 
     template <>
     struct type2object<type::INTEGER> {
         using native_type = std::int64_t;
+        static const ast::type ast_type = ast::type::INTEGER;
         static
-        ast::node::uptr to_ast( native_type )
+        ast::node::uptr to_ast( native_type val )
         {
-            return ;
+            return ast::node::uptr(new ast::expressions::detail<ast_type>(val));
         }
-
     };
 
     template <type TN>
@@ -85,10 +92,11 @@ namespace mico { namespace objects {
             return make( value_ );
         }
 
-        ast::node::uptr to_ast( ) const override
+        ast::node::uptr to_ast( tokens::position pos ) const override
         {
-
-            return nullptr;
+            auto res = type2object<type_name>::to_ast( value( ) );
+            res->set_pos( pos );
+            return res;
         }
 
     private:

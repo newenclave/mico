@@ -15,8 +15,8 @@ namespace mico { namespace objects {
 
         static const type type_value = type::REFERENCE;
 
-        using sptr = std::shared_ptr<this_type>;
-        using value_type = objects::sptr;
+        using sptr        = std::shared_ptr<this_type>;
+        using value_type  = objects::sptr;
 
         derived(const environment *my_env, value_type val)
             :my_env_(my_env)

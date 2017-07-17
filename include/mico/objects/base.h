@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "mico/ast.h"
+#include "mico/tokens.h"
 
 #if defined(DISABLE_SWITCH_WARNINGS)
 #ifdef __clang__
@@ -125,7 +126,7 @@ namespace mico { namespace objects {
         }
 
         virtual
-        ast::node::uptr to_ast( ) const
+        ast::node::uptr to_ast( tokens::position ) const
         {
             return nullptr;
         }

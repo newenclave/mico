@@ -84,6 +84,18 @@ namespace mico { namespace ast {
             pos_ = p;
         }
 
+        virtual
+        bool is_expression( ) const
+        {
+            return false;
+        }
+
+        virtual
+        uptr clone( ) const
+        {
+            return nullptr;
+        }
+
     private:
         tokens::position pos_;
     };
@@ -114,6 +126,10 @@ namespace mico { namespace ast {
     public:
         using uptr = std::unique_ptr<expression>;
         using sptr = std::shared_ptr<expression>;
+        bool is_expression( ) const override
+        {
+            return true;
+        }
     };
 
     template <type TN>

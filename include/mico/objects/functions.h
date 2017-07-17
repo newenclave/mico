@@ -3,6 +3,7 @@
 
 #include "mico/objects/reference.h"
 #include "mico/objects/collectable.h"
+#include "mico/expressions.h"
 
 namespace mico { namespace objects {
 
@@ -14,6 +15,7 @@ namespace mico { namespace objects {
         using sptr = std::shared_ptr<this_type>;
 
         using param_iterator = ast::expression_list::iterator;
+        using ast_type = ast::expressions::function;
 
         derived( std::shared_ptr<environment> e,
                  std::shared_ptr<ast::expression_list> par,
@@ -104,6 +106,18 @@ namespace mico { namespace objects {
         {
             return std::make_shared<this_type>( env( ), params_, body_,
                                                 start_param_ );
+        }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            auto res = ast_type::uptr( new ast_type );
+            res->set_pos( pos );
+
+//            for( auto &p: *this ) {
+
+//            }
+
+            return res;
         }
 
     private:

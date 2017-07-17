@@ -11,6 +11,7 @@ namespace mico { namespace ast { namespace expressions {
     template <>
     class detail<type::CALL>: public typed_expr<type::CALL> {
 
+        using this_type = detail<type::CALL>;
     public:
 
         using uptr = std::unique_ptr<detail>;
@@ -56,6 +57,24 @@ namespace mico { namespace ast { namespace expressions {
         {
             return expr_.get( );
         }
+
+        node::uptr clone( ) const override
+        {
+            auto clone = expr_->clone( );
+            expression::uptr cexpt
+                    ( static_cast<expression *>(clone.release( ) ) );
+            uptr res(new this_type( std::move(cexpt) ));
+
+            for( auto &exp: params( ) ) {
+                auto clone = exp->clone( );
+                expression::uptr cexpt
+                        ( static_cast<expression *>(clone.release( ) ) );
+                res->params( ).emplace_back( std::move(cexpt) );
+            }
+
+            return res;
+        }
+
 
     private:
         expression::uptr expr_;
