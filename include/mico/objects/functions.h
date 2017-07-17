@@ -34,7 +34,7 @@ namespace mico { namespace objects {
             if( start_param_ == 0  ) {
                 oss << "fn(" << param_size( ) << ")";
             } else {
-                oss << "fn(" << start_param_ << ":" << params_->size( ) << ")";
+                oss << "fn(" << param_size( ) << ":" << params_->size( ) << ")";
             }
             return oss.str( );
         }

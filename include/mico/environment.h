@@ -9,6 +9,8 @@
 
 #include "mico/objects/base.h"
 #include "mico/objects/reference.h"
+#include "mico/state.h"
+
 #include "etool/console/colors.h"
 
 namespace mico {
@@ -64,6 +66,7 @@ namespace mico {
         };
 
         environment( key )
+            :state_(std::make_shared<state>( ))
         {
 #if DEBUG
             std::cout << ++c << "\n";
@@ -71,7 +74,8 @@ namespace mico {
         }
 
         environment( sptr env, key )
-            :parent_(env)
+            :state_(env->state_)
+            ,parent_(env)
         {
 #if DEBUG
             std::cout << ++c << "\n";
@@ -182,6 +186,16 @@ namespace mico {
             }
         }
 
+        state &get_state( )
+        {
+            return *state_;
+        }
+
+        const state &get_state( ) const
+        {
+            return *state_;
+        }
+
         sptr parent( )
         {
             return parent_.lock( );
@@ -191,7 +205,6 @@ namespace mico {
         {
             return parent_.lock( );
         }
-
 
         // lowest common ancestor
         static
@@ -289,7 +302,7 @@ namespace mico {
             introspect( 1 );
         }
 
-        void introspect( int level )
+        void introspect( std::size_t level )
         {
             using namespace etool::console::ccout;
 
@@ -300,9 +313,9 @@ namespace mico {
                 std::cout << space << d.first
                           << " => " << d.second->value( );
                 if( d.second->value( )->hold( ) ) {
-                    std::cout << " [" << blue << d.second->value( )->hold( )
-                              << none
-                              << "]"
+                    std::cout << " [" << blue
+                              << d.second->value( )->hold( )
+                              << none << "]"
                                  ;
                 }
                 std::cout << std::endl;
@@ -336,6 +349,7 @@ namespace mico {
 
     private:
 
+        state::sptr     state_;
         wptr            parent_;
         children_type   children_;
         data_map        data_;
