@@ -190,7 +190,8 @@ There are some tricks.
 
 #### * Function call rules
 
-Partial application. A function that accepts N parameters can be called with `M` = `0..N-1` parameters. In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
+Partial application. A function that accepts N parameters can be called with `M` = `0..N-1` parameters.
+In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
 
 ```js
     let sum1 = fn(a,b,c) { a + b + c }
@@ -232,7 +233,8 @@ Partial application. A function that accepts N parameters can be called with `M`
 ```
 
 #### * Pipe operator for function.
-The pipe operator `|` is a shortcat for the `call` operator. The left side of the operator  is passed to the right side. In this case the right side must be a function (builtin or not).
+The pipe operator `|` is a shortcat for the `call` operator. The left side of the operator  is passed to the right side.
+In this case the right side must be a function (builtin or not).
 ```js
     let sum = fn(a,b) { a + b }
     let hello = sum("Hello, ")      // fn( a ) { "Hello, " + a }
