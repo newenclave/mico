@@ -243,10 +243,10 @@ The pipe operator `|` is a shortcat for the `call` operator. The left side of th
 
     /// check this out =)
     let x = 10
-    "world!" |if(x > 0){hello} else {(*hello)("Goodbay, ")} // => Hello, world!
+    "world!" |if(x > 0){hello} else {(*hello)("Goodbye, ")} // => Hello, world!
     ......
     let x = 0
-    "world!" |if(x > 0){hello} else {(*hello)("Goodbay, ")} // => Goodbay, world!
+    "world!" |if(x > 0){hello} else {(*hello)("Goodbye, ")} // => Goodbay, world!
 
 ```
 
