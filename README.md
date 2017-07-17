@@ -214,6 +214,9 @@ Partial application. A function that accepts N parameters can be called with `M`
                                  /// has lower precedence then `call` operator `()`
 
     sum3(100)  /// => 300
+
+    /// of course this code is also valid
+    (*sum3)(0.23, 0.56, 0.79) /// => 1.58
 ```
 
 #### * Pipe operator for function.
