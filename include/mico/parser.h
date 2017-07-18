@@ -699,39 +699,42 @@ namespace mico {
             return res;
         }
 
+        ast::statement::uptr parse_next( bool brace )
+        {
+            ast::statement::uptr stmt;
+
+            switch( current( ).ident.name ) {
+            case token_type::LET:
+                stmt = parse_let( );
+                break;
+            case token_type::RETURN:
+                stmt = parse_return( );
+                break;
+            case token_type::RBRACE:
+                if( brace ) {
+                    return nullptr;
+                }
+                break;
+            case token_type::SEMICOLON:
+                break;
+            default:
+                stmt = parse_exrp_stmt( );
+                break;
+            }
+            return stmt;
+        }
+
         void parse_statements( ast::statement_list &stmts, bool brace )
         {
             while( !eof( ) ) {
 
-                ast::statement::uptr stmt;
-
-                switch( current( ).ident.name ) {
-                case token_type::LET:
-                    stmt = parse_let( );
-                    break;
-                case token_type::RETURN:
-                    stmt = parse_return( );
-                    break;
-                case token_type::RBRACE:
-                    if( brace ) {
-                        return;
-                    }
-                    break;
-                case token_type::SEMICOLON:
-                    break;
-                default:
-                    stmt = parse_exrp_stmt( );
-                    break;
-                }
-
+                ast::statement::uptr stmt = parse_next( brace );
                 if( stmt ) {
                     stmts.emplace_back( std::move(stmt) );
+                    advance( );
                 }
-
-                advance( );
             }
         }
-
 
         template <typename QT>
         typename QT::uptr parse_quote_unquote( )
@@ -743,7 +746,7 @@ namespace mico {
             }
 
             advance( );
-            auto exptr = parse_expression( precedence::LOWEST );
+            auto exptr = parse_next( false );
 
             if( !expect_peek( tokens::type::RPAREN ) ) {
                 return nullptr;

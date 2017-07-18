@@ -399,9 +399,8 @@ namespace mico { namespace eval {
             }
 
             auto left = unref(eval_impl_tail(inf->left( ).get( ), env));
-            if( !left ) {
-                /////////// bad left value
-                return get_null( );
+            if( is_fail( left ) ) {
+                return left;
             }
 
             auto inf_call = [this, env](ast::node *n ) {
