@@ -22,6 +22,10 @@ namespace mico { namespace ast { namespace expressions {
             :node_(node.release( ))
         { }
 
+        detail( value_type node )
+            :node_(node)
+        { }
+
         std::string str( ) const override
         {
             std::ostringstream oss;
@@ -40,6 +44,11 @@ namespace mico { namespace ast { namespace expressions {
         uptr make( ast::node::uptr node )
         {
             return uptr(new this_type(std::move(node) ) );
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            return uptr(new this_type(node_) );
         }
 
     private:

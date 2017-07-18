@@ -44,7 +44,10 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr reduce( ast::node::reduce_call call ) override
         {
-            return call( node_.get( ) );
+            if( auto uq = call( node_.get( ) ) ) {
+                return uq;
+            }
+            return node_->clone( );
         }
 
     private:

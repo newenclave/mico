@@ -28,6 +28,7 @@ void run_file( )
 int main_lex( );
 
 int main( int argc, char * argv[ ]  )
-{    return run_repl( );
+{
+    return run_repl( );
 }
 
