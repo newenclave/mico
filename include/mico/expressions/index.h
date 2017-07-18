@@ -48,6 +48,13 @@ namespace mico { namespace ast { namespace expressions {
             return expr_.get( );
         }
 
+        ast::node::uptr reduce( ast::node::reduce_call call ) override
+        {
+            ast::expression::call_reduce( expr_, call );
+            ast::expression::call_reduce( left_, call );
+            return nullptr;
+        }
+
     private:
         expression::uptr left_;
         expression::uptr expr_;

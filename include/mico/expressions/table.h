@@ -43,6 +43,15 @@ namespace mico { namespace ast { namespace expressions {
             return value_;
         }
 
+        ast::node::uptr reduce( ast::node::reduce_call call ) override
+        {
+            for( auto &a: value_ ) {
+                ast::expression::call_reduce( a.first,  call );
+                ast::expression::call_reduce( a.second, call );
+            }
+            return nullptr;
+        }
+
     private:
 
         value_type value_;

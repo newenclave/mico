@@ -59,7 +59,11 @@ HEADERS += \
     include/mico/expressions/call.h \
     include/mico/expressions/ifelse.h \
     include/mico/expressions/table.h \
-    include/mico/state.h
+    include/mico/state.h \
+    include/mico/expressions/registry.h \
+    include/mico/expressions/quote.h \
+    include/mico/objects/quote.h \
+    include/mico/expressions/unquote.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

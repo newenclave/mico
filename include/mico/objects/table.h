@@ -158,14 +158,10 @@ namespace mico { namespace objects {
 
                 auto frst = v.first->to_ast( pos );
                 auto scnd = v.second->value( )->to_ast( pos );
+                auto f    = ast::expression::cast(frst);
+                auto s    = ast::expression::cast(scnd);
 
-                if( frst->is_expression( ) && scnd->is_expression( ) ) {
-                    ast::expression::uptr f
-                            (static_cast<ast::expression *>(frst.release( ) ) );
-                    ast::expression::uptr s
-                            (static_cast<ast::expression *>(scnd.release( ) ) );
-                    res->value( ).emplace_back( std::move(f), std::move(s) );
-                }
+                res->value( ).emplace_back( std::move(f), std::move(s) );
             }
 
             return res;

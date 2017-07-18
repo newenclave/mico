@@ -63,6 +63,13 @@ namespace mico { namespace ast { namespace expressions {
             return token_;
         }
 
+        ast::node::uptr reduce( ast::node::reduce_call call ) override
+        {
+            ast::expression::call_reduce( left_, call );
+            ast::expression::call_reduce( right_, call );
+            return nullptr;
+        }
+
     private:
         tokens::type     token_;
         expression::uptr left_;

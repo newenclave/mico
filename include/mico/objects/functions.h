@@ -4,6 +4,7 @@
 #include "mico/objects/reference.h"
 #include "mico/objects/collectable.h"
 #include "mico/expressions.h"
+#include "mico/state.h"
 
 namespace mico { namespace objects {
 
@@ -113,9 +114,30 @@ namespace mico { namespace objects {
             auto res = ast_type::uptr( new ast_type );
             res->set_pos( pos );
 
-//            for( auto &p: *this ) {
+            res->body_ptr( ) = body_;
+            res->params_ptr( ) = params_;
 
-//            }
+            auto e = env( );
+
+            for( std::size_t i = 0; i < start_param_; ++i ) {
+                auto &p((*params_)[i]);
+                if( p->get_type( ) == ast::type::IDENT ) {
+                    auto id = static_cast<ast::expressions::ident *>(p.get( ));
+                    auto obj = e->get( id->value( ) );
+                    if( !obj ) {
+                        throw std::logic_error( "Invalid object." );
+                    }
+                    auto ast_res = obj->to_ast( pos );
+                    if( !ast_res->is_expression( ) ) {
+                        throw std::logic_error( "Invalid AST." );
+                    }
+                    auto expr = ast::expression::cast( ast_res );
+                    res->inits( ).emplace( std::make_pair(id->value( ),
+                                                     std::move( expr) ) );
+                } else {
+                    throw std::logic_error( "Not valid type for ident." );
+                }
+            }
 
             return res;
         }
@@ -133,6 +155,7 @@ namespace mico { namespace objects {
     public:
         static const type type_value = type::BUILTIN;
 
+        using ast_type = ast::expressions::registry;
         using sptr = std::shared_ptr<this_type>;
 
         derived( std::shared_ptr<environment> e )
@@ -164,6 +187,18 @@ namespace mico { namespace objects {
         virtual
         void init( environment::sptr )
         { }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            auto cl = clone( );
+            if( auto e = env( ) ) {
+                auto id = e->get_state( ).add_reg_value( cl );
+                auto res = ast_type::make(id);
+                res->set_pos( pos );
+                return res;
+            }
+            return nullptr; /// shoild not be here
+        }
 
     private:
     };

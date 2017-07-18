@@ -95,6 +95,16 @@ namespace mico {
                     [this]( ) {
                         return unexpected_eof( );
                     };
+
+            nuds_[token_type::QUOTE] =
+                    [this]( ) {
+                        return parse_quote_unquote<ast::expressions::quote>( );
+                    };
+            nuds_[token_type::UNQUOTE] =
+                    [this]( ) {
+                        using QT = ast::expressions::unquote;
+                        return parse_quote_unquote<QT>( );
+                    };
         }
 
         void fill_leds( )
@@ -644,7 +654,7 @@ namespace mico {
 
             advance( );
             if( !is_current( token_type::RPAREN ) ) {
-                parse_ident_list( res->idents( ) );
+                parse_ident_list( res->params( ) );
 
                 if( !expect_peek( token_type::RPAREN ) ) {
                     return fn_type::uptr( );
@@ -656,7 +666,7 @@ namespace mico {
             }
 
             advance( );
-            parse_statements( res->states( ), true );
+            parse_statements( res->body( ), true );
 
             return res;
         }
@@ -671,7 +681,7 @@ namespace mico {
             if( !is_current( token_type::RPAREN ) ) {
                 parse_expression_list( res->params( ) );
                 if( !expect_peek( token_type::RPAREN ) ) {
-                    return call_type::uptr( );
+                    return nullptr;
                 }
             }
 
@@ -720,6 +730,27 @@ namespace mico {
 
                 advance( );
             }
+        }
+
+
+        template <typename QT>
+        typename QT::uptr parse_quote_unquote( )
+        {
+            using quote_type = QT;
+
+            if( !expect_peek( tokens::type::LPAREN ) ) {
+                return nullptr;
+            }
+
+            advance( );
+            auto exptr = parse_expression( precedence::LOWEST );
+
+            if( !expect_peek( tokens::type::RPAREN ) ) {
+                return nullptr;
+            }
+
+            auto res = quote_type::make( std::move(exptr) );
+            return res;
         }
 
         ast::program parse( )

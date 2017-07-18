@@ -2,6 +2,7 @@
 #define MICO_EXPRESSIONS_FN_H
 
 #include <sstream>
+#include <map>
 #include "mico/ast.h"
 #include "mico/tokens.h"
 #include "mico/expressions/detail.h"
@@ -17,12 +18,16 @@ namespace mico { namespace ast { namespace expressions {
 
         using uptr = std::unique_ptr<detail>;
 
-        using stmt_type  = statement::uptr;
-        using ident_type = expression::uptr;
+        using stmt_type   = statement::uptr;
+        using ident_type  = expression::uptr;
+        using init_map    = std::map<std::string, expression::uptr>;
+
+        using params_slist = std::shared_ptr<expression_list>;
+        using body_slist   = std::shared_ptr<statement_list>;
 
         detail( )
-            :ident_(std::make_shared<expression_list>( ))
-            ,expr_(std::make_shared<statement_list>( ))
+            :params_(std::make_shared<expression_list>( ))
+            ,body_(std::make_shared<statement_list>( ))
         { }
 
         std::string str( ) const override
@@ -30,7 +35,7 @@ namespace mico { namespace ast { namespace expressions {
             std::ostringstream oss;
             oss << "fn(";
             bool second = false;
-            for( auto &id: idents( ) ) {
+            for( auto &id: params( ) ) {
                 if( second) {
                     oss << ", ";
                 } else {
@@ -39,68 +44,94 @@ namespace mico { namespace ast { namespace expressions {
                 oss << id->str( );
             }
             oss << ") {\n";
-            for( auto &ex: states( ) ) {
+            for( auto &init: inits( ) ) {
+                oss << "let " << init.first
+                    << " = " << init.second->str( ) << ";\n";
+            }
+            for( auto &ex: body( ) ) {
                 oss << ex->str( ) << ";\n";
             }
             oss << "}";
             return oss.str( );
         }
 
-        std::shared_ptr<expression_list> ident_ptr( )
+        init_map &inits( )
         {
-            return ident_;
+            return inits_;
         }
 
-        std::shared_ptr<statement_list> expr_ptr( )
+        const init_map &inits( ) const
         {
-            return expr_;
+            return inits_;
         }
 
-        const expression_list &idents( ) const
+        params_slist &params_ptr( )
         {
-            return *ident_;
+            return params_;
         }
 
-        expression_list &idents( )
+        body_slist &body_ptr( )
         {
-            return *ident_;
+            return body_;
         }
 
-        const statement_list &states( ) const
+        const expression_list &params( ) const
         {
-            return *expr_;
+            return *params_;
         }
 
-        statement_list &states( )
+        expression_list &params( )
         {
-            return *expr_;
+            return *params_;
+        }
+
+        const statement_list &body( ) const
+        {
+            return *body_;
+        }
+
+        statement_list &body( )
+        {
+            return *body_;
         }
 
         node::uptr clone( ) const override
         {
             uptr res(new this_type);
 
-            for( auto &exp: *ident_ ) {
+            for( auto &exp: *params_ ) {
                 auto clone = exp->clone( );
                 expression::uptr cexpt
                         ( static_cast<expression *>(clone.release( ) ) );
-                res->ident_->emplace_back( std::move(cexpt) );
+                res->params_->emplace_back( std::move(cexpt) );
             }
 
-            for( auto &exp: *expr_ ) {
+            for( auto &exp: *body_ ) {
                 auto clone = exp->clone( );
                 statement::uptr cexpt
                         ( static_cast<statement *>(clone.release( ) ) );
-                res->expr_->emplace_back( std::move(cexpt) );
+                res->body_->emplace_back( std::move(cexpt) );
             }
 
             return res;
         }
 
-    private:
+        ast::node::uptr reduce( ast::node::reduce_call call ) override
+        {
+            for( auto &p: *params_ ) {
+                ast::expression::call_reduce( p, call );
+            }
 
-        std::shared_ptr<expression_list> ident_;
-        std::shared_ptr<statement_list> expr_;
+            for( auto &b: *body_ ) {
+                ast::statement::call_reduce( b, call );
+            }
+            return nullptr;
+        }
+
+    private:
+        init_map      inits_;
+        params_slist  params_;
+        body_slist    body_;
     };
 
 }}}

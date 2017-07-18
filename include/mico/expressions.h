@@ -14,6 +14,9 @@
 #include "mico/expressions/call.h"
 #include "mico/expressions/ifelse.h"
 #include "mico/expressions/table.h"
+#include "mico/expressions/registry.h"
+#include "mico/expressions/quote.h"
+#include "mico/expressions/unquote.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -34,6 +37,9 @@ namespace mico { namespace ast { namespace expressions {
     using ifelse    = detail<type::IFELSE>;
     using table     = detail<type::TABLE>;
     using null      = detail<type::NONE>;
+    using registry  = detail<type::REGISTRY>;
+    using quote     = detail<type::QUOTE>;
+    using unquote   = detail<type::UNQUOTE>;
 
 }}}
 

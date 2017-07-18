@@ -13,6 +13,7 @@
 #include "mico/objects/error.h"
 #include "mico/objects/boolean.h"
 #include "mico/objects/return.h"
+#include "mico/objects/quote.h"
 #include "mico/objects/base.h"
 
 namespace mico { namespace objects {
@@ -30,6 +31,7 @@ namespace mico { namespace objects {
     using reference  = derived<type::REFERENCE>;
     using table      = derived<type::TABLE>;
     using error      = derived<type::FAILURE>;
+    using quote      = derived<type::QUOTE>;
 
 #define MICO_DEFINE_CAST_FUNC( CallPrefix, TypeName )                   \
     inline                                                              \
@@ -56,6 +58,7 @@ MICO_DEFINE_CAST_FUNC( tail_call,   type::TAIL_CALL )
 MICO_DEFINE_CAST_FUNC( return,      type::RETURN    )
 MICO_DEFINE_CAST_FUNC( error,       type::FAILURE   )
 MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
+MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE )
 
 #undef MICO_DEFINE_CAST_FUNC
 

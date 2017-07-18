@@ -124,11 +124,8 @@ namespace mico { namespace objects {
             res->set_pos( pos );
             for( auto &v: value( ) ) {
                 auto next = v->value( )->to_ast( pos );
-                if( next->is_expression( ) ) {
-                    ast::expression::uptr r
-                            (static_cast<ast::expression *>(next.release( ) ) );
-                    res->value( ).emplace_back( std::move(r) );
-                }
+                auto r = ast::expression::cast(next);
+                res->value( ).emplace_back( std::move(r) );
             }
             return res;
         }

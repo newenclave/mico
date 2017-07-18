@@ -61,20 +61,31 @@ namespace mico { namespace ast { namespace expressions {
         node::uptr clone( ) const override
         {
             auto clone = expr_->clone( );
-            expression::uptr cexpt
-                    ( static_cast<expression *>(clone.release( ) ) );
+            auto cexpt = expression::cast(clone );
             uptr res(new this_type( std::move(cexpt) ));
 
             for( auto &exp: params( ) ) {
                 auto clone = exp->clone( );
-                expression::uptr cexpt
-                        ( static_cast<expression *>(clone.release( ) ) );
+                auto cexpt = expression::cast(clone );
                 res->params( ).emplace_back( std::move(cexpt) );
             }
-
             return res;
         }
 
+        ast::node::uptr reduce( ast::node::reduce_call call ) override
+        {
+            if( auto nn = expr_->reduce( call ) ) {
+                auto red = ast::expression::cast( nn );
+                expr_.swap( red );
+            }
+            for( auto &e: params_ ) {
+                if( auto nn = e->reduce( call ) ) {
+                    auto red = ast::expression::cast( nn );
+                    e.swap( red );
+                }
+            }
+            return nullptr;
+        }
 
     private:
         expression::uptr expr_;

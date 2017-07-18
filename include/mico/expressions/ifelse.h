@@ -68,6 +68,20 @@ namespace mico { namespace ast { namespace expressions {
             return alt_;
         }
 
+        ast::node::uptr reduce( ast::node::reduce_call call ) override
+        {
+            for( auto &g: general_ ) {
+                ast::expression::call_reduce( g.cond, call );
+                for( auto &b: g.states ) {
+                    ast::statement::call_reduce( b, call );
+                }
+            }
+            for( auto &a: alt_ ) {
+                ast::statement::call_reduce( a, call );
+            }
+            return nullptr;
+        }
+
     private:
         if_list         general_;
         statement_list  alt_;

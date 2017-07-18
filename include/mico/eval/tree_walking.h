@@ -663,9 +663,23 @@ namespace mico { namespace eval {
         objects::sptr eval_function( ast::node *n, environment::sptr env )
         {
             auto func = static_cast<ast::expressions::function *>( n );
+            auto init_start = func->inits( ).size( );
+            if( init_start > func->params( ).size( ) ) {
+                throw std::logic_error( "Impossible AST function" );
+            }
             auto fff  = std::make_shared<objects::function>( make_env(env),
-                                              func->ident_ptr( ),
-                                              func->expr_ptr( ));
+                                              func->params_ptr( ),
+                                              func->body_ptr( ),
+                                              init_start );
+
+            for( auto &in: func->inits( ) ) {
+                auto next = unref( eval_impl_tail( in.second.get( ), env ) );
+                if( is_fail( next ) ) {
+                    return next;
+                }
+                env->set( in.first, next );
+            }
+
             //env->add_keep(fff.get( ), fff);
             return fff;
         }
@@ -924,6 +938,42 @@ namespace mico { namespace eval {
             return eval_tail( res );
         }
 
+        objects::sptr eval_quote( ast::node *n, environment::sptr env )
+        {
+            auto q = static_cast<ast::expressions::quote *>(n);
+            auto reduce_call = [this, env]( ast::node *n ) -> ast::node::uptr {
+                auto res = eval_impl_tail( n, env );
+                if( is_null( res ) || is_fail( res ) ) {
+                    return nullptr;
+                }
+                return res->to_ast( n->pos( ) );
+            };
+            auto reduced = q->value( )->reduce( reduce_call );
+            if( reduced ) {
+                ast::node::sptr red(reduced.release( ));
+                return objects::quote::make( red );
+            } else {
+
+            }
+            return objects::quote::make( q->value( ) );
+        }
+
+        objects::sptr eval_unquote( ast::node *n, environment::sptr env )
+        {
+            auto q = static_cast<ast::expressions::unquote *>(n);
+
+            auto res = eval_impl_tail( q->value( ).get( ), env );
+            if( is_fail( res ) ) {
+                return res;
+            }
+
+            if( res->get_type( ) == objects::type::QUOTE ) {
+                auto q = objects::cast_quote( res );
+                res = eval_impl_tail( q->value( ).get( ), env );
+            }
+            return res;
+        }
+
         objects::sptr eval_impl( ast::node *n, environment::sptr env )
         {
             objects::sptr res = get_null( );
@@ -962,12 +1012,15 @@ namespace mico { namespace eval {
                 res = eval_call( n, env ); break;
             case ast::type::TABLE:
                 res = eval_table( n, env ); break;
+            case ast::type::QUOTE:
+                res = eval_quote( n, env ); break;
+            case ast::type::UNQUOTE:
+                res = eval_unquote( n, env ); break;
             case ast::type::NONE:
                 break;
             }
             return res;
         }
-
 
     public:
 

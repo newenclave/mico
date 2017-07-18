@@ -37,6 +37,7 @@ namespace mico { namespace objects {
         TAIL_CALL   = 10,
         BUILTIN     = 11,
         FAILURE     = 12,
+        QUOTE       = 13,
     };
 
     struct name {
@@ -57,6 +58,7 @@ namespace mico { namespace objects {
             case type::BUILTIN    : return "OBJ_BUILTIN";
             case type::TAIL_CALL  : return "OBJ_TAIL_CALL";
             case type::FAILURE    : return "OBJ_FAILURE";
+            case type::QUOTE      : return "OBJ_QUOTE";
             }
             return "<invalid>";
         }
