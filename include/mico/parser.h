@@ -206,6 +206,17 @@ namespace mico {
             errors_.emplace_back(oss.str( ));
         }
 
+        void error_expect_cur( token_type tt )
+        {
+            std::ostringstream oss;
+            oss << "parser error: " << current( ).where
+                << " expected token to be '" << tt
+                <<  "', got '"
+                << current( ).ident
+                << "' instead";
+            errors_.emplace_back(oss.str( ));
+        }
+
         void error_no_prefix( )
         {
             std::ostringstream oss;
@@ -337,7 +348,8 @@ namespace mico {
                 }
                 res->ifs( ).emplace_back(std::move(next));
 
-                if( !expect_peek( token_type::RBRACE ) ) {
+                if( !is_current( token_type::RBRACE ) ) {
+                    error_expect_cur( token_type::RBRACE );
                     return nullptr;
                 }
 

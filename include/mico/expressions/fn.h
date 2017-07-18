@@ -111,6 +111,11 @@ namespace mico { namespace ast { namespace expressions {
                 res->body_->emplace_back( std::move(cexpt) );
             }
 
+            for( auto &ini: inits_ ) {
+                res->inits_.emplace( ini.first,
+                                     expression::clone_call( ini.second ) );
+            }
+
             return res;
         }
 
