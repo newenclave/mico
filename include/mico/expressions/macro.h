@@ -45,25 +45,11 @@ namespace mico { namespace ast { namespace expressions {
                 oss << id->str( );
             }
             oss << ") {\n";
-            for( auto &init: inits( ) ) {
-                oss << "let " << init.first
-                    << " = " << init.second->str( ) << ";\n";
-            }
             for( auto &ex: body( ) ) {
                 oss << ex->str( ) << ";\n";
             }
             oss << "}";
             return oss.str( );
-        }
-
-        init_map &inits( )
-        {
-            return inits_;
-        }
-
-        const init_map &inits( ) const
-        {
-            return inits_;
         }
 
         params_slist &params_ptr( )
@@ -112,11 +98,6 @@ namespace mico { namespace ast { namespace expressions {
                 res->body_->emplace_back( std::move(cexpt) );
             }
 
-            for( auto &ini: inits_ ) {
-                res->inits_.emplace( ini.first,
-                                     expression::clone_call( ini.second ) );
-            }
-
             return res;
         }
 
@@ -133,7 +114,6 @@ namespace mico { namespace ast { namespace expressions {
         }
 
     private:
-        init_map      inits_;
         params_slist  params_;
         body_slist    body_;
     };
