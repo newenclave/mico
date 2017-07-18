@@ -65,7 +65,8 @@ HEADERS += \
     include/mico/objects/quote.h \
     include/mico/expressions/unquote.h \
     include/mico/expressions/macro.h \
-    include/mico/objects/macro.h
+    include/mico/objects/macro.h \
+    include/mico/objects/scope.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

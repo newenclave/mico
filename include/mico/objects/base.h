@@ -39,6 +39,7 @@ namespace mico { namespace objects {
         FAILURE     = 12,
         QUOTE       = 13,
         MACRO       = 14,
+        SCOPE       = 15,
     };
 
     struct name {
@@ -61,6 +62,7 @@ namespace mico { namespace objects {
             case type::FAILURE    : return "OBJ_FAILURE";
             case type::QUOTE      : return "OBJ_QUOTE";
             case type::MACRO      : return "OBJ_MACRO";
+            case type::SCOPE      : return "OBJ_SCOPE";
             }
             return "<invalid>";
         }

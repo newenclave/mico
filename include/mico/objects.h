@@ -15,6 +15,7 @@
 #include "mico/objects/return.h"
 #include "mico/objects/quote.h"
 #include "mico/objects/base.h"
+#include "mico/objects/scope.h"
 
 namespace mico { namespace objects {
 
@@ -32,6 +33,7 @@ namespace mico { namespace objects {
     using table      = derived<type::TABLE>;
     using error      = derived<type::FAILURE>;
     using quote      = derived<type::QUOTE>;
+    using scope      = derived<type::SCOPE>;
 
 #define MICO_DEFINE_CAST_FUNC( CallPrefix, TypeName )                   \
     inline                                                              \
@@ -58,7 +60,8 @@ MICO_DEFINE_CAST_FUNC( tail_call,   type::TAIL_CALL )
 MICO_DEFINE_CAST_FUNC( return,      type::RETURN    )
 MICO_DEFINE_CAST_FUNC( error,       type::FAILURE   )
 MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
-MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE )
+MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )
+MICO_DEFINE_CAST_FUNC( scope,       type::SCOPE     )
 
 #undef MICO_DEFINE_CAST_FUNC
 

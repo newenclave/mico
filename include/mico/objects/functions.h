@@ -5,6 +5,7 @@
 #include "mico/objects/collectable.h"
 #include "mico/expressions.h"
 #include "mico/state.h"
+#include "mico/objects/scope.h"
 
 namespace mico { namespace objects {
 
@@ -16,7 +17,8 @@ namespace mico { namespace objects {
         using sptr = std::shared_ptr<this_type>;
 
         using param_iterator = ast::expression_list::iterator;
-        using ast_type = ast::expressions::function;
+        using ast_type       = ast::expressions::function;
+        using scope_type     = objects::derived<objects::type::SCOPE>;
 
         derived( std::shared_ptr<environment> e,
                  std::shared_ptr<ast::expression_list> par,
@@ -24,7 +26,7 @@ namespace mico { namespace objects {
                  std::size_t start = 0)
             :collectable(e)
             ,params_(par)
-            ,body_(st)
+            ,body_(scope_type::make(st))
             ,start_param_(start)
         { }
 
@@ -44,7 +46,7 @@ namespace mico { namespace objects {
 
         const ast::statement_list &body( ) const
         {
-            return *body_;
+            return body_->value( );
         }
 
         static
@@ -61,7 +63,7 @@ namespace mico { namespace objects {
                    this_type &other, std::size_t start )
         {
             return std::make_shared<derived>( e, other.params_,
-                                              other.body_,
+                                              other.body_->value_ptr( ),
                                               start + other.start_param_ );
         }
 
@@ -71,8 +73,9 @@ namespace mico { namespace objects {
             if( other->start_param_ != 0 ) {
                 if( auto p = other->env( ) ) {
                     return std::make_shared<derived>( p->parent( ),
-                                                      other->params_,
-                                                      other->body_, 0 );
+                                              other->params_,
+                                              other->body_->value_ptr( ),
+                                              0 );
                 }
             }
             return other;
@@ -100,12 +103,13 @@ namespace mico { namespace objects {
 
         ast::statement_list &body( )
         {
-            return *body_;
+            return body_->value( );
         }
 
         std::shared_ptr<base> clone( ) const override
         {
-            return std::make_shared<this_type>( env( ), params_, body_,
+            return std::make_shared<this_type>( env( ), params_,
+                                                body_->value_ptr( ),
                                                 start_param_ );
         }
 
@@ -114,7 +118,7 @@ namespace mico { namespace objects {
             auto res = ast_type::uptr( new ast_type );
             res->set_pos( pos );
 
-            res->body_ptr( )   = body_;
+            res->body_ptr( )   = body_->value_ptr( );
             res->params_ptr( ) = params_;
 
             auto e = env( );
@@ -145,7 +149,7 @@ namespace mico { namespace objects {
     private:
 
         std::shared_ptr<ast::expression_list> params_;
-        std::shared_ptr<ast::statement_list>  body_;
+        scope_type::sptr  body_;
         std::size_t start_param_ = 0;
     };
 
