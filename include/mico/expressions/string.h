@@ -34,6 +34,11 @@ namespace mico { namespace ast { namespace expressions {
             return value_;
         }
 
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new detail(value( )));
+        }
+
     private:
         std::string value_;
     };

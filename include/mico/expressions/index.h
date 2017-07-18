@@ -11,6 +11,7 @@ namespace mico { namespace ast { namespace expressions {
     template <>
     class detail<type::INDEX>: public typed_expr<type::INDEX> {
 
+            using this_type = detail<type::INDEX>;
     public:
 
         using uptr = std::unique_ptr<detail>;
@@ -53,6 +54,14 @@ namespace mico { namespace ast { namespace expressions {
             ast::expression::call_reduce( expr_, call );
             ast::expression::call_reduce( left_, call );
             return nullptr;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            auto left = left_->clone( );
+            auto expr = expr_->clone( );
+            return uptr( new this_type( expression::cast(left),
+                                        expression::cast(expr) ) );
         }
 
     private:

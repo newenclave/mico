@@ -2,7 +2,7 @@
 #define MICO_STATEMENTS_H
 
 #include "mico/ast.h"
-#include "mico/expressions.h"
+//#include "mico/expressions.h"
 
 namespace mico { namespace ast { namespace statements {
 
@@ -51,6 +51,12 @@ namespace mico { namespace ast { namespace statements {
             return value_.get( );
         }
 
+        ast::node::uptr clone( ) const override
+        {
+            return uptr(new detail(expression::clone_call( ident_ ),
+                                   expression::clone_call( value_ ) ) );
+        }
+
     private:
 
         expression::uptr ident_;
@@ -84,6 +90,11 @@ namespace mico { namespace ast { namespace statements {
             return value_.get( );
         }
 
+        ast::node::uptr clone( ) const override
+        {
+            return uptr(new detail(expression::clone_call( value_ ) ) );
+        }
+
     private:
         expression::uptr value_;
     };
@@ -105,6 +116,11 @@ namespace mico { namespace ast { namespace statements {
         expression::uptr &value( )
         {
             return expr_;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            return uptr(new detail(expression::clone_call( expr_ ) ) );
         }
 
     private:

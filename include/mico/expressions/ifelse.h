@@ -11,6 +11,8 @@ namespace mico { namespace ast { namespace expressions {
     template <>
     class detail<type::IFELSE>: public typed_expr<type::IFELSE> {
 
+        using this_type = detail<type::IFELSE>;
+
     public:
 
         using uptr = std::unique_ptr<detail>;
@@ -80,6 +82,25 @@ namespace mico { namespace ast { namespace expressions {
                 ast::statement::call_reduce( a, call );
             }
             return nullptr;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            uptr inst(new this_type);
+            for( auto &g: general_ ) {
+                auto cl = g.cond->clone( );
+                node n(ast::expression::cast( cl ) );
+                for( auto &b: g.states ) {
+                    auto st = b->clone( );
+                    n.states.emplace_back( statement::cast(st) );
+                }
+                inst->general_.emplace_back(std::move(n));
+            }
+            for( auto &a: alt_ ) {
+                auto st = a->clone( );
+                inst->alt_.emplace_back( statement::cast(st) );
+            }
+            return inst;
         }
 
     private:

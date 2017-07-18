@@ -5,6 +5,7 @@
 #include "mico/ast.h"
 #include "mico/tokens.h"
 #include "mico/expressions/detail.h"
+#include "mico/statements.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -18,11 +19,11 @@ namespace mico { namespace ast { namespace expressions {
         using uptr = std::unique_ptr<detail>;
         using value_type = std::shared_ptr<ast::node>;
 
-        detail( ast::node::uptr node )
+        explicit detail( ast::node::uptr node )
             :node_(node.release( ))
         { }
 
-        detail( value_type node )
+        explicit detail( value_type node )
             :node_(node)
         { }
 
@@ -43,8 +44,19 @@ namespace mico { namespace ast { namespace expressions {
         static
         uptr make( ast::node::uptr node )
         {
-            return uptr(new this_type(std::move(node) ) );
+            if( node->get_type( ) == ast::type::EXPR) {
+                auto st = static_cast<ast::statements::expr *>(node.get( ));
+                ast::node::uptr ex( st->value( ).release( ) );
+                return uptr(new this_type( std::move( ex ) ) );
+            }
+            return uptr(new this_type( std::move( node ) ) );
         }
+
+//        ast::node::uptr reduce( ast::node::reduce_call call ) override
+//        {
+//            return node_->clone( );
+//            //return call(node_.get( ));
+//        }
 
         ast::node::uptr clone( ) const override
         {

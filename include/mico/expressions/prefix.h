@@ -10,6 +10,7 @@ namespace mico { namespace ast { namespace expressions {
 
     template <>
     class detail<type::PREFIX>: public typed_expr<type::PREFIX> {
+        using this_type = detail<type::PREFIX>;
     public:
 
         using uptr = std::unique_ptr<detail>;
@@ -34,6 +35,11 @@ namespace mico { namespace ast { namespace expressions {
         tokens::type token( ) const
         {
             return token_;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            return uptr(new this_type(token_, expression::clone_call( expr_ )));
         }
 
     private:

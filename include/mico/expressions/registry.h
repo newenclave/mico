@@ -36,6 +36,11 @@ namespace mico { namespace ast { namespace expressions {
             return res;
         }
 
+        ast::node::uptr clone( ) const override
+        {
+            return make(key_);
+        }
+
         key_type value( ) const
         {
             return key_;

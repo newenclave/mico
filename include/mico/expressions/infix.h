@@ -10,6 +10,9 @@ namespace mico { namespace ast { namespace expressions {
 
     template <>
     class detail<type::INFIX>: public typed_expr<type::INFIX> {
+
+        using this_type = detail<type::INFIX>;
+
     public:
 
         using uptr = std::unique_ptr<detail>;
@@ -68,6 +71,15 @@ namespace mico { namespace ast { namespace expressions {
             ast::expression::call_reduce( left_, call );
             ast::expression::call_reduce( right_, call );
             return nullptr;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            auto cl = left_->clone( );
+            uptr inst(new this_type(token_, expression::cast(cl)));
+            cl = right_->clone( );
+            inst->right_ = expression::cast(cl);
+            return inst;
         }
 
     private:

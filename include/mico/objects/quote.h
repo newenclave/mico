@@ -48,6 +48,11 @@ namespace mico { namespace objects {
             return make( value_ );
         }
 
+        ast::node::uptr to_ast( tokens::position ) const override
+        {
+            return value_->clone( );
+        }
+
     private:
 
         value_type value_;

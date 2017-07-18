@@ -314,8 +314,11 @@ namespace mico {
             if( !expect_peek( token_type::LBRACE ) ) {
                 return res;
             }
+
             advance( );
-            parse_statements( res.states, true );
+
+            parse_statements( res.states, token_type::RBRACE );
+
             res.cond = std::move(cond);
 
             return res;
@@ -333,6 +336,11 @@ namespace mico {
                     return nullptr;
                 }
                 res->ifs( ).emplace_back(std::move(next));
+
+                if( !expect_peek( token_type::RBRACE ) ) {
+                    return nullptr;
+                }
+
             } while ( expect_peek( token_type::ELIF, false ) );
 
             if( expect_peek( token_type::ELSE, false ) ) {
@@ -340,7 +348,7 @@ namespace mico {
                     return nullptr;
                 }
                 advance( );
-                parse_statements(res->alt( ), true );
+                parse_statements(res->alt( ), token_type::RBRACE );
             }
 
             return res;
@@ -662,11 +670,11 @@ namespace mico {
             }
 
             if( !expect_peek( token_type::LBRACE ) ) {
-                return fn_type::uptr( );
+                return nullptr;
             }
 
             advance( );
-            parse_statements( res->body( ), true );
+            parse_statements( res->body( ), token_type::RBRACE );
 
             return res;
         }
@@ -699,7 +707,7 @@ namespace mico {
             return res;
         }
 
-        ast::statement::uptr parse_next( bool brace )
+        ast::statement::uptr parse_next( )
         {
             ast::statement::uptr stmt;
 
@@ -710,11 +718,6 @@ namespace mico {
             case token_type::RETURN:
                 stmt = parse_return( );
                 break;
-            case token_type::RBRACE:
-                if( brace ) {
-                    return nullptr;
-                }
-                break;
             case token_type::SEMICOLON:
                 break;
             default:
@@ -724,15 +727,15 @@ namespace mico {
             return stmt;
         }
 
-        void parse_statements( ast::statement_list &stmts, bool brace )
+        void parse_statements( ast::statement_list &stmts, tokens::type st )
         {
-            while( !eof( ) ) {
+            while( !eof( ) && !is_current( st ) ) {
 
-                ast::statement::uptr stmt = parse_next( brace );
+                ast::statement::uptr stmt = parse_next( );
                 if( stmt ) {
                     stmts.emplace_back( std::move(stmt) );
-                    advance( );
                 }
+                advance( );
             }
         }
 
@@ -746,7 +749,7 @@ namespace mico {
             }
 
             advance( );
-            auto exptr = parse_next( false );
+            auto exptr = parse_next( );
 
             if( !expect_peek( tokens::type::RPAREN ) ) {
                 return nullptr;
@@ -760,7 +763,7 @@ namespace mico {
         {
             ast::program prog;
 
-            parse_statements( prog.states( ), false );
+            parse_statements( prog.states( ), token_type::END_OF_FILE );
 
             prog.set_errors( errors_ );
             return prog;

@@ -254,7 +254,20 @@ namespace mico {
                 if( next ) {
                     value = token_ident(*next);
 
-                    switch( *next ) {
+                    auto token_name = *next;
+
+                    if( (token_name >= token_type::LET) &&
+                      (token_name < token_type::LAST_VISIBLE) ) {
+                        if( next.iterator( ) != end ) {
+                            if( idents::is_ident( *bb ) &&
+                                idents::is_ident( *next.iterator( ) ) )
+                            {
+                                token_name = token_type::IDENT;
+                            }
+                        }
+                    }
+
+                    switch( token_name ) {
                     case token_type::COMMENT:
                         bb = skip_comment( next.iterator( ), end, lstate );
                         value.literal = "";
@@ -289,6 +302,10 @@ namespace mico {
                     case token_type::STRING:
                         bb = next.iterator( );
                         value.literal = read_string( bb, end, lstate );
+                        return std::make_pair( std::move(value), bb );
+                    case token_type::IDENT:
+                        value.name    = token_type::IDENT;
+                        value.literal = read_ident( bb, end  );
                         return std::make_pair( std::move(value), bb );
                     default:
                         return std::make_pair( std::move(value),

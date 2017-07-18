@@ -101,15 +101,13 @@ namespace mico { namespace ast { namespace expressions {
 
             for( auto &exp: *params_ ) {
                 auto clone = exp->clone( );
-                expression::uptr cexpt
-                        ( static_cast<expression *>(clone.release( ) ) );
+                auto cexpt = expression::cast(clone );
                 res->params_->emplace_back( std::move(cexpt) );
             }
 
             for( auto &exp: *body_ ) {
                 auto clone = exp->clone( );
-                statement::uptr cexpt
-                        ( static_cast<statement *>(clone.release( ) ) );
+                auto cexpt = statement::cast( clone );
                 res->body_->emplace_back( std::move(cexpt) );
             }
 

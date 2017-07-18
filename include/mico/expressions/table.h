@@ -10,6 +10,7 @@ namespace mico { namespace ast { namespace expressions {
 
     template <>
     class detail<type::TABLE>: public typed_expr<type::TABLE> {
+        using this_type = detail<type::TABLE>;
     public:
 
         using value_pair = std::pair<expression::uptr, expression::uptr>;
@@ -41,6 +42,16 @@ namespace mico { namespace ast { namespace expressions {
         const value_type &value( ) const
         {
             return value_;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            uptr inst(new this_type);
+            for( auto &a: value_ ) {
+                inst->value_.emplace_back( expression::clone_call( a.first ),
+                                           expression::clone_call( a.second ) );
+            }
+            return inst;
         }
 
         ast::node::uptr reduce( ast::node::reduce_call call ) override

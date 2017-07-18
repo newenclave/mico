@@ -937,15 +937,43 @@ namespace mico { namespace eval {
             return eval_tail( res );
         }
 
+        static
+        ast::node::uptr reduce_call( tree_walking *thiz, ast::node *n,
+                                     environment::sptr env )
+        {
+            auto res = thiz->eval_impl_tail( n, env );
+
+            if( is_null( res ) || is_fail( res ) ) {
+                return nullptr;
+            }
+
+            auto next = res->to_ast( n->pos( ) );
+
+            auto red_call = [thiz, env]( ast::node *n ) {
+                return reduce_call( thiz, n, env );
+            };
+
+            do {
+                if( next ) {
+                    auto rds  = next->reduce( red_call );
+                    if( rds ) {
+                        next = std::move( rds );
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            } while( true );
+
+            return next;
+        }
+
         objects::sptr eval_quote( ast::node *n, environment::sptr env )
         {
             auto q = static_cast<ast::expressions::quote *>(n);
-            auto reduce_call = [this, env]( ast::node *n ) -> ast::node::uptr {
-                auto res = eval_impl_tail( n, env );
-                if( is_null( res ) || is_fail( res ) ) {
-                    return nullptr;
-                }
-                return res->to_ast( n->pos( ) );
+            auto reduce_call = [this, env]( ast::node *n ) {
+                return tree_walking::reduce_call( this,  n, env );
             };
             auto reduced = q->value( )->reduce( reduce_call );
             if( reduced ) {

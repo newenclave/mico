@@ -276,4 +276,10 @@ let get_sum = fn( n ) {
 } let s = get_sum(10)
 (*s)(20, 30)
 
+let quotInfixExpression = quote(4 + 4);
+quote(unquote(4 + 4) + unquote(quotInfixExpression))
+
+let quotedInfixExpression = quote(fn( x ){ 10 * x }(100));
+let t = quote(unquote(4 + 4) + unquote(quotedInfixExpression))
+
 */

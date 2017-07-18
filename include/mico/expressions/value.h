@@ -44,6 +44,10 @@ namespace mico { namespace ast { namespace expressions {
         detail( std::int64_t val )
             :value_expr(val)
         { }
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new detail(value( )));
+        }
     };
 
     template <>
@@ -54,6 +58,10 @@ namespace mico { namespace ast { namespace expressions {
         detail( double val )
             :value_expr(val)
         { }
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new detail(value( )));
+        }
     };
 
     template <>
@@ -64,6 +72,10 @@ namespace mico { namespace ast { namespace expressions {
         detail( bool val )
             :value_expr(val)
         { }
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new detail(value( )));
+        }
     };
 
 }}}

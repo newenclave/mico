@@ -82,6 +82,7 @@ namespace mico { namespace ast {
         virtual ~node( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
+        virtual uptr clone( ) const = 0;
 
         const tokens::position &pos( ) const
         {
@@ -99,11 +100,6 @@ namespace mico { namespace ast {
             return false;
         }
 
-        virtual
-        uptr clone( ) const
-        {
-            return nullptr;
-        }
 
         virtual
         node::uptr reduce( reduce_call )
@@ -142,6 +138,13 @@ namespace mico { namespace ast {
         }
 
         static
+        uptr clone_call( const uptr &n )
+        {
+            auto cl = n->clone( );
+            return cast( cl );
+        }
+
+        static
         uptr cast( node::uptr &n )
         {
 #if defined(CHECK_CASTS)
@@ -173,6 +176,13 @@ namespace mico { namespace ast {
                 auto red = cast( nn );
                 target.swap( red );
             }
+        }
+
+        static
+        uptr clone_call( const uptr &n )
+        {
+            auto cl = n->clone( );
+            return cast( cl );
         }
 
         static
@@ -240,6 +250,15 @@ namespace mico { namespace ast {
         void set_errors( error_list err )
         {
             errors_ = std::move(err);
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            uptr inst(new program);
+            for( auto &s: states_ ) {
+                inst->states_.emplace_back( ast::statement::clone_call( s ) );
+            }
+            return inst;
         }
 
     private:
