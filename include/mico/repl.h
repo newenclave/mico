@@ -70,9 +70,9 @@ namespace mico {
                                 if( failed ) {
                                     std::cout << none;
                                 }
-                                if( auto as = obj->to_ast( tokens::position( ) ) ) {
-                                    std::cout << as->str( ) << "\n";
-                                }
+//                                if( auto as = obj->to_ast( tokens::position( ) ) ) {
+//                                    std::cout << as->str( ) << "\n";
+//                                }
                             }
                         }
                     } else {
