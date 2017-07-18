@@ -17,6 +17,7 @@
 #include "mico/expressions/registry.h"
 #include "mico/expressions/quote.h"
 #include "mico/expressions/unquote.h"
+#include "mico/expressions/macro.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -40,6 +41,7 @@ namespace mico { namespace ast { namespace expressions {
     using registry  = detail<type::REGISTRY>;
     using quote     = detail<type::QUOTE>;
     using unquote   = detail<type::UNQUOTE>;
+    using macro     = detail<type::MACRO>;
 
 }}}
 

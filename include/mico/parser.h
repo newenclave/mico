@@ -64,6 +64,11 @@ namespace mico {
                         return parse_function( );
                     };
 
+            nuds_[token_type::MACRO]   =
+                    [this]( ) {
+                        return parse_macro( );
+                    };
+
             nuds_[token_type::LBRACE]   =
                     [this]( ) {
                         return parse_table( );
@@ -665,6 +670,36 @@ namespace mico {
         ast::expressions::function::uptr parse_function( )
         {
             using fn_type = ast::expressions::function;
+            fn_type::uptr res(new fn_type);
+            res->set_pos( current( ).where );
+
+            if( !expect_peek( token_type::LPAREN ) ) {
+                return nullptr;
+            }
+
+            advance( );
+            if( !is_current( token_type::RPAREN ) ) {
+                parse_ident_list( res->params( ) );
+
+                if( !expect_peek( token_type::RPAREN ) ) {
+                    return fn_type::uptr( );
+                }
+            }
+
+            if( !expect_peek( token_type::LBRACE ) ) {
+                return nullptr;
+            }
+
+            advance( );
+            parse_statements( res->body( ), token_type::RBRACE );
+
+            return res;
+        }
+
+        ast::expressions::macro::uptr parse_macro( )
+        {
+            using fn_type = ast::expressions::macro;
+
             fn_type::uptr res(new fn_type);
             res->set_pos( current( ).where );
 

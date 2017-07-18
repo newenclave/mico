@@ -114,7 +114,7 @@ namespace mico { namespace objects {
             auto res = ast_type::uptr( new ast_type );
             res->set_pos( pos );
 
-            res->body_ptr( ) = body_;
+            res->body_ptr( )   = body_;
             res->params_ptr( ) = params_;
 
             auto e = env( );

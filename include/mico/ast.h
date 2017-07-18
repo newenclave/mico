@@ -39,6 +39,7 @@ namespace mico { namespace ast {
         REGISTRY,
         QUOTE,
         UNQUOTE,
+        MACRO,
     };
 
     struct name {
@@ -67,6 +68,7 @@ namespace mico { namespace ast {
             case type::REGISTRY: return "REGISTRY";
             case type::QUOTE   : return "QUOTE";
             case type::UNQUOTE : return "UNQUOTE";
+            case type::MACRO   : return "MACRO";
             }
             return "<INVALID>";
         }

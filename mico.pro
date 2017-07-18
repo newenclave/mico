@@ -63,7 +63,9 @@ HEADERS += \
     include/mico/expressions/registry.h \
     include/mico/expressions/quote.h \
     include/mico/objects/quote.h \
-    include/mico/expressions/unquote.h
+    include/mico/expressions/unquote.h \
+    include/mico/expressions/macro.h \
+    include/mico/objects/macro.h
 
 DISTFILES += \
     drafts/tail_recursion.md \
