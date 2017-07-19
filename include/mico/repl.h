@@ -116,6 +116,7 @@ namespace mico {
                 std::getline( std::cin, tmp );
                 if( tmp.empty( ) ) {
                     auto prog = mico::parser::parse( data );
+//                    std::cout << prog.clone( )->str( ) << "\n==========\n";
 //                    std::cout << prog.str( ) << "\n==============\n";
 //                    prog.mutate( &simply_mutator );
 //                    std::cout << prog.str( ) << "\n==============\n";
