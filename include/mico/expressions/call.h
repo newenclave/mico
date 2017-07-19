@@ -16,7 +16,7 @@ namespace mico { namespace ast { namespace expressions {
         using uptr = std::unique_ptr<detail>;
         using param_type = expression::uptr;
 
-        detail( expression::uptr f )
+        detail( node::uptr f )
             :expr_(std::move(f))
         { }
 
@@ -47,19 +47,19 @@ namespace mico { namespace ast { namespace expressions {
             return params_;
         }
 
-        expression *func( )
+        node::uptr &func( )
         {
-            return expr_.get( );
+            return expr_;
         }
 
-        const expression *func( ) const
+        const node::uptr &func( ) const
         {
-            return expr_.get( );
+            return expr_;
         }
 
         void mutate( mutator_type call ) override
         {
-            ast::expression::apply_mutator( expr_, call );
+            ast::node::apply_mutator( expr_, call );
             for( auto &a: params_ ) {
                 ast::expression::apply_mutator( a, call );
             }
@@ -80,7 +80,7 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr clone( ) const override
         {
-            auto expr = expression::call_clone( expr_ );
+            auto expr = node::call_clone( expr_ );
             uptr res(new this_type( std::move( expr ) ) );
             for( auto &ex: params_ ) {
                 res->params_.emplace_back( expression::call_clone( ex ) );
@@ -89,7 +89,7 @@ namespace mico { namespace ast { namespace expressions {
         }
 
     private:
-        expression::uptr expr_;
+        node::uptr       expr_;
         expression_list  params_;
     };
 

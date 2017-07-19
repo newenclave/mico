@@ -489,7 +489,7 @@ namespace mico { namespace eval {
         objects::sptr create_tail_call( ast::node *n, environment::sptr env )
         {
             auto call = static_cast<ast::expressions::call *>( n );
-            auto fun = eval_impl(call->func( ), env);
+            auto fun = eval_impl(call->func( ).get( ), env);
             if( is_null( fun ) || !is_func( fun ) ) {
                 ///// TODO error call object
                 return error(n, "It is not a callable object");
@@ -831,12 +831,12 @@ namespace mico { namespace eval {
                                       environment::sptr &/*work_env*/ )
         {
             auto call = static_cast<ast::expressions::call *>( n );
-            auto fun = unref(eval_impl(call->func( ), env));
+            auto fun = unref(eval_impl(call->func( ).get( ), env));
             if( is_fail( fun ) ) {
                 return fun;
             }
             if( is_null( fun ) || !is_func( fun ) ) {
-                return error( call->func( ),
+                return error( call->func( ).get( ),
                               fun->get_type( ), "(", fun, ")",
                               " is not a callable object" );
             }
@@ -881,7 +881,7 @@ namespace mico { namespace eval {
                 auto res = vfun->call( params, s.env( ) );
                 return res;
             }
-            return error( call->func( ), "Internal error: ",
+            return error( call->func( ).get( ), "Internal error: ",
                           fun, " is function, but it is not in the call list" );
         }
 
