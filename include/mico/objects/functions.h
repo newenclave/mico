@@ -225,7 +225,6 @@ namespace mico { namespace objects {
             return obj_;
         }
 
-
         static
         sptr make( objects::sptr obj, objects::slist p, environment::sptr e )
         {
