@@ -170,8 +170,8 @@ There are some tricks.
 
     // ^  - xor
     // %  - mod
-    // >> - shift left
-    // << - shift right
+    // >> - shift right
+    // << - shift left
     // ~  - bit not
 
     let bits = fn( value ) {

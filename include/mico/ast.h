@@ -66,9 +66,15 @@ namespace mico { namespace ast {
     };
 
     struct node {
+
         virtual ~node( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
+
+        using uptr = std::unique_ptr<node>;
+        using sptr = std::shared_ptr<node>;
+
+        using reduce_call = std::function<uptr (node *)>;
 
         const tokens::position &pos( ) const
         {
@@ -83,6 +89,20 @@ namespace mico { namespace ast {
         virtual
         bool is_expression( ) const
         {
+            return false;
+        }
+
+        virtual
+        void reduce( reduce_call & )
+        { }
+
+        static
+        bool reduce_apply( uptr &target, node::reduce_call &call )
+        {
+            if( auto res = call( target.get( ) ) ) {
+                target.swap( res );
+                return true;
+            }
             return false;
         }
 
@@ -106,6 +126,28 @@ namespace mico { namespace ast {
     public:
         using uptr = std::unique_ptr<statement>;
         using sptr = std::shared_ptr<statement>;
+
+        static
+        bool reduce_apply( uptr &target, node::reduce_call &call )
+        {
+            if( auto res = call( target.get( ) ) ) {
+                auto new_val = cast( res );
+                target.swap( new_val );
+                return true;
+            }
+            return false;
+        }
+
+        static
+        uptr cast( node::uptr &n )
+        {
+#if defined(CHECK_CASTS)
+            if( n->is_expression( ) ) {
+                throw  std::logic_error( "Bad statement cast." );
+            }
+#endif
+            return uptr(static_cast<statement *>( n.release( ) ) );
+        }
     };
 
     template <type TN>
@@ -120,6 +162,28 @@ namespace mico { namespace ast {
         bool is_expression( ) const
         {
             return true;
+        }
+
+        static
+        bool reduce_apply( uptr &target, node::reduce_call &call )
+        {
+            if( auto res = call( target.get( ) ) ) {
+                auto new_val = cast( res );
+                target.swap( new_val );
+                return true;
+            }
+            return false;
+        }
+
+        static
+        uptr cast( node::uptr &n )
+        {
+#if defined(CHECK_CASTS)
+            if( !n->is_expression( ) ) {
+                throw  std::logic_error( "Bad expression cast." );
+            }
+#endif
+            return uptr( static_cast<expression *>(n.release( ) ) );
         }
     };
 
