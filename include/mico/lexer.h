@@ -251,9 +251,23 @@ namespace mico {
                 int ffound = 0;
 
                 if( next ) {
+
+                    auto tt = *next;
                     value = token_ident(*next);
 
-                    switch( *next ) {
+                    /// fix situation whan we get `let1` for example
+                    /// `let1` is an ident and is not a keyword
+                    if( next.iterator( ) != end ) {
+                        if( (tt >= token_type::LET) &&
+                            (tt < token_type::LAST_VISIBLE ) ) {
+                            if( idents::is_ident( *bb ) &&
+                                idents::is_ident( *(next.iterator( )) ) ) {
+                                tt = token_type::IDENT;
+                            }
+                        }
+                    }
+
+                    switch( tt ) {
                     case token_type::COMMENT:
                         bb = skip_comment( next.iterator( ), end, lstate );
                         value.literal = "";
@@ -285,6 +299,10 @@ namespace mico {
                             return std::make_pair( std::move(value),
                                                    next.iterator( ) );
                         }
+                    case token_type::IDENT:
+                        value.name    = token_type::IDENT;
+                        value.literal = read_ident( bb, end  );
+                        return std::make_pair( std::move(value), bb );
                     case token_type::STRING:
                         bb = next.iterator( );
                         value.literal = read_string( bb, end, lstate );
@@ -304,6 +322,7 @@ namespace mico {
                     return std::make_pair( std::move(value), bb );
 
                 } else if( idents::is_alfa(*bb) ) {
+                    ////////// TODO: fix COPY-PASTE ...
                     value.name    = token_type::IDENT;
                     value.literal = read_ident( bb, end  );
                     return std::make_pair( std::move(value), bb );

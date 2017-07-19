@@ -19,8 +19,6 @@ HEADERS += \
     include/mico/operations.h \
     include/mico/expressions.h \
     include/mico/statements.h \
-    include/mico/eval/evaluator.h \
-    include/mico/eval/tree_walking.h \
     include/mico/repl.h \
     include/mico/environment.h \
     include/mico/builtin.h \
@@ -40,6 +38,8 @@ HEADERS += \
     include/mico/expressions/fn.h \
     include/mico/expressions/detail.h \
     include/mico/expressions/value.h \
+    include/mico/eval/evaluator.h \
+    include/mico/eval/tree_walking.h \
     include/mico/eval/operations/boolean.h \
     include/mico/eval/operations/float.h \
     include/mico/eval/operations/integer.h \
@@ -59,7 +59,11 @@ HEADERS += \
     include/mico/expressions/call.h \
     include/mico/expressions/ifelse.h \
     include/mico/expressions/table.h \
-    include/mico/state.h
+    include/mico/state.h \
+    etool/include/etool/trees/trie/nodes/array.h \
+    etool/include/etool/trees/trie/nodes/map.h \
+    etool/include/etool/trees/trie/base.h \
+    etool/include/etool/details/result.h
 
 DISTFILES += \
     drafts/tail_recursion.md \
