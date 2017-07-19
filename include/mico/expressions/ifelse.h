@@ -28,7 +28,7 @@ namespace mico { namespace ast { namespace expressions {
             node &operator = ( node & ) = delete;
 
             expression::uptr cond;
-            statement_list   states;
+            statement_list   body;
         };
 
         using if_list = std::vector<node>;
@@ -41,7 +41,7 @@ namespace mico { namespace ast { namespace expressions {
             for( auto &f: general_ ) {
                 oss << (first ? "if " : " elif " )
                     << f.cond->str( ) << " {\n";
-                for( auto &c: f.states ) {
+                for( auto &c: f.body ) {
                     oss << c->str( ) << ";\n";
                 }
                 oss << "}";
@@ -66,6 +66,19 @@ namespace mico { namespace ast { namespace expressions {
         statement_list &alt( )
         {
             return alt_;
+        }
+
+        void mutate( mutator_type call ) override
+        {
+            for( auto &g: general_ ) {
+                ast::expression::apply_mutator( g.cond, call );
+                for( auto &b: g.body ) {
+                    ast::statement::apply_mutator( b, call );
+                }
+            }
+            for( auto &a: alt_ ) {
+                ast::statement::apply_mutator( a, call );
+            }
         }
 
     private:

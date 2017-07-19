@@ -606,7 +606,7 @@ namespace mico { namespace eval {
                 auto bres = objects::cast_bool(res.get( ));
                 if( bres->value( ) ) {
                     environment::scoped s(make_env(env));
-                    auto eval_states = eval_scope_impl( i.states, s.env( ));
+                    auto eval_states = eval_scope_impl( i.body, s.env( ));
                     return unref(eval_states);
                 }
             }

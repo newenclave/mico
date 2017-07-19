@@ -305,7 +305,7 @@ namespace mico {
                 return res;
             }
             advance( );
-            parse_statements( res.states, token_type::RBRACE );
+            parse_statements( res.body, token_type::RBRACE );
             res.cond = std::move(cond);
 
             return res;

@@ -48,6 +48,12 @@ namespace mico { namespace ast { namespace expressions {
             return expr_.get( );
         }
 
+        void mutate( mutator_type call ) override
+        {
+            ast::expression::apply_mutator( left_, call );
+            ast::expression::apply_mutator( expr_, call );
+        }
+
     private:
         expression::uptr left_;
         expression::uptr expr_;

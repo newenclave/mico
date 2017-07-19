@@ -34,6 +34,11 @@ namespace mico { namespace ast { namespace expressions {
             return value_;
         }
 
+        void mutate( mutator_type /*call*/ ) override
+        {
+
+        }
+
     private:
         std::string value_;
     };

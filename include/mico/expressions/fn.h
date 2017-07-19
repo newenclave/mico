@@ -95,6 +95,19 @@ namespace mico { namespace ast { namespace expressions {
             return *body_;
         }
 
+        void mutate( mutator_type call ) override
+        {
+            for( auto &ini: inits_ ) {
+                ast::expression::apply_mutator( ini.second, call );
+            }
+            for( auto &par: *params_ ) {
+                ast::expression::apply_mutator( par, call );
+            }
+            for( auto &bod: *body_ ) {
+                ast::statement::apply_mutator( bod, call );
+            }
+        }
+
     private:
         init_map      inits_;
         params_slist  params_;

@@ -70,13 +70,14 @@ namespace mico { namespace ast {
     struct node {
 
         virtual ~node( ) = default;
+
+        using uptr         = std::unique_ptr<node>;
+        using sptr         = std::shared_ptr<node>;
+        using mutator_type = std::function<uptr (node *)>;
+
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
-
-        using uptr = std::unique_ptr<node>;
-        using sptr = std::shared_ptr<node>;
-
-        using reduce_call = std::function<uptr (node *)>;
+        virtual void mutate( mutator_type ) = 0;
 
         template <typename ArtT, typename ...Args>
         static
@@ -111,12 +112,9 @@ namespace mico { namespace ast {
             return false;
         }
 
-        virtual
-        void reduce( reduce_call & )
-        { }
 
         static
-        bool reduce_apply( uptr &target, node::reduce_call &call )
+        bool apply_mutator( uptr &target, node::mutator_type &call )
         {
             if( auto res = call( target.get( ) ) ) {
                 target.swap( res );
@@ -147,7 +145,7 @@ namespace mico { namespace ast {
         using sptr = std::shared_ptr<statement>;
 
         static
-        bool reduce_apply( uptr &target, node::reduce_call &call )
+        bool apply_mutator( uptr &target, node::mutator_type &call )
         {
             if( auto res = call( target.get( ) ) ) {
                 auto new_val = cast( res );
@@ -184,7 +182,7 @@ namespace mico { namespace ast {
         }
 
         static
-        bool reduce_apply( uptr &target, node::reduce_call &call )
+        bool apply_mutator( uptr &target, node::mutator_type &call )
         {
             if( auto res = call( target.get( ) ) ) {
                 auto new_val = cast( res );
@@ -259,6 +257,13 @@ namespace mico { namespace ast {
         void set_errors( error_list err )
         {
             errors_ = std::move(err);
+        }
+
+        void mutate( mutator_type call ) override
+        {
+            for( auto &s: states_ ) {
+                ast::statement::apply_mutator( s, call );
+            }
         }
 
     private:

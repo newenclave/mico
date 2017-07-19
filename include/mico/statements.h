@@ -20,7 +20,7 @@ namespace mico { namespace ast { namespace statements {
 
         detail( expression::uptr id, expression::uptr val )
             :ident_(std::move(id))
-            ,value_(std::move(val))
+            ,expr_(std::move(val))
         { }
 
         std::string str( ) const
@@ -43,18 +43,24 @@ namespace mico { namespace ast { namespace statements {
 
         const expression *value( ) const
         {
-            return value_.get( );
+            return expr_.get( );
         }
 
         expression *value( )
         {
-            return value_.get( );
+            return expr_.get( );
+        }
+
+        void mutate( mutator_type call ) override
+        {
+            ast::expression::apply_mutator( ident_, call );
+            ast::expression::apply_mutator( expr_,  call );
         }
 
     private:
 
         expression::uptr ident_;
-        expression::uptr value_;
+        expression::uptr expr_;
     };
 
     template <>
@@ -64,7 +70,7 @@ namespace mico { namespace ast { namespace statements {
         using uptr = std::unique_ptr<detail>;
 
         detail( expression::uptr val )
-            :value_(std::move(val))
+            :expr_(std::move(val))
         { }
 
         std::string str( ) const
@@ -76,16 +82,21 @@ namespace mico { namespace ast { namespace statements {
 
         const expression *value( ) const
         {
-            return value_.get( );
+            return expr_.get( );
         }
 
         expression *value( )
         {
-            return value_.get( );
+            return expr_.get( );
+        }
+
+        void mutate( mutator_type call ) override
+        {
+            ast::expression::apply_mutator( expr_, call );
         }
 
     private:
-        expression::uptr value_;
+        expression::uptr expr_;
     };
 
     template <>
@@ -105,6 +116,11 @@ namespace mico { namespace ast { namespace statements {
         expression::uptr &value( )
         {
             return expr_;
+        }
+
+        void mutate( mutator_type call ) override
+        {
+            ast::expression::apply_mutator( expr_, call );
         }
 
     private:

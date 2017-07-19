@@ -45,6 +45,13 @@ namespace mico { namespace ast { namespace expressions {
             return value_;
         }
 
+        void mutate( mutator_type call ) override
+        {
+            for( auto &a: value_ ) {
+                ast::expression::apply_mutator( a, call );
+            }
+        }
+
     private:
 
         value_type value_;

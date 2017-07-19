@@ -63,6 +63,12 @@ namespace mico { namespace ast { namespace expressions {
             return token_;
         }
 
+        void mutate( mutator_type call ) override
+        {
+            ast::expression::apply_mutator( left_, call );
+            ast::expression::apply_mutator( right_, call );
+        }
+
     private:
         tokens::type     token_;
         expression::uptr left_;

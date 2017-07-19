@@ -42,6 +42,32 @@ namespace mico {
         }
 
         static
+        ast::node::uptr mutator(ast::node *n )
+        {
+            if( n->get_type( ) == ast::type::INFIX ) {
+                auto c = static_cast<ast::expressions::infix *>(n);
+                if( c->token( ) == tokens::type::PLUS ) {
+                    auto res = ast::node::make<ast::expressions::infix>(
+                                    n->pos( ), tokens::type::MINUS,
+                                    std::move(c->right( ) ) );
+                    res->right( ).swap( c->left( ) );
+                    return res;
+                }
+            } else {
+                n->mutate( &repl::mutator );
+            }
+            return nullptr;
+        }
+
+        static
+        void test_mutate( objects::sptr o )
+        {
+            auto new_ast = o->to_ast( tokens::position { } );
+            new_ast->mutate( &repl::mutator );
+            std::cout << new_ast->str( ) << "\n";
+        }
+
+        static
         void run( )
         {
             using namespace etool::console::ccout;
@@ -66,7 +92,10 @@ namespace mico {
                                 if( failed ) {
                                     std::cout << red;
                                 }
+
                                 std::cout << obj->str( ) << "\n";
+                                //test_mutate( obj );
+
                                 if( failed ) {
                                     std::cout << none;
                                 }
