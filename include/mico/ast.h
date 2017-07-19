@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <sstream>
+#include <functional>
 
 #include "mico/tokens.h"
 

@@ -42,7 +42,7 @@ namespace mico {
         }
 
         static
-        ast::node::uptr mutator(ast::node *n )
+        ast::node::uptr mutator( ast::node *n )
         {
             if( n->get_type( ) == ast::type::INFIX ) {
                 auto c = static_cast<ast::expressions::infix *>(n);
