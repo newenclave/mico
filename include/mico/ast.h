@@ -114,10 +114,7 @@ namespace mico { namespace ast {
         }
 
         virtual
-        bool is_const( ) const
-        {
-            return false;
-        }
+        bool is_const( ) const = 0;
 
         static
         bool apply_mutator( uptr &target, const node::mutator_type &call )
@@ -270,6 +267,19 @@ namespace mico { namespace ast {
             for( auto &s: states_ ) {
                 ast::statement::apply_mutator( s, call );
             }
+        }
+
+        bool is_const( ) const override
+        {
+            if( errors_.empty( ) ) {
+                for( auto &st: states( ) ) {
+                    if( !st->is_const( ) ) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
         }
 
     private:
