@@ -118,6 +118,22 @@ namespace mico { namespace ast { namespace expressions {
             return true;
         }
 
+        ast::node::uptr clone( ) const override
+        {
+            uptr res(new this_type);
+            for( auto &ini: inits_ ) {
+                res->inits_.emplace( ini.first,
+                                     expression::call_clone( ini.second ) );
+            }
+            for( auto &par: *params_ ) {
+                res->params_->emplace_back( expression::call_clone( par ) );
+            }
+            for( auto &bod: *body_ ) {
+                res->body_->emplace_back( ast::statement::call_clone( bod ) );
+            }
+            return res;
+        }
+
     private:
         init_map      inits_;
         params_slist  params_;

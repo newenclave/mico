@@ -49,31 +49,56 @@ namespace mico { namespace ast { namespace expressions {
     template <>
     class detail<type::INTEGER>:
             public value_expr<type::INTEGER, std::int64_t> {
+        using this_type = detail<type::INTEGER>;
     public:
-        using uptr = std::unique_ptr<detail>;
+
+        using uptr = std::unique_ptr<this_type>;
+
         detail( std::int64_t val )
             :value_expr(val)
         { }
+
+        ast::node::uptr clone( ) const override
+        {
+            return uptr(new this_type(value( ) ) );
+        }
     };
 
     template <>
     class detail<type::FLOAT>:
             public value_expr<type::FLOAT, double> {
+        using this_type = detail<type::FLOAT>;
     public:
-        using uptr = std::unique_ptr<detail>;
+
+        using uptr = std::unique_ptr<this_type>;
+
         detail( double val )
             :value_expr(val)
         { }
+
+        ast::node::uptr clone( ) const override
+        {
+            return uptr(new this_type(value( ) ) );
+        }
+
     };
 
     template <>
     class detail<type::BOOLEAN>:
             public value_expr<type::BOOLEAN, bool> {
+        using this_type = detail<type::BOOLEAN>;
     public:
-        using uptr = std::unique_ptr<detail>;
+
+        using uptr = std::unique_ptr<this_type>;
+
         detail( bool val )
             :value_expr(val)
         { }
+
+        ast::node::uptr clone( ) const override
+        {
+            return uptr(new this_type(value( ) ) );
+        }
     };
 
 }}}

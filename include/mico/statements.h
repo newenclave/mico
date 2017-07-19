@@ -11,7 +11,7 @@ namespace mico { namespace ast { namespace statements {
 
     template <>
     class detail<type::LET>: public typed_stmt<type::LET> {
-
+        using this_type = detail<type::LET>;
     public:
         using uptr = std::unique_ptr<detail>;
 
@@ -62,6 +62,13 @@ namespace mico { namespace ast { namespace statements {
             return ident_->is_const( ) && expr_->is_const( );
         }
 
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new this_type(
+                                       expression::call_clone( ident_ ),
+                                       expression::call_clone( expr_ ) ) );
+        }
+
     private:
 
         expression::uptr ident_;
@@ -70,6 +77,8 @@ namespace mico { namespace ast { namespace statements {
 
     template <>
     class detail<type::RETURN>: public typed_stmt<type::RETURN> {
+
+        using this_type = detail<type::RETURN>;
 
     public:
         using uptr = std::unique_ptr<detail>;
@@ -105,12 +114,19 @@ namespace mico { namespace ast { namespace statements {
             return expr_->is_const( );
         }
 
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new this_type(
+                                       expression::call_clone( expr_ ) ) );
+        }
+
     private:
         expression::uptr expr_;
     };
 
     template <>
     class detail<type::EXPR>: public typed_stmt<type::EXPR> {
+        using this_type = detail<type::EXPR>;
     public:
         using uptr = std::unique_ptr<detail>;
 
@@ -136,6 +152,12 @@ namespace mico { namespace ast { namespace statements {
         bool is_const( ) const override
         {
             return expr_->is_const( );
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new this_type(
+                                       expression::call_clone( expr_ ) ) );
         }
 
     private:

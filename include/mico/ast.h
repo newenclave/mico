@@ -79,6 +79,7 @@ namespace mico { namespace ast {
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
         virtual void mutate( mutator_type ) = 0;
+        virtual uptr clone( ) const = 0;
 
         template <typename ArtT, typename ...Args>
         static
@@ -126,6 +127,7 @@ namespace mico { namespace ast {
             return false;
         }
 
+
     private:
         tokens::position pos_;
     };
@@ -146,6 +148,13 @@ namespace mico { namespace ast {
     public:
         using uptr = std::unique_ptr<statement>;
         using sptr = std::shared_ptr<statement>;
+
+        static
+        uptr call_clone( const uptr &target )
+        {
+            auto res = target->clone( );
+            return cast( res );
+        }
 
         static
         bool apply_mutator( uptr &target, const node::mutator_type &call )
@@ -178,10 +187,18 @@ namespace mico { namespace ast {
     public:
         using uptr = std::unique_ptr<expression>;
         using sptr = std::shared_ptr<expression>;
+
         virtual
         bool is_expression( ) const
         {
             return true;
+        }
+
+        static
+        uptr call_clone( const uptr &target )
+        {
+            auto res = target->clone( );
+            return cast( res );
         }
 
         static
@@ -236,7 +253,7 @@ namespace mico { namespace ast {
             states_.emplace_back( std::move(val) );
         }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
 
@@ -272,7 +289,7 @@ namespace mico { namespace ast {
         bool is_const( ) const override
         {
             if( errors_.empty( ) ) {
-                for( auto &st: states( ) ) {
+                for( auto &st: states_ ) {
                     if( !st->is_const( ) ) {
                         return false;
                     }
@@ -280,6 +297,16 @@ namespace mico { namespace ast {
                 return true;
             }
             return false;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            uptr res(new program);
+            res->errors_ = errors_;
+            for( auto &st: states_ ) {
+                res->states_.emplace_back( statement::call_clone( st ) );
+            }
+            return res;
         }
 
     private:

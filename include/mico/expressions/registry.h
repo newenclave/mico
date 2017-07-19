@@ -11,8 +11,10 @@ namespace mico { namespace ast { namespace expressions {
     template <>
     class detail<type::REGISTRY>: public typed_expr<type::REGISTRY> {
 
+        using this_type = detail<type::REGISTRY>;
     public:
 
+        using uptr = std::unique_ptr<this_type>;
         using value_type = std::uintptr_t;
 
         detail<type::REGISTRY>( value_type val )
@@ -39,6 +41,12 @@ namespace mico { namespace ast { namespace expressions {
         bool is_const( ) const override
         {
             return false;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            uptr res(new this_type(value_));
+            return res;
         }
 
     private:

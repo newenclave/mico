@@ -10,6 +10,9 @@ namespace mico { namespace ast { namespace expressions {
 
     template <>
     class detail<type::INFIX>: public typed_expr<type::INFIX> {
+
+        using this_type = detail<type::INFIX>;
+
     public:
 
         using uptr = std::unique_ptr<detail>;
@@ -72,6 +75,13 @@ namespace mico { namespace ast { namespace expressions {
         bool is_const( ) const override
         {
             return left_->is_const( ) && right_->is_const( );
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            uptr res(new this_type(token_, expression::call_clone( left_ ) ) );
+            res->right_ = expression::call_clone( right_ );
+            return res;
         }
 
     private:

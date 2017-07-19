@@ -62,6 +62,15 @@ namespace mico { namespace ast { namespace expressions {
             return true;
         }
 
+        ast::node::uptr clone( ) const override
+        {
+            uptr res(new this_type);
+            for( auto &v: value_ ) {
+                res->value_.emplace_back( expression::call_clone( v ) );
+            }
+            return res;
+        }
+
     private:
 
         value_type value_;

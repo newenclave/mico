@@ -10,7 +10,7 @@ namespace mico { namespace ast { namespace expressions {
 
     template <>
     class detail<type::CALL>: public typed_expr<type::CALL> {
-
+        using this_type = detail<type::CALL>;
     public:
 
         using uptr = std::unique_ptr<detail>;
@@ -76,6 +76,16 @@ namespace mico { namespace ast { namespace expressions {
                 return true;
             }
             return false;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            auto expr = expression::call_clone( expr_ );
+            uptr res(new this_type( std::move( expr ) ) );
+            for( auto &ex: params_ ) {
+                res->params_.emplace_back( expression::call_clone( ex ) );
+            }
+            return res;
         }
 
     private:
