@@ -13,9 +13,9 @@ namespace mico { namespace ast { namespace expressions {
         using this_type = detail<type::TABLE>;
     public:
 
-        using value_pair = std::pair<expression::uptr, expression::uptr>;
+        using value_pair = std::pair<node::uptr, node::uptr>;
         using value_type = std::vector<value_pair>;
-        using uptr = std::unique_ptr<this_type>;
+        using uptr       = std::unique_ptr<this_type>;
 
         std::string str( ) const override
         {
@@ -47,8 +47,8 @@ namespace mico { namespace ast { namespace expressions {
         void mutate( mutator_type call ) override
         {
             for( auto &v: value_ ) {
-                ast::expression::apply_mutator( v.first,  call );
-                ast::expression::apply_mutator( v.second, call );
+                ast::node::apply_mutator( v.first,  call );
+                ast::node::apply_mutator( v.second, call );
             }
         }
 
@@ -66,8 +66,8 @@ namespace mico { namespace ast { namespace expressions {
         {
             uptr res(new this_type);
             for( auto &v: value_ ) {
-                res->value_.emplace_back( expression::call_clone( v.first ),
-                                          expression::call_clone( v.second ) );
+                res->value_.emplace_back( node::call_clone( v.first ),
+                                          node::call_clone( v.second ) );
             }
             return res;
         }

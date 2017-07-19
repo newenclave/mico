@@ -73,8 +73,8 @@ namespace mico {
                 auto c = static_cast<ast::expressions::infix *>(n);
                 if( c->token( ) == tokens::type::PLUS ) {
                     auto mut = &repl::mutator;
-                    ast::expression::apply_mutator( c->right( ), mut );
-                    ast::expression::apply_mutator( c->left( ),  mut );
+                    ast::node::apply_mutator( c->right( ), mut );
+                    ast::node::apply_mutator( c->left( ),  mut );
                     auto res = ast::node::make<ast::expressions::infix>(
                                     n->pos( ), tokens::type::MINUS,
                                     std::move(c->right( ) ) );

@@ -17,7 +17,7 @@ namespace mico { namespace ast { namespace expressions {
 
         using uptr = std::unique_ptr<detail>;
 
-        detail( tokens::type tt, expression::uptr lft )
+        detail( tokens::type tt, node::uptr lft )
             :token_(tt)
             ,left_(std::move(lft))
         { }
@@ -30,32 +30,32 @@ namespace mico { namespace ast { namespace expressions {
             return oss.str( );
         }
 
-        void set_left( expression::uptr lft )
+        void set_left( node::uptr lft )
         {
             left_ = std::move(lft);
         }
 
-        void set_right( expression::uptr rght )
+        void set_right( node::uptr rght )
         {
             right_ = std::move(rght);
         }
 
-        expression::uptr &left( )
+        node::uptr &left( )
         {
             return left_;
         }
 
-        expression::uptr &right( )
+        node::uptr &right( )
         {
             return right_;
         }
 
-        const expression::uptr &left( ) const
+        const node::uptr &left( ) const
         {
             return left_;
         }
 
-        const expression::uptr &right( ) const
+        const node::uptr &right( ) const
         {
             return right_;
         }
@@ -68,8 +68,8 @@ namespace mico { namespace ast { namespace expressions {
 
         void mutate( mutator_type call ) override
         {
-            ast::expression::apply_mutator( left_, call );
-            ast::expression::apply_mutator( right_, call );
+            ast::node::apply_mutator( left_, call );
+            ast::node::apply_mutator( right_, call );
         }
 
         bool is_const( ) const override
@@ -79,15 +79,15 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr clone( ) const override
         {
-            uptr res(new this_type(token_, expression::call_clone( left_ ) ) );
-            res->right_ = expression::call_clone( right_ );
+            uptr res(new this_type(token_, node::call_clone( left_ ) ) );
+            res->right_ = node::call_clone( right_ );
             return res;
         }
 
     private:
         tokens::type     token_;
-        expression::uptr left_;
-        expression::uptr right_;
+        node::uptr left_;
+        node::uptr right_;
     };
 
 }}}

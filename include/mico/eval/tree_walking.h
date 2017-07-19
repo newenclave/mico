@@ -209,7 +209,7 @@ namespace mico { namespace eval {
         objects::sptr produce_prefix_minus( ast::expressions::prefix *n,
                                             environment::sptr env )
         {
-            auto oper = unref(eval_impl(n->value( ), env));
+            auto oper = unref(eval_impl(n->value( ).get( ), env));
             switch ( oper->get_type( ) ) {
             case objects::type::INTEGER: {
                 auto o = obj_cast<objects::type::INTEGER>(oper.get( ));
@@ -237,7 +237,7 @@ namespace mico { namespace eval {
         objects::sptr eval_prefix( ast::node *n, environment::sptr env )
         {
             auto expr = static_cast<ast::expressions::prefix *>( n );
-            auto oper = eval_impl(expr->value( ), env);
+            auto oper = eval_impl(expr->value( ).get( ), env);
 
             if( is_fail(oper) ) {
                 return oper;
@@ -357,7 +357,7 @@ namespace mico { namespace eval {
                 }
             }
             return error( inf, "Invalid left value for ASSIGN ",
-                          inf->left( ) );
+                          inf->left( ).get( ) );
         }
 
         objects::sptr eval_equal( objects::base *lft, objects::base *rgh,

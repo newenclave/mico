@@ -15,7 +15,7 @@ namespace mico { namespace ast { namespace expressions {
 
         using uptr = std::unique_ptr<detail>;
 
-        detail( tokens::type tt, expression::uptr exp )
+        detail( tokens::type tt, node::uptr exp )
             :token_(tt)
             ,expr_(std::move(exp))
         { }
@@ -27,9 +27,14 @@ namespace mico { namespace ast { namespace expressions {
             return oss.str( );
         }
 
-        expression *value( )
+        node::uptr &value( )
         {
-            return expr_.get( );
+            return expr_;
+        }
+
+        const node::uptr &value( ) const
+        {
+            return expr_;
         }
 
         tokens::type token( ) const
@@ -39,7 +44,7 @@ namespace mico { namespace ast { namespace expressions {
 
         void mutate( mutator_type call ) override
         {
-            ast::expression::apply_mutator( expr_, call );
+            ast::node::apply_mutator( expr_, call );
         }
 
         bool is_const( ) const override
@@ -49,12 +54,12 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr clone( ) const override
         {
-            return uptr(new this_type(token_, expression::call_clone(expr_) ) );
+            return uptr(new this_type(token_, node::call_clone(expr_) ) );
         }
 
     private:
-        tokens::type     token_;
-        expression::uptr expr_;
+        tokens::type token_;
+        node::uptr   expr_;
     };
 
 }}}

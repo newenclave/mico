@@ -14,7 +14,6 @@ namespace mico { namespace ast { namespace expressions {
     public:
 
         using uptr = std::unique_ptr<detail>;
-        using param_type = expression::uptr;
 
         detail( node::uptr left, node::uptr param )
             :left_(std::move(left))
