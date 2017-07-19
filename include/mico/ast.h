@@ -109,6 +109,16 @@ namespace mico { namespace ast {
             return nullptr;
         }
 
+        static
+        bool call_reduce( uptr &target, node::reduce_call call )
+        {
+            if( auto nn = target->reduce( call ) ) {
+                target.swap( nn );
+                return true;
+            }
+            return false;
+        }
+
     private:
         tokens::position pos_;
     };
@@ -119,6 +129,7 @@ namespace mico { namespace ast {
         {
             return TN;
         }
+
     };
 
     using node_sptr = std::shared_ptr<node>;
@@ -131,12 +142,14 @@ namespace mico { namespace ast {
         using sptr = std::shared_ptr<statement>;
 
         static
-        void call_reduce( uptr &target, node::reduce_call call )
+        bool call_reduce( uptr &target, node::reduce_call call )
         {
             if( auto nn = target->reduce( call ) ) {
                 auto red = cast( nn );
                 target.swap( red );
+                return true;
             }
+            return false;
         }
 
         static
@@ -172,12 +185,14 @@ namespace mico { namespace ast {
         }
 
         static
-        void call_reduce( uptr &target, node::reduce_call call )
+        bool call_reduce( uptr &target, node::reduce_call call )
         {
             if( auto nn = target->reduce( call ) ) {
                 auto red = cast( nn );
                 target.swap( red );
+                return true;
             }
+            return false;
         }
 
         static

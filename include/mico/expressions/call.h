@@ -74,15 +74,9 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr reduce( ast::node::reduce_call call ) override
         {
-            if( auto nn = expr_->reduce( call ) ) {
-                auto red = ast::expression::cast( nn );
-                expr_.swap( red );
-            }
+            expression::call_reduce( expr_, call );
             for( auto &e: params_ ) {
-                if( auto nn = e->reduce( call ) ) {
-                    auto red = ast::expression::cast( nn );
-                    e.swap( red );
-                }
+                expression::call_reduce( e, call );
             }
             return nullptr;
         }
