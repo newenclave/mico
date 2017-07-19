@@ -16,7 +16,7 @@ namespace mico { namespace ast { namespace expressions {
         using uptr = std::unique_ptr<detail>;
         using param_type = expression::uptr;
 
-        detail( expression::uptr left, expression::uptr param )
+        detail( node::uptr left, node::uptr param )
             :left_(std::move(left))
             ,expr_(std::move(param))
         { }
@@ -28,30 +28,30 @@ namespace mico { namespace ast { namespace expressions {
             return oss.str( );
         }
 
-        expression *value( )
+        ast::node::uptr &value( )
         {
-            return left_.get( );
+            return left_;
         }
 
-        const expression *value( ) const
+        const ast::node::uptr &value( ) const
         {
-            return left_.get( );
+            return left_;
         }
 
-        expression *param( )
+        ast::node::uptr &param( )
         {
-            return expr_.get( );
+            return expr_;
         }
 
-        const expression *param( ) const
+        const ast::node::uptr &param( ) const
         {
-            return expr_.get( );
+            return expr_;
         }
 
         void mutate( mutator_type call ) override
         {
-            ast::expression::apply_mutator( left_, call );
-            ast::expression::apply_mutator( expr_, call );
+            ast::node::apply_mutator( left_, call );
+            ast::node::apply_mutator( expr_, call );
         }
 
         bool is_const( ) const override
@@ -61,15 +61,15 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr clone( ) const override
         {
-            auto l = expression::call_clone( left_ );
-            auto e = expression::call_clone( expr_ );
+            auto l = node::call_clone( left_ );
+            auto e = node::call_clone( expr_ );
             uptr res(new this_type( std::move( l ), std::move( e ) ) );
             return res;
         }
 
     private:
-        expression::uptr left_;
-        expression::uptr expr_;
+        node::uptr left_;
+        node::uptr expr_;
     };
 
 }}}

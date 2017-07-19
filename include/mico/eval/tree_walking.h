@@ -692,7 +692,7 @@ namespace mico { namespace eval {
         {
             auto idx = static_cast<ast::expressions::index *>(n);
 
-            auto val = unref(eval_impl_tail( idx->value( ), env ));
+            auto val = unref(eval_impl_tail( idx->value( ).get( ), env ));
 
             if( is_fail( val ) ) {
                 return val;
@@ -701,7 +701,7 @@ namespace mico { namespace eval {
             if( val->get_type( ) == objects::type::STRING ) {
 
                 auto str = objects::cast_string( val.get( ) );
-                auto id = eval_impl_tail( idx->param( ), env );
+                auto id = eval_impl_tail( idx->param( ).get( ), env );
                 std::size_t index = str->value( ).size( );
 
                 if( id->get_type( ) == objects::type::INTEGER ) {
@@ -711,20 +711,20 @@ namespace mico { namespace eval {
                     auto iid = objects::cast_float( id.get( ) );
                     index = static_cast<std::size_t>(iid->value( ));
                 } else {
-                    return error( idx->param( ), idx->param( ),
+                    return error( idx->param( ).get( ), idx->param( ).get( ),
                                   " has invalid type; must be integer" );
                 }
                 if( index < str->value( ).size( ) ) {
                     return objects::integer::make( str->value( )[index] );
                 } else {
-                    return error( idx->param( ), idx->param( ),
+                    return error( idx->param( ).get( ), idx->param( ).get( ),
                                   " is not a valid index for the string" );
                 }
 
             } else if(val->get_type( ) == objects::type::ARRAY) {
 
                 auto arr = objects::cast_array( val.get( ) );
-                auto id = eval_impl_tail( idx->param( ), env );
+                auto id = eval_impl_tail( idx->param( ).get( ), env );
                 std::int64_t index = arr->value( ).size( );
 
                 if( id->get_type( ) == objects::type::INTEGER ) {
@@ -734,20 +734,20 @@ namespace mico { namespace eval {
                     auto iid = objects::cast_float( id.get( ) );
                     index = static_cast<decltype(index)>(iid->value( ));
                 } else {
-                    return error( idx->param( ), idx->param( ),
+                    return error( idx->param( ).get( ), idx->param( ).get( ),
                                   " has invalid type; must be integer" );
                 }
                 if( static_cast<std::size_t>(index) < arr->value( ).size( ) ) {
                     return arr->at( index );
                 } else {
-                    return error( idx->param( ), idx->param( ),
+                    return error( idx->param( ).get( ), idx->param( ).get( ),
                                   " is not a valid index for the array" );
                 }
 
             } else if(val->get_type( ) == objects::type::TABLE) {
 
                 auto arr = objects::cast_table( val.get( ) );
-                auto id = unref(eval_impl( idx->param( ), env ));
+                auto id = unref(eval_impl( idx->param( ).get( ), env ));
 
                 if( is_fail( id ) ) {
                     return id;
@@ -757,7 +757,7 @@ namespace mico { namespace eval {
                 if( !is_null( res ) ) {
                     return res;
                 } else {
-                    return error( idx->param( ), idx->param( ),
+                    return error( idx->param( ).get( ), idx->param( ).get( ),
                                   " is not a valid index for the table" );
                 }
 

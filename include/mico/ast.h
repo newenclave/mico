@@ -127,6 +127,11 @@ namespace mico { namespace ast {
             return false;
         }
 
+        static
+        uptr call_clone( const uptr &target )
+        {
+            return target->clone( );
+        }
 
     private:
         tokens::position pos_;
