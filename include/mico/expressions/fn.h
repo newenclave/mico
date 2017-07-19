@@ -110,9 +110,6 @@ namespace mico { namespace ast { namespace expressions {
 
         bool is_const( ) const override
         {
-            if( !params_->empty( ) ) {
-                return false;
-            }
             for( auto &b: *body_ ) {
                 if( !b->is_const( ) ) {
                     return false;

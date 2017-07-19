@@ -42,6 +42,31 @@ namespace mico {
         }
 
         static
+        ast::node::uptr simply_mutator( ast::node *n )
+        {
+            if( n->get_type( ) == ast::type::CALL ) {
+                std::cout << "call detected! ";
+                std::cout << n->is_const( ) << "\n";
+            }
+
+            if( n->is_const( ) ) {
+                mico::eval::tree_walking tv;
+                mico::state st;
+                builtin::init( st.env( ) );
+                auto obj = tv.eval( n, st.env( ) );
+                auto new_ast = obj->to_ast( n->pos( ) );
+                if( !n->is_expression( ) && new_ast->is_expression( ) ) {
+                    return ast::node::make<ast::statements::expr>(n->pos( ),
+                                           ast::expression::cast(new_ast) );
+                }
+                return new_ast;
+            } else {
+                n->mutate( &repl::simply_mutator );
+            }
+            return nullptr;
+        }
+
+        static
         ast::node::uptr mutator( ast::node *n )
         {
             if( n->get_type( ) == ast::type::INFIX ) {
@@ -91,6 +116,10 @@ namespace mico {
                 std::getline( std::cin, tmp );
                 if( tmp.empty( ) ) {
                     auto prog = mico::parser::parse( data );
+//                    std::cout << prog.str( ) << "\n==============\n";
+//                    prog.mutate( &simply_mutator );
+//                    std::cout << prog.str( ) << "\n==============\n";
+
                     if( prog.errors( ).empty( ) ) {
                         //std::cout << prog.str( ) << "\n";
                         mico::eval::tree_walking tv;

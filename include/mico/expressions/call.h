@@ -67,6 +67,14 @@ namespace mico { namespace ast { namespace expressions {
 
         bool is_const( ) const override
         {
+            if( expr_->is_const( ) ) {
+                for( auto &p: params_ ) {
+                    if( !p->is_const( ) ) {
+                        return false;
+                    }
+                }
+                return true;
+            }
             return false;
         }
 

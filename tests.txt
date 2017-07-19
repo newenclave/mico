@@ -282,4 +282,10 @@ let get_sum = fn( n ) {
 
 fn(a,b,c){a+b+c}
 
+let a = fn( ) {
+    let z = 100 + 199
+    z
+}
+let d = fn(){ 200 + 100 }( )
+
 */
