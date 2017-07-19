@@ -305,7 +305,7 @@ namespace mico {
                 return res;
             }
             advance( );
-            parse_statements( res.states, true );
+            parse_statements( res.states, token_type::RBRACE );
             res.cond = std::move(cond);
 
             return res;
@@ -330,7 +330,7 @@ namespace mico {
                     return nullptr;
                 }
                 advance( );
-                parse_statements(res->alt( ), true );
+                parse_statements(res->alt( ), token_type::RBRACE );
             }
 
             return res;
@@ -656,7 +656,7 @@ namespace mico {
             }
 
             advance( );
-            parse_statements( res->body( ), true );
+            parse_statements( res->body( ), token_type::RBRACE );
 
             return res;
         }
@@ -689,31 +689,31 @@ namespace mico {
             return res;
         }
 
-        void parse_statements( ast::statement_list &stmts, bool brace )
+        ast::statement::uptr parse_next(  )
         {
-            while( !eof( ) ) {
+            ast::statement::uptr stmt;
 
-                ast::statement::uptr stmt;
+            switch( current( ).ident.name ) {
+            case token_type::LET:
+                stmt = parse_let( );
+                break;
+            case token_type::RETURN:
+                stmt = parse_return( );
+                break;
+            case token_type::SEMICOLON:
+                break;
+            default:
+                stmt = parse_exrp_stmt( );
+                break;
+            }
+            return stmt;
+        }
 
-                switch( current( ).ident.name ) {
-                case token_type::LET:
-                    stmt = parse_let( );
-                    break;
-                case token_type::RETURN:
-                    stmt = parse_return( );
-                    break;
-                case token_type::RBRACE:
-                    if( brace ) {
-                        return;
-                    }
-                    break;
-                case token_type::SEMICOLON:
-                    break;
-                default:
-                    stmt = parse_exrp_stmt( );
-                    break;
-                }
+        void parse_statements( ast::statement_list &stmts, token_type stop )
+        {
+            while( !eof( ) && !is_current( stop ) ) {
 
+                auto stmt = parse_next( );
                 if( stmt ) {
                     stmts.emplace_back( std::move(stmt) );
                 }
@@ -726,7 +726,7 @@ namespace mico {
         {
             ast::program prog;
 
-            parse_statements( prog.states( ), false );
+            parse_statements( prog.states( ), token_type::END_OF_FILE );
 
             prog.set_errors( errors_ );
             return prog;

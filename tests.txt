@@ -90,11 +90,14 @@ let t = {a: 100}
 
 let sum = fn( count ) { // start
     let impl = fn( a, new ) { /// internal
-            r(10)
+            //r(10)
         if( new == 0 ) {
-            a
+            return a
         } else {
-            return impl( a + 1, new - 1 )
+            if( true ) {
+                return impl( a + new, new - 1 )
+            }
+            return 100;
         }
     }
     impl( 0, count )

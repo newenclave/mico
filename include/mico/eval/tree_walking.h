@@ -510,26 +510,40 @@ namespace mico { namespace eval {
             return std::make_shared<objects::tail_call>(fun, params, new_env);
         }
 
-        objects::sptr eval_tail( objects::sptr obj )
+        static
+        objects::sptr get_tail( objects::sptr obj )
+        {
+            if( obj->get_type( ) == objects::type::TAIL_CALL ) {
+                return obj;
+            } else if( obj->get_type( ) == objects::type::RETURN ) {
+                auto ret = objects::cast_return( obj.get( ) );
+                if( ret->value( )->get_type( ) == objects::type::TAIL_CALL ) {
+                    return ret->value( );
+                }
+            }
+            return nullptr;
+        }
+
+        objects::sptr eval_tail( objects::sptr obj_src )
         {
             using call_type = objects::tail_call;
-            while(obj->get_type( ) == objects::type::TAIL_CALL ) {
+            while( auto obj = get_tail( obj_src ) ) {
                 auto call = static_cast<call_type *>(obj.get( ));
                 auto call_type = call->value( )->get_type( );
                 if( call_type == objects::type::FUNCTION ) {
                     auto fun = objects::cast_func(call->value( ).get( ));
                     environment::scoped s( call->env( ) );
                     fun->env( )->get_state( ).GC( fun->env( ) );
-                    obj = eval_scope_impl( fun->body( ), call->env( ) );
+                    obj_src = eval_scope_impl( fun->body( ), call->env( ) );
                 } else if( call_type == objects::type::BUILTIN ) {
                     auto fun = objects::cast_builtin(call->value( ).get( ));
-                    obj = fun->call( call->params( ), call->env( ) );
+                    obj_src = fun->call( call->params( ), call->env( ) );
                 }
-                if( is_return( obj ) ) {
-                    return obj;
-                }
+//                if( is_return( obj_src ) ) {
+//                    return obj_src;
+//                }
             }
-            return obj;
+            return obj_src;
         }
 
         objects::sptr eval_scope( ast::statement_list &lst,
