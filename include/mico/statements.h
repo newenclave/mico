@@ -57,6 +57,11 @@ namespace mico { namespace ast { namespace statements {
             ast::expression::apply_mutator( expr_,  call );
         }
 
+        bool is_const( ) const override
+        {
+            return ident_->is_const( ) && expr_->is_const( );
+        }
+
     private:
 
         expression::uptr ident_;
@@ -95,6 +100,11 @@ namespace mico { namespace ast { namespace statements {
             ast::expression::apply_mutator( expr_, call );
         }
 
+        bool is_const( ) const override
+        {
+            return expr_->is_const( );
+        }
+
     private:
         expression::uptr expr_;
     };
@@ -121,6 +131,11 @@ namespace mico { namespace ast { namespace statements {
         void mutate( mutator_type call ) override
         {
             ast::expression::apply_mutator( expr_, call );
+        }
+
+        bool is_const( ) const override
+        {
+            return expr_->is_const( );
         }
 
     private:

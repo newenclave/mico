@@ -112,9 +112,14 @@ namespace mico { namespace ast {
             return false;
         }
 
+        virtual
+        bool is_const( ) const
+        {
+            return false;
+        }
 
         static
-        bool apply_mutator( uptr &target, node::mutator_type &call )
+        bool apply_mutator( uptr &target, const node::mutator_type &call )
         {
             if( auto res = call( target.get( ) ) ) {
                 target.swap( res );
@@ -145,7 +150,7 @@ namespace mico { namespace ast {
         using sptr = std::shared_ptr<statement>;
 
         static
-        bool apply_mutator( uptr &target, node::mutator_type &call )
+        bool apply_mutator( uptr &target, const node::mutator_type &call )
         {
             if( auto res = call( target.get( ) ) ) {
                 auto new_val = cast( res );
@@ -182,7 +187,7 @@ namespace mico { namespace ast {
         }
 
         static
-        bool apply_mutator( uptr &target, node::mutator_type &call )
+        bool apply_mutator( uptr &target, const node::mutator_type &call )
         {
             if( auto res = call( target.get( ) ) ) {
                 auto new_val = cast( res );

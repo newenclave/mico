@@ -39,6 +39,11 @@ namespace mico { namespace ast { namespace expressions {
 
         }
 
+        bool is_const( ) const override
+        {
+            return true;
+        }
+
     private:
         std::string value_;
     };

@@ -81,6 +81,28 @@ namespace mico { namespace ast { namespace expressions {
             }
         }
 
+        bool is_const( ) const override
+        {
+            for( auto &g: general_ ) {
+                if(g.cond->is_const( )) {
+                    for( auto &b: g.body ) {
+                        if( !b->is_const( ) ) {
+                            return false;
+                        }
+                    }
+                } else {
+                    return false;
+                }
+            }
+            for( auto &a: alt_ ) {
+                if( !a->is_const( ) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
     private:
         if_list         general_;
         statement_list  alt_;

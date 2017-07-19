@@ -54,6 +54,11 @@ namespace mico { namespace ast { namespace expressions {
             ast::expression::apply_mutator( expr_, call );
         }
 
+        bool is_const( ) const override
+        {
+            return left_->is_const( ) && expr_->is_const( );
+        }
+
     private:
         expression::uptr left_;
         expression::uptr expr_;

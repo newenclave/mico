@@ -51,6 +51,16 @@ namespace mico { namespace ast { namespace expressions {
             }
         }
 
+        bool is_const( ) const override
+        {
+            for( auto &v: value_ ) {
+                if( !v.first->is_const( ) || !v.second->is_const( ) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
     private:
 
         value_type value_;

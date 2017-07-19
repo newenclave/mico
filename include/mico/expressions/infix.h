@@ -69,6 +69,11 @@ namespace mico { namespace ast { namespace expressions {
             ast::expression::apply_mutator( right_, call );
         }
 
+        bool is_const( ) const override
+        {
+            return left_->is_const( ) && right_->is_const( );
+        }
+
     private:
         tokens::type     token_;
         expression::uptr left_;

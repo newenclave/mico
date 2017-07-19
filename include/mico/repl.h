@@ -47,6 +47,9 @@ namespace mico {
             if( n->get_type( ) == ast::type::INFIX ) {
                 auto c = static_cast<ast::expressions::infix *>(n);
                 if( c->token( ) == tokens::type::PLUS ) {
+                    auto mut = &repl::mutator;
+                    ast::expression::apply_mutator( c->right( ), mut );
+                    ast::expression::apply_mutator( c->left( ),  mut );
                     auto res = ast::node::make<ast::expressions::infix>(
                                     n->pos( ), tokens::type::MINUS,
                                     std::move(c->right( ) ) );
@@ -65,6 +68,14 @@ namespace mico {
             auto new_ast = o->to_ast( tokens::position { } );
             new_ast->mutate( &repl::mutator );
             std::cout << new_ast->str( ) << "\n";
+        }
+
+        static
+        void test_const( objects::sptr o )
+        {
+            auto new_ast = o->to_ast( tokens::position { } );
+            std::cout << new_ast->str( ) << " IS "
+                      << new_ast->is_const( ) << "\n";
         }
 
         static
@@ -95,6 +106,7 @@ namespace mico {
 
                                 std::cout << obj->str( ) << "\n";
                                 //test_mutate( obj );
+                                //test_const( obj );
 
                                 if( failed ) {
                                     std::cout << none;

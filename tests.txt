@@ -279,4 +279,7 @@ let get_sum = fn( n ) {
 } let s = get_sum(10)
 (*s)(20, 30)
 
+
+fn(a,b,c){a+b+c}
+
 */
