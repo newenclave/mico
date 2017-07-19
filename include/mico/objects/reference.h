@@ -115,6 +115,11 @@ namespace mico { namespace objects {
             return marked_;
         }
 
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            return value_->to_ast( pos );
+        }
+
     private:
         const environment  *my_env_;
         value_type          value_;

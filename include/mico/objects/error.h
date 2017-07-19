@@ -91,6 +91,11 @@ namespace mico { namespace objects {
             return make(pos, oss.str( ) );
         }
 
+        ast::node::uptr to_ast( tokens::position /*pos*/ ) const override
+        {
+            return nullptr;
+        }
+
     private:
         tokens::position where_;
         value_type value_;

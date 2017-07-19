@@ -14,6 +14,7 @@
 #include "mico/expressions/call.h"
 #include "mico/expressions/ifelse.h"
 #include "mico/expressions/table.h"
+#include "mico/expressions/registry.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -34,7 +35,7 @@ namespace mico { namespace ast { namespace expressions {
     using ifelse    = detail<type::IFELSE>;
     using table     = detail<type::TABLE>;
     using null      = detail<type::NONE>;
-
+    using registry  = detail<type::REGISTRY>;
 }}}
 
 #endif // EXPRESSIONS_H

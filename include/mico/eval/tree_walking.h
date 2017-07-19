@@ -107,12 +107,6 @@ namespace mico { namespace eval {
         bool is_function_call( const ast::expression *exp )
         {
             return (exp->get_type( ) == ast::type::CALL);
-//            if(exp->get_type( ) == ast::type::CALL) {
-//                return true;
-//                auto call = static_cast<const ast::expressions::call *>(exp);
-//                return call->func( )->get_type( ) == ast::type::FN;
-//            }
-//            return false;
         }
 
         static
@@ -663,10 +657,20 @@ namespace mico { namespace eval {
         objects::sptr eval_function( ast::node *n, environment::sptr env )
         {
             auto func = static_cast<ast::expressions::function *>( n );
+            auto init_size = func->inits( ).size( );
+            if( init_size > func->params( ).size( ) ) {
+                init_size = func->params( ).size( );
+            }
             auto fff  = std::make_shared<objects::function>( make_env(env),
-                                              func->ident_ptr( ),
-                                              func->expr_ptr( ));
-            //env->add_keep(fff.get( ), fff);
+                                              func->params_ptr( ),
+                                              func->body_ptr( ), init_size );
+            for( auto &next: func->inits( ) ) {
+                auto res = unref(eval_impl_tail( next.second.get( ), env ) );
+                if( is_fail( res ) ) {
+                    return res;
+                }
+                env->set( next.first, res );
+            }
             return fff;
         }
 
@@ -918,6 +922,16 @@ namespace mico { namespace eval {
             return res;
         }
 
+        objects::sptr eval_registry( ast::node *n, environment::sptr env )
+        {
+            auto reg = static_cast<ast::expressions::registry *>(n);
+            auto obj = env->get_state( ).get_registry_value( reg->value( ) );
+            if( !obj ) {
+                return error(n, "Registry object not found. ", reg->str( ));
+            }
+            return obj;
+        }
+
         objects::sptr eval_impl_tail( ast::node *n, environment::sptr env )
         {
             auto res = eval_impl(n, env);
@@ -962,6 +976,8 @@ namespace mico { namespace eval {
                 res = eval_call( n, env ); break;
             case ast::type::TABLE:
                 res = eval_table( n, env ); break;
+            case ast::type::REGISTRY:
+                res = eval_registry( n, env ); break;
             case ast::type::NONE:
                 break;
             }

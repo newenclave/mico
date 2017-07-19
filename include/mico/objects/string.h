@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include "mico/objects/base.h"
+#include "mico/expressions/string.h"
 
 namespace mico { namespace objects {
 
@@ -63,9 +64,15 @@ namespace mico { namespace objects {
             return std::make_shared<this_type>( value_ );
         }
 
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = ast::expressions::detail<ast::type::STRING>;
+            return ast::node::make<ast_type>( pos, value( ) );
+        }
+
     private:
         value_type value_;
-    public:
+
     };
 
 }}

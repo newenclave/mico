@@ -3,6 +3,9 @@
 
 #include "mico/objects/reference.h"
 #include "mico/objects/collectable.h"
+#include "mico/expressions/fn.h"
+
+#include "mico/state.h"
 
 namespace mico { namespace objects {
 
@@ -106,6 +109,37 @@ namespace mico { namespace objects {
                                                 start_param_ );
         }
 
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = ast::expressions::detail<ast::type::FN>;
+            auto res = ast::node::make<ast_type>(pos);
+
+            auto e = env( );
+            res->body_ptr( )   = body_;
+            res->params_ptr( ) = params_;
+
+            for( std::size_t i = 0; i < start_param_; ++i ) {
+                auto &p((*params_)[i]);
+                if( p->get_type( ) == ast::type::IDENT ) {
+                    auto id = static_cast<ast::expressions::ident *>(p.get( ));
+                    auto obj = e->get( id->value( ) );
+                    if( !obj ) {
+                        throw std::logic_error( "Invalid object." );
+                    }
+                    auto ast_res = obj->to_ast( pos );
+                    if( !ast_res->is_expression( ) ) {
+                        throw std::logic_error( "Invalid AST." );
+                    }
+                    auto expr = ast::expression::cast( ast_res );
+                    res->inits( ).emplace( std::make_pair(id->value( ),
+                                                     std::move( expr) ) );
+                } else {
+                    throw std::logic_error( "Not valid type for ident." );
+                }
+            }
+            return res;
+        }
+
     private:
 
         std::shared_ptr<ast::expression_list> params_;
@@ -150,6 +184,17 @@ namespace mico { namespace objects {
         virtual
         void init( environment::sptr )
         { }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = ast::expressions::detail<ast::type::REGISTRY>;
+            std::uintptr_t id = 0;
+            if( auto p = env( ) ) {
+                auto cl = clone( );
+                id = p->get_state( ).add_registry_value( cl );
+            }
+            return ast::node::make<ast_type>( pos, id );
+        }
 
     private:
     };
@@ -201,6 +246,11 @@ namespace mico { namespace objects {
         std::shared_ptr<base> clone( ) const override
         {
             return std::make_shared<this_type>( obj_, params_, env( ) );
+        }
+
+        ast::node::uptr to_ast( tokens::position /*pos*/ ) const override
+        {
+            return nullptr;
         }
 
     private:

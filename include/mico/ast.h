@@ -35,6 +35,7 @@ namespace mico { namespace ast {
         CALL,
         INDEX,
         IFELSE,
+        REGISTRY,
     };
 
     struct name {
@@ -60,6 +61,7 @@ namespace mico { namespace ast {
             case type::CALL    : return "CALL";
             case type::INDEX   : return "INDEX";
             case type::IFELSE  : return "IFELSE";
+            case type::REGISTRY: return "REGISTRY";
             }
             return "<INVALID>";
         }
@@ -75,6 +77,23 @@ namespace mico { namespace ast {
         using sptr = std::shared_ptr<node>;
 
         using reduce_call = std::function<uptr (node *)>;
+
+        template <typename ArtT, typename ...Args>
+        static
+        typename ArtT::uptr make( Args && ... args )
+        {
+            typename ArtT::uptr res( new ArtT(std::forward<Args>(args)... ) );
+            return res;
+        }
+
+        template <typename ArtT, typename ...Args>
+        static
+        typename ArtT::uptr make( tokens::position pos, Args && ... args )
+        {
+            typename ArtT::uptr res( new ArtT(std::forward<Args>(args)... ) );
+            res->set_pos( pos );
+            return res;
+        }
 
         const tokens::position &pos( ) const
         {

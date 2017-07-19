@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include "mico/objects/base.h"
+#include "mico/expressions/value.h"
 
 namespace mico { namespace objects {
 
@@ -58,6 +59,13 @@ namespace mico { namespace objects {
         std::shared_ptr<base> clone( ) const override
         {
             return make( value_ );
+        }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = ast::expressions::detail<ast::type::BOOLEAN>;
+            auto res = ast::node::make<ast_type>(pos, value_);
+            return res;
         }
 
     private:

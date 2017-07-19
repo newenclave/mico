@@ -36,6 +36,11 @@ namespace mico { namespace objects {
             return make( );
         }
 
+        ast::node::uptr to_ast( tokens::position /*pos*/ ) const override
+        {
+            return nullptr;
+        }
+
     };
 
 }}

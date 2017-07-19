@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include "mico/objects/base.h"
+#include "mico/statements.h"
 
 namespace mico { namespace objects {
 
@@ -46,6 +47,15 @@ namespace mico { namespace objects {
         std::shared_ptr<base> clone( ) const override
         {
             return std::make_shared<this_type>( value_ );
+        }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = ast::statements::detail<ast::type::RETURN>;
+            auto obj = value_->to_ast( pos );
+            ast_type::uptr res( new ast_type( ast::expression::cast(obj) ) );
+            res->set_pos(pos);
+            return res;
         }
 
     private:

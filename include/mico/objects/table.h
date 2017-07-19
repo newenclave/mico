@@ -6,6 +6,7 @@
 #include "mico/objects/reference.h"
 #include "mico/objects/null.h"
 #include "mico/objects/collectable.h"
+#include "mico/expressions/table.h"
 
 namespace mico { namespace objects {
 
@@ -144,6 +145,20 @@ namespace mico { namespace objects {
                 auto vc = ref::make( v.second->env( ),
                                      v.second->value( )->clone( ) );
                 res->value( ).insert( std::make_pair(kc, vc) );
+            }
+            return res;
+        }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = ast::expressions::detail<ast::type::TABLE>;
+            ast_type::uptr res(new ast_type);
+            res->set_pos(pos);
+            for( auto &v: value_ ) {
+                auto fast = v.first->to_ast( pos );
+                auto sast = v.second->value( )->to_ast( pos );
+                res->value( ).emplace_back( ast::expression::cast(fast),
+                                            ast::expression::cast(sast) );
             }
             return res;
         }

@@ -6,6 +6,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "mico/ast.h"
+
 #if defined(DISABLE_SWITCH_WARNINGS)
 #ifdef __clang__
 #   pragma clang diagnostic ignored "-Wswitch"
@@ -60,9 +62,14 @@ namespace mico { namespace objects {
     };
 
     struct base {
+
         virtual ~base( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
+        virtual std::shared_ptr<base> clone( ) const = 0;
+
+        virtual
+        ast::node::uptr to_ast( tokens::position ) const = 0;
 
         virtual
         std::uint64_t hash( ) const
@@ -122,7 +129,7 @@ namespace mico { namespace objects {
             return 0;
         }
 
-        virtual std::shared_ptr<base> clone( ) const = 0;
+
 
     };
 

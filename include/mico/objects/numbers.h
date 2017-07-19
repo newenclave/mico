@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include "mico/objects/base.h"
+#include "mico/expressions/value.h"
 
 namespace mico { namespace objects {
 
@@ -12,11 +13,13 @@ namespace mico { namespace objects {
     template <>
     struct type2object<type::FLOAT> {
         using native_type = double;
+        using ast_type    = ast::expressions::detail<ast::type::FLOAT>;
     };
 
     template <>
     struct type2object<type::INTEGER> {
         using native_type = std::int64_t;
+        using ast_type    = ast::expressions::detail<ast::type::INTEGER>;
     };
 
     template <type TN>
@@ -77,6 +80,12 @@ namespace mico { namespace objects {
         std::shared_ptr<base> clone( ) const override
         {
             return make( value_ );
+        }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = typename type2object<TN>::ast_type;
+            return ast::node::make<ast_type>(pos, value_);
         }
 
     private:

@@ -6,6 +6,7 @@
 #include "mico/objects/reference.h"
 #include "mico/objects/null.h"
 #include "mico/objects/collectable.h"
+#include "mico/expressions/array.h"
 
 namespace mico { namespace objects {
 
@@ -112,6 +113,17 @@ namespace mico { namespace objects {
             for( auto &v: value_ ) {
                 auto clone = v->value( )->clone( );
                 res->push( v->env( ), clone );
+            }
+            return res;
+        }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = ast::expressions::detail<ast::type::ARRAY>;
+            auto res = ast::node::make<ast_type>(pos);
+            for( auto &v: value_ ) {
+                auto next = v->value( )->to_ast( pos );
+                res->value( ).emplace_back( ast::expression::cast( next ) );
             }
             return res;
         }

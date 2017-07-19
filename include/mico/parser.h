@@ -644,7 +644,7 @@ namespace mico {
 
             advance( );
             if( !is_current( token_type::RPAREN ) ) {
-                parse_ident_list( res->idents( ) );
+                parse_ident_list( res->params( ) );
 
                 if( !expect_peek( token_type::RPAREN ) ) {
                     return fn_type::uptr( );
@@ -656,7 +656,7 @@ namespace mico {
             }
 
             advance( );
-            parse_statements( res->states( ), true );
+            parse_statements( res->body( ), true );
 
             return res;
         }
