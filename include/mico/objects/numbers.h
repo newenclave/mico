@@ -13,18 +13,18 @@ namespace mico { namespace objects {
     template <>
     struct type2object<type::FLOAT> {
         using native_type = double;
-        using ast_type    = ast::expressions::detail<ast::type::FLOAT>;
+        using ast_type    = ast::expressions::impl<ast::type::FLOAT>;
     };
 
     template <>
     struct type2object<type::INTEGER> {
         using native_type = std::int64_t;
-        using ast_type    = ast::expressions::detail<ast::type::INTEGER>;
+        using ast_type    = ast::expressions::impl<ast::type::INTEGER>;
     };
 
     template <type TN>
-    class derived: public typed_base<TN>  {
-        using this_type = derived<TN>;
+    class impl: public typed_base<TN>  {
+        using this_type = impl<TN>;
     public:
 
         static const type type_value = TN;
@@ -33,7 +33,7 @@ namespace mico { namespace objects {
         static const type type_name = TN;
         using value_type = typename type2object<type_name>::native_type;
 
-        derived(value_type val)
+        impl(value_type val)
             :value_(val)
         { }
 

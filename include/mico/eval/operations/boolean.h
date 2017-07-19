@@ -12,10 +12,10 @@ namespace mico { namespace eval { namespace operations {
 
     template <>
     struct operation<objects::type::BOOLEAN> {
-        using float_type = objects::derived<objects::type::FLOAT>;
-        using int_type   = objects::derived<objects::type::INTEGER>;
-        using error_type = objects::derived<objects::type::FAILURE>;
-        using bool_type  = objects::derived<objects::type::BOOLEAN>;
+        using float_type = objects::impl<objects::type::FLOAT>;
+        using int_type   = objects::impl<objects::type::INTEGER>;
+        using error_type = objects::impl<objects::type::FAILURE>;
+        using bool_type  = objects::impl<objects::type::BOOLEAN>;
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
 

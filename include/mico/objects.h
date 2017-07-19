@@ -17,28 +17,28 @@
 
 namespace mico { namespace objects {
 
-    using null       = derived<type::NULL_OBJ>;
-    using string     = derived<type::STRING>;
-    using function   = derived<type::FUNCTION>;
-    using builtin    = derived<type::BUILTIN>;
-    using tail_call  = derived<type::TAIL_CALL>;
-    using retutn_obj = derived<type::RETURN>;
-    using boolean    = derived<type::BOOLEAN>;
-    using integer    = derived<type::INTEGER>;
-    using floating   = derived<type::FLOAT>;
-    using array      = derived<type::ARRAY>;
-    using reference  = derived<type::REFERENCE>;
-    using table      = derived<type::TABLE>;
-    using error      = derived<type::FAILURE>;
+    using null       = impl<type::NULL_OBJ>;
+    using string     = impl<type::STRING>;
+    using function   = impl<type::FUNCTION>;
+    using builtin    = impl<type::BUILTIN>;
+    using tail_call  = impl<type::TAIL_CALL>;
+    using retutn_obj = impl<type::RETURN>;
+    using boolean    = impl<type::BOOLEAN>;
+    using integer    = impl<type::INTEGER>;
+    using floating   = impl<type::FLOAT>;
+    using array      = impl<type::ARRAY>;
+    using reference  = impl<type::REFERENCE>;
+    using table      = impl<type::TABLE>;
+    using error      = impl<type::FAILURE>;
 
 #define MICO_DEFINE_CAST_FUNC( CallPrefix, TypeName )                   \
     inline                                                              \
-    derived<TypeName> *cast_##CallPrefix( base *val )                   \
+    impl<TypeName> *cast_##CallPrefix( base *val )                   \
     {                                                                   \
         return objects::cast<TypeName>(val);                            \
     }                                                                   \
     inline                                                              \
-    std::shared_ptr<derived<TypeName> > cast_##CallPrefix( sptr val )   \
+    std::shared_ptr<impl<TypeName> > cast_##CallPrefix( sptr val )   \
     {                                                                   \
         return objects::cast<TypeName>( val );                          \
     }

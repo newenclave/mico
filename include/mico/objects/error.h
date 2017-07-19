@@ -11,9 +11,9 @@
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::FAILURE>: public typed_base<type::FAILURE> {
+    class impl<type::FAILURE>: public typed_base<type::FAILURE> {
 
-        using this_type = derived<type::FAILURE>;
+        using this_type = impl<type::FAILURE>;
     public:
 
         static const type type_value = type::FAILURE;
@@ -21,7 +21,7 @@ namespace mico { namespace objects {
 
         using value_type = std::string;
 
-        derived( tokens::position where, value_type val )
+        impl( tokens::position where, value_type val )
             :where_(where)
             ,value_(std::move(val))
         { }

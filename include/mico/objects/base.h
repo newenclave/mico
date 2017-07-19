@@ -129,8 +129,6 @@ namespace mico { namespace objects {
             return 0;
         }
 
-
-
     };
 
     template <type TN>
@@ -142,7 +140,7 @@ namespace mico { namespace objects {
     };
 
     template <type>
-    class derived;
+    class impl;
 
     using sptr  = std::shared_ptr<base>;
     using uptr  = std::unique_ptr<base>;
@@ -151,26 +149,26 @@ namespace mico { namespace objects {
 
     template <type ToT>
     inline
-    derived<ToT> *cast( base *val )
+    impl<ToT> *cast( base *val )
     {
 #if defined(CHECK_CASTS)
         if( ToT != val->get_type( ) ) {
             throw  std::runtime_error( "Bad object* cast" );
         }
 #endif
-        return static_cast<derived<ToT> *>(val);
+        return static_cast<impl<ToT> *>(val);
     }
 
     template <type ToT>
     inline
-    std::shared_ptr<derived<ToT> > cast( sptr &val )
+    std::shared_ptr<impl<ToT> > cast( sptr &val )
     {
 #if defined(CHECK_CASTS)
         if( ToT != val->get_type( ) ) {
             throw  std::runtime_error( "Bad shared<object> cast" );
         }
 #endif
-        return std::shared_ptr<derived<ToT> >(val, cast<ToT>(val.get( ) ) );
+        return std::shared_ptr<impl<ToT> >(val, cast<ToT>(val.get( ) ) );
     }
 
     inline

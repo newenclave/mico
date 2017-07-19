@@ -9,9 +9,9 @@
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::STRING>: public typed_base<type::STRING> {
+    class impl<type::STRING>: public typed_base<type::STRING> {
 
-        using this_type = derived<type::STRING>;
+        using this_type = impl<type::STRING>;
 
     public:
 
@@ -26,7 +26,7 @@ namespace mico { namespace objects {
             oss << "\"" << value( ) << "\"";
             return oss.str( );
         }
-        derived( value_type val )
+        impl( value_type val )
             :value_(std::move(val))
         { }
         const value_type &value( ) const
@@ -66,7 +66,7 @@ namespace mico { namespace objects {
 
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            using ast_type = ast::expressions::detail<ast::type::STRING>;
+            using ast_type = ast::expressions::impl<ast::type::STRING>;
             return ast::node::make<ast_type>( pos, value( ) );
         }
 

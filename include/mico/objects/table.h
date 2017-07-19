@@ -28,20 +28,20 @@ namespace mico { namespace objects {
     };
 
     template <>
-    class derived<type::TABLE>: public collectable<type::TABLE> {
+    class impl<type::TABLE>: public collectable<type::TABLE> {
 
-        using this_type = derived<type::TABLE>;
+        using this_type = impl<type::TABLE>;
     public:
 
         static const type type_value = type::TABLE;
         using sptr = std::shared_ptr<this_type>;
-        using cont = derived<type::REFERENCE>;
+        using cont = impl<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;
 
         using value_type = std::unordered_map<objects::sptr, cont_sptr,
                                               hash_helper, equal_helper>;
 
-        derived( environment::sptr e )
+        impl( environment::sptr e )
             :collectable<type::TABLE>(e)
         { }
 
@@ -98,7 +98,7 @@ namespace mico { namespace objects {
             objects::sptr ptr = id;
             auto f = value_.find( ptr );
             if(f == value_.end( )) {
-                return derived<type::NULL_OBJ>::make( );
+                return impl<type::NULL_OBJ>::make( );
             } else {
                 return f->second;
             }
@@ -138,7 +138,7 @@ namespace mico { namespace objects {
 
         std::shared_ptr<base> clone( ) const override
         {
-            using ref = derived<type::REFERENCE>;
+            using ref = impl<type::REFERENCE>;
             auto res = make( env( ) );
             for( auto &v: value( ) ) {
                 auto kc = v.first->clone( );
@@ -151,7 +151,7 @@ namespace mico { namespace objects {
 
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            using ast_type = ast::expressions::detail<ast::type::TABLE>;
+            using ast_type = ast::expressions::impl<ast::type::TABLE>;
             ast_type::uptr res(new ast_type);
             res->set_pos(pos);
             for( auto &v: value_ ) {

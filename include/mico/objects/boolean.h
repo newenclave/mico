@@ -8,8 +8,8 @@
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::BOOLEAN>: public typed_base<type::BOOLEAN> {
-        using this_type = derived<type::BOOLEAN>;
+    class impl<type::BOOLEAN>: public typed_base<type::BOOLEAN> {
+        using this_type = impl<type::BOOLEAN>;
 
         struct key { };
 
@@ -18,7 +18,7 @@ namespace mico { namespace objects {
         static const type type_value = type::BOOLEAN;
         using sptr = std::shared_ptr<this_type>;
 
-        derived( bool v )
+        impl( bool v )
             :value_(v)
         { }
 
@@ -63,7 +63,7 @@ namespace mico { namespace objects {
 
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            using ast_type = ast::expressions::detail<ast::type::BOOLEAN>;
+            using ast_type = ast::expressions::impl<ast::type::BOOLEAN>;
             auto res = ast::node::make<ast_type>(pos, value_);
             return res;
         }

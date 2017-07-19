@@ -23,7 +23,7 @@ namespace mico { namespace eval { namespace operations {
         template<objects::type T>
         struct reference {
 
-            using derive_type = objects::derived<T>;
+            using derive_type = objects::impl<T>;
             using shared_derive = std::shared_ptr<derive_type>;
 
             reference( objects::sptr o )

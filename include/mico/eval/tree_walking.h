@@ -58,7 +58,7 @@ namespace mico { namespace eval {
         }
 
         template <objects::type ToT, typename FromT>
-        objects::derived<ToT> *obj_cast( FromT *obj )
+        objects::impl<ToT> *obj_cast( FromT *obj )
         {
             return objects::cast<ToT>(obj);
         }

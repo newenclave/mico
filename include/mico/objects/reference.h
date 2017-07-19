@@ -9,8 +9,8 @@
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::REFERENCE>: public typed_base<type::REFERENCE> {
-        using this_type = derived<type::REFERENCE>;
+    class impl<type::REFERENCE>: public typed_base<type::REFERENCE> {
+        using this_type = impl<type::REFERENCE>;
     public:
 
         static const type type_value = type::REFERENCE;
@@ -18,7 +18,7 @@ namespace mico { namespace objects {
         using sptr = std::shared_ptr<this_type>;
         using value_type = objects::sptr;
 
-        derived(const environment *my_env, value_type val)
+        impl(const environment *my_env, value_type val)
             :my_env_(my_env)
             ,value_(unref(val))
         {
@@ -26,7 +26,7 @@ namespace mico { namespace objects {
             marked_ = val->marked( );
         }
 
-        ~derived( )
+        ~impl( )
         {
             value_->unmark_in( my_env_ );
         }

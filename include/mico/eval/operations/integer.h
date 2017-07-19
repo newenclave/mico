@@ -12,12 +12,12 @@ namespace mico { namespace eval { namespace operations {
     template <>
     struct operation<objects::type::INTEGER> {
 
-        using float_type    = objects::derived<objects::type::FLOAT>;
-        using value_type    = objects::derived<objects::type::INTEGER>;
-        using error_type    = objects::derived<objects::type::FAILURE>;
-        using bool_type     = objects::derived<objects::type::BOOLEAN>;
-        using builtin_type  = objects::derived<objects::type::BUILTIN>;
-        using function_type = objects::derived<objects::type::FUNCTION>;
+        using float_type    = objects::impl<objects::type::FLOAT>;
+        using value_type    = objects::impl<objects::type::INTEGER>;
+        using error_type    = objects::impl<objects::type::FAILURE>;
+        using bool_type     = objects::impl<objects::type::BOOLEAN>;
+        using builtin_type  = objects::impl<objects::type::BUILTIN>;
+        using function_type = objects::impl<objects::type::FUNCTION>;
 
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;

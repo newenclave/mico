@@ -1,7 +1,7 @@
 #ifndef MICO_EXPRESSIONS_H
 #define MICO_EXPRESSIONS_H
 
-#include "mico/expressions/detail.h"
+#include "mico/expressions/impl.h"
 #include "mico/expressions/fn.h"
 #include "mico/expressions/value.h"
 #include "mico/expressions/array.h"
@@ -18,24 +18,24 @@
 
 namespace mico { namespace ast { namespace expressions {
 
-    using ident     = detail<type::IDENT>;
-    using string    = detail<type::STRING>;
-    using array     = detail<type::ARRAY>;
-    using integer   = detail<type::INTEGER>;
-    using floating  = detail<type::FLOAT>;
-    using boolean   = detail<type::BOOLEAN>;
+    using ident     = impl<type::IDENT>;
+    using string    = impl<type::STRING>;
+    using array     = impl<type::ARRAY>;
+    using integer   = impl<type::INTEGER>;
+    using floating  = impl<type::FLOAT>;
+    using boolean   = impl<type::BOOLEAN>;
 
-    using prefix    = detail<type::PREFIX>;
-    using infix     = detail<type::INFIX>;
-    using index     = detail<type::INDEX>;
+    using prefix    = impl<type::PREFIX>;
+    using infix     = impl<type::INFIX>;
+    using index     = impl<type::INDEX>;
 
-    using function  = detail<type::FN>;
-    using call      = detail<type::CALL>;
+    using function  = impl<type::FN>;
+    using call      = impl<type::CALL>;
 
-    using ifelse    = detail<type::IFELSE>;
-    using table     = detail<type::TABLE>;
-    using null      = detail<type::NONE>;
-    using registry  = detail<type::REGISTRY>;
+    using ifelse    = impl<type::IFELSE>;
+    using table     = impl<type::TABLE>;
+    using null      = impl<type::NONE>;
+    using registry  = impl<type::REGISTRY>;
 }}}
 
 #endif // EXPRESSIONS_H

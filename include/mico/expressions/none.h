@@ -4,13 +4,13 @@
 #include <sstream>
 #include "mico/ast.h"
 #include "mico/tokens.h"
-#include "mico/expressions/detail.h"
+#include "mico/expressions/impl.h"
 
 namespace mico { namespace ast { namespace expressions {
 
     template <>
-    class detail<type::NONE>: public typed_expr<type::NONE> {
-        using this_type = detail<type::NONE>;
+    class impl<type::NONE>: public typed_expr<type::NONE> {
+        using this_type = impl<type::NONE>;
     public:
         std::string str( ) const
         {

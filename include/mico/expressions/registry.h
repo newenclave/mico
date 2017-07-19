@@ -4,20 +4,20 @@
 #include <sstream>
 #include "mico/ast.h"
 #include "mico/tokens.h"
-#include "mico/expressions/detail.h"
+#include "mico/expressions/impl.h"
 
 namespace mico { namespace ast { namespace expressions {
 
     template <>
-    class detail<type::REGISTRY>: public typed_expr<type::REGISTRY> {
+    class impl<type::REGISTRY>: public typed_expr<type::REGISTRY> {
 
-        using this_type = detail<type::REGISTRY>;
+        using this_type = impl<type::REGISTRY>;
     public:
 
         using uptr = std::unique_ptr<this_type>;
         using value_type = std::uintptr_t;
 
-        detail<type::REGISTRY>( value_type val )
+        impl<type::REGISTRY>( value_type val )
             :value_(val)
         { }
 

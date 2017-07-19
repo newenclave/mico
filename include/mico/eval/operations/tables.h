@@ -9,11 +9,11 @@ namespace mico { namespace eval { namespace operations {
     template <>
     struct operation<objects::type::TABLE> {
 
-        using table_type = objects::derived<objects::type::STRING>;
-        using str_type   = objects::derived<objects::type::STRING>;
-        using bool_type  = objects::derived<objects::type::BOOLEAN>;
-        using error_type = objects::derived<objects::type::FAILURE>;
-        using int_type   = objects::derived<objects::type::INTEGER>;
+        using table_type = objects::impl<objects::type::STRING>;
+        using str_type   = objects::impl<objects::type::STRING>;
+        using bool_type  = objects::impl<objects::type::BOOLEAN>;
+        using error_type = objects::impl<objects::type::FAILURE>;
+        using int_type   = objects::impl<objects::type::INTEGER>;
         using prefix     = ast::expressions::prefix;
         using infix      = ast::expressions::infix;
 

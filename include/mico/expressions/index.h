@@ -4,18 +4,18 @@
 #include <sstream>
 #include "mico/ast.h"
 #include "mico/tokens.h"
-#include "mico/expressions/detail.h"
+#include "mico/expressions/impl.h"
 
 namespace mico { namespace ast { namespace expressions {
 
     template <>
-    class detail<type::INDEX>: public typed_expr<type::INDEX> {
-        using this_type = detail<type::INDEX>;
+    class impl<type::INDEX>: public typed_expr<type::INDEX> {
+        using this_type = impl<type::INDEX>;
     public:
 
-        using uptr = std::unique_ptr<detail>;
+        using uptr = std::unique_ptr<impl>;
 
-        detail( node::uptr left, node::uptr param )
+        impl( node::uptr left, node::uptr param )
             :left_(std::move(left))
             ,expr_(std::move(param))
         { }

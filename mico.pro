@@ -36,7 +36,7 @@ HEADERS += \
     include/mico/objects/boolean.h \
     include/mico/objects/collectable.h \
     include/mico/expressions/fn.h \
-    include/mico/expressions/detail.h \
+    include/mico/expressions/impl.h \
     include/mico/expressions/value.h \
     include/mico/eval/evaluator.h \
     include/mico/eval/tree_walking.h \
@@ -63,7 +63,7 @@ HEADERS += \
     etool/include/etool/trees/trie/nodes/array.h \
     etool/include/etool/trees/trie/nodes/map.h \
     etool/include/etool/trees/trie/base.h \
-    etool/include/etool/details/result.h \
+    etool/include/etool/impls/result.h \
     include/mico/expressions/registry.h
 
 DISTFILES += \

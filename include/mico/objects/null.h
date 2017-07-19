@@ -5,8 +5,8 @@
 
 namespace mico { namespace objects {
     template <>
-    class derived<type::NULL_OBJ>: public typed_base<type::NULL_OBJ> {
-        using this_type = derived<type::NULL_OBJ>;
+    class impl<type::NULL_OBJ>: public typed_base<type::NULL_OBJ> {
+        using this_type = impl<type::NULL_OBJ>;
     public:
 
         static const type type_value = type::NULL_OBJ;

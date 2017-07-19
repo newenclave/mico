@@ -7,18 +7,18 @@
 namespace mico { namespace ast { namespace statements {
 
     template <type>
-    class detail;
+    class impl;
 
     template <>
-    class detail<type::LET>: public typed_stmt<type::LET> {
-        using this_type = detail<type::LET>;
+    class impl<type::LET>: public typed_stmt<type::LET> {
+        using this_type = impl<type::LET>;
     public:
-        using uptr = std::unique_ptr<detail>;
+        using uptr = std::unique_ptr<impl>;
 
         using expr_type        = expression::uptr;
         using ident_type       = expression::uptr;
 
-        detail( expression::uptr id, expression::uptr val )
+        impl( expression::uptr id, expression::uptr val )
             :ident_(std::move(id))
             ,expr_(std::move(val))
         { }
@@ -76,14 +76,14 @@ namespace mico { namespace ast { namespace statements {
     };
 
     template <>
-    class detail<type::RETURN>: public typed_stmt<type::RETURN> {
+    class impl<type::RETURN>: public typed_stmt<type::RETURN> {
 
-        using this_type = detail<type::RETURN>;
+        using this_type = impl<type::RETURN>;
 
     public:
-        using uptr = std::unique_ptr<detail>;
+        using uptr = std::unique_ptr<impl>;
 
-        detail( expression::uptr val )
+        impl( expression::uptr val )
             :expr_(std::move(val))
         { }
 
@@ -125,12 +125,12 @@ namespace mico { namespace ast { namespace statements {
     };
 
     template <>
-    class detail<type::EXPR>: public typed_stmt<type::EXPR> {
-        using this_type = detail<type::EXPR>;
+    class impl<type::EXPR>: public typed_stmt<type::EXPR> {
+        using this_type = impl<type::EXPR>;
     public:
-        using uptr = std::unique_ptr<detail>;
+        using uptr = std::unique_ptr<impl>;
 
-        detail( expression::uptr val )
+        impl( expression::uptr val )
             :expr_(std::move(val))
         { }
 
@@ -164,9 +164,9 @@ namespace mico { namespace ast { namespace statements {
         expression::uptr expr_;
     };
 
-    using let   = detail<type::LET>;
-    using ret   = detail<type::RETURN>;
-    using expr  = detail<type::EXPR>;
+    using let   = impl<type::LET>;
+    using ret   = impl<type::RETURN>;
+    using expr  = impl<type::EXPR>;
 
 }}}
 

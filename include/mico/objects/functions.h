@@ -10,15 +10,15 @@
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::FUNCTION>: public collectable<type::FUNCTION> {
-        using this_type = derived<type::FUNCTION>;
+    class impl<type::FUNCTION>: public collectable<type::FUNCTION> {
+        using this_type = impl<type::FUNCTION>;
     public:
         static const type type_value = type::FUNCTION;
         using sptr = std::shared_ptr<this_type>;
 
         using param_iterator = ast::expression_list::iterator;
 
-        derived( std::shared_ptr<environment> e,
+        impl( std::shared_ptr<environment> e,
                  std::shared_ptr<ast::expression_list> par,
                  std::shared_ptr<ast::statement_list> st,
                  std::size_t start = 0)
@@ -28,7 +28,7 @@ namespace mico { namespace objects {
             ,start_param_(start)
         { }
 
-        ~derived( )
+        ~impl( )
         { }
 
         std::string str( ) const override
@@ -53,14 +53,14 @@ namespace mico { namespace objects {
                    std::shared_ptr<ast::statement_list> st,
                    std::size_t start = 0 )
         {
-            return std::make_shared<derived>( e, par, st, start );
+            return std::make_shared<impl>( e, par, st, start );
         }
 
         static
         sptr make( std::shared_ptr<environment> e,
                    this_type &other, std::size_t start )
         {
-            return std::make_shared<derived>( e, other.params_,
+            return std::make_shared<impl>( e, other.params_,
                                               other.body_,
                                               start + other.start_param_ );
         }
@@ -70,7 +70,7 @@ namespace mico { namespace objects {
         {
             if( other->start_param_ != 0 ) {
                 if( auto p = other->env( ) ) {
-                    return std::make_shared<derived>( p->parent( ),
+                    return std::make_shared<impl>( p->parent( ),
                                                       other->params_,
                                                       other->body_, 0 );
                 }
@@ -111,7 +111,7 @@ namespace mico { namespace objects {
 
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            using ast_type = ast::expressions::detail<ast::type::FN>;
+            using ast_type = ast::expressions::impl<ast::type::FN>;
             auto res = ast::node::make<ast_type>(pos);
 
             auto e = env( );
@@ -148,14 +148,14 @@ namespace mico { namespace objects {
     };
 
     template <>
-    class derived<type::BUILTIN>: public collectable<type::BUILTIN> {
-        using this_type = derived<type::BUILTIN>;
+    class impl<type::BUILTIN>: public collectable<type::BUILTIN> {
+        using this_type = impl<type::BUILTIN>;
     public:
         static const type type_value = type::BUILTIN;
 
         using sptr = std::shared_ptr<this_type>;
 
-        derived( std::shared_ptr<environment> e )
+        impl( std::shared_ptr<environment> e )
             :collectable(e)
         { }
 
@@ -169,7 +169,7 @@ namespace mico { namespace objects {
         virtual
         objects::sptr call( objects::slist &, environment::sptr )
         {
-            return derived<type::NULL_OBJ>::make( );
+            return impl<type::NULL_OBJ>::make( );
         }
 
         bool equal( const objects::base *other ) const override
@@ -187,7 +187,7 @@ namespace mico { namespace objects {
 
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            using ast_type = ast::expressions::detail<ast::type::REGISTRY>;
+            using ast_type = ast::expressions::impl<ast::type::REGISTRY>;
             std::uintptr_t id = 0;
             if( auto p = env( ) ) {
                 auto cl = clone( );
@@ -200,14 +200,14 @@ namespace mico { namespace objects {
     };
 
     template <>
-    class derived<type::TAIL_CALL>: public collectable<type::TAIL_CALL> {
+    class impl<type::TAIL_CALL>: public collectable<type::TAIL_CALL> {
 
-        using this_type = derived<type::TAIL_CALL>;
+        using this_type = impl<type::TAIL_CALL>;
     public:
         static const type type_value = type::TAIL_CALL;
         using sptr = std::shared_ptr<this_type>;
 
-        derived(objects::sptr obj, objects::slist p, environment::sptr e)
+        impl(objects::sptr obj, objects::slist p, environment::sptr e)
             :collectable(e)
             ,obj_(obj)
             ,params_(std::move(p))

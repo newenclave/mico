@@ -4,13 +4,13 @@
 #include <sstream>
 #include "mico/ast.h"
 #include "mico/tokens.h"
-#include "mico/expressions/detail.h"
+#include "mico/expressions/impl.h"
 
 namespace mico { namespace ast { namespace expressions {
 
     template <>
-    class detail<type::ARRAY>: public typed_expr<type::ARRAY> {
-        using this_type = detail<type::ARRAY>;
+    class impl<type::ARRAY>: public typed_expr<type::ARRAY> {
+        using this_type = impl<type::ARRAY>;
     public:
 
         using uptr = std::unique_ptr<this_type>;

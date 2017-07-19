@@ -8,8 +8,8 @@
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::RETURN>: public typed_base<type::RETURN> {
-        using this_type = derived<type::RETURN>;
+    class impl<type::RETURN>: public typed_base<type::RETURN> {
+        using this_type = impl<type::RETURN>;
     public:
         static const type type_value = type::RETURN;
 
@@ -17,7 +17,7 @@ namespace mico { namespace objects {
 
         using value_type = objects::sptr;
 
-        derived( value_type val )
+        impl( value_type val )
             :value_(val)
         { }
 
@@ -51,7 +51,7 @@ namespace mico { namespace objects {
 
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            using ast_type = ast::statements::detail<ast::type::RETURN>;
+            using ast_type = ast::statements::impl<ast::type::RETURN>;
             auto obj = value_->to_ast( pos );
             ast_type::uptr res( new ast_type( ast::expression::cast(obj) ) );
             res->set_pos(pos);

@@ -11,18 +11,18 @@
 namespace mico { namespace objects {
 
     template <>
-    class derived<type::ARRAY>: public collectable<type::ARRAY> {
-        using this_type = derived<type::ARRAY>;
+    class impl<type::ARRAY>: public collectable<type::ARRAY> {
+        using this_type = impl<type::ARRAY>;
     public:
 
         static const type type_value = type::ARRAY;
 
         using sptr = std::shared_ptr<this_type>;
-        using cont = derived<type::REFERENCE>;
+        using cont = impl<type::REFERENCE>;
         using cont_sptr = std::shared_ptr<cont>;
         using value_type = std::deque<cont_sptr>;
 
-        derived( environment::sptr env )
+        impl( environment::sptr env )
             :collectable<type::ARRAY>(env)
         { }
 
@@ -64,7 +64,7 @@ namespace mico { namespace objects {
             if( (size < value_.size( )) && ( id >= 0) ) {
                 return value_[size];
             } else {
-                return derived<type::NULL_OBJ>::make( );
+                return impl<type::NULL_OBJ>::make( );
             }
         }
 
@@ -119,7 +119,7 @@ namespace mico { namespace objects {
 
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            using ast_type = ast::expressions::detail<ast::type::ARRAY>;
+            using ast_type = ast::expressions::impl<ast::type::ARRAY>;
             auto res = ast::node::make<ast_type>(pos);
             for( auto &v: value_ ) {
                 auto next = v->value( )->to_ast( pos );

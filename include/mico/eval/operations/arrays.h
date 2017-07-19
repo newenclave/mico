@@ -9,8 +9,8 @@ namespace mico { namespace eval { namespace operations {
     template <>
     struct operation<objects::type::ARRAY> {
 
-        using error_type = objects::derived<objects::type::FAILURE>;
-        using int_type   = objects::derived<objects::type::INTEGER>;
+        using error_type = objects::impl<objects::type::FAILURE>;
+        using int_type   = objects::impl<objects::type::INTEGER>;
         using prefix     = ast::expressions::prefix;
         using infix      = ast::expressions::infix;
 

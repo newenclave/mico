@@ -4,7 +4,7 @@
 #include <sstream>
 #include "mico/ast.h"
 #include "mico/tokens.h"
-#include "mico/expressions/detail.h"
+#include "mico/expressions/impl.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -47,14 +47,14 @@ namespace mico { namespace ast { namespace expressions {
     };
 
     template <>
-    class detail<type::INTEGER>:
+    class impl<type::INTEGER>:
             public value_expr<type::INTEGER, std::int64_t> {
-        using this_type = detail<type::INTEGER>;
+        using this_type = impl<type::INTEGER>;
     public:
 
         using uptr = std::unique_ptr<this_type>;
 
-        detail( std::int64_t val )
+        impl( std::int64_t val )
             :value_expr(val)
         { }
 
@@ -65,14 +65,14 @@ namespace mico { namespace ast { namespace expressions {
     };
 
     template <>
-    class detail<type::FLOAT>:
+    class impl<type::FLOAT>:
             public value_expr<type::FLOAT, double> {
-        using this_type = detail<type::FLOAT>;
+        using this_type = impl<type::FLOAT>;
     public:
 
         using uptr = std::unique_ptr<this_type>;
 
-        detail( double val )
+        impl( double val )
             :value_expr(val)
         { }
 
@@ -84,14 +84,14 @@ namespace mico { namespace ast { namespace expressions {
     };
 
     template <>
-    class detail<type::BOOLEAN>:
+    class impl<type::BOOLEAN>:
             public value_expr<type::BOOLEAN, bool> {
-        using this_type = detail<type::BOOLEAN>;
+        using this_type = impl<type::BOOLEAN>;
     public:
 
         using uptr = std::unique_ptr<this_type>;
 
-        detail( bool val )
+        impl( bool val )
             :value_expr(val)
         { }
 

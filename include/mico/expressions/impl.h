@@ -1,13 +1,13 @@
-#ifndef MICO_EXPRESSIONS_DETAIL_H
-#define MICO_EXPRESSIONS_DETAIL_H
+#ifndef MICO_EXPRESSIONS_impl_H
+#define MICO_EXPRESSIONS_impl_H
 
 #include "mico/ast.h"
 
 namespace mico { namespace ast { namespace expressions {
 
     template <type>
-    class detail;
+    class impl;
 
 }}}
 
-#endif // DETAIL_H
+#endif // impl_H

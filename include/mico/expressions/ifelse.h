@@ -4,17 +4,17 @@
 #include <sstream>
 #include "mico/ast.h"
 #include "mico/tokens.h"
-#include "mico/expressions/detail.h"
+#include "mico/expressions/impl.h"
 
 namespace mico { namespace ast { namespace expressions {
 
     template <>
-    class detail<type::IFELSE>: public typed_expr<type::IFELSE> {
+    class impl<type::IFELSE>: public typed_expr<type::IFELSE> {
 
-        using this_type = detail<type::IFELSE>;
+        using this_type = impl<type::IFELSE>;
     public:
 
-        using uptr = std::unique_ptr<detail>;
+        using uptr = std::unique_ptr<impl>;
 
         struct node {
             node( expression::uptr val )

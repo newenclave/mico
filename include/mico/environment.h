@@ -31,7 +31,7 @@ namespace mico {
         using object_sptr   = std::shared_ptr<objects::base>;
         using object_wptr   = std::weak_ptr<objects::base>;
         using children_type = std::set<sptr>;
-        using obj_reference = objects::derived<objects::type::REFERENCE>;
+        using obj_reference = objects::impl<objects::type::REFERENCE>;
         using data_map      = std::map<std::string, obj_reference::sptr>;
 
     protected:

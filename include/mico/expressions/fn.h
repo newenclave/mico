@@ -5,18 +5,18 @@
 #include <map>
 #include "mico/ast.h"
 #include "mico/tokens.h"
-#include "mico/expressions/detail.h"
+#include "mico/expressions/impl.h"
 
 namespace mico { namespace ast { namespace expressions {
 
     template <>
-    class detail<type::FN>: public typed_expr<type::FN> {
+    class impl<type::FN>: public typed_expr<type::FN> {
 
-        using this_type = detail<type::FN>;
+        using this_type = impl<type::FN>;
 
     public:
 
-        using uptr = std::unique_ptr<detail>;
+        using uptr = std::unique_ptr<impl>;
 
         using stmt_type   = statement::uptr;
         using ident_type  = expression::uptr;
@@ -25,7 +25,7 @@ namespace mico { namespace ast { namespace expressions {
         using params_slist = std::shared_ptr<expression_list>;
         using body_slist   = std::shared_ptr<statement_list>;
 
-        detail( )
+        impl( )
             :params_(std::make_shared<expression_list>( ))
             ,body_(std::make_shared<statement_list>( ))
         { }
