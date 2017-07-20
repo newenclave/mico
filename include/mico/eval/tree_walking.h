@@ -548,7 +548,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_scope_node( ast::node *n, environment::sptr env )
         {
-            auto scope = static_cast<ast::expressions::scope *>( n );
+            auto scope = static_cast<ast::expressions::list *>( n );
             return eval_scope_impl( scope->value( ), env );
         }
 
@@ -1001,7 +1001,7 @@ namespace mico { namespace eval {
                 res = eval_table( n, env ); break;
             case ast::type::REGISTRY:
                 res = eval_registry( n, env ); break;
-            case ast::type::SCOPE:
+            case ast::type::LIST:
                 res = eval_scope_node( n, env ); break;
             case ast::type::NONE:
                 break;

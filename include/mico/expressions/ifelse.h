@@ -5,7 +5,7 @@
 #include "mico/ast.h"
 #include "mico/tokens.h"
 #include "mico/expressions/impl.h"
-#include "mico/expressions/scope.h"
+#include "mico/expressions/list.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -15,7 +15,7 @@ namespace mico { namespace ast { namespace expressions {
         using this_type = impl<type::IFELSE>;
     public:
 
-        using scope_type  = ast::expressions::impl<ast::type::SCOPE>;
+        using scope_type  = ast::expressions::impl<ast::type::LIST>;
         using scope_value = scope_type::uptr;
         using uptr = std::unique_ptr<impl>;
 

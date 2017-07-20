@@ -2,7 +2,7 @@
 #define MICO_EXPRESSIONS_H
 
 #include "mico/expressions/impl.h"
-#include "mico/expressions/scope.h"
+#include "mico/expressions/list.h"
 #include "mico/expressions/fn.h"
 #include "mico/expressions/value.h"
 #include "mico/expressions/array.h"
@@ -37,7 +37,7 @@ namespace mico { namespace ast { namespace expressions {
     using table     = impl<type::TABLE>;
     using null      = impl<type::NONE>;
     using registry  = impl<type::REGISTRY>;
-    using scope     = impl<type::SCOPE>;
+    using list      = impl<type::LIST>;
 
 }}}
 

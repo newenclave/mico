@@ -6,7 +6,7 @@
 #include "mico/ast.h"
 #include "mico/tokens.h"
 #include "mico/expressions/impl.h"
-#include "mico/expressions/scope.h"
+#include "mico/expressions/list.h"
 
 namespace mico { namespace ast { namespace expressions {
 

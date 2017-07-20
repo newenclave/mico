@@ -37,7 +37,7 @@ namespace mico { namespace ast {
         INDEX,
         IFELSE,
         REGISTRY,
-        SCOPE,
+        LIST,
     };
 
     struct name {
@@ -64,7 +64,7 @@ namespace mico { namespace ast {
             case type::INDEX   : return "INDEX";
             case type::IFELSE  : return "IFELSE";
             case type::REGISTRY: return "REGISTRY";
-            case type::SCOPE   : return "SCOPE";
+            case type::LIST    : return "LIST";
             }
             return "<INVALID>"; /// sould not be here
         }

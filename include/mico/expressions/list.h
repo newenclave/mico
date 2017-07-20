@@ -10,8 +10,8 @@
 namespace mico { namespace ast { namespace expressions {
 
     template <>
-    class impl<type::SCOPE>: public typed_expr<type::SCOPE> {
-        using this_type = impl<type::SCOPE>;
+    class impl<type::LIST>: public typed_expr<type::LIST> {
+        using this_type = impl<type::LIST>;
     public:
 
         using uptr      = std::unique_ptr<this_type>;
