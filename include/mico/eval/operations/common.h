@@ -71,6 +71,7 @@ namespace mico { namespace eval { namespace operations {
                                     environment::sptr env )
 
         {
+
             switch (right->get_type( )) {
             case objects::type::BUILTIN:
                 if(inf->token( ) == tokens::type::BIT_OR) {
@@ -100,6 +101,24 @@ namespace mico { namespace eval { namespace operations {
             auto func = objects::cast_builtin(call.get( ));
             auto call_env = environment::make( func->env( ) );
             return objects::tail_call::make( call, std::move(par), call_env );
+        }
+
+        static
+        objects::sptr eval_equal( infix *inf,
+                                  objects::sptr lft, objects::sptr rght )
+        {
+            if( lft->get_type( ) == rght->get_type( ) ) {
+                bool res = lft->equal( rght.get( ) );
+                if( inf->token( ) == tokens::type::NOT_EQ ) {
+                    res = !res;
+                }
+                return objects::boolean::make( res );
+            }
+            return error_type::make( inf->pos( ), "Operation ",
+                                     lft->get_type( )," '",
+                                     inf->token( ), "' ",
+                                     rght->get_type( ),
+                                     " is not defined");
         }
 
         static

@@ -60,6 +60,11 @@ namespace mico { namespace eval { namespace operations {
                 return right;
             }
 
+            if( (inf->token( ) == tokens::type::EQ) ||
+                (inf->token( ) == tokens::type::NOT_EQ) ) {
+                return common::eval_equal( inf, obj, right );
+            }
+
             switch (right->get_type( )) {
             case objects::type::TABLE:
                 if( inf->token( ) == tokens::type::PLUS ) {
