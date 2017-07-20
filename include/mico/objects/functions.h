@@ -3,6 +3,8 @@
 
 #include "mico/objects/reference.h"
 #include "mico/objects/collectable.h"
+#include "mico/objects/null.h"
+
 #include "mico/expressions/fn.h"
 #include "mico/expressions/list.h"
 
@@ -203,6 +205,9 @@ namespace mico { namespace objects {
         }
 
         virtual
+        std::uintptr_t stub_number( ) const = 0;
+
+        virtual
         void init( environment::sptr )
         { }
 
@@ -212,7 +217,7 @@ namespace mico { namespace objects {
             std::uintptr_t id = 0;
             if( auto p = env( ) ) {
                 auto cl = clone( );
-                id = p->get_state( ).add_registry_value( cl );
+                id = p->get_state( ).add_registry_value( stub_number( ), cl );
             }
             return ast::node::make<ast_type>( pos, id );
         }

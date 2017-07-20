@@ -41,6 +41,11 @@ namespace mico {
             ,call_(std::move(c))
         { }
 
+        std::uintptr_t stub_number( ) const override
+        {
+            return reinterpret_cast<std::uintptr_t>(this);
+        }
+
         static
         objects::sptr make( environment::sptr e, call_type c )
         {

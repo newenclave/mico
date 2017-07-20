@@ -17,9 +17,9 @@ namespace mico {
             env_ = environment::make( this );
         }
 
-        std::uintptr_t add_registry_value( objects::sptr obj )
+        std::uintptr_t add_registry_value( std::uintptr_t id,
+                                           objects::sptr obj )
         {
-            auto id = reinterpret_cast<std::uintptr_t>(obj.get( ));
             registry_[id] = obj;
             return id;
         }
