@@ -693,19 +693,23 @@ namespace mico { namespace eval {
 
                 auto str = objects::cast_string( val.get( ) );
                 auto id = eval_impl_tail( idx->param( ).get( ), env );
-                std::size_t index = str->value( ).size( );
+
+                std::int64_t index = str->value( ).size( );
 
                 if( id->get_type( ) == objects::type::INTEGER ) {
                     auto iid = objects::cast_int( id.get( ) );
-                    index = static_cast<std::size_t>(iid->value( ));
+                    index = iid->value( );
                 } else if( id->get_type( ) == objects::type::FLOAT ) {
                     auto iid = objects::cast_float( id.get( ) );
-                    index = static_cast<std::size_t>(iid->value( ));
+                    index = static_cast<decltype(index)>(iid->value( ));
                 } else {
                     return error( idx->param( ).get( ), idx->param( ).get( ),
                                   " has invalid type; must be integer" );
                 }
-                if( index < str->value( ).size( ) ) {
+                if( index < 0 ) {
+                    index = str->value( ).size( ) - (index * -1);
+                }
+                if( static_cast<std::size_t>(index) < str->value( ).size( ) ) {
                     return objects::integer::make( str->value( )[index] );
                 } else {
                     return error( idx->param( ).get( ), idx->param( ).get( ),
@@ -728,6 +732,10 @@ namespace mico { namespace eval {
                     return error( idx->param( ).get( ), idx->param( ).get( ),
                                   " has invalid type; must be integer" );
                 }
+                if( index < 0 ) {
+                    index = arr->value( ).size( ) - (index * -1);
+                }
+                /// TODO fix copypaste
                 if( static_cast<std::size_t>(index) < arr->value( ).size( ) ) {
                     return arr->at( index );
                 } else {
