@@ -31,7 +31,7 @@ namespace mico { namespace objects {
             return (o->get_type( ) == get_type( ));
         }
 
-        std::shared_ptr<base> clone( ) const override
+        objects::sptr clone( ) const override
         {
             return make( );
         }

@@ -44,7 +44,7 @@ namespace mico { namespace objects {
             return std::make_shared<this_type>( res );
         }
 
-        std::shared_ptr<base> clone( ) const override
+        objects::sptr clone( ) const override
         {
             return std::make_shared<this_type>( value_ );
         }

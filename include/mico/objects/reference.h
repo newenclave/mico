@@ -104,7 +104,7 @@ namespace mico { namespace objects {
             return value_->equal( other );
         }
 
-        std::shared_ptr<base> clone( ) const override
+        objects::sptr clone( ) const override
         {
             auto res = std::make_shared<this_type>( my_env_, value_->clone( ) );
             return res;

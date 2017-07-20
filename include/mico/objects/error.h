@@ -43,7 +43,7 @@ namespace mico { namespace objects {
             return value_;
         }
 
-        std::shared_ptr<base> clone( ) const override
+        objects::sptr clone( ) const override
         {
             auto res = make( where_, value_ );
             return res;

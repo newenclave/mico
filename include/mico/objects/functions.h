@@ -122,7 +122,7 @@ namespace mico { namespace objects {
             return body_.get( );
         }
 
-        std::shared_ptr<base> clone( ) const override
+        objects::sptr clone( ) const override
         {
             return std::make_shared<this_type>( env( ), params_, body_,
                                                 start_param_ );

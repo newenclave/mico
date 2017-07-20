@@ -136,7 +136,7 @@ namespace mico { namespace objects {
             return 0;
         }
 
-        std::shared_ptr<base> clone( ) const override
+        objects::sptr clone( ) const override
         {
             using ref = impl<type::REFERENCE>;
             auto res = make( env( ) );
