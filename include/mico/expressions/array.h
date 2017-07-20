@@ -14,7 +14,7 @@ namespace mico { namespace ast { namespace expressions {
     public:
 
         using uptr = std::unique_ptr<this_type>;
-        using value_type = std::vector<node::uptr>;
+        using value_type = ast::node_list;
 
         std::string str( ) const override
         {

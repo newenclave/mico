@@ -108,8 +108,8 @@ namespace mico { namespace ast { namespace expressions {
         }
 
     private:
-        if_list             general_;
-        expression::uptr    alt_;
+        if_list          general_;
+        expression::uptr alt_;
     };
 
 }}}
