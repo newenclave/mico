@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <deque>
 #include <sstream>
 #include <functional>
 
@@ -232,12 +233,9 @@ namespace mico { namespace ast {
     template <type TN>
     using typed_expr = typed_node<TN, expression>;
 
-    using node_list       = std::vector<node::uptr>;
-    using expression_list = std::vector<expression::uptr>;
-    using statement_list  = std::vector<statement::uptr>;
-
-    using expression_slist = std::vector<expression::sptr>;
-    using statement_slist  = std::vector<statement::sptr>;
+    using node_list        = std::deque<node::uptr>;
+    using expression_list  = std::deque<expression::uptr>;
+    using statement_list   = std::deque<statement::uptr>;
 
     class program: public typed_node<type::PROGRAM, node> {
 
