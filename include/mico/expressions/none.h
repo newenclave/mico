@@ -17,6 +17,7 @@ namespace mico { namespace ast { namespace expressions {
         {
             return "null";
         }
+
         void mutate( mutator_type ) override
         {
 
