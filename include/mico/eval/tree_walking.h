@@ -2,6 +2,7 @@
 #define MICO_TREE_WALKING_H
 
 #include <iostream>
+#include <limits>
 
 #include "mico/eval/evaluator.h"
 #include "mico/expressions.h"
@@ -689,13 +690,11 @@ namespace mico { namespace eval {
                 return val;
             }
 
-            if( val->get_type( ) == objects::type::STRING ) {
-
-                auto str = objects::cast_string( val.get( ) );
+            std::int64_t index = std::numeric_limits<std::int64_t>::max( );
+            if( (val->get_type( ) == objects::type::STRING) ||
+                (val->get_type( ) == objects::type::ARRAY)   )
+            {
                 auto id = eval_impl_tail( idx->param( ).get( ), env );
-
-                std::int64_t index = str->value( ).size( );
-
                 if( id->get_type( ) == objects::type::INTEGER ) {
                     auto iid = objects::cast_int( id.get( ) );
                     index = iid->value( );
@@ -706,6 +705,12 @@ namespace mico { namespace eval {
                     return error( idx->param( ).get( ), idx->param( ).get( ),
                                   " has invalid type; must be integer" );
                 }
+            }
+
+            if( val->get_type( ) == objects::type::STRING ) {
+
+                auto str = objects::cast_string( val.get( ) );
+
                 if( index < 0 ) {
                     index = str->value( ).size( ) - (index * -1);
                 }
@@ -719,19 +724,7 @@ namespace mico { namespace eval {
             } else if(val->get_type( ) == objects::type::ARRAY) {
 
                 auto arr = objects::cast_array( val.get( ) );
-                auto id = eval_impl_tail( idx->param( ).get( ), env );
-                std::int64_t index = arr->value( ).size( );
 
-                if( id->get_type( ) == objects::type::INTEGER ) {
-                    auto iid = objects::cast_int( id.get( ) );
-                    index = static_cast<decltype(index)>(iid->value( ));
-                } else if( id->get_type( ) == objects::type::FLOAT ) {
-                    auto iid = objects::cast_float( id.get( ) );
-                    index = static_cast<decltype(index)>(iid->value( ));
-                } else {
-                    return error( idx->param( ).get( ), idx->param( ).get( ),
-                                  " has invalid type; must be integer" );
-                }
                 if( index < 0 ) {
                     index = arr->value( ).size( ) - (index * -1);
                 }
