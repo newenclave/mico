@@ -22,7 +22,7 @@ namespace mico { namespace ast { namespace expressions {
         struct node {
             node( expression::uptr val )
                 :cond(std::move(val))
-                ,body(scope_type::make( ))
+                ,body(scope_type::make_scope( ))
             { }
 
             node( ) = default;

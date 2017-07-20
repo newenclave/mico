@@ -295,7 +295,7 @@ namespace mico {
 
         ast::expressions::list::uptr parse_scope( )
         {
-            auto scope = ast::expressions::list::make( );
+            auto scope = ast::expressions::list::make_scope( );
             parse_statements( scope->value( ), token_type::RBRACE );
             return scope;
         }
