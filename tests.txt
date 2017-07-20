@@ -320,7 +320,22 @@ let tail = fn( arr ) {
             }
         }
         return impl(1, [])
+    } else {
+        []
     }
+}
+
+let reverse = fn( arr ) {
+    let impl = fn( acc ) {
+        if( arr != [] ) {
+            let h = head(arr)
+            arr   = tail(arr)
+            impl( [h] + acc )
+        } else {
+            acc
+        }
+    }
+    return impl([])
 }
 
 let a = fn( len ) {
