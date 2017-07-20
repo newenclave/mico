@@ -546,6 +546,12 @@ namespace mico { namespace eval {
             return obj_src;
         }
 
+        objects::sptr eval_scope_node( ast::node *n, environment::sptr env )
+        {
+            auto scope = static_cast<ast::expressions::scope *>( n );
+            return eval_scope_impl( scope->value( ), env );
+        }
+
         objects::sptr eval_scope( ast::statement_list &lst,
                                   environment::sptr env )
         {
@@ -606,7 +612,7 @@ namespace mico { namespace eval {
                 auto bres = objects::cast_bool(res.get( ));
                 if( bres->value( ) ) {
                     environment::scoped s(make_env(env));
-                    auto eval_states = eval_scope_impl( i.body, s.env( ));
+                    auto eval_states = eval_impl( i.body.get( ), s.env( ));
                     return unref(eval_states);
                 }
             }
@@ -992,6 +998,8 @@ namespace mico { namespace eval {
                 res = eval_table( n, env ); break;
             case ast::type::REGISTRY:
                 res = eval_registry( n, env ); break;
+            case ast::type::SCOPE:
+                res = eval_scope_node( n, env ); break;
             case ast::type::NONE:
                 break;
             }

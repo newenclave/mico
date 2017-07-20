@@ -276,7 +276,8 @@ let sum = fn(a, b, c) {
 let get_sum = fn( n ) {
     let impl = fn( a, b ) { a + b }
     impl( n )
-} let s = get_sum(10)
+}
+let s = get_sum(10);
 (*s)(20, 30)
 
 
@@ -287,5 +288,21 @@ let a = fn( ) {
     z
 }
 let d = fn(){ 200 + 100 }( )
+
+let t = fn( n ) {
+    let impl = fn( c ) {
+        if( c > 0 ) {
+            if( true ) {
+                return impl( c - 1 )
+            }
+        } else {
+            return c
+        }
+        return "here we are!";
+    }
+    return impl(n)
+}
+
+
 
 */

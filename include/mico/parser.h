@@ -305,8 +305,10 @@ namespace mico {
                 return res;
             }
             advance( );
-            parse_statements( res.body, token_type::RBRACE );
+            ast::expressions::scope::uptr s = ast::expressions::scope::make( );
+            parse_statements( s->value( ), token_type::RBRACE );
             res.cond = std::move(cond);
+            res.body = std::move(s);
 
             return res;
         }

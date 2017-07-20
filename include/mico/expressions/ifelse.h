@@ -5,6 +5,7 @@
 #include "mico/ast.h"
 #include "mico/tokens.h"
 #include "mico/expressions/impl.h"
+#include "mico/expressions/scope.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -14,11 +15,14 @@ namespace mico { namespace ast { namespace expressions {
         using this_type = impl<type::IFELSE>;
     public:
 
+        using scope_type  = ast::expressions::impl<ast::type::SCOPE>;
+        using scope_value = scope_type::uptr;
         using uptr = std::unique_ptr<impl>;
 
         struct node {
             node( expression::uptr val )
                 :cond(std::move(val))
+                ,body(scope_type::make( ))
             { }
 
             node( ) = default;
@@ -29,7 +33,7 @@ namespace mico { namespace ast { namespace expressions {
             node &operator = ( node & ) = delete;
 
             expression::uptr cond;
-            statement_list   body;
+            expression::uptr body;
         };
 
         using if_list = std::vector<node>;
@@ -41,10 +45,8 @@ namespace mico { namespace ast { namespace expressions {
             bool first = true;
             for( auto &f: general_ ) {
                 oss << (first ? "if " : " elif " )
-                    << f.cond->str( ) << " {\n";
-                for( auto &c: f.body ) {
-                    oss << c->str( ) << ";\n";
-                }
+                    << f.cond->str( );
+                oss << f.body->str( );
                 oss << "}";
                 first = false;
             }
@@ -73,9 +75,7 @@ namespace mico { namespace ast { namespace expressions {
         {
             for( auto &g: general_ ) {
                 ast::expression::apply_mutator( g.cond, call );
-                for( auto &b: g.body ) {
-                    ast::statement::apply_mutator( b, call );
-                }
+                ast::expression::apply_mutator( g.body, call );
             }
             for( auto &a: alt_ ) {
                 ast::statement::apply_mutator( a, call );
@@ -85,13 +85,7 @@ namespace mico { namespace ast { namespace expressions {
         bool is_const( ) const override
         {
             for( auto &g: general_ ) {
-                if(g.cond->is_const( )) {
-                    for( auto &b: g.body ) {
-                        if( !b->is_const( ) ) {
-                            return false;
-                        }
-                    }
-                } else {
+                if( !g.cond->is_const( ) || !g.body->is_const( ) ) {
                     return false;
                 }
             }
@@ -109,9 +103,7 @@ namespace mico { namespace ast { namespace expressions {
             for( auto &g: general_ ) {
                 node next;
                 next.cond = expression::call_clone( g.cond );
-                for( auto &b: g.body ) {
-                    next.body.emplace_back( statement::call_clone( b ) );
-                }
+                next.body = expression::call_clone( g.body );
                 res->general_.emplace_back( std::move(next) );
             }
             for( auto &a: alt_ ) {
