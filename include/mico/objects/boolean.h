@@ -42,9 +42,9 @@ namespace mico { namespace objects {
             return val ? true_this : false_this;
         }
 
-        std::uint64_t hash( ) const override
+        hash_type hash( ) const override
         {
-            return value_ ? 1 : 0;
+            return value_ ? 2 : 1;
         }
 
         bool equal( const base *other ) const override

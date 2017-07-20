@@ -79,7 +79,7 @@ namespace mico { namespace objects {
             return std::make_shared<this_type>( env );
         }
 
-        std::uint64_t hash( ) const override
+        hash_type hash( ) const override
         {
             auto init = static_cast<std::uint64_t>(get_type( ));
             std::uint64_t h = base::hash64( init );

@@ -38,7 +38,7 @@ namespace mico { namespace objects {
             return value_;
         }
 
-        std::size_t hash( ) const override
+        hash_type hash( ) const override
         {
             std::hash<std::string> h;
             return h(value_);

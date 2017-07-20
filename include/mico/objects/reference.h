@@ -94,7 +94,7 @@ namespace mico { namespace objects {
             return value_->unmark_in( e );
         }
 
-        std::uint64_t hash( ) const override
+        hash_type hash( ) const override
         {
             return value_->hash( );
         }

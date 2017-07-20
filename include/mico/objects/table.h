@@ -83,12 +83,12 @@ namespace mico { namespace objects {
             return false;
         }
 
-        std::uint64_t hash( ) const override
+        hash_type hash( ) const override
         {
             auto h = static_cast<std::uint64_t>(get_type( ));
             for( auto &o: value( ) ) {
                 h = base::hash64( h + o.first->hash( ) +
-                                     o.second->hash( ) );
+                                      o.second->hash( ) );
             }
             return h;
         }

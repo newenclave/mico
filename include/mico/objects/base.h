@@ -63,6 +63,8 @@ namespace mico { namespace objects {
 
     struct base {
 
+        using hash_type = std::uint64_t;
+
         virtual ~base( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
@@ -72,7 +74,7 @@ namespace mico { namespace objects {
         ast::node::uptr to_ast( tokens::position ) const = 0;
 
         virtual
-        std::uint64_t hash( ) const
+        hash_type hash( ) const
         {
             std::hash<std::string> h;
             return h( str( ) )  ;

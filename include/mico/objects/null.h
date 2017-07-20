@@ -21,7 +21,8 @@ namespace mico { namespace objects {
             static auto val = std::make_shared<this_type>( );
             return val;
         }
-        std::uint64_t hash( ) const override
+
+        hash_type hash( ) const override
         {
             return 0;
         }
