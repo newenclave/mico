@@ -67,11 +67,7 @@ namespace mico { namespace ast { namespace expressions {
 
         std::size_t param_size( ) const
         {
-            if( params_->get_type( ) == ast::type::LIST ) {
-                auto p = static_cast<const list_type *>(params_.get( ));
-                return p->value( ).size( );
-            }
-            return 1;
+            return params_->value( ).size( );
         }
 
         const body_type &body( ) const
