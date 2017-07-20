@@ -46,7 +46,7 @@ namespace mico { namespace ast {
         const char *get( type t )
         {
             switch (t) {
-            case type::NONE    : return "none";
+            case type::NONE    : return "NONE";
             case type::PROGRAM : return "PROGRAM";
             case type::IDENT   : return "IDENTIFIER";
             case type::LET     : return "LET";
