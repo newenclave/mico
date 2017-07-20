@@ -5,6 +5,7 @@
 #include "mico/ast.h"
 #include "mico/tokens.h"
 #include "mico/expressions/impl.h"
+#include "mico/expressions/scope.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -13,7 +14,7 @@ namespace mico { namespace ast { namespace expressions {
         using this_type = impl<type::CALL>;
     public:
 
-        using uptr = std::unique_ptr<impl>;
+        using uptr       = std::unique_ptr<impl>;
         using param_type = expression::uptr;
 
         impl( node::uptr f )

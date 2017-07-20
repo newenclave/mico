@@ -12,7 +12,8 @@ namespace mico { namespace ast { namespace expressions {
     class impl<type::NONE>: public typed_expr<type::NONE> {
         using this_type = impl<type::NONE>;
     public:
-        std::string str( ) const
+
+        std::string str( ) const override
         {
             return "null";
         }

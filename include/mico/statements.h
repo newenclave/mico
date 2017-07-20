@@ -23,7 +23,7 @@ namespace mico { namespace ast { namespace statements {
             ,expr_(std::move(val))
         { }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << "let " << ident( )->str( ) << " = " << value( )->str( );
@@ -87,7 +87,7 @@ namespace mico { namespace ast { namespace statements {
             :expr_(std::move(val))
         { }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << "return " << value( )->str( );
@@ -134,7 +134,7 @@ namespace mico { namespace ast { namespace statements {
             :expr_(std::move(val))
         { }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             return expr_->str( );
         }

@@ -11,7 +11,7 @@ namespace mico { namespace objects {
 
         static const type type_value = type::NULL_OBJ;
         using sptr = std::shared_ptr<this_type>;
-        std::string str( ) const
+        std::string str( ) const override
         {
             return "null";
         }

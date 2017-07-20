@@ -37,6 +37,7 @@ namespace mico { namespace ast {
         INDEX,
         IFELSE,
         REGISTRY,
+        SCOPE,
     };
 
     struct name {
@@ -63,8 +64,9 @@ namespace mico { namespace ast {
             case type::INDEX   : return "INDEX";
             case type::IFELSE  : return "IFELSE";
             case type::REGISTRY: return "REGISTRY";
+            case type::SCOPE   : return "SCOPE";
             }
-            return "<INVALID>";
+            return "<INVALID>"; /// sould not be here
         }
     };
 
@@ -80,6 +82,7 @@ namespace mico { namespace ast {
         virtual std::string str( ) const = 0;
         virtual void mutate( mutator_type ) = 0;
         virtual uptr clone( ) const = 0;
+        virtual bool is_const( ) const = 0;
 
         template <typename ArtT, typename ...Args>
         static
@@ -113,9 +116,6 @@ namespace mico { namespace ast {
         {
             return false;
         }
-
-        virtual
-        bool is_const( ) const = 0;
 
         static
         bool apply_mutator( uptr &target, const node::mutator_type &call )

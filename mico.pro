@@ -64,7 +64,8 @@ HEADERS += \
     etool/include/etool/trees/trie/nodes/map.h \
     etool/include/etool/trees/trie/base.h \
     etool/include/etool/impls/result.h \
-    include/mico/expressions/registry.h
+    include/mico/expressions/registry.h \
+    include/mico/expressions/scope.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

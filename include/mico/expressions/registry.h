@@ -21,7 +21,7 @@ namespace mico { namespace ast { namespace expressions {
             :value_(val)
         { }
 
-        std::string str( ) const
+        std::string str( ) const override
         {
             std::ostringstream oss;
             oss << std::hex << "reg(" << value( ) << ")";
