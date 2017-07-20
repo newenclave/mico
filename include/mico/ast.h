@@ -144,7 +144,34 @@ namespace mico { namespace ast {
         {
             return TN;
         }
+        static const type type_name = TN;
     };
+
+    template <typename T>
+    inline
+    T *cast( node *val )
+    {
+#if defined(CHECK_CASTS)
+        if( T::type_name != val->get_type( ) ) {
+            throw  std::runtime_error( "Bad node* cast" );
+        }
+#endif
+        return static_cast<T *>(val);
+    }
+
+    template <typename T>
+    inline
+    typename T::uptr cast( node::uptr &val )
+    {
+#if defined(CHECK_CASTS)
+        if( T::type_name != val->get_type( ) ) {
+            throw  std::runtime_error( "Bad unique<node> cast" );
+        }
+#endif
+        typename T::uptr res( static_cast<T *>(val.release( ) ) );
+        return res;
+    }
+
 
     using node_sptr = std::shared_ptr<node>;
     using node_uptr = std::unique_ptr<node>;

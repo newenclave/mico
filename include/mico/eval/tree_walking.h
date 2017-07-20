@@ -137,20 +137,20 @@ namespace mico { namespace eval {
 
         objects::boolean::sptr get_bool( ast::node *n )
         {
-            auto bstate = static_cast<ast::expressions::boolean *>(n);
+            auto bstate = ast::cast<ast::expressions::boolean>(n);
             return bstate->value( ) ? get_bool_true( ) : get_bool_false( );
         }
 
 
         objects::integer::sptr eval_int( ast::node *n )
         {
-            auto state = static_cast<ast::expressions::integer *>(n);
+            auto state = ast::cast<ast::expressions::integer>(n);
             return std::make_shared<objects::integer>( state->value( ) );
         }
 
         objects::integer::sptr get_signed( ast::node *n )
         {
-            auto state = static_cast<ast::expressions::integer *>(n);
+            auto state = ast::cast<ast::expressions::integer>(n);
             auto sign_value = static_cast<std::int64_t>(state->value( ));
             return std::make_shared<objects::integer>( sign_value );
         }
@@ -191,7 +191,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_float( ast::node *n )
         {
-            auto state = static_cast<ast::expressions::floating *>(n);
+            auto state = ast::cast<ast::expressions::floating>(n);
             return std::make_shared<objects::floating>( state->value( ) );
         }
 
@@ -202,7 +202,7 @@ namespace mico { namespace eval {
 
         objects::string::sptr eval_string( ast::node *n )
         {
-            auto val = static_cast<ast::expressions::string *>(n);
+            auto val = ast::cast<ast::expressions::string>(n);
             return std::make_shared<objects::string>( val->value( ) );
         }
 
@@ -236,7 +236,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_prefix( ast::node *n, environment::sptr env )
         {
-            auto expr = static_cast<ast::expressions::prefix *>( n );
+            auto expr = ast::cast<ast::expressions::prefix>( n );
             auto oper = eval_impl(expr->value( ).get( ), env);
 
             if( is_fail(oper) ) {
@@ -362,7 +362,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_infix( ast::node *n, environment::sptr env )
         {
-            auto inf = static_cast<ast::expressions::infix *>(n);
+            auto inf = ast::cast<ast::expressions::infix>(n);
 
             /// need to do some optimization for OR, AND operation
 
@@ -470,7 +470,7 @@ namespace mico { namespace eval {
 
         objects::sptr create_tail_call( ast::node *n, environment::sptr env )
         {
-            auto call = static_cast<ast::expressions::call *>( n );
+            auto call = ast::cast<ast::expressions::call>( n );
             auto fun = eval_impl(call->func( ).get( ), env);
             if( is_null( fun ) || !is_func( fun ) ) {
                 ///// TODO error call object
@@ -530,7 +530,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_scope_node( ast::node *n, environment::sptr env )
         {
-            auto scope = static_cast<ast::expressions::list *>( n );
+            auto scope = ast::cast<ast::expressions::list>( n );
             return eval_scope_impl( scope->value( ), env );
         }
 
@@ -580,7 +580,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_ifelse( ast::node *n, environment::sptr env )
         {
-            auto ifblock = static_cast<ast::expressions::ifelse *>( n );
+            auto ifblock = ast::cast<ast::expressions::ifelse>( n );
 
             for( auto &i: ifblock->ifs(  ) ) {
                 auto cond = unref(eval_impl( i.cond.get( ), env ));
@@ -609,7 +609,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_program( ast::node *n, environment::sptr env )
         {
-            auto prog = static_cast<ast::program *>( n );
+            auto prog = ast::cast<ast::program>( n );
             objects::sptr last = get_null( );
             for( auto &s: prog->states( ) ) {
                 last = eval_impl_tail( s.get( ), env );
@@ -622,13 +622,13 @@ namespace mico { namespace eval {
 
         objects::sptr eval_expression( ast::node *n, environment::sptr env )
         {
-            auto expr = static_cast<ast::statements::expr *>( n );
+            auto expr = ast::cast<ast::statements::expr>( n );
             return eval_impl( expr->value( ).get( ), env );
         }
 
         objects::sptr eval_let( ast::node *n, environment::sptr env )
         {
-            auto expr = static_cast<ast::statements::let *>( n );
+            auto expr = ast::cast<ast::statements::let>( n );
             auto id   = expr->ident( )->str( );
             auto val  = eval_impl( expr->value( ), env );
             if( is_fail( val ) ) {
@@ -640,7 +640,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_return( ast::node *n, environment::sptr env )
         {
-            auto expr = static_cast<ast::statements::ret *>( n );
+            auto expr = ast::cast<ast::statements::ret>( n );
             auto val  = eval_impl( expr->value( ), env );
             return std::make_shared<objects::retutn_obj>(val);
         }
@@ -648,7 +648,7 @@ namespace mico { namespace eval {
         objects::sptr eval_ident( ast::node *n, environment::sptr env )
         {
 
-            auto expr = static_cast<ast::expressions::ident *>( n );
+            auto expr = ast::cast<ast::expressions::ident>( n );
             auto val = env->get( expr->value( ) );
             if( !val ) {
                 return error( n, "Identifier not found '", n->str( ), "'" );
@@ -659,7 +659,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_function( ast::node *n, environment::sptr env )
         {
-            auto func = static_cast<ast::expressions::function *>( n );
+            auto func = ast::cast<ast::expressions::function>( n );
             auto init_size = func->inits( ).size( );
             if( init_size > func->param_size( ) ) {
                 init_size = func->param_size( );
@@ -681,7 +681,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_index( ast::node *n, environment::sptr env )
         {
-            auto idx = static_cast<ast::expressions::index *>(n);
+            auto idx = ast::cast<ast::expressions::index>(n);
 
             auto val = unref(eval_impl_tail( idx->value( ).get( ), env ));
 
@@ -821,7 +821,7 @@ namespace mico { namespace eval {
                                       environment::sptr env,
                                       environment::sptr &/*work_env*/ )
         {
-            auto call = static_cast<ast::expressions::call *>( n );
+            auto call = ast::cast<ast::expressions::call>( n );
             auto fun = unref(eval_impl(call->func( ).get( ), env));
             if( is_fail( fun ) ) {
                 return fun;
@@ -885,7 +885,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_array( ast::node *n, environment::sptr env )
         {
-            auto arr = static_cast<ast::expressions::array *>( n );
+            auto arr = ast::cast<ast::expressions::array>( n );
             auto res = objects::array::make( env );
 
             for( auto &a: arr->value( ) ) {
@@ -901,7 +901,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_table( ast::node *n, environment::sptr env )
         {
-            auto table = static_cast<ast::expressions::table *>( n );
+            auto table = ast::cast<ast::expressions::table>( n );
 
             auto res = objects::table::make( env );
 
@@ -929,7 +929,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_registry( ast::node *n, environment::sptr env )
         {
-            auto reg = static_cast<ast::expressions::registry *>(n);
+            auto reg = ast::cast<ast::expressions::registry>(n);
             auto obj = env->get_state( ).get_registry_value( reg->value( ) );
             if( !obj ) {
                 return error(n, "Registry object not found. ", reg->str( ));

@@ -30,8 +30,7 @@ namespace mico { namespace objects {
         static const type type_value = TN;
         using sptr = std::shared_ptr<this_type>;
 
-        static const type type_name = TN;
-        using value_type = typename type2object<type_name>::native_type;
+        using value_type = typename type2object<TN>::native_type;
 
         impl(value_type val)
             :value_(val)
