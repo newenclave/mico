@@ -304,6 +304,35 @@ let t = fn( n ) {
     return impl(n)
 }
 
+let head = fn( arr ) {
+    if( len(arr) > 0 ) {
+        return arr[0]
+    }
+}
 
+let tail = fn( arr ) {
+    if( len(arr) > 1 ) {
+        let impl = fn( c, acc ) {
+            if( c < len(arr) ) {
+                return impl( c + 1, acc + [arr[c]] )
+            } else {
+                return acc
+            }
+        }
+        return impl(1, [])
+    }
+}
+
+let a = fn( len ) {
+    let impl = fn( accum, len ) {
+        if( len > 0 ) {
+            puts(len)
+            return impl(accum + [0], len - 1)
+        } else {
+            return accum
+        }
+    }
+    return impl([], len)
+}
 
 */
