@@ -14,38 +14,52 @@ namespace mico { namespace ast { namespace expressions {
         using this_type = impl<type::CALL>;
     public:
 
+        using list_type  = expressions::impl<ast::type::LIST>;
         using uptr       = std::unique_ptr<impl>;
-        using param_type = expression::uptr;
+        using param_type = list_type::uptr;
 
         impl( node::uptr f )
             :expr_(std::move(f))
+            ,params_(list_type::make_params( ))
         { }
 
         std::string str( ) const override
         {
             std::ostringstream oss;
             oss << expr_->str( ) << "(";
-            bool second = false;
-            for( auto &par: params( ) ) {
-                if( second) {
-                    oss << ", ";
-                } else {
-                    second = true;
-                }
-                oss << par->str( );
-            }
+            oss << params_->str( );
             oss << ")";
             return oss.str( );
         }
 
-        const expression_list &params( ) const
+        const param_type &params( ) const
         {
             return params_;
         }
 
-        expression_list &params( )
+        ast::node_list &param_list( )
         {
-            return params_;
+            return params_->value( );
+        }
+
+        const ast::node_list &param_list( ) const
+        {
+            return params_->value( );
+        }
+
+        ast::node::uptr &param_at( std::size_t pos )
+        {
+            return params_->value( )[pos];
+        }
+
+        const ast::node::uptr &param_at( std::size_t pos ) const
+        {
+            return params_->value( )[pos];
+        }
+
+        void set_params( param_type val )
+        {
+            params_ = std::move(val);
         }
 
         node::uptr &func( )
@@ -61,37 +75,27 @@ namespace mico { namespace ast { namespace expressions {
         void mutate( mutator_type call ) override
         {
             ast::node::apply_mutator( expr_, call );
-            for( auto &a: params_ ) {
-                ast::expression::apply_mutator( a, call );
+            for( auto &a: params_->value( ) ) {
+                ast::node::apply_mutator( a, call );
             }
         }
 
         bool is_const( ) const override
         {
-            if( expr_->is_const( ) ) {
-                for( auto &p: params_ ) {
-                    if( !p->is_const( ) ) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return false;
+            return expr_->is_const( ) && params( )->is_const( );
         }
 
         ast::node::uptr clone( ) const override
         {
             auto expr = node::call_clone( expr_ );
             uptr res(new this_type( std::move( expr ) ) );
-            for( auto &ex: params_ ) {
-                res->params_.emplace_back( expression::call_clone( ex ) );
-            }
+            res->params_ = params_->clone_me( );
             return res;
         }
 
     private:
-        node::uptr       expr_;
-        expression_list  params_;
+        node::uptr  expr_;
+        param_type  params_;
     };
 
 

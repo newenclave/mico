@@ -11,8 +11,8 @@ namespace mico { namespace ast { namespace expressions {
 
     template <>
     class impl<type::LIST>: public typed_expr<type::LIST> {
-        using this_type = impl<type::LIST>;
 
+        using this_type = impl<type::LIST>;
 
     public:
 
@@ -22,6 +22,7 @@ namespace mico { namespace ast { namespace expressions {
         };
 
     private:
+
         static
         const char *role2str( role r)
         {
@@ -35,8 +36,8 @@ namespace mico { namespace ast { namespace expressions {
     public:
 
         using uptr      = std::unique_ptr<this_type>;
-        //using sptr      = std::shared_ptr<this_type>;
-        using list_type = statement_list;
+        using sptr      = std::shared_ptr<this_type>;
+        using list_type = node_list;
 
         impl<type::LIST>( role scope )
             :scope_(scope)
@@ -67,16 +68,29 @@ namespace mico { namespace ast { namespace expressions {
             return oss.str( );
         }
 
+        template<role R>
+        static
+        uptr make( )
+        {
+            return uptr( new this_type(R) );
+        }
+
         static
         uptr make_scope( )
         {
-            return uptr(new this_type(role::LIST_SCOPE));
+            return make<role::LIST_SCOPE>( );
+        }
+
+        static
+        uptr make_params( )
+        {
+            return make<role::LIST_PARAMS>( );
         }
 
         void mutate( node::mutator_type call ) override
         {
             for( auto &v: value_ ) {
-                ast::statement::apply_mutator( v, call );
+                ast::node::apply_mutator( v, call );
             }
         }
 
@@ -90,13 +104,18 @@ namespace mico { namespace ast { namespace expressions {
             return true;
         }
 
-        ast::node::uptr clone( ) const override
+        uptr clone_me( ) const
         {
             uptr res(new this_type(scope_));
             for( auto &v: value_ ) {
-                res->value_.emplace_back( ast::statement::call_clone( v ) );
+                res->value_.emplace_back( ast::node::call_clone( v ) );
             }
             return res;
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            return clone_me( );
         }
 
     private:

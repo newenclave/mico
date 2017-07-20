@@ -45,15 +45,13 @@ namespace mico { namespace ast { namespace expressions {
             bool first = true;
             for( auto &f: general_ ) {
                 oss << (first ? "if " : " elif " )
-                    << f.cond->str( );
-                oss << f.body->str( );
-                oss << "}";
+                    << "(" << f.cond->str( ) << ") ";
+                oss << "{\n" << f.body->str( ) << "\n}";
                 first = false;
             }
             if( alt_ ) {
-                oss << " else " << alt_->str( );
+                oss << " else {\n" << alt_->str( ) << "\n}";
             }
-
             return oss.str( );
         }
 

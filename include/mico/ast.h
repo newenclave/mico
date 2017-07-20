@@ -232,6 +232,7 @@ namespace mico { namespace ast {
     template <type TN>
     using typed_expr = typed_node<TN, expression>;
 
+    using node_list       = std::vector<node::uptr>;
     using expression_list = std::vector<expression::uptr>;
     using statement_list  = std::vector<statement::uptr>;
 
@@ -245,10 +246,10 @@ namespace mico { namespace ast {
         using uptr = std::unique_ptr<program>;
         using sptr = std::shared_ptr<program>;
 
-        using state_list = statement_list;
+        using state_list = node_list;
         using error_list = std::vector<std::string>;
 
-        const std::vector<statement::uptr> &states( ) const
+        const node_list &states( ) const
         {
             return states_;
         }
@@ -287,7 +288,7 @@ namespace mico { namespace ast {
         void mutate( mutator_type call ) override
         {
             for( auto &s: states_ ) {
-                ast::statement::apply_mutator( s, call );
+                ast::node::apply_mutator( s, call );
             }
         }
 
@@ -309,7 +310,7 @@ namespace mico { namespace ast {
             uptr res(new program);
             res->errors_ = errors_;
             for( auto &st: states_ ) {
-                res->states_.emplace_back( statement::call_clone( st ) );
+                res->states_.emplace_back( node::call_clone( st ) );
             }
             return res;
         }

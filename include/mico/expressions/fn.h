@@ -19,30 +19,24 @@ namespace mico { namespace ast { namespace expressions {
 
         using uptr = std::unique_ptr<impl>;
 
-        using stmt_type   = statement::uptr;
-        using ident_type  = expression::uptr;
-        using init_map    = std::map<std::string, expression::uptr>;
+        using stmt_type    = statement::uptr;
+        using ident_type   = expression::uptr;
+        using init_map     = std::map<std::string, node::uptr>;
 
-        using body_type   = ast::node::uptr;
-
-        using params_slist = std::shared_ptr<expression_list>;
+        using body_type    = ast::node::uptr;
+        using list_type    = expressions::impl<ast::type::LIST>;
+        using params_type  = list_type::uptr;
 
         impl( )
-            :params_(std::make_shared<expression_list>( ))
+            :params_(list_type::make_params( ))
         { }
 
         std::string str( ) const override
         {
             std::ostringstream oss;
             oss << "fn(";
-            bool second = false;
-            for( auto &id: params( ) ) {
-                if( second) {
-                    oss << ", ";
-                } else {
-                    second = true;
-                }
-                oss << id->str( );
+            if( params_ ) {
+                oss << params_->str( );
             }
             oss << ") {\n";
             for( auto &init: inits( ) ) {
@@ -66,19 +60,18 @@ namespace mico { namespace ast { namespace expressions {
             return inits_;
         }
 
-        params_slist &params_ptr( )
+        const params_type &params( ) const
         {
             return params_;
         }
 
-        const expression_list &params( ) const
+        std::size_t param_size( ) const
         {
-            return *params_;
-        }
-
-        expression_list &params( )
-        {
-            return *params_;
+            if( params_->get_type( ) == ast::type::LIST ) {
+                auto p = static_cast<const list_type *>(params_.get( ));
+                return p->value( ).size( );
+            }
+            return 1;
         }
 
         const body_type &body( ) const
@@ -91,15 +84,18 @@ namespace mico { namespace ast { namespace expressions {
             body_ = std::move(val);
         }
 
+        void set_params( params_type val )
+        {
+            params_ = std::move(val);
+        }
+
         void mutate( mutator_type call ) override
         {
             for( auto &ini: inits_ ) {
-                ast::expression::apply_mutator( ini.second, call );
+                ast::node::apply_mutator( ini.second, call );
             }
-            for( auto &par: *params_ ) {
-                ast::expression::apply_mutator( par, call );
-            }
-            ast::node::apply_mutator( body_, call );
+            params_->mutate( call ); // cannot be mutated
+            ast::node::apply_mutator( body_,   call );
         }
 
         bool is_const( ) const override
@@ -112,19 +108,17 @@ namespace mico { namespace ast { namespace expressions {
             uptr res(new this_type);
             for( auto &ini: inits_ ) {
                 res->inits_.emplace( ini.first,
-                                     expression::call_clone( ini.second ) );
+                                     node::call_clone( ini.second ) );
             }
-            for( auto &par: *params_ ) {
-                res->params_->emplace_back( expression::call_clone( par ) );
-            }
-            res->body_ = ast::node::call_clone( body_ );
+            res->params_ = params_->clone_me( );
+            res->body_   = ast::node::call_clone( body_ );
             return res;
         }
 
     private:
-        init_map      inits_;
-        params_slist  params_;
-        body_type     body_;
+        init_map     inits_;
+        params_type  params_;
+        body_type    body_;
     };
 
 }}}

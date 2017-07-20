@@ -4,6 +4,7 @@
 #include "mico/objects/reference.h"
 #include "mico/objects/collectable.h"
 #include "mico/expressions/fn.h"
+#include "mico/expressions/list.h"
 
 #include "mico/state.h"
 
@@ -16,22 +17,26 @@ namespace mico { namespace objects {
         static const type type_value = type::FUNCTION;
         using sptr = std::shared_ptr<this_type>;
 
-        using param_iterator = ast::expression_list::iterator;
+        using param_iterator = ast::node_list::iterator;
+
         using body_type = ast::node;
         using body_ptr  = body_type::sptr;
 
+        using param_type = ast::expressions::list;
+        using param_ptr  = param_type::sptr;
+
         impl( std::shared_ptr<environment> e,
-                 std::shared_ptr<ast::expression_list> par,
+                 param_type::uptr par,
                  body_type::uptr body,
                  std::size_t start = 0)
             :collectable(e)
-            ,params_(par)
+            ,params_(par.release( ))
             ,body_(body.release( ))
             ,start_param_(start)
         { }
 
         impl( std::shared_ptr<environment> e,
-                 std::shared_ptr<ast::expression_list> par,
+                 param_ptr par,
                  body_ptr body,
                  std::size_t start = 0)
             :collectable(e)
@@ -49,18 +54,20 @@ namespace mico { namespace objects {
             if( start_param_ == 0  ) {
                 oss << "fn(" << param_size( ) << ")";
             } else {
-                oss << "fn(" << param_size( ) << ":" << params_->size( ) << ")";
+                oss << "fn(" << param_size( ) << ":"
+                    << params_->value( ).size( ) << ")";
             }
             return oss.str( );
         }
 
         static
         sptr make( std::shared_ptr<environment> e,
-                   std::shared_ptr<ast::expression_list> par,
+                   param_type::uptr par,
                    ast::node::uptr body,
                    std::size_t start = 0 )
         {
-            return std::make_shared<impl>( e, par, std::move(body), start );
+            return std::make_shared<impl>( e, std::move(par), std::move(body),
+                                           start );
         }
 
         static
@@ -92,17 +99,17 @@ namespace mico { namespace objects {
 
         param_iterator begin( )
         {
-            return params_->begin( ) + start_param_;
+            return params_->value( ).begin( ) + start_param_;
         }
 
         param_iterator end( )
         {
-            return params_->end( );
+            return params_->value( ).end( );
         }
 
         std::size_t param_size( ) const
         {
-            return params_->size( ) - start_param_;
+            return params_->value( ).size( ) - start_param_;
         }
 
         const ast::node *body( ) const
@@ -128,10 +135,12 @@ namespace mico { namespace objects {
 
             auto e = env( );
             res->set_body( body_->clone( ) );
-            res->params_ptr( ) = params_;
+            //res->set_params( params_->clone( ) );
 
             for( std::size_t i = 0; i < start_param_; ++i ) {
-                auto &p((*params_)[i]);
+
+                auto &p( params_->value( )[i] );
+
                 if( p->get_type( ) == ast::type::IDENT ) {
                     auto id = static_cast<ast::expressions::ident *>(p.get( ));
                     auto obj = e->get( id->value( ) );
@@ -154,7 +163,7 @@ namespace mico { namespace objects {
 
     private:
 
-        std::shared_ptr<ast::expression_list> params_;
+        param_ptr   params_;
         body_ptr    body_;
         std::size_t start_param_ = 0;
     };

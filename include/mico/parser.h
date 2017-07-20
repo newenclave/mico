@@ -474,17 +474,36 @@ namespace mico {
             return res;
         }
 
-        bool parse_ident_list( std::vector<ast::expression::uptr> &res )
+        ast::expressions::list::uptr parse_ident_list( )
         {
+            auto res = ast::expressions::list::make_params( );
             while( is_current( token_type::IDENT ) ) {
-                res.emplace_back(parse_ident( ));
+                res->value( ).emplace_back(parse_ident( ));
                 if( expect_peek( token_type::COMMA, false ) ) {
                     advance( );
                 } else {
                     break;
                 }
             }
-            return true;
+            return res;
+        }
+
+        ast::expressions::list::uptr parse_expression_list( )
+        {
+            auto res = ast::expressions::list::make_params( );
+            if( !is_current( token_type::SEMICOLON ) ) do {
+                auto next = parse_expression( precedence::LOWEST );
+                if( !next ) {
+                    return res;
+                }
+                res->value( ).emplace_back( std::move(next) );
+                if( expect_peek( token_type::COMMA, false ) ) {
+                    advance( );
+                } else {
+                    break;
+                }
+            } while( true );
+            return res;
         }
 
         bool parse_expression_list( std::vector<ast::expression::uptr> &res )
@@ -652,8 +671,7 @@ namespace mico {
 
             advance( );
             if( !is_current( token_type::RPAREN ) ) {
-                parse_ident_list( res->params( ) );
-
+                res->set_params( parse_ident_list( ) );
                 if( !expect_peek( token_type::RPAREN ) ) {
                     return fn_type::uptr( );
                 }
@@ -677,7 +695,7 @@ namespace mico {
             advance( );
 
             if( !is_current( token_type::RPAREN ) ) {
-                parse_expression_list( res->params( ) );
+                res->set_params( parse_expression_list( ) );
                 if( !expect_peek( token_type::RPAREN ) ) {
                     return call_type::uptr( );
                 }
@@ -717,7 +735,7 @@ namespace mico {
             return stmt;
         }
 
-        void parse_statements( ast::statement_list &stmts, token_type stop )
+        void parse_statements( ast::node_list &stmts, token_type stop )
         {
             while( !eof( ) && !is_current( stop ) ) {
 

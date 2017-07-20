@@ -462,9 +462,8 @@ namespace mico { namespace eval {
                 for( auto &p: *vfun ) {
                     if( p->get_type( ) == ast::type::IDENT ) {
                         auto n = static_cast<ident_type *>(p.get( ));
-                        auto v = unref(
-                                 eval_impl_tail( call->params( )[id++].get( ),
-                                                 env ) );
+                        auto v = unref( eval_impl_tail(
+                                        call->param_at(id++).get( ), env ) );
                         new_env->set(n->value( ), v);
                     } else {
                         /// TODO bad param
@@ -477,7 +476,7 @@ namespace mico { namespace eval {
                 auto vfun = objects::cast_builtin(fun);
                 auto new_env = environment::make(vfun->env( ));
 
-                for( auto &cp: call->params( ) ) {
+                for( auto &cp: call->param_list( ) ) {
                     auto v = unref( eval_impl_tail( cp.get( ), env ) );
                     params.push_back( v );
                 }
@@ -552,14 +551,14 @@ namespace mico { namespace eval {
             return eval_scope_impl( scope->value( ), env );
         }
 
-        objects::sptr eval_scope( ast::statement_list &lst,
+        objects::sptr eval_scope( ast::node_list &lst,
                                   environment::sptr env )
         {
             objects::sptr res = eval_scope_impl(lst, env);
             return eval_tail( res );
         }
 
-        objects::sptr eval_scope_impl( ast::statement_list &lst,
+        objects::sptr eval_scope_impl( ast::node_list &lst,
                                        environment::sptr env )
         {
             using return_type = ast::statements::ret;
@@ -679,11 +678,11 @@ namespace mico { namespace eval {
         {
             auto func = static_cast<ast::expressions::function *>( n );
             auto init_size = func->inits( ).size( );
-            if( init_size > func->params( ).size( ) ) {
-                init_size = func->params( ).size( );
+            if( init_size > func->param_size( ) ) {
+                init_size = func->param_size( );
             }
             auto fff  = objects::function::make( make_env(env),
-                                                 func->params_ptr( ),
+                                                 func->params( )->clone_me( ),
                                                  func->body( )->clone( ),
                                                  init_size );
 
@@ -783,7 +782,7 @@ namespace mico { namespace eval {
                                         environment::sptr env )
         {
             objects::slist res;
-            for( auto &e: call->params( ) ) {
+            for( auto &e: call->param_list( ) ) {
                 auto next = unref(eval_impl_tail( e.get( ), env ));
                 if( is_fail(next) ) {
                     return objects::slist { next };
@@ -802,7 +801,7 @@ namespace mico { namespace eval {
             if( fun->get_type( ) == objects::type::FUNCTION ) {
                 auto vfun = objects::cast_func(fun);
 
-                std::size_t call_params = call->params( ).size( );
+                std::size_t call_params = call->param_list( ).size( );
                 if( call_params < vfun->param_size( ) ) {
 
                     if( call_params == 0 ) {
@@ -815,7 +814,7 @@ namespace mico { namespace eval {
 
                         auto &p(*(vfun->begin( ) + i));
 
-                        auto &c(call->params( ) [i]);
+                        auto &c(call->param_at( i ));
 
                         auto ptype = p->get_type( );
 
