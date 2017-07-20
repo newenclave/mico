@@ -17,14 +17,26 @@ namespace mico { namespace objects {
         using sptr = std::shared_ptr<this_type>;
 
         using param_iterator = ast::expression_list::iterator;
+        using body_type = ast::node;
+        using body_ptr  = body_type::sptr;
 
         impl( std::shared_ptr<environment> e,
                  std::shared_ptr<ast::expression_list> par,
-                 std::shared_ptr<ast::statement_list> st,
+                 body_type::uptr body,
                  std::size_t start = 0)
             :collectable(e)
             ,params_(par)
-            ,body_(st)
+            ,body_(body.release( ))
+            ,start_param_(start)
+        { }
+
+        impl( std::shared_ptr<environment> e,
+                 std::shared_ptr<ast::expression_list> par,
+                 body_ptr body,
+                 std::size_t start = 0)
+            :collectable(e)
+            ,params_(par)
+            ,body_(body)
             ,start_param_(start)
         { }
 
@@ -42,18 +54,13 @@ namespace mico { namespace objects {
             return oss.str( );
         }
 
-        const ast::statement_list &body( ) const
-        {
-            return *body_;
-        }
-
         static
         sptr make( std::shared_ptr<environment> e,
                    std::shared_ptr<ast::expression_list> par,
-                   std::shared_ptr<ast::statement_list> st,
+                   ast::node::uptr body,
                    std::size_t start = 0 )
         {
-            return std::make_shared<impl>( e, par, st, start );
+            return std::make_shared<impl>( e, par, std::move(body), start );
         }
 
         static
@@ -98,9 +105,14 @@ namespace mico { namespace objects {
             return params_->size( ) - start_param_;
         }
 
-        ast::statement_list &body( )
+        const ast::node *body( ) const
         {
-            return *body_;
+            return body_.get( );
+        }
+
+        ast::node *body( )
+        {
+            return body_.get( );
         }
 
         std::shared_ptr<base> clone( ) const override
@@ -115,7 +127,7 @@ namespace mico { namespace objects {
             auto res = ast::node::make<ast_type>(pos);
 
             auto e = env( );
-            res->body_ptr( )   = body_;
+            res->set_body( body_->clone( ) );
             res->params_ptr( ) = params_;
 
             for( std::size_t i = 0; i < start_param_; ++i ) {
@@ -143,7 +155,7 @@ namespace mico { namespace objects {
     private:
 
         std::shared_ptr<ast::expression_list> params_;
-        std::shared_ptr<ast::statement_list>  body_;
+        body_ptr    body_;
         std::size_t start_param_ = 0;
     };
 

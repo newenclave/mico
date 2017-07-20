@@ -6,6 +6,7 @@
 #include "mico/ast.h"
 #include "mico/tokens.h"
 #include "mico/expressions/impl.h"
+#include "mico/expressions/scope.h"
 
 namespace mico { namespace ast { namespace expressions {
 
@@ -22,12 +23,12 @@ namespace mico { namespace ast { namespace expressions {
         using ident_type  = expression::uptr;
         using init_map    = std::map<std::string, expression::uptr>;
 
+        using body_type   = ast::node::uptr;
+
         using params_slist = std::shared_ptr<expression_list>;
-        using body_slist   = std::shared_ptr<statement_list>;
 
         impl( )
             :params_(std::make_shared<expression_list>( ))
-            ,body_(std::make_shared<statement_list>( ))
         { }
 
         std::string str( ) const override
@@ -48,8 +49,8 @@ namespace mico { namespace ast { namespace expressions {
                 oss << "let " << init.first
                     << " = " << init.second->str( ) << ";\n";
             }
-            for( auto &ex: body( ) ) {
-                oss << ex->str( ) << ";\n";
+            if( body_ ) {
+                oss << body_->str( ) << "\n";
             }
             oss << "}";
             return oss.str( );
@@ -70,11 +71,6 @@ namespace mico { namespace ast { namespace expressions {
             return params_;
         }
 
-        body_slist &body_ptr( )
-        {
-            return body_;
-        }
-
         const expression_list &params( ) const
         {
             return *params_;
@@ -85,14 +81,14 @@ namespace mico { namespace ast { namespace expressions {
             return *params_;
         }
 
-        const statement_list &body( ) const
+        const body_type &body( ) const
         {
-            return *body_;
+            return body_;
         }
 
-        statement_list &body( )
+        void set_body( body_type val )
         {
-            return *body_;
+            body_ = std::move(val);
         }
 
         void mutate( mutator_type call ) override
@@ -103,19 +99,12 @@ namespace mico { namespace ast { namespace expressions {
             for( auto &par: *params_ ) {
                 ast::expression::apply_mutator( par, call );
             }
-            for( auto &bod: *body_ ) {
-                ast::statement::apply_mutator( bod, call );
-            }
+            ast::node::apply_mutator( body_, call );
         }
 
         bool is_const( ) const override
         {
-            for( auto &b: *body_ ) {
-                if( !b->is_const( ) ) {
-                    return false;
-                }
-            }
-            return true;
+            return body_->is_const( );
         }
 
         ast::node::uptr clone( ) const override
@@ -128,16 +117,14 @@ namespace mico { namespace ast { namespace expressions {
             for( auto &par: *params_ ) {
                 res->params_->emplace_back( expression::call_clone( par ) );
             }
-            for( auto &bod: *body_ ) {
-                res->body_->emplace_back( ast::statement::call_clone( bod ) );
-            }
+            res->body_ = ast::node::call_clone( body_ );
             return res;
         }
 
     private:
         init_map      inits_;
         params_slist  params_;
-        body_slist    body_;
+        body_type     body_;
     };
 
 }}}

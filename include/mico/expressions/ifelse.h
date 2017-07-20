@@ -50,12 +50,8 @@ namespace mico { namespace ast { namespace expressions {
                 oss << "}";
                 first = false;
             }
-            if( !alt_.empty( ) ) {
-                oss << " else {\n";
-                for( auto &a: alt_ ) {
-                    oss << a->str( ) << ";\n";
-                }
-                oss << "}";
+            if( alt_ ) {
+                oss << " else " << alt_->str( );
             }
 
             return oss.str( );
@@ -66,7 +62,12 @@ namespace mico { namespace ast { namespace expressions {
             return general_;
         }
 
-        statement_list &alt( )
+        expression::uptr &alt( )
+        {
+            return alt_;
+        }
+
+        const expression::uptr &alt( ) const
         {
             return alt_;
         }
@@ -77,9 +78,7 @@ namespace mico { namespace ast { namespace expressions {
                 ast::expression::apply_mutator( g.cond, call );
                 ast::expression::apply_mutator( g.body, call );
             }
-            for( auto &a: alt_ ) {
-                ast::statement::apply_mutator( a, call );
-            }
+            ast::expression::apply_mutator( alt_, call );
         }
 
         bool is_const( ) const override
@@ -89,10 +88,8 @@ namespace mico { namespace ast { namespace expressions {
                     return false;
                 }
             }
-            for( auto &a: alt_ ) {
-                if( !a->is_const( ) ) {
-                    return false;
-                }
+            if( alt_ ) {
+                return alt_->is_const( );
             }
             return true;
         }
@@ -106,15 +103,15 @@ namespace mico { namespace ast { namespace expressions {
                 next.body = expression::call_clone( g.body );
                 res->general_.emplace_back( std::move(next) );
             }
-            for( auto &a: alt_ ) {
-                res->alt_.emplace_back( statement::call_clone( a ) );
+            if( alt_ ) {
+                res->alt_ = expression::call_clone( alt_ );
             }
             return res;
         }
 
     private:
-        if_list         general_;
-        statement_list  alt_;
+        if_list             general_;
+        expression::uptr    alt_;
     };
 
 }}}

@@ -293,6 +293,13 @@ namespace mico {
 
     public: /////////////////// PARSING
 
+        ast::expressions::scope::uptr parse_scope( )
+        {
+            auto scope = ast::expressions::scope::make( );
+            parse_statements( scope->value( ), token_type::RBRACE );
+            return scope;
+        }
+
         ast::expressions::ifelse::node parse_if_node( )
         {
             ast::expressions::ifelse::node res;
@@ -305,10 +312,9 @@ namespace mico {
                 return res;
             }
             advance( );
-            ast::expressions::scope::uptr s = ast::expressions::scope::make( );
-            parse_statements( s->value( ), token_type::RBRACE );
+
             res.cond = std::move(cond);
-            res.body = std::move(s);
+            res.body = parse_scope( );
 
             return res;
         }
@@ -332,7 +338,7 @@ namespace mico {
                     return nullptr;
                 }
                 advance( );
-                parse_statements(res->alt( ), token_type::RBRACE );
+                res->alt( ) = parse_scope( );
             }
 
             return res;
@@ -658,7 +664,7 @@ namespace mico {
             }
 
             advance( );
-            parse_statements( res->body( ), token_type::RBRACE );
+            res->set_body( parse_scope( ) );
 
             return res;
         }

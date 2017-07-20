@@ -534,7 +534,7 @@ namespace mico { namespace eval {
                     auto fun = objects::cast_func(call->value( ).get( ));
                     environment::scoped s( call->env( ) );
                     fun->env( )->get_state( ).GC( fun->env( ) );
-                    obj_src = eval_scope_impl( fun->body( ), call->env( ) );
+                    obj_src = eval_impl( fun->body( ), call->env( ) );
                 } else if( call_type == objects::type::BUILTIN ) {
                     auto fun = objects::cast_builtin(call->value( ).get( ));
                     obj_src = fun->call( call->params( ), call->env( ) );
@@ -616,9 +616,10 @@ namespace mico { namespace eval {
                     return unref(eval_states);
                 }
             }
-            if( !ifblock->alt( ).empty( ) ) {
+            if( ifblock->alt( ) ) {
                 environment::scoped s(make_env(env));
-                auto eval_states = eval_scope_impl( ifblock->alt( ), s.env( ) );
+                auto eval_states = eval_impl( ifblock->alt( ).get( ),
+                                              s.env( ) );
                 return unref(eval_states);
             }
             return get_null( );
@@ -681,9 +682,11 @@ namespace mico { namespace eval {
             if( init_size > func->params( ).size( ) ) {
                 init_size = func->params( ).size( );
             }
-            auto fff  = std::make_shared<objects::function>( make_env(env),
-                                              func->params_ptr( ),
-                                              func->body_ptr( ), init_size );
+            auto fff  = objects::function::make( make_env(env),
+                                                 func->params_ptr( ),
+                                                 func->body( )->clone( ),
+                                                 init_size );
+
             for( auto &next: func->inits( ) ) {
                 auto res = unref(eval_impl_tail( next.second.get( ), env ) );
                 if( is_fail( res ) ) {
@@ -868,7 +871,7 @@ namespace mico { namespace eval {
                     return get_null( );
                 }
 
-                auto res = eval_scope( vfun->body( ), s.env( ) );
+                auto res = eval_impl( vfun->body( ), s.env( ) );
                 while( is_return( res ) ) {
                     auto r = objects::cast_return(res.get( ));
                     res = eval_tail( r->value( ) );
