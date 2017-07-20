@@ -243,13 +243,13 @@ namespace mico { namespace eval {
                 return oper;
             }
 
-            using int_operation   = OP<objects::type::INTEGER>;
-            using float_operation = OP<objects::type::FLOAT>;
-            using bool_operation  = OP<objects::type::BOOLEAN>;
-            using str_operation   = OP<objects::type::STRING>;
-            using table_operation = OP<objects::type::TABLE>;
-            using array_operation = OP<objects::type::ARRAY>;
-            using func_operation  = OP<objects::type::FUNCTION>;
+            using OP_int   = OP<objects::type::INTEGER>;
+            using OP_float = OP<objects::type::FLOAT>;
+            using OP_bool  = OP<objects::type::BOOLEAN>;
+            using OP_str   = OP<objects::type::STRING>;
+            using OP_table = OP<objects::type::TABLE>;
+            using OP_array = OP<objects::type::ARRAY>;
+            using OP_func  = OP<objects::type::FUNCTION>;
 
             objects::type opertype = oper->get_type( );
             if( opertype == objects::type::REFERENCE ) {
@@ -258,20 +258,20 @@ namespace mico { namespace eval {
 
             switch ( opertype ) {
             case objects::type::INTEGER:
-                return int_operation::eval_prefix(expr, oper);
+                return OP_int::eval_prefix(expr, oper);
             case objects::type::STRING:
-                return str_operation::eval_prefix(expr, oper);
+                return OP_str::eval_prefix(expr, oper);
             case objects::type::BOOLEAN:
-                return bool_operation::eval_prefix(expr, oper);
+                return OP_bool::eval_prefix(expr, oper);
             case objects::type::FLOAT:
-                return float_operation::eval_prefix(expr, oper);
+                return OP_float::eval_prefix(expr, oper);
             case objects::type::TABLE:
-                return table_operation::eval_prefix(expr, oper);
+                return OP_table::eval_prefix(expr, oper);
             case objects::type::ARRAY:
-                return array_operation::eval_prefix(expr, oper);
+                return OP_array::eval_prefix(expr, oper);
             case objects::type::BUILTIN:
             case objects::type::FUNCTION:
-                return func_operation::eval_prefix(expr, oper);
+                return OP_func::eval_prefix(expr, oper);
             default:
                 break;
             }
@@ -360,28 +360,6 @@ namespace mico { namespace eval {
                           inf->left( ).get( ) );
         }
 
-        objects::sptr eval_equal( objects::base *lft, objects::base *rgh,
-                                  ast::expressions::infix *inf,
-                                  environment::sptr /*env*/ )
-        {
-            auto copmarable =
-                    (
-                        (lft->get_type( ) == rgh->get_type( ))
-                    &&  (lft->get_type( ) != objects::type::FUNCTION)
-                    &&  (lft->get_type( ) != objects::type::TAIL_CALL)
-                    );
-
-            if( !copmarable ) {
-                return objects::error::make( inf->pos( ),
-                                         "Impossible to compare ",
-                                         inf->left( )->get_type( ),
-                                             " and ",
-                                         inf->right( )->get_type( ) );
-            }
-            bool eq = lft->equal( rgh );
-            return get_bool((inf->token( ) == tokens::type::EQ) ? eq : !eq);
-        }
-
         objects::sptr eval_infix( ast::node *n, environment::sptr env )
         {
             auto inf = static_cast<ast::expressions::infix *>(n);
@@ -398,41 +376,46 @@ namespace mico { namespace eval {
                 return get_null( );
             }
 
+            objects::type opertype = left->get_type( );
+            if( opertype == objects::type::REFERENCE ) {
+                opertype = objects::cast_ref( left )->value( )->get_type( );
+            }
+
             auto inf_call = [this, env](ast::node *n ) {
                 return unref( eval_impl( n, env ) );
             };
 
-            using int_operation   = OP<objects::type::INTEGER>;
-            using float_operation = OP<objects::type::FLOAT>;
-            using bool_operation  = OP<objects::type::BOOLEAN>;
-            using str_operation   = OP<objects::type::STRING>;
-            using table_operation = OP<objects::type::TABLE>;
-            using array_operation = OP<objects::type::ARRAY>;
-            using func_operation  = OP<objects::type::FUNCTION>;
+            using OP_int   = OP<objects::type::INTEGER>;
+            using OP_float = OP<objects::type::FLOAT>;
+            using OP_bool  = OP<objects::type::BOOLEAN>;
+            using OP_str   = OP<objects::type::STRING>;
+            using OP_table = OP<objects::type::TABLE>;
+            using OP_array = OP<objects::type::ARRAY>;
+            using OP_func  = OP<objects::type::FUNCTION>;
 
             objects::sptr res;
-            switch (left->get_type( )) {
+            switch( opertype ) {
             case objects::type::INTEGER:
-                res = int_operation::eval_infix( inf, left, inf_call, env);
+                res = OP_int::eval_infix( inf, left, inf_call, env);
                 break;
             case objects::type::FLOAT:
-                res = float_operation::eval_infix( inf, left, inf_call, env);
+                res = OP_float::eval_infix( inf, left, inf_call, env);
                 break;
             case objects::type::BOOLEAN:
-                res = bool_operation::eval_infix( inf, left, inf_call, env);
+                res = OP_bool::eval_infix( inf, left, inf_call, env);
                 break;
             case objects::type::STRING:
-                res = str_operation::eval_infix( inf, left, inf_call, env);
+                res = OP_str::eval_infix( inf, left, inf_call, env);
                 break;
             case objects::type::TABLE:
-                res = table_operation::eval_infix( inf, left, inf_call, env);
+                res = OP_table::eval_infix( inf, left, inf_call, env);
                 break;
             case objects::type::ARRAY:
-                res = array_operation::eval_infix( inf, left, inf_call, env);
+                res = OP_array::eval_infix( inf, left, inf_call, env);
                 break;
             case objects::type::FUNCTION:
             case objects::type::BUILTIN:
-                res = func_operation::eval_infix( inf, left, inf_call, env);
+                res = OP_func::eval_infix( inf, left, inf_call, env);
                 break;
             default:
                 break;

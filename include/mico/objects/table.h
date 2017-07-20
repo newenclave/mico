@@ -49,11 +49,17 @@ namespace mico { namespace objects {
         {
             std::ostringstream oss;
             oss << "{ ";
+            bool first = true;
             for( auto &v: value_ ) {
+                if( !first ) {
+                    oss << ", ";
+                } else {
+                    first = false;
+                }
                 oss << v.first->str( ) << ":";
-                oss << v.second->value( )->str( )<< " ";
+                oss << v.second->value( )->str( );
             }
-            oss << "}";
+            oss << " }";
             return oss.str( );
         }
 
