@@ -355,5 +355,9 @@ quote(unquote(8+8))
 let qqq = quote(17 + 7)
 quote( 7 + unquote(qqq) )
 
+let bind = fn( call, param ) {
+    return fn( ) { call(param) }
+}
+
 quote(unquote(4 + 4) + 8)
 */
