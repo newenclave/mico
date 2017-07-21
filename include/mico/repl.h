@@ -116,13 +116,7 @@ namespace mico {
                 std::getline( std::cin, tmp );
                 if( tmp.empty( ) ) {
                     auto prog = mico::parser::parse( data );
-//                    std::cout << prog.clone( )->str( ) << "\n==========\n";
-//                    std::cout << prog.str( ) << "\n==============\n";
-//                    prog.mutate( &simply_mutator );
-//                    std::cout << prog.str( ) << "\n==============\n";
-
                     if( prog.errors( ).empty( ) ) {
-                        //std::cout << prog.str( ) << "\n";
                         mico::eval::tree_walking tv;
                         if( prog.states( ).size( ) > 0 ) {
                             st.GC( st.env( ) );
@@ -135,8 +129,6 @@ namespace mico {
                                 }
 
                                 std::cout << obj->str( ) << "\n";
-                                //test_mutate( obj );
-                                //test_const( obj );
 
                                 if( failed ) {
                                     std::cout << none;

@@ -11,7 +11,6 @@ namespace mico {
         {
             return (c == ' ')
                 || (c == '\t')
-                || (c == '\r')
                  ;
         }
 
@@ -19,6 +18,7 @@ namespace mico {
         bool is_newline( char c )
         {
             return (c == '\n')
+                || (c == '\r')
                  ;
         }
 

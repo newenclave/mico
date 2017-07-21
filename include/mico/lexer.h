@@ -85,6 +85,7 @@ namespace mico {
         {
             while( b != end ) {
                 if( idents::is_newline(*b) ) {
+                    break;
                     lstate->line++;
                     lstate->line_itr = ++b;
                 } else if( !idents::is_whitespace(*b) ) {
@@ -275,7 +276,8 @@ namespace mico {
                     case token_type::END_OF_LINE:
                         lstate->line++;
                         lstate->line_itr = next.iterator( );
-                        break;
+                        return std::make_pair( std::move(value),
+                                               next.iterator( ) );
                     case token_type::INT_BIN:
                     case token_type::INT_TER:
                     case token_type::INT_HEX:
@@ -370,6 +372,8 @@ namespace mico {
 
                 if( nt.first.name == token_type::END_OF_FILE ) {
                     break;
+                } else if( nt.first.name == token_type::END_OF_LINE ) {
+                    // do nothing yet
                 } else if ( nt.first.name == token_type::COMMENT ) {
                     /// do nothing
                 } else if( nt.first.name == token_type::NONE ) {
