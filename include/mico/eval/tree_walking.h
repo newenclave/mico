@@ -1,10 +1,6 @@
 #ifndef MICO_TREE_WALKING_H
 #define MICO_TREE_WALKING_H
 
-#ifdef _WIN32
-#define NOMINMAX
-#endif
-
 #include <iostream>
 #include <limits>
 
