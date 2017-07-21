@@ -68,9 +68,9 @@ namespace mico { namespace eval { namespace operations {
                 }
 
             case tokens::type::LOGIC_AND:
-                return  bool_type::make( lft && rht );
+                return  bool_type::make( (lft != 0.0) && (rht != 0.0) );
             case tokens::type::LOGIC_OR:
-                return  bool_type::make( lft || rht );
+                return  bool_type::make( (lft != 0.0) || (rht != 0.0) );
             case tokens::type::GT:
                 return  bool_type::make( lft  > rht );
             case tokens::type::LT:
