@@ -944,7 +944,7 @@ namespace mico { namespace eval {
         {
             if( n->get_type( ) == ast::type::QUOTE ) {
                 auto quo = ast::cast<ast::expressions::quote>( n );
-                return quo->value( )->clone( );
+                return unquote_mutator(quo->value( ).get( ), thiz, env);
             } else if( n->get_type( ) == ast::type::UNQUOTE ) {
                 auto quo = ast::cast<ast::expressions::unquote>( n );
                 auto res = thiz->eval_impl( quo->value( ).get( ), env );
@@ -964,37 +964,19 @@ namespace mico { namespace eval {
         objects::sptr eval_quote( ast::node *n, environment::sptr env )
         {
             auto quo = ast::cast<ast::expressions::quote>(n);
-
-            auto muted = unquote_mutator( quo->value( ).get( ), this, env );
-
-            if( muted ) {
-                return objects::quote::make( std::move(muted) );
-            } else {
-                return objects::quote::make( quo->value( )->clone( ) );
-            }
+            unquote_mutator( quo->value( ).get( ), this, env );
+            return objects::quote::make( quo->value( )->clone( ) );
         }
 
         objects::sptr eval_unquote( ast::node *n, environment::sptr env )
         {
             auto quo = ast::cast<ast::expressions::unquote>(n);
 
-            if( quo->value( )->get_type( ) == ast::type::QUOTE ) {
-                auto qq = ast::cast<ast::expressions::quote>(
-                            quo->value( ).get( ));
-                auto muted = unquote_mutator( qq, this, env );
-                if( muted ) {
-                    return eval_impl( muted.get( ), env );
-                } else {
-                    return eval_impl( qq, env );
-                }
+            auto muted = unquote_mutator( quo->value( ).get( ), this, env );
+            if( muted ) {
+                return eval_impl( muted.get( ), env );
             } else {
-
-                auto muted = unquote_mutator( quo->value( ).get( ), this, env );
-                if( muted ) {
-                    return eval_impl( muted.get( ), env );
-                } else {
-                    return eval_impl( quo->value( ).get( ), env );
-                }
+                return eval_impl( quo->value( ).get( ), env );
             }
         }
 
