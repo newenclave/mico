@@ -944,15 +944,20 @@ namespace mico { namespace eval {
         {
             if( n->get_type( ) == ast::type::QUOTE ) {
                 auto quo = ast::cast<ast::expressions::quote>( n );
+                //unquote_mutator( quo->value( ).get( ), thiz, env );
                 return quo->value( )->clone( );
+            } else if( n->get_type( ) == ast::type::UNQUOTE ) {
+                auto quo = ast::cast<ast::expressions::unquote>( n );
+                auto res = thiz->eval_impl( quo, env );
+                if( !is_fail( res ) ) {
+                    return res->to_ast( n->pos( ) );
+                }
             } else {
-                auto res = thiz->eval_impl( n, env );
-                auto nn = res->to_ast( n->pos( ) );
-//                nn->mutate( [thiz, env](ast::node *n) {
-//                    return tree_walking::unquote_mutator( n, thiz, env );
-//                } );
-                return nn;
+                n->mutate( [thiz, env](ast::node *n) {
+                    return tree_walking::unquote_mutator( n, thiz, env );
+                } );
             }
+            return nullptr;
         }
 
         objects::sptr eval_quote( ast::node *n, environment::sptr env )
@@ -966,7 +971,13 @@ namespace mico { namespace eval {
         objects::sptr eval_unquote( ast::node *n, environment::sptr env )
         {
             auto quo = ast::cast<ast::expressions::unquote>(n);
-            return eval_impl( quo->value( ).get(  ), env );
+            auto res = eval_impl( quo->value( ).get( ), env );
+            if( res->get_type( ) == objects::type::QUOTE ) {
+                auto qq = objects::cast<objects::type::QUOTE>(res.get( ));
+                return eval_impl( qq->value( ).get( ), env );
+            } else {
+                return res;
+            }
         }
 
         objects::sptr eval_impl_tail( ast::node *n, environment::sptr env )

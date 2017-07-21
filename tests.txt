@@ -360,4 +360,7 @@ let bind = fn( call, param ) {
 }
 
 quote(unquote(4 + 4) + 8)
+
+quote(unquote(quote(4 + 4) ) + unquote(4+4) )
+
 */
