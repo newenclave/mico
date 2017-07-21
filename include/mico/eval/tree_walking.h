@@ -944,12 +944,7 @@ namespace mico { namespace eval {
         {
             if( n->get_type( ) == ast::type::QUOTE ) {
                 auto quo = ast::cast<ast::expressions::quote>( n );
-                auto res = thiz->eval_impl( quo->value( ).get( ), env );
-                if( !is_fail( res ) ) {
-                    return res->to_ast(n->pos( ) );
-                } else {
-                    return std::move(quo->value( ));
-                }
+                return quo->value( )->clone( );
             } else if( n->get_type( ) == ast::type::UNQUOTE ) {
                 auto quo = ast::cast<ast::expressions::unquote>( n );
                 auto res = thiz->eval_impl( quo->value( ).get( ), env );
@@ -983,11 +978,23 @@ namespace mico { namespace eval {
         {
             auto quo = ast::cast<ast::expressions::unquote>(n);
 
-            auto muted = unquote_mutator( quo->value( ).get( ), this, env );
-            if( muted ) {
-                return eval_impl( muted.get( ), env );
+            if( quo->value( )->get_type( ) == ast::type::QUOTE ) {
+                auto qq = ast::cast<ast::expressions::quote>(
+                            quo->value( ).get( ));
+                auto muted = unquote_mutator( qq, this, env );
+                if( muted ) {
+                    return eval_impl( muted.get( ), env );
+                } else {
+                    return eval_impl( qq, env );
+                }
             } else {
-                return eval_impl( quo->value( ).get( ), env );
+
+                auto muted = unquote_mutator( quo->value( ).get( ), this, env );
+                if( muted ) {
+                    return eval_impl( muted.get( ), env );
+                } else {
+                    return eval_impl( quo->value( ).get( ), env );
+                }
             }
         }
 
