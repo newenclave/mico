@@ -942,42 +942,19 @@ namespace mico { namespace eval {
         ast::node::uptr unquote_mutator( ast::node *n, tree_walking* thiz,
                                          environment::sptr env )
         {
-            if( n->get_type( ) == ast::type::QUOTE ) {
-                auto quo = ast::cast<ast::expressions::quote>( n );
-                return unquote_mutator(quo->value( ).get( ), thiz, env);
-            } else if( n->get_type( ) == ast::type::UNQUOTE ) {
-                auto quo = ast::cast<ast::expressions::unquote>( n );
-                auto res = thiz->eval_impl( quo->value( ).get( ), env );
-                if( !is_fail( res ) ) {
-                    return res->to_ast(n->pos( ) );
-                } else {
-                    return std::move(quo->value( ));
-                }
-            } else {
-                n->mutate( [thiz, env](ast::node *n){
-                    return tree_walking::unquote_mutator( n, thiz, env );
-                } );
-            }
             return nullptr;
         }
 
         objects::sptr eval_quote( ast::node *n, environment::sptr env )
         {
             auto quo = ast::cast<ast::expressions::quote>(n);
-            unquote_mutator( quo->value( ).get( ), this, env );
             return objects::quote::make( quo->value( )->clone( ) );
         }
 
         objects::sptr eval_unquote( ast::node *n, environment::sptr env )
         {
             auto quo = ast::cast<ast::expressions::unquote>(n);
-
-            auto muted = unquote_mutator( quo->value( ).get( ), this, env );
-            if( muted ) {
-                return eval_impl( muted.get( ), env );
-            } else {
-                return eval_impl( quo->value( ).get( ), env );
-            }
+            return eval_impl( quo->value( ).get(  ), env );
         }
 
         objects::sptr eval_impl_tail( ast::node *n, environment::sptr env )
