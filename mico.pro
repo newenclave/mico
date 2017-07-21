@@ -67,7 +67,10 @@ HEADERS += \
     include/mico/expressions/registry.h \
     include/mico/expressions/list.h \
     etool/include/etool/details/result.h \
-    etool/include/etool/console/colors.h
+    etool/include/etool/console/colors.h \
+    include/mico/expressions/quote.h \
+    include/mico/expressions/unquote.h \
+    include/mico/objects/quote.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

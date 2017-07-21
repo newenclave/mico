@@ -350,4 +350,10 @@ let a = fn( len ) {
     return impl([], len)
 }
 
+quote(unquote(8+8))
+
+let qqq = quote(17 + 7)
+quote( 7 + unquote(qqq) )
+
+quote(unquote(4 + 4) + 8)
 */

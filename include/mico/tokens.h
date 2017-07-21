@@ -68,8 +68,8 @@ namespace mico { namespace tokens {
         LET,
         RETURN,
         FUNCTION,
-//        QUOTE,
-//        UNQUOTE,
+        QUOTE,
+        UNQUOTE,
 //        MACRO,
         BOOL_TRUE,
         BOOL_FALSE,
@@ -143,8 +143,8 @@ namespace mico { namespace tokens {
             case type::LET:         return "let";
             case type::RETURN:      return "return";
             case type::FUNCTION:    return "fn";
-//            case type::QUOTE:       return "quote";
-//            case type::UNQUOTE:     return "unquote";
+            case type::QUOTE:       return "quote";
+            case type::UNQUOTE:     return "unquote";
 //            case type::MACRO:       return "macro";
 
             case type::BOOL_TRUE:   return "true";

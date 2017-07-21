@@ -64,6 +64,16 @@ namespace mico {
                         return parse_function( );
                     };
 
+            nuds_[token_type::QUOTE]   =
+                    [this]( ) {
+                        return parse_quote( );
+                    };
+
+            nuds_[token_type::UNQUOTE]   =
+                    [this]( ) {
+                        return parse_unquote( );
+                    };
+
             nuds_[token_type::LBRACE]   =
                     [this]( ) {
                         return parse_table( );
@@ -678,13 +688,46 @@ namespace mico {
             }
 
             if( !expect_peek( token_type::LBRACE ) ) {
-                return fn_type::uptr( );
+                return nullptr;
             }
 
             advance( );
             res->set_body( parse_scope( ) );
 
             return res;
+        }
+
+        ast::expressions::quote::uptr parse_quote( )
+        {
+            using quote_type = ast::expressions::quote;
+            if( !expect_peek( token_type::LPAREN ) ) {
+                return nullptr;
+            }
+            advance( );
+
+            auto expr = parse_expression( precedence::LOWEST );
+
+            if( !expect_peek( token_type::RPAREN ) ) {
+                return nullptr;
+            }
+
+            return quote_type::uptr( new quote_type( std::move(expr) ) );
+        }
+
+        ast::expressions::unquote::uptr parse_unquote( )
+        {
+            using unquote_type = ast::expressions::unquote;
+            if( !expect_peek( token_type::LPAREN ) ) {
+                return nullptr;
+            }
+            advance( );
+
+            auto expr = parse_expression( precedence::LOWEST );
+
+            if( !expect_peek( token_type::RPAREN ) ) {
+                return nullptr;
+            }
+            return unquote_type::uptr( new unquote_type( std::move(expr) ) );
         }
 
         ast::expressions::call::uptr parse_call( ast::expression::uptr left )

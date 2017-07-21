@@ -39,6 +39,8 @@ namespace mico { namespace ast {
         IFELSE,
         REGISTRY,
         LIST,
+        QUOTE,
+        UNQUOTE,
     };
 
     struct name {
@@ -66,6 +68,8 @@ namespace mico { namespace ast {
             case type::IFELSE  : return "IFELSE";
             case type::REGISTRY: return "REGISTRY";
             case type::LIST    : return "LIST";
+            case type::QUOTE   : return "QUOTE";
+            case type::UNQUOTE : return "UNQUOTE";
             }
             return "<INVALID>"; /// sould not be here
         }
