@@ -23,7 +23,7 @@ namespace mico { namespace ast { namespace expressions {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << "unquote( " << value_->str( ) << ")";
+            oss << "unquote(" << value_->str( ) << ")";
             return oss.str( );
         }
 

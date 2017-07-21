@@ -942,12 +942,23 @@ namespace mico { namespace eval {
         ast::node::uptr unquote_mutator( ast::node *n, tree_walking* thiz,
                                          environment::sptr env )
         {
+            if( n->get_type( ) == ast::type::QUOTE ) {
+                auto quo = ast::cast<ast::expressions::quote>( n );
+                return quo->value( )->clone( );
+            } else {
+                n->mutate( [thiz, env](ast::node *n) {
+                    return tree_walking::unquote_mutator( n, thiz, env );
+                } );
+            }
             return nullptr;
         }
 
         objects::sptr eval_quote( ast::node *n, environment::sptr env )
         {
             auto quo = ast::cast<ast::expressions::quote>(n);
+            ast::node::apply_mutator( quo->value( ), [this, env](ast::node *n) {
+                return tree_walking::unquote_mutator( n, this, env );
+            } );
             return objects::quote::make( quo->value( )->clone( ) );
         }
 
