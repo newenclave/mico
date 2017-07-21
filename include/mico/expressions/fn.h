@@ -90,7 +90,7 @@ namespace mico { namespace ast { namespace expressions {
             for( auto &ini: inits_ ) {
                 ast::node::apply_mutator( ini.second, call );
             }
-            params_->mutate( call ); // cannot be mutated
+            list_type::apply_mutator( params_, call );
             ast::node::apply_mutator( body_,   call );
         }
 

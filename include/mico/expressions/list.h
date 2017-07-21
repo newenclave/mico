@@ -104,6 +104,12 @@ namespace mico { namespace ast { namespace expressions {
             return true;
         }
 
+        uptr make_copy( ) const
+        {
+            uptr res (new this_type(scope_));
+            return res;
+        }
+
         uptr clone_me( ) const
         {
             uptr res(new this_type(scope_));
@@ -116,6 +122,23 @@ namespace mico { namespace ast { namespace expressions {
         ast::node::uptr clone( ) const override
         {
             return clone_me( );
+        }
+
+        static
+        bool apply_mutator( uptr &target, const node::mutator_type &call )
+        {
+            if( auto res = call( target.get( ) ) ) {
+                if( res->get_type( ) == target->get_type( ) ) {
+                    auto cst = ast::cast<this_type>(res);
+                    target.swap( cst );
+                } else {
+                    auto new_list = target->make_copy( );
+                    new_list->value( ).emplace_back( std::move(target) );
+                    target.swap( new_list );
+                }
+                return true;
+            }
+            return false;
         }
 
     private:
