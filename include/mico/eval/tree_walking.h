@@ -691,6 +691,7 @@ namespace mico { namespace eval {
             }
 
             std::int64_t index = std::numeric_limits<std::int64_t>::max( );
+
             if( (val->get_type( ) == objects::type::STRING) ||
                 (val->get_type( ) == objects::type::ARRAY)   )
             {
