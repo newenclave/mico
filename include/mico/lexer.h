@@ -81,13 +81,11 @@ namespace mico {
         }
 
         template <typename ItrT>
-        static ItrT skip_whitespaces( ItrT b, ItrT end, state *lstate  )
+        static ItrT skip_whitespaces( ItrT b, ItrT end )
         {
             while( b != end ) {
                 if( idents::is_newline(*b) ) {
                     break;
-                    lstate->line++;
-                    lstate->line_itr = ++b;
                 } else if( !idents::is_whitespace(*b) ) {
                     break;
                 } else {
@@ -331,7 +329,7 @@ namespace mico {
                 } else {
                     return std::make_pair( I(token_type::NONE), begin );
                 }
-                begin = skip_whitespaces( begin, end, lstate );
+                begin = skip_whitespaces( begin, end );
             }
 
             return std::make_pair( I(token_type::END_OF_FILE), end);
@@ -359,7 +357,7 @@ namespace mico {
 
             auto b = input.begin( );
 
-            b = skip_whitespaces( b, input.end( ), &lex_state );
+            b = skip_whitespaces( b, input.end( ) );
 
             while( b != input.end( ) ) {
 
@@ -387,7 +385,7 @@ namespace mico {
 
                     res.tokens_.emplace_back(std::move(ti));
                 }
-                b = skip_whitespaces( nt.second, input.end( ), &lex_state );
+                b = skip_whitespaces( nt.second, input.end( ) );
             }
 
             token_info ti;
