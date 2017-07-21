@@ -137,7 +137,7 @@ namespace mico { namespace objects {
 
             auto e = env( );
             res->set_body( body_->clone( ) );
-            //res->set_params( params_->clone( ) );
+            res->set_params( params_->clone_me( ) );
 
             for( std::size_t i = 0; i < start_param_; ++i ) {
 
