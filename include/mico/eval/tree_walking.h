@@ -963,8 +963,10 @@ namespace mico { namespace eval {
         objects::sptr eval_quote( ast::node *n, environment::sptr env )
         {
             auto quo = ast::cast<ast::expressions::quote>(n);
-            //ast::node::apply_mutator(  )
-            tree_walking::unquote_mutator( quo->value( ).get( ), this, env );
+            ast::node::apply_mutator( quo->value( ),
+                                      [this, env]( ast::node *n ) {
+                return tree_walking::unquote_mutator( n, this, env );
+            } );
             return objects::quote::make( quo->value( )->clone( ) );
         }
 
