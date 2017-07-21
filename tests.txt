@@ -363,4 +363,11 @@ quote(unquote(4 + 4) + 8)
 
 quote(unquote(quote(4 + 4) ) + unquote(4+4) )
 
+let t = quote(1000)
+let ex = quote( unquote(t) + 1.0 )
+let a = quote( fn( a ) { unquote(ex) + a } )
+unquote(a)(1)
+
+quote(unquote(quote(unquote(quote(unquote(quote(unquote(2+2))))))))
+
 */
