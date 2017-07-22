@@ -324,6 +324,15 @@ And this is all happening in the macro expansion phase before the evaluation.
     let test = macro( a ) { sum(10, unquote(a) ) }
     test(10) /// ast is ( 10 + 10 )
 
+    let test2 = macro( a, b ) {
+        let impl = macro( a, b ) { /// yes! macroses have their scopes!
+                                   /// impl can be accessed only in `test2`
+            unquote(a) + unquote(b)
+        }
+        impl(unquote(a), unquote(b))
+    }
+    test2(10, 20) // just inlined (10 + 20) => 30 of course
+
     /// and `The Mighty Unless Macro` of course
     let unless = macro(condition, consequence, alternative) {
         puts("Here the macro inlined!")
@@ -352,6 +361,13 @@ And this is all happening in the macro expansion phase before the evaluation.
     // ==========
     // test => macro(a) {
     //  sum(10, a)
+    // }
+    // ==========
+    // test2 => macro(a, b) {
+    //  let impl = macro(a, b) {
+    //      (unquote(a)+unquote(b))
+    //  };
+    //  impl(unquote(a), unquote(b))
     // }
     // ==========
     // unless => macro(condition, consequence, alternative) {
