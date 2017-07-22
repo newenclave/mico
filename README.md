@@ -266,12 +266,13 @@ In this case the right side must be a function (builtin or not).
 Yes. Finnaly I've had some free time to add the system; https://interpreterbook.com/lost/
 So. First of all **quote**, **unquote**, and **macro** are keywords and I can parse them as I want.
 And there are 2 types of **quote**
-    * Expression **quote**
+
+##### * Expression **quote**
 ```js
     let a = quote( 2 + 2 ) /// a is an ast node containing (2 + 2)
     unquote(a) // => ( 2 + 2 ) => 4
 ```
-    * Scope **quote**
+##### * Scope **quote**
 ```js
     let a = quote{ let a = 1000 } // a is an ast node this an uniq statement **let**
     unquote(a) // => `let a = 1000` => null
