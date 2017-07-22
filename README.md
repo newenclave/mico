@@ -284,7 +284,7 @@ And there are 2 types of **quote**
     //  quote_func => quote( fn( a ) { 1000            + a } )
 
     let quote_if =  quote( if( unquote(x) > 10 ) { "huge" } else { "small" } )
-    //  quote_if => quote(if ( 100        > 10 ) { "huge" } else { "small" } )
+    //  quote_if => quote( if( 100        > 10 ) { "huge" } else { "small" } )
 
     unquote(quote_func)(10) // 1010
     unquote(quote_if)       // "huge"
@@ -324,6 +324,28 @@ I.e.
         };
     }
     unless(10 > 5, puts("not greater"), puts("greater")) // => greater =)
+
+    /// just for debug purposes
+    __macro( ) // shows all the macroses srored by REPL
+
+    // Macros:
+    // set_env => macro(env) {
+    // unquote(env)
+    // }
+    // ==========
+    // sum => macro(a, b) {
+    // (unquote(a)+unquote(b))
+    // }
+    // ==========
+    // unless => macro(condition, consequence, alternative) {
+    // if ((!unquote(condition))) {
+    // unquote(consequence)
+    // } else {
+    // unquote(alternative)
+    // }
+    // }
+    // ==========
+    // End of macros.
 
 ```
 
