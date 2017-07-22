@@ -24,6 +24,7 @@ namespace mico { namespace macro {
             { }
 
             using value_map  = std::map<std::string, ast::node::uptr>;
+            using remap_set  = std::set<std::string>;
 
             scope *parent( )
             {
@@ -35,10 +36,19 @@ namespace mico { namespace macro {
                 values_[name] = std::move(value);
             }
 
+            void deny( std::string name )
+            {
+                remaped_.insert(name);
+            }
+
             ast::node *get( const std::string &name )
             {
                 scope *cur = this;
                 while( cur ) {
+                    auto rf = remaped_.find( name );
+                    if( rf != remaped_.end( ) ) {
+                        return nullptr;
+                    }
                     auto f = cur->values_.find( name );
                     if( f != cur->values_.end( ) ) {
                         return f->second.get( );
@@ -57,6 +67,7 @@ namespace mico { namespace macro {
 
             scope *parent_ = nullptr;
             value_map      values_;
+            remap_set      remaped_;
         };
 
         static
@@ -145,12 +156,13 @@ namespace mico { namespace macro {
             if( n->get_type( ) == AT::LET ) {
                 auto ln = ast::cast<AST::let>( n );
                 if( ln->value( )->get_type( ) == AT::MACRO ) {
-
                     //// doesn't work because it can be impossible
 //                    auto mac = ast::cast<AEX::macro>(ln->value( ).get( ));
 //                    mac->mutate( me );
                     s->set( ln->ident( )->str( ), std::move( ln->value( ) ) );
                     return AEX::null::make( );
+                } else {
+                    //s->deny( ln->ident( )->str( ) );
                 }
 
             } else if( n->get_type( ) == AT::CALL ) {

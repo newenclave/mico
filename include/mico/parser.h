@@ -487,7 +487,9 @@ namespace mico {
             if( expect_peek( token_type::RPAREN, true ) ) {
                 //advance( );
             }
-            res->set_pos( current( ).where );
+            if( res ) {
+                res->set_pos( current( ).where );
+            }
             return res;
         }
 
@@ -667,6 +669,7 @@ namespace mico {
                 return nullptr;
             }
 
+            //auto id = parse_expression( precedence::LOWEST );
             auto id = parse_ident( );
 
             if( !expect_peek( token_type::ASSIGN, true ) ) {
@@ -717,7 +720,7 @@ namespace mico {
             return res;
         }
 
-#if true || !defined(DISABLE_MACRO) || !DISABLE_MACRO
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 
         ast::statement::uptr parse_macro_state( )
         {
@@ -727,7 +730,7 @@ namespace mico {
                 return ast::statements::let::make( std::move(id),
                                                    std::move(macro) );
             } else {
-                return parse_exrp_stmt( );
+                return parse_expr_stmt( );
             }
         }
 
