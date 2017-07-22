@@ -657,6 +657,10 @@ namespace mico { namespace eval {
         objects::sptr eval_let( ast::node *n, environment::sptr env )
         {
             auto expr = ast::cast<ast::statements::let>( n );
+            if( expr->ident( )->get_type( ) != ast::type::IDENT ) {
+                return error(n, "Bad identifier '", expr->ident( )->str( ),
+                             "' for let statement");
+            }
             auto id   = expr->ident( )->str( );
             auto val  = eval_impl( expr->value( ).get( ), env );
             if( is_fail( val ) ) {

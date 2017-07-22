@@ -542,10 +542,17 @@ namespace mico {
             return true;
         }
 
-        ast::expressions::ident::uptr parse_ident( )
+        ast::expression::uptr parse_ident( )
         {
             using ident_type = ast::expressions::ident;
             ident_type::uptr res( new ident_type(current( ).ident.literal ) );
+
+//            if( prefix_let && (peek( ).ident.name == token_type::LPAREN) ) {
+//                advance( );
+//                auto call = parse_call( std::move(res) );
+//                call->set_pos( current( ).where );
+//                return call;
+//            }
             res->set_pos( current( ).where );
             return res;
         }
@@ -669,8 +676,7 @@ namespace mico {
                 return nullptr;
             }
 
-            //auto id = parse_expression( precedence::LOWEST );
-            auto id = parse_ident( );
+            ast::expression::uptr id = parse_ident( );
 
             if( !expect_peek( token_type::ASSIGN, true ) ) {
                 return ast::statements::let::uptr( );
@@ -722,7 +728,7 @@ namespace mico {
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 
-        ast::statement::uptr parse_macro_state( )
+        ast::statement::uptr parse_macro_state(  )
         {
             if( expect_peek( token_type::IDENT, false ) ) {
                 auto id     = parse_ident( );

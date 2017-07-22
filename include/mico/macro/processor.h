@@ -79,6 +79,17 @@ namespace mico { namespace macro {
                 ;
             return oss.str( );
         }
+        static
+        ast::node::uptr unlist( ast::node::uptr lst )
+        {
+            if( lst->get_type( ) == ast::type::LIST ) {
+                auto l = ast::cast<ast::expressions::list>(lst.get( ));
+                if( l->value( ).size( ) == 1 ) {
+                    return std::move(l->value( )[0]);
+                }
+            }
+            return lst;
+        }
 
         static
         ast::node::uptr apply_macro( ast::node *n, scope *s,
@@ -132,7 +143,7 @@ namespace mico { namespace macro {
                     return processor::macro_mutator( n, &mscope, e );
                 } );
 
-                return new_body;
+                return unlist(std::move(new_body));
             }
             return nullptr;
         }
