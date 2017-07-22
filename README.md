@@ -271,7 +271,7 @@ And there are 2 types of **quote**
 ```js
     /// expression quote = quote + ( + expression + )
 
-    let a = quote( 2 + 2 ) /// a is an ast node containing (2 + 2)
+    let a = quote( 2 + 2 ) /// `a` is an ast node and contains (2 + 2)
     unquote(a) // => ( 2 + 2 ) => 4
     quote(unquote(quote(unquote(quote(unquote(quote(unquote(2+2)))))))) // => quote(4) =)
 
@@ -281,10 +281,10 @@ And there are 2 types of **quote**
     let x = 100 /// just a value for unquote the call
 
     let quote_func =  quote( fn( a ) { unquote(10 * x) + a } )
-    //  quote_func => quote(fn(a) { (1000+a) })
+    //  quote_func => quote( fn( a ) { 1000            + a } )
 
     let quote_if =  quote( if( unquote(x) > 10 ) { "huge" } else { "small" } )
-    //  quote_if => quote(if( 100 > 10 ) { "huge" } else { "small" })
+    //  quote_if => quote(if ( 100        > 10 ) { "huge" } else { "small" } )
 
     unquote(quote_func)(10) // 1010
     unquote(quote_if)       // "huge"
