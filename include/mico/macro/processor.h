@@ -93,15 +93,17 @@ namespace mico { namespace macro {
                         if( id < param_count ) {
 
                             auto &val(cn->param_list( )[id++]);
-                            mscope.set( p->str( ), QT::make( std::move(val) ) );
+                            ast::node::apply_mutator( val, mut );
+
+//                            mscope.set( p->str( ), QT::make( std::move(val) ) );
 
                             /// hm...
-//                            if( val->get_type( ) != AT::QUOTE ) {
-//                                mscope.set( p->str( ),
-//                                       AEX::quote::make( std::move(val) ) );
-//                            } else {
-//                                mscope.set( p->str( ), std::move(val) );
-//                            }
+                            if( val->get_type( ) != AT::QUOTE ) {
+                                mscope.set( p->str( ),
+                                       AEX::quote::make( std::move(val) ) );
+                            } else {
+                                mscope.set( p->str( ), std::move(val) );
+                            }
                         } else {
                             /// what about error?
                             mscope.set( p->str( ), AEX::null::make( ) );

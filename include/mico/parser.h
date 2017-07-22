@@ -718,7 +718,7 @@ namespace mico {
             return res;
         }
 
-#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
+#if true || !defined(DISABLE_MACRO) || !DISABLE_MACRO
 
         ast::statements::let::uptr parse_macro_state( )
         {
@@ -760,9 +760,10 @@ namespace mico {
             return res;
         }
 
-        ast::expressions::quote::uptr parse_quote( )
+        ast::expressions::quote::uptr parse_expr_quote( )
         {
             using quote_type = ast::expressions::quote;
+
             if( !expect_peek( token_type::LPAREN ) ) {
                 return nullptr;
             }
@@ -775,6 +776,32 @@ namespace mico {
             }
 
             return quote_type::uptr( new quote_type( std::move(expr) ) );
+        }
+
+        ast::expressions::quote::uptr parse_scope_quote( )
+        {
+            using quote_type = ast::expressions::quote;
+
+            if( !expect_peek( token_type::LBRACE ) ) {
+                return nullptr;
+            }
+            advance( );
+
+            auto expr = parse_scope( ); /// parse scope set current to brace
+
+            return quote_type::uptr( new quote_type( std::move(expr) ) );
+        }
+
+        ast::expressions::quote::uptr parse_quote( )
+        {
+            if( peek( ).ident.name == token_type::LPAREN ) {
+                return parse_expr_quote( );
+            } else if( peek( ).ident.name == token_type::LBRACE ) {
+                return parse_scope_quote( );
+            } else {
+                error_expect( token_type::LBRACE );
+            }
+            return nullptr;
         }
 
         ast::expressions::unquote::uptr parse_unquote( )

@@ -413,4 +413,23 @@ let plusToMinus = macro(infixExpression) {
 unless(10 > 5, puts("not greater"), puts("greater"))
 s(sum(10, 10), 10)
 
+let a = quote {
+    let b = 100
+    let c = 200
+    let d = 300
+}
+
+macro a( ) {
+    let b = 100
+    let c = 200
+    let d = 300
+}
+macro set(init) {
+    unquote(init)
+}
+
+unquote(set(a))
+
+
+
 */
