@@ -269,37 +269,50 @@ And there are 2 types of **quote**
 
 ##### * Expression **quote**
 ```js
+    /// expression quote = quote + ( + expression + )
+
     let a = quote( 2 + 2 ) /// a is an ast node containing (2 + 2)
     unquote(a) // => ( 2 + 2 ) => 4
+    quote(unquote(quote(unquote(quote(unquote(quote(unquote(2+2)))))))) // => quote(4) =)
+
+    /// unquote can be placed wherever you want.
+
+    /// function body
+    let x = 100 /// just a value for unquote the call
+
+    let quote_func =  quote( fn( a ) { unquote(10 * x) + a } )
+    //  quote_func => quote(fn(a) { (1000+a) })
+
+    let quote_if =  quote( if( unquote(x) > 10 ) { "huge" } else { "small" } )
+    //  quote_if => quote(if( 100 > 10 ) { "huge" } else { "small" })
+
+    unquote(quote_func)(10) // 1010
+    unquote(quote_if)       // "huge"
+
 ```
-##### * Scope **quote**
+##### * Statements **quote**
 ```js
-    let a = quote{ let a = 1000 } // `a` is an ast node that has an unique let the statement
+
+    /// statements quote = quote + { + statements + }
+
+    let a = quote { let a = 1000 } // `a` is an ast node that has an unique let the statement
     unquote(a) // => `let a = 1000` => null
                // now `a` is 1000
-    quote(unquote(quote(unquote(quote(unquote(quote(unquote(2+2)))))))) // => quote(4) =)
 ```
 The `macro` keyword defines a piece of code that will be placed in the place where it will be called.
-Before the evaluation process
+Before the evaluation process in the macro expansion phase.
 I.e.
 ```js
     let sum = macro( a, b ) { unquote(a) + unquote(b) }
     sum(10, 200)  // here the `ast` is replaced by body of the macro sum so => 210
 
-    let set_env = macro( env ) {
-        unquote(env)
-    }
-    set_env( quote{
+    let set_env = macro( env ) { unquote(env) }
+
+    set_env( quote {
         let a = 10
         let b = 20
     } )
     sum(a, b) // => 30 yeah! inline =)
-
-    let x = 100
-    let quote_func = quote( fn( a ) { unquote(10 * x) + a } )
-    // quote_func => quote(fn(a) { (1000+a) })
-
-    unquote(quote_func)(10) // 1010
 
 ```
 
