@@ -381,7 +381,6 @@ And this is all happening in the macro expansion phase before the evaluation.
     //  }
     // }
     // ==========
-    // End of macros.
 
 ```
 
