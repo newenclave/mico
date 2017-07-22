@@ -263,7 +263,7 @@ In this case the right side must be a function (builtin or not).
 
 #### * A Macro System For Monkey
 
-Yes. Finnaly I've had some free time to add the system; https://interpreterbook.com/lost/
+Yes. Finally I've had some free time to add the system; https://interpreterbook.com/lost/
 So. First of all **quote**, **unquote**, and **macro** are keywords and I can parse them as I wish.
 And there are 2 types of **quote**
 
