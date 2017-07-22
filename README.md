@@ -274,7 +274,7 @@ And there are 2 types of **quote**
 ```
 ##### * Scope **quote**
 ```js
-    let a = quote{ let a = 1000 } // a is an ast node this an uniq statement **let**
+    let a = quote{ let a = 1000 } // a is an ast node this an unique statement let
     unquote(a) // => `let a = 1000` => null
                // now `a` is 1000
     quote(unquote(quote(unquote(quote(unquote(quote(unquote(2+2)))))))) // => quote(4) =)
@@ -284,7 +284,7 @@ Before the evaluation process
 I.e.
 ```js
     let sum = macro( a, b ) { unquote(a) + unquote(b) }
-    sum(10, 200)  // here the `ast` is replaced by body of the macro `sum` so => 210
+    sum(10, 200)  // here the `ast` is replaced by body of the macro sum so => 210
 
     let set_env = macro( env ) {
         unquote(env)
