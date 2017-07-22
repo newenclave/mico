@@ -85,6 +85,11 @@ namespace mico { namespace macro {
             if( lst->get_type( ) == ast::type::LIST ) {
                 auto l = ast::cast<ast::expressions::list>(lst.get( ));
                 if( l->value( ).size( ) == 1 ) {
+                    if( l->value( )[0]->get_type( ) == ast::type::EXPR ) {
+                        auto n = l->value( )[0].get( );
+                        auto exp = ast::cast<ast::statements::expr>(n);
+                        return std::move( exp->value( ) );
+                    }
                     return std::move(l->value( )[0]);
                 }
             }
@@ -143,7 +148,7 @@ namespace mico { namespace macro {
                     return processor::macro_mutator( n, &mscope, e );
                 } );
 
-                return unlist(std::move(new_body));
+                return std::move(new_body);
             }
             return nullptr;
         }
