@@ -330,7 +330,7 @@ And this is all happening in the macro expansion phase before the evaluation.
     unless(10 > 5, puts("not greater"), puts("greater")) // => greater =)
 
     /// just for debug purposes
-    __macro( ) // shows all the macroses srored by REPL
+    __macro( ) // shows all the macroses stored by REPL
 
     // Macros:
     // set_env => macro(env) {
