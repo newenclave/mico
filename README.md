@@ -295,7 +295,7 @@ And there are 2 types of **quote**
 
     /// statements quote = quote + { + statements + }
 
-    let a = quote { let a = 1000; let b = a * 2 } // `a` is an ast node that has 2 `let` statements
+    let a = quote { let a = 1000; let b = a * 2 } // `a` is an ast node that contains 2 `let` statements
     unquote(a) // => eval `let a = 1000; let b = a * 2` => null
                // now `a` is 1000 and `b` is 2000
 ```
