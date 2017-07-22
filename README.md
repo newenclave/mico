@@ -313,7 +313,11 @@ I.e.
         let b = 20
     } )
     /// now a is 10 and b is 20
-    sum(a, b) // => 30 yeah! inline =)
+    sum(a, b) // => 30 yeah! inline (10 + 20) =)
+
+    /// macro `test` stores the macro `sum` and it is inlined when `test` is called
+    let test = macro( a ) { sum(10, unquote(a) ) }
+    test(10) /// ast is ( 10 + 10 )
 
     /// and `The Mighty Unless Macro` of course
     let unless = macro(condition, consequence, alternative) {
@@ -324,10 +328,6 @@ I.e.
         };
     }
     unless(10 > 5, puts("not greater"), puts("greater")) // => greater =)
-
-    /// yes. macro `test` stores the macro `sum`  and it is inlined when `test` is called
-    let test = macro( a ) { sum(10, unquote(a) ) }
-    test(10) /// ast is ( 10 + 10 )
 
     /// just for debug purposes
     __macro( ) // shows all the macroses srored by REPL
