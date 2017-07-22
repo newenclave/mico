@@ -321,13 +321,17 @@ And this is all happening in the macro expansion phase before the evaluation.
 
     /// and `The Mighty Unless Macro` of course
     let unless = macro(condition, consequence, alternative) {
+        puts("Here the macro inlined!")
         if(!(unquote(condition))) {
             unquote(consequence);
         } else {
             unquote(alternative);
         };
     }
-    unless(10 > 5, puts("not greater"), puts("greater")) // => greater =)
+    unless(10 > 5, puts("not greater"), puts("greater"))
+    // Here the macro inlined!
+    // greater
+    // =)
 
     /// just for debug purposes
     __macro( ) // shows all the macroses stored by REPL
