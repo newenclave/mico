@@ -860,10 +860,11 @@ namespace mico {
             case token_type::RETURN:
                 stmt = parse_return( );
                 break;
+            case token_type::SEMICOLON:
+                break;
+/*
             case token_type::FUNCTION:
                 stmt = parse_fn_state( );
-                break;
-            case token_type::SEMICOLON:
                 break;
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
@@ -871,7 +872,7 @@ namespace mico {
                 stmt = parse_macro_state( );
                 break;
 #endif
-
+*/
             default:
                 stmt = parse_exrp_stmt( );
                 break;
