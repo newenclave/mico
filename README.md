@@ -328,6 +328,8 @@ And this is all happening in the macro expansion phase before the evaluation.
         let impl = macro( a, b ) {  /// yes! macroses have their scopes!
                                     /// impl can be accessed only in `test2`
             unquote(a) + unquote(b) /// variable shadowing...yes here is
+                                    /// `a` and `b` shadow
+                                    /// `a` and `b` from the scope of test2
         }
         impl(unquote(a), unquote(b))
     }
