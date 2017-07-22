@@ -299,9 +299,8 @@ And there are 2 types of **quote**
     unquote(a) // => eval `let a = 1000; let b = a * 2` => null
                // now `a` is 1000 and `b` is 2000
 ```
-The `macro` keyword defines a piece of code that is placed in the place where it is called.
-Before the evaluation process in the macro expansion phase.
-I.e.
+The `macro` keyword defines a piece of code that is placed in the position where it is called.
+And this is all happening in the macro expansion phase before the evaluation.
 ```js
     let sum = macro( a, b ) { unquote(a) + unquote(b) }
     sum(10, 200)  // here the `ast` is replaced by body of the macro sum so => 210
