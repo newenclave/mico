@@ -390,6 +390,8 @@ let sum = fn( a, b ) {
     smacro(a, b)
 }
 
+let sum = macro( a, b ) { unquote( a ) + unquote( b ) }
+
 let s = fn(a, b) {
     a + b;
 }

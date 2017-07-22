@@ -53,12 +53,23 @@ namespace mico { namespace macro {
         };
 
         static
+        std::string error_param_size( ast::node *n )
+        {
+            std::ostringstream oss;
+            oss << "error: [" << n->pos( ) << "]"
+                << " Not enough actual parameters for macro.";
+                ;
+            return oss.str( );
+        }
+
+        static
         ast::node::uptr apply_macro( ast::node *n, scope *s,
                                      error_list *e )
         {
             using     AT  = ast::type;
             namespace AST = ast::statements;
             namespace AEX = ast::expressions;
+            using     QT  = AEX::quote;
 
             auto cn = ast::cast<AEX::call>( n );
             auto mut = [s, e](ast::node *n) {
@@ -78,12 +89,21 @@ namespace mico { namespace macro {
                 for( auto &p: mfunc->params( )->value( ) ) {
                     if( p->get_type( ) == AT::IDENT ) {
                         if( id < param_count ) {
+
                             auto &val(cn->param_list( )[id++]);
-                            mscope.set( p->str( ),
-                                       AEX::quote::make( std::move(val) ) );
+                            mscope.set( p->str( ), QT::make( std::move(val) ) );
+
+                            /// hm...
+//                            if( val->get_type( ) != AT::QUOTE ) {
+//                                mscope.set( p->str( ),
+//                                       AEX::quote::make( std::move(val) ) );
+//                            } else {
+//                                mscope.set( p->str( ), std::move(val) );
+//                            }
                         } else {
                             /// what about error?
                             mscope.set( p->str( ), AEX::null::make( ) );
+                            e->emplace_back( error_param_size(n) );
                         }
                     }
                 }
