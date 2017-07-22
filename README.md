@@ -274,7 +274,7 @@ And there are 2 types of **quote**
 ```
 ##### * Scope **quote**
 ```js
-    let a = quote{ let a = 1000 } // a is an ast node this an unique statement let
+    let a = quote{ let a = 1000 } // `a` is an ast node that has an unique let the statement
     unquote(a) // => `let a = 1000` => null
                // now `a` is 1000
     quote(unquote(quote(unquote(quote(unquote(quote(unquote(2+2)))))))) // => quote(4) =)
