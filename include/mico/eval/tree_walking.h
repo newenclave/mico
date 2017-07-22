@@ -490,7 +490,8 @@ namespace mico { namespace eval {
             if( !new_env ) {
                 return get_null( );
             }
-            return std::make_shared<objects::tail_call>(fun, params, new_env);
+            return std::make_shared<objects::tail_call>( fun, std::move(params),
+                                                         new_env );
         }
 
         static
@@ -505,6 +506,29 @@ namespace mico { namespace eval {
                 }
             }
             return nullptr;
+        }
+
+        objects::sptr eval_tail_return( objects::sptr obj )
+        {
+            using call_type = objects::tail_call;
+            while( obj->get_type( ) == objects::type::TAIL_CALL ) {
+                auto call = static_cast<call_type *>(obj.get( ));
+                auto call_type = call->value( )->get_type( );
+                if( call_type == objects::type::FUNCTION ) {
+                    auto fun = objects::cast_func(call->value( ).get( ));
+                    environment::scoped s( call->env( ) );
+                    fun->env( )->get_state( ).GC( fun->env( ) );
+                    obj = eval_impl( fun->body( ), call->env( ) );
+                } else if( call_type == objects::type::BUILTIN ) {
+                    auto fun = objects::cast_builtin(call->value( ).get( ));
+                    fun->env( )->get_state( ).GC( fun->env( ) );
+                    obj = fun->call( call->params( ), call->env( ) );
+                }
+                if( is_return( obj ) ) {
+                    return obj;
+                }
+            }
+            return obj;
         }
 
         objects::sptr eval_tail( objects::sptr obj_src )
@@ -574,6 +598,9 @@ namespace mico { namespace eval {
                 last = next;
                 if( is_return( next ) || is_fail( next ) ) {
                     return last;
+                } else if( (0 != count) &&
+                           (next->get_type( ) == objects::type::TAIL_CALL) ) {
+                    last = eval_tail_return( last );
                 }
             }
             return last;
@@ -866,6 +893,9 @@ namespace mico { namespace eval {
             } else if( fun->get_type( ) == objects::type::BUILTIN ) {
                 environment::scoped s(make_env( env ));
                 auto vfun = objects::cast_builtin(fun.get( ));
+
+                vfun->env( )->get_state( ).GC( vfun->env( ) );
+
                 vfun->init( s.env( ) );
                 auto params = eval_parameters(call, s.env( ));
                 if( params.size( ) == 1 && is_fail( params[0] ) ) {
@@ -989,6 +1019,12 @@ namespace mico { namespace eval {
         {
             auto res = eval_impl(n, env);
             return eval_tail( res );
+        }
+
+        objects::sptr eval_impl_tail_ret( ast::node *n, environment::sptr env )
+        {
+            auto res = eval_impl(n, env);
+            return eval_tail_return( res );
         }
 
         objects::sptr eval_impl( ast::node *n, environment::sptr env )

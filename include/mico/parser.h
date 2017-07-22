@@ -647,17 +647,16 @@ namespace mico {
             return left;
         }
 
-
-        ast::statements::let::uptr parse_fn_state( )
+        ast::statement::uptr parse_fn_state( )
         {
-
-            if( !expect_peek( token_type::IDENT ) ) {
-                return nullptr;
+            if( expect_peek( token_type::IDENT, false ) ) {
+                auto id     = parse_ident( );
+                auto macro  = parse_function( );
+                return ast::statements::let::make( std::move(id),
+                                                   std::move(macro) );
+            } else {
+                return parse_expr_stmt( );
             }
-            auto id     = parse_ident( );
-            auto macro  = parse_function( );
-            return ast::statements::let::make( std::move(id),
-                                               std::move(macro) );
         }
 
         ast::statements::let::uptr parse_let( )
@@ -720,16 +719,16 @@ namespace mico {
 
 #if true || !defined(DISABLE_MACRO) || !DISABLE_MACRO
 
-        ast::statements::let::uptr parse_macro_state( )
+        ast::statement::uptr parse_macro_state( )
         {
-
-            if( !expect_peek( token_type::IDENT ) ) {
-                return nullptr;
+            if( expect_peek( token_type::IDENT, false ) ) {
+                auto id     = parse_ident( );
+                auto macro  = parse_macro( );
+                return ast::statements::let::make( std::move(id),
+                                                   std::move(macro) );
+            } else {
+                return parse_exrp_stmt( );
             }
-            auto id     = parse_ident( );
-            auto macro  = parse_macro( );
-            return ast::statements::let::make( std::move(id),
-                                               std::move(macro) );
         }
 
         ast::expressions::macro::uptr parse_macro( )
@@ -838,7 +837,7 @@ namespace mico {
             return res;
         }
 
-        ast::statements::expr::uptr parse_exrp_stmt(  )
+        ast::statements::expr::uptr parse_expr_stmt(  )
         {
             using expr_type = ast::statements::expr;
             auto expt = parse_expression(precedence::LOWEST);
@@ -862,7 +861,7 @@ namespace mico {
                 break;
             case token_type::SEMICOLON:
                 break;
-/*
+
             case token_type::FUNCTION:
                 stmt = parse_fn_state( );
                 break;
@@ -872,9 +871,9 @@ namespace mico {
                 stmt = parse_macro_state( );
                 break;
 #endif
-*/
+
             default:
-                stmt = parse_exrp_stmt( );
+                stmt = parse_expr_stmt( );
                 break;
             }
             return stmt;

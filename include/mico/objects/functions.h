@@ -239,6 +239,9 @@ namespace mico { namespace objects {
             ,params_(std::move(p))
         { }
 
+        ~impl( )
+        { }
+
         std::string str( ) const override
         {
             std::ostringstream oss;

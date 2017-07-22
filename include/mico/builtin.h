@@ -154,6 +154,8 @@ namespace mico {
             static const auto line = __LINE__;
             using objects::error;
 
+            static auto res = objects::null::make( );
+
             std::size_t count = 0;
             for( auto &p: pp ) {
                 ++count;
@@ -176,7 +178,7 @@ namespace mico {
                 }
             }
             std::cout << std::endl;
-            return objects::null::make( );
+            return res;
         }
     };
 
