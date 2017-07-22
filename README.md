@@ -325,9 +325,9 @@ And this is all happening in the macro expansion phase before the evaluation.
     test(10) /// ast is ( 10 + 10 )
 
     let test2 = macro( a, b ) {
-        let impl = macro( a, b ) { /// yes! macroses have their scopes!
-                                   /// impl can be accessed only in `test2`
-            unquote(a) + unquote(b)
+        let impl = macro( a, b ) {  /// yes! macroses have their scopes!
+                                    /// impl can be accessed only in `test2`
+            unquote(a) + unquote(b) /// variable shadowing...yes here is
         }
         impl(unquote(a), unquote(b))
     }
