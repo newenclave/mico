@@ -39,7 +39,7 @@ namespace mico { namespace ast {
         IFELSE,
         REGISTRY,
         LIST,
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         QUOTE,
         UNQUOTE,
         MACRO,
@@ -71,7 +71,7 @@ namespace mico { namespace ast {
             case type::IFELSE  : return "IFELSE";
             case type::REGISTRY: return "REGISTRY";
             case type::LIST    : return "LIST";
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case type::QUOTE   : return "QUOTE";
             case type::UNQUOTE : return "UNQUOTE";
             case type::MACRO   : return "MACO";

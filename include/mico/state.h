@@ -12,7 +12,8 @@ namespace mico {
 
         using sptr          = std::shared_ptr<state>;
         using registry_type = std::map<std::uintptr_t, objects::sptr>;
-#if !defined(DISABLE_MACRO)
+
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         using macro_scope   = macro::processor::scope;
 #endif
         state(  )
@@ -36,7 +37,7 @@ namespace mico {
             return nullptr;
         }
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         macro_scope &macros( )
         {
             return macro_;
@@ -68,7 +69,7 @@ namespace mico {
         environment::sptr env_;
         registry_type     registry_;
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         macro_scope       macro_;
 #endif
     };

@@ -1,7 +1,7 @@
 #ifndef MICO_MACRO_PROCESSOR_H
 #define MICO_MACRO_PROCESSOR_H
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 
 #include <map>
 #include <vector>

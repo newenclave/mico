@@ -32,7 +32,7 @@ namespace mico { namespace objects {
     using table      = impl<type::TABLE>;
     using error      = impl<type::FAILURE>;
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
     using quote      = impl<type::QUOTE>;
 #endif
 
@@ -62,7 +62,7 @@ MICO_DEFINE_CAST_FUNC( return,      type::RETURN    )
 MICO_DEFINE_CAST_FUNC( error,       type::FAILURE   )
 MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )
 #endif
 

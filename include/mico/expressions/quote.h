@@ -6,7 +6,7 @@
 #include "mico/tokens.h"
 #include "mico/expressions/impl.h"
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 namespace mico { namespace ast { namespace expressions {
 
     template <>

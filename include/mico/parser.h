@@ -64,7 +64,7 @@ namespace mico {
                         return parse_function( );
                     };
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             nuds_[token_type::MACRO]   =
                     [this]( ) {
                         return parse_macro( );
@@ -718,7 +718,7 @@ namespace mico {
             return res;
         }
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 
         ast::statements::let::uptr parse_macro_state( )
         {
@@ -839,7 +839,7 @@ namespace mico {
             case token_type::SEMICOLON:
                 break;
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case token_type::MACRO:
                 stmt = parse_macro_state( );
                 break;

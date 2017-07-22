@@ -8,7 +8,7 @@
 #include "mico/expressions/impl.h"
 #include "mico/expressions/list.h"
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 namespace mico { namespace ast { namespace expressions {
 
     template <>

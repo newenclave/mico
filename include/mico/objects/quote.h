@@ -1,7 +1,7 @@
 #ifndef MICO_OBJECTS_QUOTE_H
 #define MICO_OBJECTS_QUOTE_H
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 
 #include <string>
 #include <sstream>

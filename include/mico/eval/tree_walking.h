@@ -939,7 +939,7 @@ namespace mico { namespace eval {
             return obj;
         }
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         static
         ast::node::uptr unquote_mutator( ast::node *n, tree_walking* thiz,
                                          environment::sptr env )
@@ -1034,7 +1034,7 @@ namespace mico { namespace eval {
             case ast::type::LIST:
                 res = eval_scope_node( n, env ); break;
 
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case ast::type::QUOTE:
                 res = eval_quote( n, env ); break;
             case ast::type::UNQUOTE:

@@ -123,12 +123,14 @@ namespace mico {
                     auto prog = parser::parse( data );
 
                     if( prog.errors( ).empty( ) ) {
-
-#if !defined(DISABLE_MACRO)
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
                         macro::processor::process( &st.macros( ), &prog,
                                                    prog.errors( ) );
 //                        std::cout << prog.str( ) << "\n============\n";
 #endif
+                    }
+
+                    if( prog.errors( ).empty( ) ) {
 
                         eval::tree_walking tv;
                         if( prog.states( ).size( ) > 0 ) {
@@ -149,9 +151,11 @@ namespace mico {
                             }
                         }
                     } else {
+                        std::cout << red;
                         for( auto &e: prog.errors( ) ) {
                             std::cout << e << "\n";
                         }
+                        std::cout << none;
                     }
                     data.clear( );
                     std::cout << ">>> ";
