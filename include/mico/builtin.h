@@ -124,7 +124,7 @@ namespace mico {
             using namespace etool::console::ccout;
             if( auto l = env.lock( ) ) {
                 auto &s(l->get_state( ));
-                std::cout << light << "Macros:\n";
+                std::cout << light << "Macroses:\n";
                 for( auto &ss: s.macros( ).value( ) ) {
                     std::cout << cyan << ss.first << none
                               << " => "
@@ -132,7 +132,6 @@ namespace mico {
                               << light << "\n==========\n" << none
                               ;
                 }
-                std::cout << light << "End of macros.\n" << none;
             }
             return objects::null::make( );
         }
