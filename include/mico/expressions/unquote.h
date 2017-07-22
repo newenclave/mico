@@ -6,6 +6,7 @@
 #include "mico/tokens.h"
 #include "mico/expressions/impl.h"
 
+#if !defined(DISABLE_MACRO)
 namespace mico { namespace ast { namespace expressions {
 
     template <>
@@ -65,4 +66,6 @@ namespace mico { namespace ast { namespace expressions {
     };
 
 }}}
+
+#endif // !defined(DISABLE_MACRO)
 #endif // QUOTE_H

@@ -121,12 +121,15 @@ namespace mico {
                 if( tmp.empty( ) ) {
 
                     auto prog = parser::parse( data );
-                    macro::processor::process( &st.macros( ),
-                                               &prog, prog.errors( ) );
-
-//                    std::cout << prog.str( ) << "\n============\n";
 
                     if( prog.errors( ).empty( ) ) {
+
+#if !defined(DISABLE_MACRO)
+                        macro::processor::process( &st.macros( ), &prog,
+                                                   prog.errors( ) );
+//                        std::cout << prog.str( ) << "\n============\n";
+#endif
+
                         eval::tree_walking tv;
                         if( prog.states( ).size( ) > 0 ) {
                             st.GC( st.env( ) );

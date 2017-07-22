@@ -41,9 +41,12 @@ namespace mico { namespace ast { namespace expressions {
     using null      = impl<type::NONE>;
     using registry  = impl<type::REGISTRY>;
     using list      = impl<type::LIST>;
+
+#if !defined(DISABLE_MACRO)
     using quote     = impl<type::QUOTE>;
     using unquote   = impl<type::UNQUOTE>;
     using macro     = impl<type::MACRO>;
+#endif
 
 }}}
 

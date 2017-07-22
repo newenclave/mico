@@ -8,6 +8,7 @@
 #include "mico/expressions/impl.h"
 #include "mico/expressions/list.h"
 
+#if !defined(DISABLE_MACRO)
 namespace mico { namespace ast { namespace expressions {
 
     template <>
@@ -98,4 +99,5 @@ namespace mico { namespace ast { namespace expressions {
 
 }}}
 
+#endif // !defined(DISABLE_MACRO)
 #endif // FN_H

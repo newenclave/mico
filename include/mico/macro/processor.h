@@ -1,6 +1,8 @@
 #ifndef MICO_MACRO_PROCESSOR_H
 #define MICO_MACRO_PROCESSOR_H
 
+#if !defined(DISABLE_MACRO)
+
 #include <map>
 #include <vector>
 
@@ -126,6 +128,10 @@ namespace mico { namespace macro {
             namespace AST = ast::statements;
             namespace AEX = ast::expressions;
 
+            if( !n ) {
+                return nullptr;
+            }
+
             if( n->get_type( ) == AT::LET ) {
                 auto ln = ast::cast<AST::let>( n );
                 if( ln->value( )->get_type( ) == AT::MACRO ) {
@@ -178,4 +184,5 @@ namespace mico { namespace macro {
 
 }}
 
+#endif // !defined(DISABLE_MACRO)
 #endif // MACRO_PROCESSOR_H

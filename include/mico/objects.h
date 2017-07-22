@@ -31,7 +31,10 @@ namespace mico { namespace objects {
     using reference  = impl<type::REFERENCE>;
     using table      = impl<type::TABLE>;
     using error      = impl<type::FAILURE>;
+
+#if !defined(DISABLE_MACRO)
     using quote      = impl<type::QUOTE>;
+#endif
 
 #define MICO_DEFINE_CAST_FUNC( CallPrefix, TypeName )                   \
     inline                                                              \
@@ -58,7 +61,10 @@ MICO_DEFINE_CAST_FUNC( tail_call,   type::TAIL_CALL )
 MICO_DEFINE_CAST_FUNC( return,      type::RETURN    )
 MICO_DEFINE_CAST_FUNC( error,       type::FAILURE   )
 MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
+
+#if !defined(DISABLE_MACRO)
 MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )
+#endif
 
 #undef MICO_DEFINE_CAST_FUNC
 

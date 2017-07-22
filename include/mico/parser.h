@@ -63,6 +63,8 @@ namespace mico {
                     [this]( ) {
                         return parse_function( );
                     };
+
+#if !defined(DISABLE_MACRO)
             nuds_[token_type::MACRO]   =
                     [this]( ) {
                         return parse_macro( );
@@ -77,6 +79,7 @@ namespace mico {
                     [this]( ) {
                         return parse_unquote( );
                     };
+#endif
 
             nuds_[token_type::LBRACE]   =
                     [this]( ) {
@@ -644,17 +647,6 @@ namespace mico {
             return left;
         }
 
-        ast::statements::let::uptr parse_macro_state( )
-        {
-
-            if( !expect_peek( token_type::IDENT ) ) {
-                return nullptr;
-            }
-            auto id     = parse_ident( );
-            auto macro  = parse_macro( );
-            return ast::statements::let::make( std::move(id),
-                                               std::move(macro) );
-        }
 
         ast::statements::let::uptr parse_fn_state( )
         {
@@ -697,9 +689,10 @@ namespace mico {
             return res_type::uptr( new res_type( std::move(expr ) ) );
         }
 
-        ast::expressions::macro::uptr parse_macro( )
+
+        ast::expressions::function::uptr parse_function( )
         {
-            using fn_type = ast::expressions::macro;
+            using fn_type = ast::expressions::function;
             fn_type::uptr res(new fn_type);
             res->set_pos( current( ).where );
 
@@ -725,9 +718,23 @@ namespace mico {
             return res;
         }
 
-        ast::expressions::function::uptr parse_function( )
+#if !defined(DISABLE_MACRO)
+
+        ast::statements::let::uptr parse_macro_state( )
         {
-            using fn_type = ast::expressions::function;
+
+            if( !expect_peek( token_type::IDENT ) ) {
+                return nullptr;
+            }
+            auto id     = parse_ident( );
+            auto macro  = parse_macro( );
+            return ast::statements::let::make( std::move(id),
+                                               std::move(macro) );
+        }
+
+        ast::expressions::macro::uptr parse_macro( )
+        {
+            using fn_type = ast::expressions::macro;
             fn_type::uptr res(new fn_type);
             res->set_pos( current( ).where );
 
@@ -785,6 +792,7 @@ namespace mico {
             }
             return unquote_type::uptr( new unquote_type( std::move(expr) ) );
         }
+#endif
 
         ast::expressions::call::uptr parse_call( ast::expression::uptr left )
         {
@@ -825,14 +833,18 @@ namespace mico {
             case token_type::RETURN:
                 stmt = parse_return( );
                 break;
-            case token_type::MACRO:
-                stmt = parse_macro_state( );
-                break;
             case token_type::FUNCTION:
                 stmt = parse_fn_state( );
                 break;
             case token_type::SEMICOLON:
                 break;
+
+#if !defined(DISABLE_MACRO)
+            case token_type::MACRO:
+                stmt = parse_macro_state( );
+                break;
+#endif
+
             default:
                 stmt = parse_exrp_stmt( );
                 break;

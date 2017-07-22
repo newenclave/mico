@@ -1,6 +1,8 @@
 #ifndef MICO_OBJECTS_QUOTE_H
 #define MICO_OBJECTS_QUOTE_H
 
+#if !defined(DISABLE_MACRO)
+
 #include <string>
 #include <sstream>
 #include "mico/objects/base.h"
@@ -69,4 +71,5 @@ namespace mico { namespace objects {
 
 }}
 
+#endif // !defined(DISABLE_MACRO)
 #endif // STRING_H
