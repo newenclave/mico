@@ -295,11 +295,11 @@ And there are 2 types of **quote**
 
     /// statements quote = quote + { + statements + }
 
-    let a = quote { let a = 1000 } // `a` is an ast node that has an unique let the statement
-    unquote(a) // => `let a = 1000` => null
-               // now `a` is 1000
+    let a = quote { let a = 1000; let b = a * 2 } // `a` is an ast node that has 2 `let` statements
+    unquote(a) // => eval `let a = 1000; let b = a * 2` => null
+               // now `a` is 1000 and `b` is 2000
 ```
-The `macro` keyword defines a piece of code that will be placed in the place where it will be called.
+The `macro` keyword defines a piece of code that is placed in the place where it is called.
 Before the evaluation process in the macro expansion phase.
 I.e.
 ```js
@@ -326,7 +326,6 @@ I.e.
     unless(10 > 5, puts("not greater"), puts("greater")) // => greater =)
 
 ```
-
 
 Is not yet complete.
 
