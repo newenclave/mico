@@ -312,6 +312,7 @@ I.e.
         let a = 10
         let b = 20
     } )
+    /// now a is 10 and b is 20
     sum(a, b) // => 30 yeah! inline =)
 
 ```
