@@ -61,9 +61,13 @@ namespace mico { namespace macro {
             namespace AEX = ast::expressions;
 
             auto cn = ast::cast<AEX::call>( n );
-            ast::node::apply_mutator( cn->func( ), [s, e](ast::node *n) {
+            auto mut = [s, e](ast::node *n) {
                 return processor::macro_mutator( n, s, e );
-            } );
+            };
+
+            ast::node::apply_mutator( cn->func( ), mut );
+            cn->params( )->mutate( mut );
+
             if( cn->func( )->get_type( ) == AT::MACRO ) {
 
                 scope mscope( s );
@@ -110,7 +114,9 @@ namespace mico { namespace macro {
                 }
 
             } else if( n->get_type( ) == AT::CALL ) {
-                return apply_macro( n, s, e );
+                if( auto res = apply_macro( n, s, e ) ) {
+                    return res;
+                }
             } else if( n->get_type( ) == AT::LIST ) {
                 auto ln = ast::cast<AEX::list>( n );
                 if( ln->get_role( ) == AEX::list::role::LIST_SCOPE ) {
@@ -124,12 +130,12 @@ namespace mico { namespace macro {
                 if( auto val = s->get( in->value( ) ) ) {
                     return val->clone( );
                 }
-            } else {
-                auto me = [s, e]( ast::node *n ) {
-                    return macro_mutator( n, s, e );
-                };
-                n->mutate( me );
             }
+
+            auto me = [s, e]( ast::node *n ) {
+                return macro_mutator( n, s, e );
+            };
+            n->mutate( me );
 
             return nullptr;
         }

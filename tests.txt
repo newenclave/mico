@@ -383,4 +383,17 @@ m(1,2,3)
 let z = 100
 let s = fn(a,b) { m( 1, 2, 3 ); a + b }
 
+let sum = fn( a, b ) {
+    macro smacro( a, b ) {
+        unquote(a) + unquote(b)
+    }
+    smacro(a, b)
+}
+
+macro sum(a, b) { unquote(a) + unquote(b) }
+let s = fn(a, b) {
+    a + b;
+}
+s(sum(10, 10), 10)
+
 */

@@ -50,6 +50,12 @@ namespace mico { namespace ast { namespace statements {
             return expr_;
         }
 
+        static
+        uptr make( expression::uptr id, expression::uptr expr )
+        {
+            return uptr( new this_type( std::move(id), std::move(expr) ) );
+        }
+
         void mutate( mutator_type call ) override
         {
             ast::expression::apply_mutator( ident_, call );
@@ -141,6 +147,12 @@ namespace mico { namespace ast { namespace statements {
         expression::uptr &value( )
         {
             return expr_;
+        }
+
+        static
+        uptr make( expression::uptr val )
+        {
+            return uptr( new this_type( std::move(val) ) );
         }
 
         void mutate( mutator_type call ) override

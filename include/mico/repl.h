@@ -109,9 +109,9 @@ namespace mico {
         static
         void run( )
         {
+            static const auto fail_type = objects::type::FAILURE;
             using namespace etool::console::ccout;
             mico::state st;
-            mico::macro::processor::scope macros;
             builtin::init( st.env( ) );
             std::string data;
             std::cout << logo << ">>> ";
@@ -120,19 +120,20 @@ namespace mico {
                 std::getline( std::cin, tmp );
                 if( tmp.empty( ) ) {
 
-                    auto prog = mico::parser::parse( data );
-                    mico::macro::processor::process( &macros, &prog,
-                                                     prog.errors( ) );
-                    std::cout << prog.str( ) << "\n============\n";
+                    auto prog = parser::parse( data );
+                    macro::processor::process( &st.macros( ),
+                                               &prog, prog.errors( ) );
+
+//                    std::cout << prog.str( ) << "\n============\n";
 
                     if( prog.errors( ).empty( ) ) {
-                        mico::eval::tree_walking tv;
+                        eval::tree_walking tv;
                         if( prog.states( ).size( ) > 0 ) {
                             st.GC( st.env( ) );
                             auto obj = tv.eval( &prog, st.env( ) );
                             if( obj->get_type( ) != objects::type::NULL_OBJ ) {
-                                bool failed =
-                                    (obj->get_type( )==objects::type::FAILURE);
+                                bool failed = ( obj->get_type( ) == fail_type );
+
                                 if( failed ) {
                                     std::cout << red;
                                 }

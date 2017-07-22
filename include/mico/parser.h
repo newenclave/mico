@@ -644,6 +644,30 @@ namespace mico {
             return left;
         }
 
+        ast::statements::let::uptr parse_macro_state( )
+        {
+
+            if( !expect_peek( token_type::IDENT ) ) {
+                return nullptr;
+            }
+            auto id     = parse_ident( );
+            auto macro  = parse_macro( );
+            return ast::statements::let::make( std::move(id),
+                                               std::move(macro) );
+        }
+
+        ast::statements::let::uptr parse_fn_state( )
+        {
+
+            if( !expect_peek( token_type::IDENT ) ) {
+                return nullptr;
+            }
+            auto id     = parse_ident( );
+            auto macro  = parse_function( );
+            return ast::statements::let::make( std::move(id),
+                                               std::move(macro) );
+        }
+
         ast::statements::let::uptr parse_let( )
         {
             using let_type = ast::statements::let;
@@ -800,6 +824,12 @@ namespace mico {
                 break;
             case token_type::RETURN:
                 stmt = parse_return( );
+                break;
+            case token_type::MACRO:
+                stmt = parse_macro_state( );
+                break;
+            case token_type::FUNCTION:
+                stmt = parse_fn_state( );
                 break;
             case token_type::SEMICOLON:
                 break;

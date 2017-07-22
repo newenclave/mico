@@ -4,13 +4,15 @@
 #include <memory>
 #include "mico/objects/base.h"
 #include "mico/environment.h"
+#include "mico/macro/processor.h"
 
 namespace mico {
 
     struct state {
 
-        using sptr = std::shared_ptr<state>;
+        using sptr          = std::shared_ptr<state>;
         using registry_type = std::map<std::uintptr_t, objects::sptr>;
+        using macro_scope   = macro::processor::scope;
 
         state(  )
         {
@@ -33,6 +35,16 @@ namespace mico {
             return nullptr;
         }
 
+        macro_scope &macros( )
+        {
+            return macro_;
+        }
+
+        const macro_scope &macros( ) const
+        {
+            return macro_;
+        }
+
         environment::sptr env( )
         {
             return env_;
@@ -52,6 +64,7 @@ namespace mico {
         bool              gc_deep_ = true;
         environment::sptr env_;
         registry_type     registry_;
+        macro_scope       macro_;
     };
 }
 
