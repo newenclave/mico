@@ -48,6 +48,11 @@ namespace mico { namespace macro {
                 return nullptr;
             }
 
+            const value_map &value( ) const
+            {
+                return values_;
+            }
+
         private:
 
             scope *parent_ = nullptr;
@@ -71,7 +76,6 @@ namespace mico { namespace macro {
             using     AT  = ast::type;
             namespace AST = ast::statements;
             namespace AEX = ast::expressions;
-            using     QT  = AEX::quote;
 
             auto cn = ast::cast<AEX::call>( n );
             auto mut = [s, e](ast::node *n) {

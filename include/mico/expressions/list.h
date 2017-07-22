@@ -27,7 +27,7 @@ namespace mico { namespace ast { namespace expressions {
         const char *role2str( role r)
         {
             switch (r) {
-            case role::LIST_SCOPE:  return ";\n";
+            case role::LIST_SCOPE:  return "; ";
             case role::LIST_PARAMS: return ", ";
             }
             return " ";

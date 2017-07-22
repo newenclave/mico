@@ -261,6 +261,48 @@ In this case the right side must be a function (builtin or not).
 
 ```
 
+#### * A Macro System For Monkey
+
+Yes. Finnaly I've had some free time to add the system; https://interpreterbook.com/lost/
+So. First of all **quote**, **unquote**, and **macro** are keywords and I can parse them as I want.
+And there are 2 types of **quote**
+    * Expression **quote**
+```js
+    let a = quote( 2 + 2 ) /// a is an ast node containing (2 + 2)
+    unquote(a) // => ( 2 + 2 ) => 4
+```
+    * Scope **quote**
+```js
+    let a = quote{ let a = 1000 } // a is an ast node this an uniq statement **let**
+    unquote(a) // => `let a = 1000` => null
+               // now `a` is 1000
+    quote(unquote(quote(unquote(quote(unquote(quote(unquote(2+2)))))))) // => quote(4) =)
+```
+The `macro` keyword defines a piece of code that will be placed in the place where it will be called.
+Before the evaluation process
+I.e.
+```js
+    let sum = macro( a, b ) { unquote(a) + unquote(b) }
+    sum(10, 200)  // here the `ast` is replaced by body of the macro `sum` so => 210
+
+    let set_env = macro( env ) {
+        unquote(env)
+    }
+    set_env( quote{
+        let a = 10
+        let b = 20
+    } )
+    sum(a, b) // => 30 yeah! inline =)
+
+    let x = 100
+    let quote_func = quote( fn( a ) { unquote(10 * x) + a } )
+    // quote_func => quote(fn(a) { (1000+a) })
+
+    unquote(quote_func)(10) // 1010
+
+```
+
+
 Is not yet complete.
 
 ### ... are not supported yet
@@ -272,9 +314,3 @@ This is a block of comments
 */
 let a = 0
 ```
-
-#### A Macro System For Monkey
-
-https://interpreterbook.com/lost/
-
-Nope. I have not started to implement it.

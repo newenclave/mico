@@ -3,6 +3,7 @@
 
 #include "mico/parser.h"
 #include "mico/eval/tree_walking.h"
+#include "etool/console/colors.h"
 
 namespace mico {
 
@@ -112,6 +113,32 @@ namespace mico {
         environment::wptr env;
     };
 
+    struct macro_show {
+
+        macro_show( environment::sptr e )
+            :env(e)
+        { }
+
+        objects::sptr operator ( )( objects::slist &, environment::sptr )
+        {
+            using namespace etool::console::ccout;
+            if( auto l = env.lock( ) ) {
+                auto &s(l->get_state( ));
+                std::cout << light << "Macros:\n";
+                for( auto &ss: s.macros( ).value( ) ) {
+                    std::cout << cyan << ss.first << none
+                              << " => "
+                              << ss.second->str( )
+                              << light << "\n==========\n" << none
+                              ;
+                }
+                std::cout << light << "End of macros.\n" << none;
+            }
+            return objects::null::make( );
+        }
+        environment::wptr env;
+    };
+
     struct copy {
         objects::sptr operator ( )( objects::slist &p, environment::sptr )
         {
@@ -158,10 +185,11 @@ namespace mico {
         static
         void init( environment::sptr env )
         {
-            env->set( "len",    common::make( env, len { } ) );
-            env->set( "puts",   common::make( env, puts { } ) );
-            env->set( "copy",   common::make( env, copy { } ) );
-            env->set( "env",    common::make( env, env_show(env) ) );
+            env->set( "len",        common::make( env, len { } ) );
+            env->set( "puts",       common::make( env, puts { } ) );
+            env->set( "copy",       common::make( env, copy { } ) );
+            env->set( "__env",      common::make( env, env_show(env) ) );
+            env->set( "__macro",    common::make( env, macro_show(env) ) );
         }
     };
 
