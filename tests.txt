@@ -390,10 +390,12 @@ let sum = fn( a, b ) {
     smacro(a, b)
 }
 
-macro sum(a, b) { unquote(a) + unquote(b) }
 let s = fn(a, b) {
     a + b;
 }
+macro sum(a, b) { unquote(a) + unquote(b) }
+macro eval_first( a, b ) { unquote(a) }
+
 s(sum(10, 10), 10)
 
 */
