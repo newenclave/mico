@@ -315,6 +315,7 @@ I.e.
     /// now a is 10 and b is 20
     sum(a, b) // => 30 yeah! inline =)
 
+    /// and `The Mighty Unless Macro` of course
     let unless = macro(condition, consequence, alternative) {
         if(!(unquote(condition))) {
             unquote(consequence);
