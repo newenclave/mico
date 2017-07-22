@@ -30,25 +30,24 @@ namespace mico { namespace ast { namespace statements {
             return oss.str( );
         }
 
-        const expression *ident( ) const
+        const expression::uptr &ident( ) const
         {
-            return ident_.get( );
+            return ident_;
         }
 
-        expression *ident( )
+        expression::uptr &ident( )
         {
-            return ident_.get( );
+            return ident_;
         }
 
-
-        const expression *value( ) const
+        const expression::uptr &value( ) const
         {
-            return expr_.get( );
+            return expr_;
         }
 
-        expression *value( )
+        expression::uptr &value( )
         {
-            return expr_.get( );
+            return expr_;
         }
 
         void mutate( mutator_type call ) override

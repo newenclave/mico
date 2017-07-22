@@ -43,6 +43,11 @@ namespace mico { namespace ast { namespace expressions {
             :scope_(scope)
         { }
 
+        role get_role( ) const
+        {
+            return scope_;
+        }
+
         list_type &value( )
         {
             return value_;

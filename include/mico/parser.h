@@ -63,6 +63,10 @@ namespace mico {
                     [this]( ) {
                         return parse_function( );
                     };
+            nuds_[token_type::MACRO]   =
+                    [this]( ) {
+                        return parse_macro( );
+                    };
 
             nuds_[token_type::QUOTE]   =
                     [this]( ) {
@@ -667,6 +671,34 @@ namespace mico {
             advance( );
             auto expr = parse_expression( precedence::LOWEST );
             return res_type::uptr( new res_type( std::move(expr ) ) );
+        }
+
+        ast::expressions::macro::uptr parse_macro( )
+        {
+            using fn_type = ast::expressions::macro;
+            fn_type::uptr res(new fn_type);
+            res->set_pos( current( ).where );
+
+            if( !expect_peek( token_type::LPAREN ) ) {
+                return nullptr;
+            }
+
+            advance( );
+            if( !is_current( token_type::RPAREN ) ) {
+                res->set_params( parse_ident_list( ) );
+                if( !expect_peek( token_type::RPAREN ) ) {
+                    return fn_type::uptr( );
+                }
+            }
+
+            if( !expect_peek( token_type::LBRACE ) ) {
+                return nullptr;
+            }
+
+            advance( );
+            res->set_body( parse_scope( ) );
+
+            return res;
         }
 
         ast::expressions::function::uptr parse_function( )

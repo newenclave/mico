@@ -370,4 +370,17 @@ unquote(a)(1)
 
 quote(unquote(quote(unquote(quote(unquote(quote(unquote(2+2))))))))
 
+let m = macro(a, b, c) { unquote(a) + unquote(b) + unquote(c) }
+let m = macro(a, b, c) {
+    let int = macro(  ) {
+        unquote(a) + unquote(b) + unquote(c)
+    }
+    int( )
+}
+
+m(1,2,3)
+
+let z = 100
+let s = fn(a,b) { m( 1, 2, 3 ); a + b }
+
 */

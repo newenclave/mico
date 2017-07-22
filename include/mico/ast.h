@@ -41,6 +41,7 @@ namespace mico { namespace ast {
         LIST,
         QUOTE,
         UNQUOTE,
+        MACRO,
     };
 
     struct name {
@@ -70,6 +71,7 @@ namespace mico { namespace ast {
             case type::LIST    : return "LIST";
             case type::QUOTE   : return "QUOTE";
             case type::UNQUOTE : return "UNQUOTE";
+            case type::MACRO   : return "MACO";
             }
             return "<INVALID>"; /// sould not be here
         }
@@ -299,7 +301,12 @@ namespace mico { namespace ast {
             return oss.str( );
         }
 
-        const error_list &errors( )
+        const error_list &errors( ) const
+        {
+            return errors_;
+        }
+
+        error_list &errors( )
         {
             return errors_;
         }

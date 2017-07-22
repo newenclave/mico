@@ -40,6 +40,9 @@ namespace mico { namespace ast { namespace expressions {
         static
         uptr make( ast::node::uptr val )
         {
+//            if( !val ) {
+//                throw std::logic_error( "Nothig to qote!" );
+//            }
             return uptr(new this_type( std::move( val ) ) );
         }
 

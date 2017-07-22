@@ -27,18 +27,7 @@ void run_file( )
 
 int main_lex( );
 
-int sum2( int a, int b )
-{
-    return  a + b;
-}
-
-int sum3( int a, int b, int c )
-{
-    return  a + b;
-}
-
-int main( int argc, char * argv[ ]  )
+int main( int /*argc*/, char ** /*argv[ ]*/  )
 {
     return run_repl( );
 }
-

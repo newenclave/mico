@@ -8,7 +8,10 @@
 #include "mico/builtin.h"
 #include "mico/objects.h"
 #include "mico/state.h"
+#include "mico/macro/processor.h"
+
 #include "etool/console/colors.h"
+
 
 namespace mico {
 
@@ -108,6 +111,7 @@ namespace mico {
         {
             using namespace etool::console::ccout;
             mico::state st;
+            mico::macro::processor::scope macros;
             builtin::init( st.env( ) );
             std::string data;
             std::cout << logo << ">>> ";
@@ -115,7 +119,12 @@ namespace mico {
                 std::string tmp;
                 std::getline( std::cin, tmp );
                 if( tmp.empty( ) ) {
+
                     auto prog = mico::parser::parse( data );
+                    mico::macro::processor::process( &macros, &prog,
+                                                     prog.errors( ) );
+                    std::cout << prog.str( ) << "\n============\n";
+
                     if( prog.errors( ).empty( ) ) {
                         mico::eval::tree_walking tv;
                         if( prog.states( ).size( ) > 0 ) {

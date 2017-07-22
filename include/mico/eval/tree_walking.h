@@ -631,7 +631,7 @@ namespace mico { namespace eval {
         {
             auto expr = ast::cast<ast::statements::let>( n );
             auto id   = expr->ident( )->str( );
-            auto val  = eval_impl( expr->value( ), env );
+            auto val  = eval_impl( expr->value( ).get( ), env );
             if( is_fail( val ) ) {
                 return val;
             }
@@ -942,12 +942,12 @@ namespace mico { namespace eval {
         ast::node::uptr unquote_mutator( ast::node *n, tree_walking* thiz,
                                          environment::sptr env )
         {
-            if( n->get_type( ) == ast::type::QUOTE ) {
-                auto quo = ast::cast<ast::expressions::quote>( n );
-                //unquote_mutator( quo->value( ).get( ), thiz, env );
-                return quo->value( )->clone( );
-            } else if( n->get_type( ) == ast::type::UNQUOTE ) {
-                auto quo = ast::cast<ast::expressions::unquote>( n );
+            namespace EXP = ast::expressions;
+            namespace OBJ = objects;
+
+            if( n->get_type( ) == ast::type::UNQUOTE ) {
+                auto quo = ast::cast<EXP::unquote>( n );
+
                 auto res = thiz->eval_impl( quo, env );
                 if( !is_fail( res ) ) {
                     return res->to_ast( n->pos( ) );

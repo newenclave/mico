@@ -23,6 +23,12 @@ namespace mico { namespace ast { namespace expressions {
 
         }
 
+        static
+        ast::node::uptr make( )
+        {
+            return ast::node::uptr(new this_type);
+        }
+
         ast::node::uptr clone( ) const override
         {
             return ast::node::uptr(new this_type);

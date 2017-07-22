@@ -70,7 +70,7 @@ namespace mico { namespace tokens {
         FUNCTION,
         QUOTE,
         UNQUOTE,
-//        MACRO,
+        MACRO,
         BOOL_TRUE,
         BOOL_FALSE,
         IF,
@@ -145,7 +145,7 @@ namespace mico { namespace tokens {
             case type::FUNCTION:    return "fn";
             case type::QUOTE:       return "quote";
             case type::UNQUOTE:     return "unquote";
-//            case type::MACRO:       return "macro";
+            case type::MACRO:       return "macro";
 
             case type::BOOL_TRUE:   return "true";
             case type::BOOL_FALSE:  return "false";
