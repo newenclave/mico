@@ -325,6 +325,10 @@ I.e.
     }
     unless(10 > 5, puts("not greater"), puts("greater")) // => greater =)
 
+    /// yes. macro `test` stores the macro `sum`  and it is inlined when `test` is called
+    let test = macro( a ) { sum(10, unquote(a) ) }
+    test(10) /// ast is ( 10 + 10 )
+
     /// just for debug purposes
     __macro( ) // shows all the macroses srored by REPL
 
@@ -335,6 +339,9 @@ I.e.
     // ==========
     // sum => macro(a, b) {
     // (unquote(a)+unquote(b))
+    // }
+    // test => macro(a) {
+    // sum(10, a)
     // }
     // ==========
     // unless => macro(condition, consequence, alternative) {

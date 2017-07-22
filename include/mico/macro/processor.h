@@ -138,9 +138,17 @@ namespace mico { namespace macro {
                 return nullptr;
             }
 
+            auto me = [s, e]( ast::node *n ) {
+                return macro_mutator( n, s, e );
+            };
+
             if( n->get_type( ) == AT::LET ) {
                 auto ln = ast::cast<AST::let>( n );
                 if( ln->value( )->get_type( ) == AT::MACRO ) {
+
+                    //// doesn't work because it can be impossible
+//                    auto mac = ast::cast<AEX::macro>(ln->value( ).get( ));
+//                    mac->mutate( me );
                     s->set( ln->ident( )->str( ), std::move( ln->value( ) ) );
                     return AEX::null::make( );
                 }
@@ -163,10 +171,6 @@ namespace mico { namespace macro {
                     return val->clone( );
                 }
             }
-
-            auto me = [s, e]( ast::node *n ) {
-                return macro_mutator( n, s, e );
-            };
             n->mutate( me );
 
             return nullptr;
