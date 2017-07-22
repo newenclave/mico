@@ -313,7 +313,7 @@ I.e.
         let b = 20
     } )
     /// now a is 10 and b is 20
-    sum(a, b) // => 30 yeah! inline (10 + 20) =)
+    sum(a, b) // => 30 yeah! inline (a + b) =)
 
     /// macro `test` stores the macro `sum` and it is inlined when `test` is called
     let test = macro( a ) { sum(10, unquote(a) ) }
