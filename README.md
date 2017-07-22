@@ -286,8 +286,13 @@ And there are 2 types of **quote**
     let quote_if =  quote( if( unquote(x) > 10 ) { "huge" } else { "small" } )
     //  quote_if => quote( if( 100        > 10 ) { "huge" } else { "small" } )
 
+    let x = "Hello!"
+    let quote_call =  quote( unquote(x) | len )
+    /// quote_call =  quote( "Hello!"   | len )
+
     unquote(quote_func)(10) // 1010
     unquote(quote_if)       // "huge"
+    unquote(quote_call)     // 6
 
 ```
 ##### * Statements **quote**
