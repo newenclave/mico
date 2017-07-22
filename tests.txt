@@ -398,6 +398,19 @@ let s = fn(a, b) {
 macro sum(a, b) { unquote(a) + unquote(b) }
 macro eval_first( a, b ) { unquote(a) }
 
+let unless = macro (cond, yes, no) {
+    if( unquote(cond) ) {
+        unquote(yes)
+    } else {
+        unquote(no)
+    }
+}
+
+let plusToMinus = macro(infixExpression) {
+  unquote(left(infixExpression)) - unquote(right(infixExpression))
+}
+
+unless(10 > 5, puts("not greater"), puts("greater"))
 s(sum(10, 10), 10)
 
 */
