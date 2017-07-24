@@ -15,6 +15,7 @@ namespace mico { namespace eval { namespace operations {
         using int_type   = objects::impl<objects::type::INTEGER>;
         using prefix     = ast::expressions::prefix;
         using infix      = ast::expressions::infix;
+        using index      = ast::expressions::index;
 
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr /*obj*/ )
@@ -73,6 +74,52 @@ namespace mico { namespace eval { namespace operations {
             return error_type::make(inf->pos( ), "Infix operation '",
                                     inf->token( ), "' is not defined for "
                                                     "string and integer");
+
+        }
+
+        static
+        objects::sptr eval_index( index *idx, objects::sptr obj,
+                                  eval_call ev, environment::sptr /*env*/  )
+        {
+            common::reference<objects::type::STRING> ref(obj);
+            auto str = ref.shared_unref( );
+
+            objects::sptr id = ev( idx->param( ).get( ) );
+            if( id->get_type( ) == objects::type::FAILURE ) {
+                return id;
+            }
+
+            std::int64_t index = std::numeric_limits<std::int64_t>::max( );
+
+            if( id->get_type( ) == objects::type::INTEGER ) {
+                auto iid = objects::cast_int( id.get( ) );
+                index = iid->value( );
+            } else if( id->get_type( ) == objects::type::FLOAT ) {
+                auto iid = objects::cast_float( id.get( ) );
+                index = static_cast<decltype(index)>(iid->value( ));
+            } else {
+                return error_type::make( idx->pos( ),
+                                         idx->param( ).get( ),
+                              " has invalid type; must be integer" );
+            }
+
+            auto fix = static_cast<std::size_t>(index);
+            if( index < 0 ) {
+                fix = str->value( ).size( ) -
+                        static_cast<std::size_t>(-1 * index);
+            }
+
+            if( fix < str->value( ).size( ) ) {
+                return objects::integer::make( str->value( )[fix] );
+            } else {
+                return error_type::make(
+                            idx->param( ).get( ), idx->param( ).get( ),
+                            " is not a valid index for the string" );
+            }
+
+//            return error_type::make( idx->param( )->pos( ),
+//                                     idx->param( ).get( ),
+//                          " is not a valid index for the string" );
 
         }
 

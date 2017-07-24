@@ -60,11 +60,16 @@ namespace mico { namespace objects {
 
         objects::sptr at( std::int64_t id )
         {
-            auto size = static_cast<std::size_t>(id);
-            if( (size < value_.size( )) && ( id >= 0) ) {
-                return value_[size];
+            auto siz = static_cast<std::size_t>(id);
+
+            if( id < 0 ) {
+                siz = value_.size( ) - static_cast<std::size_t>(-1 * id);
+            }
+
+            if( siz < value_.size( ) ) {
+                return value_[siz];
             } else {
-                return impl<type::NULL_OBJ>::make( );
+                return nullptr;
             }
         }
 

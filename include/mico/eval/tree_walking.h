@@ -213,25 +213,6 @@ namespace mico { namespace eval {
             return std::make_shared<objects::string>( val->value( ) );
         }
 
-        objects::sptr produce_prefix_minus( ast::expressions::prefix *n,
-                                            environment::sptr env )
-        {
-            auto oper = unref(eval_impl(n->value( ).get( ), env));
-            switch ( oper->get_type( ) ) {
-            case objects::type::INTEGER: {
-                auto o = obj_cast<objects::type::INTEGER>(oper.get( ));
-                return get_signed( -1 * static_cast<std::int64_t>(o->value( )));
-            }
-            case objects::type::FLOAT: {
-                auto o = obj_cast<objects::type::FLOAT>(oper.get( ));
-                return eval_float( -1.0 * o->value( ) );
-            }
-            default:
-                break;
-            }
-            return get_null( );
-        }
-
         bool is_bool( objects::base *oper )
         {
             return (oper->get_type( ) == objects::type::INTEGER )
@@ -728,72 +709,21 @@ namespace mico { namespace eval {
                 return val;
             }
 
-            std::int64_t index = std::numeric_limits<std::int64_t>::max( );
+            auto idx_call = [this, env](ast::node *n ) {
+                return unref( eval_impl_tail( n, env ) );
+            };
 
-            if( (val->get_type( ) == objects::type::STRING) ||
-                (val->get_type( ) == objects::type::ARRAY)   )
-            {
-                auto id = eval_impl_tail( idx->param( ).get( ), env );
-                if( id->get_type( ) == objects::type::INTEGER ) {
-                    auto iid = objects::cast_int( id.get( ) );
-                    index = iid->value( );
-                } else if( id->get_type( ) == objects::type::FLOAT ) {
-                    auto iid = objects::cast_float( id.get( ) );
-                    index = static_cast<decltype(index)>(iid->value( ));
-                } else {
-                    return error( idx->param( ).get( ), idx->param( ).get( ),
-                                  " has invalid type; must be integer" );
-                }
-            }
+            using OP_array  = operations::operation<objects::type::ARRAY>;
+            using OP_string = operations::operation<objects::type::STRING>;
+            using OP_table  = operations::operation<objects::type::TABLE>;
 
-            if( val->get_type( ) == objects::type::STRING ) {
-
-                auto str = objects::cast_string( val.get( ) );
-
-                if( index < 0 ) {
-                    index = str->value( ).size( ) - (index * -1);
-                }
-                if( static_cast<std::size_t>(index) < str->value( ).size( ) ) {
-                    return objects::integer::make( str->value( )[index] );
-                } else {
-                    return error( idx->param( ).get( ), idx->param( ).get( ),
-                                  " is not a valid index for the string" );
-                }
-
-            } else if(val->get_type( ) == objects::type::ARRAY) {
-
-                auto arr = objects::cast_array( val.get( ) );
-
-                if( index < 0 ) {
-                    index = arr->value( ).size( ) - (index * -1);
-                }
-                /// TODO fix copypaste
-                if( static_cast<std::size_t>(index) < arr->value( ).size( ) ) {
-                    return arr->at( index );
-                } else {
-                    return error( idx->param( ).get( ), idx->param( ).get( ),
-                                  " is not a valid index for the array" );
-                }
-
-            } else if(val->get_type( ) == objects::type::TABLE) {
-
-                auto arr = objects::cast_table( val.get( ) );
-                auto id = unref(eval_impl( idx->param( ).get( ), env ));
-
-                if( is_fail( id ) ) {
-                    return id;
-                }
-
-                auto res = arr->at( id );
-                if( !is_null( res ) ) {
-                    return res;
-                } else {
-                    return error( idx->param( ).get( ), idx->param( ).get( ),
-                                  " is not a valid index for the table" );
-                }
-
-            } else {
-
+            switch ( val->get_type( ) ) {
+            case objects::type::ARRAY:
+                return OP_array::eval_index( idx, val, idx_call, env );
+            case objects::type::STRING:
+                return OP_string::eval_index( idx, val, idx_call, env );
+            case objects::type::TABLE:
+                return OP_table::eval_index( idx, val, idx_call, env );
             }
 
             return objects::error::make(n->pos( ),

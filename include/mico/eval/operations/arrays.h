@@ -13,6 +13,7 @@ namespace mico { namespace eval { namespace operations {
         using int_type   = objects::impl<objects::type::INTEGER>;
         using prefix     = ast::expressions::prefix;
         using infix      = ast::expressions::infix;
+        using index      = ast::expressions::index;
 
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
@@ -43,6 +44,42 @@ namespace mico { namespace eval { namespace operations {
             }
 
             return res;
+        }
+
+        static
+        objects::sptr eval_index( index *inf, objects::sptr obj,
+                                  eval_call ev, environment::sptr /*env*/  )
+        {
+
+            common::reference<objects::type::ARRAY> ref(obj);
+            auto arr = ref.shared_unref( );
+
+            objects::sptr id = ev( inf->param( ).get( ) );
+            if( id->get_type( ) == objects::type::FAILURE ) {
+                return id;
+            }
+
+            std::int64_t index = std::numeric_limits<std::int64_t>::max( );
+
+            if( id->get_type( ) == objects::type::INTEGER ) {
+                auto iid = objects::cast_int( id.get( ) );
+                index = iid->value( );
+            } else if( id->get_type( ) == objects::type::FLOAT ) {
+                auto iid = objects::cast_float( id.get( ) );
+                index = static_cast<decltype(index)>(iid->value( ));
+            } else {
+                return error_type::make( inf->pos( ),
+                                         inf->param( ).get( ),
+                              " has invalid type; must be integer" );
+            }
+
+            if( auto res = arr->at( index ) ) {
+                return res;
+            }
+
+            return error_type::make( inf->param( )->pos( ),
+                                     inf->param( ).get( ),
+                          " is not a valid index for the array" );
         }
 
         static

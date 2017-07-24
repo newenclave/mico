@@ -104,7 +104,7 @@ namespace mico { namespace objects {
             objects::sptr ptr = id;
             auto f = value_.find( ptr );
             if(f == value_.end( )) {
-                return impl<type::NULL_OBJ>::make( );
+                return nullptr;
             } else {
                 return f->second;
             }
