@@ -405,6 +405,7 @@ And this is all happening in the macro expansion phase before the evaluation.
 ```
 #### * Built in macroses
 Yes, it is possible to add them. One test macro `__concat_idents` I've added to the macro processor.
+It just returns a concatination of all of the parameters it has. Well the parameter must be an ident or a number.
 ```js
     let __concat_idents(name, 1) = "this is the firts one"
 
