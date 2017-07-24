@@ -433,7 +433,7 @@ macro set(init) {
 unquote(set(a))
 
 let spin = fn( count ) {
-    if( count % 1000 == 0 ) {
+    if( count % 10000 == 0 ) {
         puts(count)
     }
     if( count > 0 ) {
@@ -444,7 +444,7 @@ let spin = fn( count ) {
 }
 
 let spin = fn( count ) {
-    if( count % 10000 == 0 ) {
+    if( count % 100000 == 0 ) {
         return puts( count )
         //fn(a, b){ a + b } (count + 100)
     }
