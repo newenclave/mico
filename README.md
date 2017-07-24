@@ -7,7 +7,7 @@ Monkey the language interpreter implementation done with C++. https://interprete
 ## Requirements
 
 * C++ compiler (c++11 or later)
-* The book https://interpreterbook.com/
+* The book https://interpreterbook.com/. If you have not read it yet.
 
 ## Difference
 
