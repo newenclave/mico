@@ -864,6 +864,8 @@ namespace mico { namespace eval {
                 auto res = thiz->eval_impl( quo, env );
                 if( !is_fail( res ) ) {
                     return res->to_ast( n->pos( ) );
+                } else {
+                    return std::move(quo->value( ));
                 }
             } else {
                 n->mutate( [thiz, env](ast::node *n) {
