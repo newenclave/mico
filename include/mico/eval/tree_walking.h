@@ -533,9 +533,6 @@ namespace mico { namespace eval {
                     auto fun = objects::cast_builtin(call->value( ).get( ));
                     obj_src = fun->call( call->params( ), call->env( ) );
                 }
-//                if( is_return( obj_src ) ) {
-//                    return obj_src;
-//                }
             }
             return obj_src;
         }
