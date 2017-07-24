@@ -726,9 +726,9 @@ namespace mico { namespace eval {
                 return OP_table::eval_index( idx, val, idx_call, env );
             }
 
-            return objects::error::make(n->pos( ),
-                                        "Impossible to get an index of ",
-                                        idx->param( )->get_type( ));
+            return objects::error::make( n->pos( ),
+                                         "Impossible to get an index of ",
+                                         idx->param( )->get_type( ) );
         }
 
         objects::slist eval_parameters( ast::expressions::call *call,

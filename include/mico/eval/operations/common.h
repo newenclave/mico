@@ -66,6 +66,12 @@ namespace mico { namespace eval { namespace operations {
 
 
         static
+        bool is_fail( objects::sptr &obj )
+        {
+            return obj->get_type( ) == objects::type::FAILURE;
+        }
+
+        static
         objects::sptr common_infix( infix *inf,
                                     objects::sptr left, objects::sptr right,
                                     environment::sptr env )
@@ -131,7 +137,7 @@ namespace mico { namespace eval { namespace operations {
 
             if( func->param_size( ) == 0 ) {
                 return error_type::make( inf->pos( ),
-                                        "Function does not accept parameters");
+                                  "Function does not accept parameters");
             }
 
             if( func->param_size( ) > 1 ) {
