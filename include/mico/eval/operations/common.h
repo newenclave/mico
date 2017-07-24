@@ -19,6 +19,7 @@ namespace mico { namespace eval { namespace operations {
 
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
+        using index  = ast::expressions::index;
 
         template<objects::type T>
         struct reference {
@@ -66,9 +67,27 @@ namespace mico { namespace eval { namespace operations {
 
 
         static
-        bool is_fail( objects::sptr &obj )
+        bool is_fail( const objects::base *obj )
         {
             return obj->get_type( ) == objects::type::FAILURE;
+        }
+
+        static
+        bool is_fail( const objects::sptr &obj )
+        {
+            return is_fail( obj.get( ) );
+        }
+
+        static
+        bool is_func( const objects::base *obj )
+        {
+            return obj->get_type( ) == objects::type::FUNCTION;
+        }
+
+        static
+        bool is_func( const objects::sptr &obj )
+        {
+            return is_func( obj.get( ) );
         }
 
         static

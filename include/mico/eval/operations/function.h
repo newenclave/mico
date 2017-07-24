@@ -17,7 +17,7 @@ namespace mico { namespace eval { namespace operations {
         {
             if( pref->token( ) == tokens::type::ASTERISK ) {
                 auto unref = objects::reference::unref( obj );
-                if( unref->get_type( ) == objects::type::FUNCTION ) {
+                if( common::is_func( unref ) ) {
                     auto func = objects::cast_func( unref );
                     if( func->is_part( ) ) {
                         return objects::function::make_from_partial( func );
@@ -38,7 +38,7 @@ namespace mico { namespace eval { namespace operations {
 
             if( inf->token( ) == tokens::type::BIT_OR ) {
                 objects::sptr right = ev( inf->right( ).get( ) );
-                if( right->get_type( ) == objects::type::FAILURE ) {
+                if( common::is_fail( right ) ) {
                     return right;
                 }
                 return common::common_infix( inf, obj, right, env );

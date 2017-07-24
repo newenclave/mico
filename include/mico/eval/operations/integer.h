@@ -185,7 +185,7 @@ namespace mico { namespace eval { namespace operations {
             }
 
             objects::sptr right = ev( inf->right( ).get( ) );
-            if( right->get_type( ) == objects::type::FAILURE ) {
+            if( common::is_fail( right ) ) {
                 return right;
             }
 

@@ -57,7 +57,8 @@ namespace mico { namespace eval { namespace operations {
             auto tab = ref.shared_unref( );
 
             objects::sptr id = ev( idx->param( ).get( ) );
-            if( id->get_type( ) == objects::type::FAILURE ) {
+
+            if( common::is_fail( id ) ) {
                 return id;
             }
 
@@ -78,7 +79,7 @@ namespace mico { namespace eval { namespace operations {
             obj = ref.shared_unref( );
 
             objects::sptr right = ev( inf->right( ).get( ) );
-            if( right->get_type( ) == objects::type::FAILURE ) {
+            if( common::is_fail( right ) ) {
                 return right;
             }
 

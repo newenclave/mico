@@ -72,15 +72,15 @@ namespace mico { namespace eval { namespace operations {
 
             auto val = ref.unref( )->value( );
 
-            if( (inf->token( ) == tokens::type::LOGIC_AND) && (val == 0)) {
+            if( (inf->token( ) == tokens::type::LOGIC_AND) && (val == 0.0)) {
                 return bool_type::make( false );
             }
-            if( (inf->token( ) == tokens::type::LOGIC_OR) && (val != 0)) {
+            if( (inf->token( ) == tokens::type::LOGIC_OR) && (val != 0.0)) {
                 return bool_type::make( true );
             }
 
             objects::sptr right = ev( inf->right( ).get( ) );
-            if( right->get_type( ) == objects::type::FAILURE ) {
+            if( common::is_fail( right ) ) {
                 return right;
             }
 
@@ -102,11 +102,11 @@ namespace mico { namespace eval { namespace operations {
                 return common::common_infix( inf, obj, right, env );
             }
 
-            return error_type::make(inf->pos( ), "Infix operation ",
-                                    obj->get_type( )," '",
-                                    inf->token( ), "' ",
-                                    right->get_type( ),
-                                    " is not defined");
+            return error_type::make( inf->pos( ), "Infix operation ",
+                                     obj->get_type( )," '",
+                                     inf->token( ), "' ",
+                                     right->get_type( ),
+                                     " is not defined" );
 
         }
     };
