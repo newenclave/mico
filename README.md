@@ -4,6 +4,11 @@ Monkey the language interpreter implementation done with C++. https://interprete
 
 ![Mico REPL Terminal](repl.png)
 
+## Requirements
+
+* C++ compiler (c++11 or later)
+* The book https://interpreterbook.com/
+
 ## Difference
 
 "Mico" is an implementation but of course it has some difference.
