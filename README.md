@@ -416,6 +416,10 @@ It just returns a concatination of all of the parameters it has. Well the parame
     puts(__concat_idents(name, 2))
     /// error: [1:29] Identifier not found 'name2'
 
+    let __concat_idents(sum, 2) = fn(a,b) { a + b }
+    __concat_idents(sum, 2)(1, 2) /// => sum2(1, 2) => 3
+    sum2(1, 2) // => 3
+
 ```
 
 Is not yet complete.
