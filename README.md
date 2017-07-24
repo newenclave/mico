@@ -389,11 +389,7 @@ And this is all happening in the macro expansion phase before the evaluation.
     apply(ident(), 1, 2, 3 ) /// Yeee-haa! we have made an ident!
     test_sum(1,2,3)          /// call
 
-    let test_fn = fn( ident( ), a, b, c ) {
-        ident( )(a,b,c)
-    }
-
-    __env( ) // shows us environment
+    __env( ) // shows us the environment
 
     /// Root: [0x560858819c30]
     ///   __env => fn(0x56085881a030) [0x560858819c30]
