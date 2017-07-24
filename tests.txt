@@ -483,4 +483,11 @@ let spin = fn( count ) {
 
 spin(1000000)
 
+let name = macro( val ) {
+    let impl = macro( ) {
+        1 + 1
+    }
+    __concat_idents( val, 1 )
+}
+
 */

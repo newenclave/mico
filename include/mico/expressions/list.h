@@ -92,13 +92,6 @@ namespace mico { namespace ast { namespace expressions {
             return make<role::LIST_PARAMS>( );
         }
 
-        void mutate( node::mutator_type call ) override
-        {
-            for( auto &v: value_ ) {
-                ast::node::apply_mutator( v, call );
-            }
-        }
-
         bool is_const( ) const override
         {
             for( auto &v: value_ ) {
@@ -127,6 +120,24 @@ namespace mico { namespace ast { namespace expressions {
         ast::node::uptr clone( ) const override
         {
             return clone_me( );
+        }
+
+        void mutate( node::mutator_type call ) override
+        {
+            auto b = value_.begin( );
+            auto e = value_.end( );
+
+            while( b != e ) {
+                ast::node::apply_mutator( *b, call );
+                if( *b && ((*b)->get_type( ) != ast::type::NONE) ) {
+                    b++;
+                } else {
+                    b = value_.erase( b );
+                }
+            }
+//            for( auto &v: value_ ) {
+//                ast::node::apply_mutator( v, call );
+//            }
         }
 
         static
