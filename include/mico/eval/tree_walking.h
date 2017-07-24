@@ -27,6 +27,11 @@ namespace mico { namespace eval {
         tree_walking( )
         { }
 
+        ~tree_walking( )
+        {
+            delete call_stack( );
+        }
+
     private:
 
         template <objects::type T>
@@ -757,13 +762,13 @@ namespace mico { namespace eval {
             const ast::node *val_;
         };
 
-        static
         call_info::list *call_stack( )
         {
-            static thread_local
-            std::unique_ptr<call_info::list> call_stack_(new call_info::list);
+            if( !call_stack_ ) {
+                call_stack_ = new call_info::list;
+            }
 
-            call_info::list *res = call_stack_.get( );
+            call_info::list *res = call_stack_;
 
             return res;
         }
@@ -1020,6 +1025,7 @@ namespace mico { namespace eval {
 
     private:
         error_list errors_;
+        call_info::list *call_stack_ = nullptr;
     };
 
 }}
