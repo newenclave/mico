@@ -72,6 +72,18 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
+        bool is_ident( const ast::node *obj )
+        {
+            return obj->get_type( ) == ast::type::IDENT;
+        }
+
+        static
+        bool is_ident( const ast::node::uptr &obj )
+        {
+            return is_ident( obj.get( ) );
+        }
+
+        static
         objects::sptr common_infix( infix *inf,
                                     objects::sptr left, objects::sptr right,
                                     environment::sptr env )
@@ -80,12 +92,12 @@ namespace mico { namespace eval { namespace operations {
 
             switch (right->get_type( )) {
             case objects::type::BUILTIN:
-                if(inf->token( ) == tokens::type::BIT_OR) {
+                if( inf->token( ) == tokens::type::BIT_OR ) {
                     return eval_builtin( inf, left, right, env);
                 }
                 break;
             case objects::type::FUNCTION:
-                if(inf->token( ) == tokens::type::BIT_OR) {
+                if( inf->token( ) == tokens::type::BIT_OR ) {
                     return eval_func( inf, left, right, env);
                 }
                 break;
@@ -104,7 +116,7 @@ namespace mico { namespace eval { namespace operations {
                                     environment::sptr /*env*/ )
         {
             objects::slist par { obj };
-            auto func = objects::cast_builtin(call.get( ));
+            auto func     = objects::cast_builtin(call.get( ));
             auto call_env = environment::make( func->env( ) );
             return objects::tail_call::make( call, std::move(par), call_env );
         }
@@ -144,7 +156,7 @@ namespace mico { namespace eval { namespace operations {
                 auto new_env = environment::make(func->env( ));
                 auto &p( *func->begin( ) );
 
-                if( p->get_type( ) == ast::type::IDENT ) {
+                if( is_ident( p ) ) {
                     auto n = static_cast<ast::expressions::ident *>(p.get( ));
                     new_env->set( n->value( ), obj );
                 } else {
@@ -156,7 +168,7 @@ namespace mico { namespace eval { namespace operations {
             }
 
             for( auto &p: *func ) {
-                if( p->get_type( ) != ast::type::IDENT ) {
+                if( !is_ident( p ) ) {
                     return error_type::make( inf->pos( ),
                                              "Invalid parameter type.",
                                              p->get_type( ));
