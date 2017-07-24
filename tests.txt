@@ -471,6 +471,9 @@ let spin = fn( count ) {
 }
 
 let spin = fn( count ) {
+    if( count % 10000 == 0 ) {
+        puts(count)
+    }
     if( count > 0 ) {
         spin(count - 1)
     } else {

@@ -844,6 +844,7 @@ namespace mico { namespace eval {
         {
             environment::sptr we;
             auto res = eval_call_impl( n, env, we );
+            res = eval_tail( res );
             return res;
         }
 
