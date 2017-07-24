@@ -3,6 +3,7 @@
 
 #include "mico/parser.h"
 #include "mico/eval/tree_walking.h"
+#include "mico/state.h"
 #include "etool/console/colors.h"
 
 namespace mico {
@@ -132,6 +133,14 @@ namespace mico {
                               << light << "\n==========\n" << none
                               ;
                 }
+
+                for( auto &ss: s.macros( ).built_in( ) ) {
+                    std::cout << cyan << ss.first << none
+                              << " => "
+                              << ss.second->str( )
+                              << light << "\n==========\n" << none
+                              ;
+                }
             }
             return objects::null::make( );
         }
@@ -182,15 +191,86 @@ namespace mico {
         }
     };
 
+    struct common_macro: public macro::processor::built_in_macro {
+        using error_list = std::vector<std::string>;
+        using call_type = std::function<ast::node::uptr ( ast::node *,
+                                        macro::processor::scope *,
+                                        ast::node_list &,
+                                        error_list *)>;
+
+        using uptr = std::unique_ptr<common_macro>;
+
+        common_macro( call_type val )
+            :call_(std::move(val))
+        { }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "macro(builtin@" << this << ")";
+            return oss.str( );
+        }
+
+        void mutate( mutator_type /*call*/ ) override
+        {
+            return;
+        }
+
+        bool is_const( ) const override
+        {
+            return false;
+        }
+
+        static
+        uptr make( call_type val )
+        {
+            return uptr(new common_macro( std::move(val ) ) );
+        }
+
+        ast::node::uptr call( ast::node *n, macro::processor::scope *s,
+                              ast::node_list &params,
+                              error_list *e) override
+        {
+            return call_(n, s,params,  e);
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            return make(call_);
+        }
+
+        call_type call_;
+    };
+
+    struct random_name {
+        ast::node::uptr operator ( )( ast::node * n,
+                                      macro::processor::scope * /*s*/,
+                                      ast::node_list &p,
+                                      common_macro::error_list * /*e*/ )
+        {
+            std::string res;
+            for( auto &par: p ) {
+                res += par->str( );
+            }
+            return ast::node::make<ast::expressions::ident>( n->pos( ),
+                                                             std::move(res) );
+        }
+    };
+
     struct builtin {
         static
-        void init( environment::sptr env )
+        void init( mico::state &st )
         {
+            auto env = st.env( );
             env->set( "len",        common::make( env, len { } ) );
             env->set( "puts",       common::make( env, puts { } ) );
             env->set( "copy",       common::make( env, copy { } ) );
             env->set( "__env",      common::make( env, env_show(env) ) );
             env->set( "__macro",    common::make( env, macro_show(env) ) );
+
+            st.macros( ).set_bi( "__concat_idents",
+                                 common_macro::make( random_name{ } ) );
+
         }
     };
 

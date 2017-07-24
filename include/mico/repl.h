@@ -55,7 +55,7 @@ namespace mico {
             if( n->is_const( ) ) {
                 mico::eval::tree_walking tv;
                 mico::state st;
-                builtin::init( st.env( ) );
+                builtin::init( st );
                 auto obj = tv.eval( n, st.env( ) );
                 auto new_ast = obj->to_ast( n->pos( ) );
                 if( !n->is_expression( ) && new_ast->is_expression( ) ) {
@@ -112,7 +112,7 @@ namespace mico {
             static const auto fail_type = objects::type::FAILURE;
             using namespace etool::console::ccout;
             mico::state st;
-            builtin::init( st.env( ) );
+            builtin::init( st );
             std::string data;
             std::cout << logo << ">>> ";
             while( true ) {

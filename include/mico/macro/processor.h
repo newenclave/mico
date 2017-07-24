@@ -17,6 +17,37 @@ namespace mico { namespace macro {
 
         using error_list = std::vector<std::string>;
 
+        struct scope;
+
+        class built_in_macro: public ast::typed_expr<ast::type::BUILTIN_MACRO> {
+
+            using this_type = built_in_macro;
+
+        public:
+
+            using uptr = std::unique_ptr<this_type>;
+
+            std::string str( ) const override
+            {
+                std::ostringstream oss;
+                oss << "macro(<builtin>)";
+                return oss.str( );
+            }
+
+            void mutate( mutator_type /*call*/ ) override
+            { }
+
+            bool is_const( ) const override
+            {
+                return false;
+            }
+
+            virtual
+            ast::node::uptr call( ast::node *, scope *, ast::node_list &,
+                                  error_list *) = 0;
+
+        };
+
         struct scope {
 
             scope( ) = default;
@@ -24,8 +55,9 @@ namespace mico { namespace macro {
                 :parent_(p)
             { }
 
-            using value_map  = std::map<std::string, ast::node::uptr>;
-            using remap_set  = std::set<std::string>;
+            using value_map     = std::map<std::string, ast::node::uptr>;
+            using built_in_map  = std::map<std::string, built_in_macro::uptr>;
+            using remap_set     = std::set<std::string>;
 
             scope *parent( )
             {
@@ -37,9 +69,31 @@ namespace mico { namespace macro {
                 values_[name] = std::move(value);
             }
 
+            void set_bi( std::string name, built_in_macro::uptr value )
+            {
+                built_in_[name] = std::move(value);
+            }
+
             void deny( std::string name )
             {
                 remaped_.insert(name);
+            }
+
+            built_in_macro *get_bi( const std::string &name )
+            {
+                scope *cur = this;
+                while( cur ) {
+                    auto rf = remaped_.find( name );
+                    if( rf != remaped_.end( ) ) {
+                        return nullptr;
+                    }
+                    auto f = cur->built_in_.find( name );
+                    if( f != cur->built_in_.end( ) ) {
+                        return f->second.get( );
+                    }
+                    cur = cur->parent( );
+                }
+                return nullptr;
             }
 
             ast::node *get( const std::string &name )
@@ -64,12 +118,19 @@ namespace mico { namespace macro {
                 return values_;
             }
 
+            const built_in_map &built_in( ) const
+            {
+                return built_in_;
+            }
+
         private:
 
             scope *parent_ = nullptr;
             value_map      values_;
+            built_in_map   built_in_;
             remap_set      remaped_;
         };
+
 
         static
         std::string error_param_size( ast::node *n )
@@ -154,7 +215,17 @@ namespace mico { namespace macro {
                 } );
 
                 return unlist(std::move(new_body));
+
+            } else if( cn->func( )->get_type( ) == AT::BUILTIN_MACRO ) {
+                scope mscope( s );
+                auto mfunc = ast::cast<built_in_macro>(cn->func( ).get( ));
+                ast::node_list params;
+                for( auto &param: cn->param_list( ) ) {
+                    params.emplace_back( std::move(param) );
+                }
+                return mfunc->call( n, &mscope, params, e );
             }
+
             return nullptr;
         }
 
@@ -199,9 +270,16 @@ namespace mico { namespace macro {
                 return apply_statement_expr( n, s, e );
             } else if( n->get_type( ) == AT::IDENT ) {
                 auto in = ast::cast<AEX::ident>( n );
+
                 if( auto val = s->get( in->value( ) ) ) {
                     return val->clone( );
                 }
+
+                /// built in macroses have less priority
+                if( auto val = s->get_bi( in->value( ) ) ) {
+                    return val->clone( );
+                }
+
             }
             n->mutate( me );
 

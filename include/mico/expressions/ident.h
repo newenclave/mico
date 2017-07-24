@@ -36,6 +36,12 @@ namespace mico { namespace ast { namespace expressions {
             /// hm...
         }
 
+        static
+        uptr make( std::string name )
+        {
+            return uptr(new this_type(std::move(name) ) );
+        }
+
         bool is_const( ) const override
         {
             return false;

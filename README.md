@@ -403,6 +403,19 @@ And this is all happening in the macro expansion phase before the evaluation.
     ///   Child: 1 [0x56085881ed10]
 
 ```
+#### * Built in macroses
+Yes, it is possible to add them. One test macro `__concat_idents` I've added to the macro processor.
+```js
+    let __concat_idents(name, 1) = "this is the firts one"
+
+    puts(name1)
+    puts(__concat_idents(name, 1)) // also should work
+    /// this is the firts one
+
+    puts(__concat_idents(name, 2))
+    /// error: [1:29] Identifier not found 'name2'
+
+```
 
 Is not yet complete.
 

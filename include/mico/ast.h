@@ -43,6 +43,7 @@ namespace mico { namespace ast {
         QUOTE,
         UNQUOTE,
         MACRO,
+        BUILTIN_MACRO,
 #endif
     };
 
@@ -51,30 +52,31 @@ namespace mico { namespace ast {
         const char *get( type t )
         {
             switch (t) {
-            case type::NONE    : return "NONE";
-            case type::PROGRAM : return "PROGRAM";
-            case type::IDENT   : return "IDENTIFIER";
-            case type::LET     : return "LET";
-            case type::EXPR    : return "EXPRESSION";
-            case type::RETURN  : return "RETURN";
-            case type::PREFIX  : return "PREFIX";
-            case type::INFIX   : return "INFIX";
-            case type::STRING  : return "STRING";
-            case type::ARRAY   : return "ARRAY";
-            case type::INTEGER : return "INTEGER";
-            case type::BOOLEAN : return "BOOLEAN";
-            case type::FLOAT   : return "FLOAT";
-            case type::TABLE   : return "TABLE";
-            case type::FN      : return "FUNCTION";
-            case type::CALL    : return "CALL";
-            case type::INDEX   : return "INDEX";
-            case type::IFELSE  : return "IFELSE";
-            case type::REGISTRY: return "REGISTRY";
-            case type::LIST    : return "LIST";
+            case type::NONE         : return "NONE";
+            case type::PROGRAM      : return "PROGRAM";
+            case type::IDENT        : return "IDENTIFIER";
+            case type::LET          : return "LET";
+            case type::EXPR         : return "EXPRESSION";
+            case type::RETURN       : return "RETURN";
+            case type::PREFIX       : return "PREFIX";
+            case type::INFIX        : return "INFIX";
+            case type::STRING       : return "STRING";
+            case type::ARRAY        : return "ARRAY";
+            case type::INTEGER      : return "INTEGER";
+            case type::BOOLEAN      : return "BOOLEAN";
+            case type::FLOAT        : return "FLOAT";
+            case type::TABLE        : return "TABLE";
+            case type::FN           : return "FUNCTION";
+            case type::CALL         : return "CALL";
+            case type::INDEX        : return "INDEX";
+            case type::IFELSE       : return "IFELSE";
+            case type::REGISTRY     : return "REGISTRY";
+            case type::LIST         : return "LIST";
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
-            case type::QUOTE   : return "QUOTE";
-            case type::UNQUOTE : return "UNQUOTE";
-            case type::MACRO   : return "MACO";
+            case type::QUOTE        : return "QUOTE";
+            case type::UNQUOTE      : return "UNQUOTE";
+            case type::MACRO        : return "MACO";
+            case type::BUILTIN_MACRO: return "MACO";
 #endif
             }
             return "<INVALID>"; /// sould not be here

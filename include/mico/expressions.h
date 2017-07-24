@@ -43,9 +43,9 @@ namespace mico { namespace ast { namespace expressions {
     using list      = impl<type::LIST>;
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
-    using quote     = impl<type::QUOTE>;
-    using unquote   = impl<type::UNQUOTE>;
-    using macro     = impl<type::MACRO>;
+    using quote             = impl<type::QUOTE>;
+    using unquote           = impl<type::UNQUOTE>;
+    using macro             = impl<type::MACRO>;
 #endif
 
 }}}
