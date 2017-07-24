@@ -382,7 +382,7 @@ And this is all happening in the macro expansion phase before the evaluation.
     // }
     // ==========
 
-    // And one ome thing...
+    // And one more thing...
     let ident = macro( ){ test_sum }
     let ident( ) = fn(a,b,c){ a + b + c };
     let apply = fn(call, a,b,c) { call(a,b,c) }
