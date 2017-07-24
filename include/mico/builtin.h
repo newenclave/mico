@@ -251,6 +251,8 @@ namespace mico {
         {
             std::string res;
             for( auto &par: p ) {
+                if( (par->get_type( ) == ast::type::IDENT) ||
+                    (par->get_type( ) == ast::type::INTEGER ) )
                 res += par->str( );
             }
             return ast::node::make<ast::expressions::ident>( n->pos( ),
