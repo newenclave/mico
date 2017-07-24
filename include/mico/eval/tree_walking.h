@@ -111,6 +111,12 @@ namespace mico { namespace eval {
         }
 
         static
+        bool is_tail_call( const objects::base *exp )
+        {
+            return (exp->get_type( ) == objects::type::TAIL_CALL );
+        }
+
+        static
         objects::retutn_obj::sptr do_return( objects::sptr res )
         {
             return objects::retutn_obj::make( res );
@@ -600,8 +606,7 @@ namespace mico { namespace eval {
                 last = next;
                 if( is_return( next ) || is_fail( next ) ) {
                     return last;
-                } else if( (0 != count) &&
-                           (next->get_type( ) == objects::type::TAIL_CALL) ) {
+                } else if( (0 != count) && is_tail_call( next.get( ) ) ) {
                     last = eval_tail_return( last );
                 }
             }
