@@ -547,12 +547,12 @@ namespace mico {
             using ident_type = ast::expressions::ident;
             ident_type::uptr res( new ident_type(current( ).ident.literal ) );
 
-//            if( prefix_let && (peek( ).ident.name == token_type::LPAREN) ) {
-//                advance( );
-//                auto call = parse_call( std::move(res) );
-//                call->set_pos( current( ).where );
-//                return call;
-//            }
+            if( (peek( ).ident.name == token_type::LPAREN) ) {
+                advance( );
+                auto call = parse_call( std::move(res) );
+                call->set_pos( current( ).where );
+                return call;
+            }
             res->set_pos( current( ).where );
             return res;
         }
@@ -871,6 +871,7 @@ namespace mico {
             case token_type::SEMICOLON:
                 break;
 
+/*
             case token_type::FUNCTION:
                 stmt = parse_fn_state( );
                 break;
@@ -880,6 +881,7 @@ namespace mico {
                 stmt = parse_macro_state( );
                 break;
 #endif
+*/
 
             default:
                 stmt = parse_expr_stmt( );

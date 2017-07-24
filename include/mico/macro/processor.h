@@ -4,6 +4,7 @@
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "mico/ast.h"
@@ -85,15 +86,19 @@ namespace mico { namespace macro {
             if( lst->get_type( ) == ast::type::LIST ) {
                 auto l = ast::cast<ast::expressions::list>(lst.get( ));
                 if( l->value( ).size( ) == 1 ) {
-                    if( l->value( )[0]->get_type( ) == ast::type::EXPR ) {
-                        auto n = l->value( )[0].get( );
-                        auto exp = ast::cast<ast::statements::expr>(n);
-                        return std::move( exp->value( ) );
-                    }
                     return std::move(l->value( )[0]);
                 }
             }
             return lst;
+        }
+
+        static
+        ast::node::uptr apply_statement_expr( ast::node *n, scope *s,
+                                              error_list *e )
+        {
+            auto stm = ast::cast<ast::statements::expr>( n );
+            auto mut = macro_mutator( stm->value( ).get( ), s, e );
+            return mut ? std::move(mut) : std::move(stm->value( ));
         }
 
         static
@@ -148,7 +153,7 @@ namespace mico { namespace macro {
                     return processor::macro_mutator( n, &mscope, e );
                 } );
 
-                return std::move(new_body);
+                return unlist(std::move(new_body));
             }
             return nullptr;
         }
@@ -172,9 +177,6 @@ namespace mico { namespace macro {
             if( n->get_type( ) == AT::LET ) {
                 auto ln = ast::cast<AST::let>( n );
                 if( ln->value( )->get_type( ) == AT::MACRO ) {
-                    //// doesn't work because it can be impossible
-//                    auto mac = ast::cast<AEX::macro>(ln->value( ).get( ));
-//                    mac->mutate( me );
                     s->set( ln->ident( )->str( ), std::move( ln->value( ) ) );
                     return AEX::null::make( );
                 } else {
@@ -193,6 +195,8 @@ namespace mico { namespace macro {
                         return processor::macro_mutator( n, &sscope, e );
                     } );
                 }
+            } else if( n->get_type( ) == AT::EXPR ) {
+                return apply_statement_expr( n, s, e );
             } else if( n->get_type( ) == AT::IDENT ) {
                 auto in = ast::cast<AEX::ident>( n );
                 if( auto val = s->get( in->value( ) ) ) {

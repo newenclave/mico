@@ -382,9 +382,8 @@ m(1,2,3)
 
 let z = 100
 let s = fn(a,b) { m( 1, 2, 3 ); a + b }
-
 let sum = fn( a, b ) {
-    macro smacro( a, b ) {
+    let smacro = macro ( a, b ) {
         unquote(a) + unquote(b)
     }
     smacro(a, b)
@@ -399,7 +398,7 @@ macro sum(a, b) { unquote(a) + unquote(b) }
 macro eval_first( a, b ) { unquote(a) }
 
 let unless = macro (cond, yes, no) {
-    if( unquote(cond) ) {
+    if( !unquote(cond) ) {
         unquote(yes)
     } else {
         unquote(no)
@@ -418,6 +417,9 @@ let a = quote {
     let c = 200
     let d = 300
 }
+
+let ident = macro() {sum}
+let ident() = fn(a,b){a+b}
 
 macro a( ) {
     let b = 100
