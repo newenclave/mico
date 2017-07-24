@@ -382,6 +382,30 @@ And this is all happening in the macro expansion phase before the evaluation.
     // }
     // ==========
 
+    // And one ome thing...
+    let ident = macro( ){ test_sum }
+    let ident( ) = fn(a,b,c){ a + b + c };
+    let apply = fn(call, a,b,c) { call(a,b,c) }
+    apply(ident(), 1, 2, 3 ) /// Yeee-haa! we have made an ident!
+    test_sum(1,2,3)          /// call
+
+    let test_fn = fn( ident( ), a, b, c ) {
+        ident( )(a,b,c)
+    }
+
+    __env( ) // shows us environment
+
+    /// Root: [0x560858819c30]
+    ///   __env => fn(0x56085881a030) [0x560858819c30]
+    ///   __macro => fn(0x56085881a160) [0x560858819c30]
+    ///   apply => fn(4) [0x56381c7409a0]
+    ///   copy => fn(0x560858819f00) [0x560858819c30]
+    ///   len => fn(0x560858819ce0) [0x560858819c30]
+    ///   puts => fn(0x560858819df0) [0x560858819c30]
+    ///   test_sum => fn(3) [0x56085881ed10] // here is our function
+    ///   Child: 1 [0x56085881d8a0]
+    ///   Child: 1 [0x56085881ed10]
+
 ```
 
 Is not yet complete.
