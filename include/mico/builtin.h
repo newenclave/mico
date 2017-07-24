@@ -242,6 +242,7 @@ namespace mico {
         call_type call_;
     };
 
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
     struct random_name {
         ast::node::uptr operator ( )( ast::node * n,
                                       macro::processor::scope * /*s*/,
@@ -256,6 +257,7 @@ namespace mico {
                                                              std::move(res) );
         }
     };
+#endif
 
     struct builtin {
         static
@@ -268,9 +270,10 @@ namespace mico {
             env->set( "__env",      common::make( env, env_show(env) ) );
             env->set( "__macro",    common::make( env, macro_show(env) ) );
 
+#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             st.macros( ).set_bi( "__concat_idents",
                                  common_macro::make( random_name{ } ) );
-
+#endif
         }
     };
 

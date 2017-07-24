@@ -521,7 +521,7 @@ namespace mico { namespace eval {
                 last = next;
                 if( is_return( next ) || is_fail( next ) ) {
                     return last;
-                } else if( (0 != count) && is_tail_call( next.get( ) ) ) {
+                } else if( ( 0 != count ) && is_tail_call( next.get( ) ) ) {
                     last = eval_tail_return( last );
                 }
             }
