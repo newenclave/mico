@@ -459,4 +459,14 @@ let spin = fn( count ) {
     spin(count)
 }
 
+let a = quote{ if(count == 666 ) { return 666 } }
+let spin = fn( count ) {
+    unquote(a)
+    if( count > 0 ) {
+        spin(count-1)
+    } else {
+        0
+    }
+}
+
 */

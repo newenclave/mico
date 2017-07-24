@@ -76,7 +76,9 @@ namespace mico { namespace ast { namespace expressions {
                 ast::expression::apply_mutator( g.cond, call );
                 ast::expression::apply_mutator( g.body, call );
             }
-            ast::expression::apply_mutator( alt_, call );
+            if( alt_ ) {
+                ast::expression::apply_mutator( alt_, call );
+            }
         }
 
         bool is_const( ) const override

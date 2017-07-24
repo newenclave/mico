@@ -886,7 +886,7 @@ namespace mico { namespace eval {
         objects::sptr eval_unquote( ast::node *n, environment::sptr env )
         {
             auto quo = ast::cast<ast::expressions::unquote>(n);
-            auto res = eval_impl( quo->value( ).get( ), env );
+            auto res = eval_impl_tail_ret( quo->value( ).get( ), env );
             if( res->get_type( ) == objects::type::QUOTE ) {
                 auto qq = objects::cast<objects::type::QUOTE>(res.get( ));
                 return eval_impl( qq->value( ).get( ), env );
