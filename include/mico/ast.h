@@ -375,6 +375,12 @@ namespace mico { namespace ast {
     }
 
     inline
+    std::ostream &operator << ( std::ostream &o, const node::uptr &obj )
+    {
+        return o << obj->str( );
+    }
+
+    inline
     std::ostream &operator << ( std::ostream &o, node *obj )
     {
         return o << obj->str( );

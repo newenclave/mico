@@ -29,7 +29,7 @@ namespace mico { namespace eval { namespace operations {
             }
             return error_type::make( pref->pos( ),   "Prefix operator '",
                                      pref->token( ), "' is not defined for"
-                                                     " string");
+                                                     " table");
         }
 
         static

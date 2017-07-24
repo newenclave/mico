@@ -91,20 +91,6 @@ namespace mico { namespace eval {
         }
 
         static
-        bool is_numeric( objects::sptr obj )
-        {
-            return (!!obj) &&
-                    ( (obj->get_type( ) == objects::type::INTEGER)
-                   || (obj->get_type( ) == objects::type::FLOAT) );
-        }
-
-        static
-        bool is_fail_args( const objects::slist &args )
-        {
-            return ( args.size( ) == 1 ) && ( is_fail( args[0] ) );
-        }
-
-        static
         bool is_function_call( const ast::node *exp )
         {
             return (exp->get_type( ) == ast::type::CALL);
@@ -129,56 +115,15 @@ namespace mico { namespace eval {
             return bobj;
         }
 
-
         objects::boolean::sptr get_bool( bool b )
         {
-            return b ? get_bool_true( ) : get_bool_false( );
+            return objects::boolean::make( b );
         }
-
-        static
-        objects::boolean::sptr get_bool_false( )
-        {
-            static auto bobj = objects::boolean::make(false);
-            return bobj;
-        }
-
-        objects::boolean::sptr get_bool( ast::node *n )
-        {
-            auto bstate = ast::cast<ast::expressions::boolean>(n);
-            return bstate->value( ) ? get_bool_true( ) : get_bool_false( );
-        }
-
 
         objects::integer::sptr eval_int( ast::node *n )
         {
             auto state = ast::cast<ast::expressions::integer>(n);
             return std::make_shared<objects::integer>( state->value( ) );
-        }
-
-        objects::integer::sptr get_signed( ast::node *n )
-        {
-            auto state = ast::cast<ast::expressions::integer>(n);
-            auto sign_value = static_cast<std::int64_t>(state->value( ));
-            return std::make_shared<objects::integer>( sign_value );
-        }
-
-        objects::integer::sptr get_signed( std::int64_t n )
-        {
-            return std::make_shared<objects::integer>( n );
-        }
-
-        static
-        environment::sptr object_env( objects::sptr o )
-        {
-            switch (o->get_type( )) {
-            case objects::type::FUNCTION:
-                return objects::cast_func(o.get( ))->env( );
-            case objects::type::BUILTIN:
-                return objects::cast_builtin(o.get( ))->env( );
-            case objects::type::TAIL_CALL:
-                return objects::cast_tail_call(o.get( ))->env( );
-            }
-            return environment::sptr( );
         }
 
         objects::sptr extract_return( objects::sptr obj )
@@ -211,15 +156,6 @@ namespace mico { namespace eval {
         {
             auto val = ast::cast<ast::expressions::string>(n);
             return std::make_shared<objects::string>( val->value( ) );
-        }
-
-        bool is_bool( objects::base *oper )
-        {
-            return (oper->get_type( ) == objects::type::INTEGER )
-                || (oper->get_type( ) == objects::type::FLOAT )
-                || (oper->get_type( ) == objects::type::BOOLEAN )
-                || (oper->get_type( ) == objects::type::NULL_OBJ )
-                 ;
         }
 
         objects::sptr eval_prefix( ast::node *n, environment::sptr env )
@@ -265,7 +201,8 @@ namespace mico { namespace eval {
             }
 
             return error( n, "Invalid prefix function '",
-                          expr->token( ), "'" );
+                          expr->token( ), "' for ",
+                          expr->value( )->get_type( ) );
         }
 
         template <typename Res>
@@ -601,9 +538,15 @@ namespace mico { namespace eval {
                     return cond;
                 }
                 auto res = obj2num_obj<objects::boolean>( cond.get( ) );
+                if( is_null( res ) ) {
+                    return error( i.cond.get( ), "Failed to convert ",
+                                  cond->get_type( ), " to boolean.");
+                }
+
                 if( is_fail( res ) ) {
                     return res;
                 }
+
                 auto bres = objects::cast_bool(res.get( ));
                 if( bres->value( ) ) {
                     environment::scoped s(make_env(env));
