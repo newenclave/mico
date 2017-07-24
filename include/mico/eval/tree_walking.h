@@ -105,7 +105,7 @@ namespace mico { namespace eval {
         }
 
         static
-        bool is_function_call( const ast::expression *exp )
+        bool is_function_call( const ast::node *exp )
         {
             return (exp->get_type( ) == ast::type::CALL);
         }
@@ -586,7 +586,9 @@ namespace mico { namespace eval {
                 }
 
                 if( 0 == count ) {
-                    if(stmt->get_type( ) == ast::type::EXPR) {
+                    if( is_function_call( stmt.get( ) ) ) {
+                        return create_tail_call( stmt.get( ), env);
+                    } else if( stmt->get_type( ) == ast::type::EXPR ) {
                         auto expr = static_cast<expression_type *>(stmt.get( ));
                         if( is_function_call( expr->value( ).get( ) ) ) {
                             return create_tail_call(expr->value( ).get( ), env);
