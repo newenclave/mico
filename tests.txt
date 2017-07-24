@@ -470,4 +470,14 @@ let spin = fn( count ) {
     }
 }
 
+let spin = fn( count ) {
+    if( count > 0 ) {
+        spin(count - 1)
+    } else {
+        fn( a, b ) { a + b }
+    }
+}
+
+spin(1000000)
+
 */

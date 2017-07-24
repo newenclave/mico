@@ -783,7 +783,7 @@ namespace mico { namespace eval {
 //            }
 
             auto call = ast::cast<ast::expressions::call>( n );
-            auto fun = unref(eval_impl(call->func( ).get( ), env));
+            auto fun = unref(eval_impl_tail(call->func( ).get( ), env));
             if( is_fail( fun ) ) {
                 return fun;
             }
