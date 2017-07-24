@@ -459,7 +459,8 @@ let spin = fn( count ) {
     spin(count)
 }
 
-let a = quote( if(count == 666 ) { return 666 } )
+let sum = fn( a, b ) { a + b }
+let a = quote( if(count == 666 ) { return sum(1, 665) } )
 let spin = fn( count ) {
     unquote(a)
     if( count > 0 ) {
