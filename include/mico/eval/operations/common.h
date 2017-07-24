@@ -103,6 +103,35 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
+        bool is_numeric( const objects::base *obj )
+        {
+            return ( obj->get_type( ) == objects::type::INTEGER )
+                || ( obj->get_type( ) == objects::type::FLOAT )
+                 ;
+        }
+
+        static
+        bool is_numeric( const objects::sptr &obj )
+        {
+            return is_numeric( obj.get( ) );
+        }
+
+        static
+        std::int64_t to_index( const objects::sptr &id )
+        {
+            std::int64_t index = std::numeric_limits<std::int64_t>::max( );
+
+            if( id->get_type( ) == objects::type::INTEGER ) {
+                auto iid = objects::cast_int( id.get( ) );
+                index = iid->value( );
+            } else if( id->get_type( ) == objects::type::FLOAT ) {
+                auto iid = objects::cast_float( id.get( ) );
+                index = static_cast<decltype(index)>(iid->value( ));
+            }
+            return index;
+        }
+
+        static
         objects::sptr common_infix( infix *inf,
                                     objects::sptr left, objects::sptr right,
                                     environment::sptr env )

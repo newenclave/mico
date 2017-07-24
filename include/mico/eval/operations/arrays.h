@@ -59,19 +59,12 @@ namespace mico { namespace eval { namespace operations {
                 return id;
             }
 
-            std::int64_t index = std::numeric_limits<std::int64_t>::max( );
-
-            if( id->get_type( ) == objects::type::INTEGER ) {
-                auto iid = objects::cast_int( id.get( ) );
-                index = iid->value( );
-            } else if( id->get_type( ) == objects::type::FLOAT ) {
-                auto iid = objects::cast_float( id.get( ) );
-                index = static_cast<decltype(index)>(iid->value( ));
-            } else {
-                return error_type::make( inf->pos( ),
-                                         inf->param( ).get( ),
-                              " has invalid type; must be integer" );
+            if( !common::is_numeric( id ) ) {
+                return error_type::make( inf->pos( ), inf->param( ).get( ),
+                                         " has invalid type; must be integer" );
             }
+
+            std::int64_t index = common::to_index( id );
 
             if( auto res = arr->at( index ) ) {
                 return res;
