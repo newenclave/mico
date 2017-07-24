@@ -163,8 +163,7 @@ namespace mico { namespace macro {
         }
 
         static
-        ast::node::uptr apply_macro( ast::node *n, scope *s,
-                                     error_list *e )
+        ast::node::uptr apply_macro( ast::node *n, scope *s, error_list *e )
         {
             using     AT  = ast::type;
             namespace AST = ast::statements;

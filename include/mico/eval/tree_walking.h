@@ -23,6 +23,10 @@ namespace mico { namespace eval {
 
     public:
         using error_list = std::vector<std::string>;
+
+        tree_walking( )
+        { }
+
     private:
 
         template <objects::type T>
@@ -727,10 +731,52 @@ namespace mico { namespace eval {
             return nullptr;
         }
 
+        struct call_info {
+            using uptr = std::unique_ptr<call_info>;
+            using list = std::deque<uptr>;
+
+            call_info( ast::node *n )
+                :val_(n)
+            { }
+
+            struct scope {
+
+                scope( list *lst, ast::node *n )
+                {
+                    lst->emplace_back( uptr(new call_info(n) ) );
+                }
+
+                ~scope( )
+                {
+                    lst_->pop_back( );
+                }
+
+                list *lst_;
+            };
+
+            const ast::node *val_;
+        };
+
+        static
+        call_info::list *call_stack( )
+        {
+            static thread_local
+            std::unique_ptr<call_info::list> call_stack_(new call_info::list);
+
+            call_info::list *res = call_stack_.get( );
+
+            return res;
+        }
+
         objects::sptr eval_call_impl( ast::node *n,
                                       environment::sptr env,
                                       environment::sptr &/*work_env*/ )
         {
+//            call_info::scope scp( call_stack( ), n);
+//            if( call_stack( )->size( ) > 1000 ) {
+//                return error( n, "Stack overflow" );
+//            }
+
             auto call = ast::cast<ast::expressions::call>( n );
             auto fun = unref(eval_impl(call->func( ).get( ), env));
             if( is_fail( fun ) ) {
@@ -856,7 +902,6 @@ namespace mico { namespace eval {
                                          environment::sptr env )
         {
             namespace EXP = ast::expressions;
-            namespace OBJ = objects;
 
             if( n->get_type( ) == ast::type::UNQUOTE ) {
                 auto quo = ast::cast<EXP::unquote>( n );
