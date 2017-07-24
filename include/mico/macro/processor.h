@@ -69,7 +69,7 @@ namespace mico { namespace macro {
                 values_[name] = std::move(value);
             }
 
-            void set_bi( std::string name, built_in_macro::uptr value )
+            void set_built( std::string name, built_in_macro::uptr value )
             {
                 built_in_[name] = std::move(value);
             }
@@ -79,7 +79,7 @@ namespace mico { namespace macro {
                 remaped_.insert(name);
             }
 
-            built_in_macro *get_bi( const std::string &name )
+            built_in_macro *get_built( const std::string &name )
             {
                 scope *cur = this;
                 while( cur ) {
@@ -276,7 +276,7 @@ namespace mico { namespace macro {
                 }
 
                 /// built in macroses have less priority
-                if( auto val = s->get_bi( in->value( ) ) ) {
+                if( auto val = s->get_built( in->value( ) ) ) {
                     return val->clone( );
                 }
 

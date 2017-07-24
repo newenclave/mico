@@ -273,7 +273,7 @@ namespace mico {
             env->set( "__macro",    common::make( env, macro_show(env) ) );
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
-            st.macros( ).set_bi( "__concat_idents",
+            st.macros( ).set_built( "__concat_idents",
                                  common_macro::make( random_name{ } ) );
 #endif
         }
