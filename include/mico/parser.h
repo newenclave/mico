@@ -310,6 +310,11 @@ namespace mico {
 
     public: /////////////////// PARSING
 
+        bool failed( ) const
+        {
+            return !errors_.empty( );
+        }
+
         ast::expressions::list::uptr parse_scope( )
         {
             auto scope = ast::expressions::list::make_scope( );
@@ -473,6 +478,8 @@ namespace mico {
                     }
                 } else if( expect_peek( token_type::RBRACE, false ) ) {
                     break;
+                } else if( failed( ) ) {
+                    return nullptr;
                 }
             } while( true );
 
