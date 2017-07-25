@@ -124,15 +124,15 @@ namespace mico { namespace eval {
             return bobj;
         }
 
-        objects::boolean::sptr get_bool( bool b )
+        objects::boolean::sptr get_bool_value( bool b )
         {
             return objects::boolean::make( b );
         }
 
-        objects::boolean::sptr get_bool( const ast::node &n )
+        objects::boolean::sptr get_bool( const ast::node *n )
         {
-            auto bstate = static_cast<const ast::expressions::boolean *>(&n);
-            return get_bool(bstate->value( ));
+            auto bstate = static_cast<const ast::expressions::boolean *>(n);
+            return get_bool_value(bstate->value( ));
         }
 
         objects::integer::sptr eval_int( ast::node *n )
@@ -247,7 +247,7 @@ namespace mico { namespace eval {
         {
             switch (oper->get_type( )) {
             case objects::type::BOOLEAN:
-                return get_bool( obj2num<bool>(oper) );
+                return get_bool_value( obj2num<bool>(oper) );
             case objects::type::INTEGER:
                 return std::make_shared<NumObj>( obj2num<std::int64_t>(oper) );
             case objects::type::FLOAT:
@@ -976,7 +976,7 @@ namespace mico { namespace eval {
             case ast::type::EXPR:
                 res = eval_expression( n, env ); break;
             case ast::type::BOOLEAN:
-                res = get_bool( *n ); break;
+                res = get_bool( n ); break;
             case ast::type::INTEGER:
                 res = eval_int( n ); break;
             case ast::type::FLOAT:
