@@ -59,3 +59,12 @@ let arr = [1,2,3,4,5,6,7]
 put("Array:   ") show_array( arr )
 put("Reverse: ") show_array( reverse( arr ) )
 
+let unless = macro(condition, consequence, alternative) {
+    puts("Here the macro inlined!")
+    if(!(unquote(condition))) {
+        unquote(consequence);
+    } else {
+        unquote(alternative);
+    };
+}
+unless(10 > 5, puts("not greater"), puts("greater"))
