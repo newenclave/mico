@@ -195,6 +195,10 @@ namespace mico { namespace macro {
 
 //                            mscope.set( p->str( ), QT::make( std::move(val) ) );
 
+//                            mscope.set( p->str( ), std::move(val) );
+//                            mscope.set( p->str( ),
+//                                   AEX::quote::make( std::move(val) ) );
+
                             /// hm...
                             if( val->get_type( ) != AT::QUOTE ) {
                                 mscope.set( p->str( ),
@@ -217,7 +221,7 @@ namespace mico { namespace macro {
 
                 new_body = unlist(std::move(new_body));
 
-                std::cout << new_body->str( ) << "\n";
+                //std::cout << new_body->str( ) << "\n";
 
                 return new_body;
 
@@ -287,10 +291,16 @@ namespace mico { namespace macro {
 
             }
 //            else if( n->get_type( ) == AT::UNQUOTE ) {
-//                auto re = ec( n );
-//                if( re->get_type( ) != objects::type::FAILURE ) {
-//                    return re->to_ast( n->pos( ) );
-//                }
+//                auto quo = ast::cast<ast::expressions::unquote>(n);
+
+//                quo->value( )->mutate( me );
+//                auto mut = macro_mutator(quo->value( ).get( ), s, e, ec);
+//                return mut ? std::move(mut) : std::move(quo->value( ));
+
+////                auto re = ec( n );
+////                if( re->get_type( ) != objects::type::FAILURE ) {
+////                    return re->to_ast( n->pos( ) );
+////                }
 //            }
 
             n->mutate( me );
