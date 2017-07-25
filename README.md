@@ -1,6 +1,6 @@
 # Mico
 
-Monkey the language interpreter implementation done with C++. https://interpreterbook.com/
+Monkey :monkey: the language interpreter implementation done with C++. https://interpreterbook.com/
 
 ![Mico REPL Terminal](repl.png)
 
