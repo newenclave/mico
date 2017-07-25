@@ -117,13 +117,6 @@ namespace mico { namespace eval {
             return objects::retutn_obj::make( res );
         }
 
-        static
-        objects::boolean::sptr get_bool_true( )
-        {
-            static auto bobj = objects::boolean::make(true);
-            return bobj;
-        }
-
         objects::boolean::sptr get_bool_value( bool b )
         {
             return objects::boolean::make( b );
@@ -160,11 +153,6 @@ namespace mico { namespace eval {
         {
             auto state = ast::cast<ast::expressions::floating>(n);
             return std::make_shared<objects::floating>( state->value( ) );
-        }
-
-        objects::floating::sptr eval_float( double n )
-        {
-            return std::make_shared<objects::floating>( n );
         }
 
         objects::string::sptr eval_string( ast::node *n )
