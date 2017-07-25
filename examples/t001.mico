@@ -36,20 +36,19 @@ let show_array = fn( arr ) {
     put( "]\n"   )
 }
 
-let ra = fn( arr ) {
+let reverse = fn( arr ) {
     let impl = fn( arr, id ) {
         if( id < len(arr) / 2 ) {
             // swap
-            //let tmp      = arr[id]
-            //arr[id]      = arr[-id - 1]
-            //arr[-id - 1] = tmp
+            let tmp      = arr[id]
+            arr[id]      = arr[-id - 1]
+            arr[-id - 1] = tmp
             impl( arr, id + 1 )
         } else {
             arr
         }
     }
     impl( arr, 0 )
-    //arr
 }
 
 puts( "fib(20)     = ",     fib(20) )
@@ -58,5 +57,5 @@ puts( "fib_rec(20) = ", fib_rec(20) )
 let arr = [1,2,3,4,5,6,7]
 
 put("Array:   ") show_array( arr )
-put("Reverse: ") show_array( reverse_array( arr ) )
+put("Reverse: ") show_array( reverse( arr ) )
 
