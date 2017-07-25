@@ -126,7 +126,7 @@ Can be the keys for the other Hashes
         point(1, 0, 0): 0.4,
         point(1, 0, 1): 0.5,
         point(1, 1, 0): 0.6,
-        point(1, 1, 1): 0.7,
+        point(1, 1, 1): 0.7
     }
     // table[point(0, 1, 1)] // 0.3
 
