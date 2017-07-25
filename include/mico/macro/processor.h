@@ -215,7 +215,11 @@ namespace mico { namespace macro {
                     return processor::macro_mutator( n, &mscope, e, ec );
                 } );
 
-                return unlist(std::move(new_body));
+                new_body = unlist(std::move(new_body));
+
+                std::cout << new_body->str( ) << "\n";
+
+                return new_body;
 
             } else if( cn->func( )->get_type( ) == AT::BUILTIN_MACRO ) {
                 scope mscope( s );
@@ -281,12 +285,14 @@ namespace mico { namespace macro {
                     return val->clone( );
                 }
 
-            } else if( n->get_type( ) == AT::UNQUOTE ) {
-                auto re = ec( n );
-                if( re->get_type( ) != objects::type::FAILURE ) {
-                    return re->to_ast( n->pos( ) );
-                }
             }
+//            else if( n->get_type( ) == AT::UNQUOTE ) {
+//                auto re = ec( n );
+//                if( re->get_type( ) != objects::type::FAILURE ) {
+//                    return re->to_ast( n->pos( ) );
+//                }
+//            }
+
             n->mutate( me );
 
             return nullptr;
