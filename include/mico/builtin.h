@@ -247,6 +247,22 @@ namespace mico {
     };
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
+
+    struct str {
+        ast::node::uptr operator ( )( ast::node * n,
+                                      macro::processor::scope *  /*s*/,
+                                      ast::node_list &p,
+                                      common_macro::error_list * /*e*/ )
+        {
+            namespace E = ast::expressions;
+            std::string res;
+            for( auto &par: p ) {
+                res += par->str( );
+            }
+            return ast::node::make<E::string>( n->pos( ), std::move(res) );
+        }
+    };
+
     struct random_name {
 
         using eval_call = std::function<mico::objects::sptr(ast::node *)>;
@@ -296,10 +312,12 @@ namespace mico {
             env->set( "__macro",    common::make( env, macro_show(env) ) );
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
+            st.macros( ).set_built( "__str",
+                                    common_macro::make( str { } ) );
             st.macros( ).set_built( "__I",
-                                 common_macro::make( random_name(ev) ) );
+                                    common_macro::make( random_name(ev) ) );
             st.macros( ).set_built( "__concat_idents",
-                                 common_macro::make( random_name(ev) ) );
+                                    common_macro::make( random_name(ev) ) );
 #endif
         }
     };
