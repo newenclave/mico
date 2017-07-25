@@ -182,7 +182,7 @@ There are some tricks.
     let bits = fn( value ) {
         let impl = fn( val, acc ) {
             if( val > 0 ) {
-                impl( val >> 1, acc + (val & 2) )
+                impl( val >> 1, acc + (val & 1) ) // or val % 2
             } else {
                 acc
             }
