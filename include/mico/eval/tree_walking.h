@@ -39,6 +39,7 @@ namespace mico { namespace eval {
 
         ////////////// errors /////////////
 
+        static
         objects::sptr error_operation_notfound( tokens::type tt,
                                                 const ast::node *n )
         {
@@ -46,6 +47,7 @@ namespace mico { namespace eval {
                                          "operation '", tt, "' not found" );
         }
 
+        static
         objects::sptr error_index_inval( const ast::node *n,
                                          objects::sptr val )
         {
@@ -54,6 +56,7 @@ namespace mico { namespace eval {
         }
 
         template <typename ...Args>
+        static
         objects::sptr error( const ast::node *n, Args&&...args )
         {
             return objects::error::make( n, std::forward<Args>(args)... );
@@ -117,9 +120,22 @@ namespace mico { namespace eval {
             return objects::retutn_obj::make( res );
         }
 
+        static
         objects::boolean::sptr get_bool_value( bool b )
         {
             return objects::boolean::make( b );
+        }
+
+        static
+        objects::sptr unref( objects::sptr obj )
+        {
+            return objects::reference::unref( obj );
+        }
+
+        static
+        environment::sptr make_env( environment::sptr parent )
+        {
+            return environment::make(parent);
         }
 
         objects::boolean::sptr get_bool( const ast::node *n )
@@ -142,11 +158,6 @@ namespace mico { namespace eval {
             } else {
                 return obj;
             }
-        }
-
-        objects::sptr unref( objects::sptr obj )
-        {
-            return objects::reference::unref( obj );
         }
 
         objects::sptr eval_float( ast::node *n )
@@ -244,11 +255,6 @@ namespace mico { namespace eval {
                 break;
             }
             return get_null( );
-        }
-
-        environment::sptr make_env( environment::sptr parent )
-        {
-            return environment::make(parent);
         }
 
         objects::sptr eval_assign( ast::expressions::infix *inf,
