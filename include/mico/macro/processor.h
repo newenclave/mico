@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "mico/ast.h"
+#include "mico/objects/base.h"
 #include "mico/expressions.h"
 #include "mico/statements.h"
 
@@ -16,6 +17,7 @@ namespace mico { namespace macro {
     struct processor {
 
         using error_list = std::vector<std::string>;
+        using eval_call  = std::function<mico::objects::sptr(ast::node *)>;
 
         struct scope;
 
@@ -286,16 +288,17 @@ namespace mico { namespace macro {
         }
 
         static
-        void process( ast::node *node, error_list &errors )
+        void process( ast::node *node, error_list &errors, eval_call ec )
         {
             scope s;
-            return process( &s, node, errors );
+            return process( &s, node, errors, ec );
         }
 
         static
-        void process( scope *s, ast::node *node, error_list &errors )
+        void process( scope *s, ast::node *node,
+                      error_list &errors, eval_call ec )
         {
-            node->mutate( [s, &errors]( ast::node *n ) {
+            node->mutate( [s, &errors, ec]( ast::node *n ) {
                 return macro_mutator( n, s, &errors );
             } );
         }

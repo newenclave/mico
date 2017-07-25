@@ -117,9 +117,11 @@ namespace mico {
             eval::tree_walking tv;
             mico::state st;
 
-            builtin::init( st, [&tv, &st]( ast::node *n ) {
+            auto ev = [&tv, &st]( ast::node *n ) {
                 return tv.eval( n, st.env( ) );
-            } );
+            };
+
+            builtin::init( st, ev );
 
             std::string data;
             std::cout << logo << ">>> ";
@@ -133,7 +135,7 @@ namespace mico {
                     if( prog.errors( ).empty( ) ) {
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
                         macro::processor::process( &st.macros( ), &prog,
-                                                   prog.errors( ) );
+                                                   prog.errors( ), ev );
 //                        std::cout << prog.str( ) << "\n============\n";
 #endif
                     }
