@@ -490,4 +490,27 @@ let name = macro( val ) {
     __concat_idents( val, 1 )
 }
 
+let fib = fn( n ) {
+    let impl = fn( a, b, c ) {
+        if( c > 0 ) {
+            impl( b, a + b, c - 1 )
+        } else {
+            a
+        }
+    }
+    impl( 0, 1, n )
+}
+
+let ra = fn( arr ) {
+    let impl = fn( res, id ) {
+        if( true ) {
+            puts(id)
+            impl( res, id + 1 )
+        } else {
+            res
+        }
+    }
+    impl( arr, 0 )
+}
+
 */

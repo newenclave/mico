@@ -36,13 +36,13 @@ let show_array = fn( arr ) {
     put( "]\n"   )
 }
 
-let reverse_array = fn( arr ) {
+let ra = fn( arr ) {
     let impl = fn( arr, id ) {
         if( id < len(arr) / 2 ) {
             // swap
-            let tmp      = arr[id]
-            arr[id]      = arr[-id - 1]
-            arr[-id - 1] = tmp
+            //let tmp      = arr[id]
+            //arr[id]      = arr[-id - 1]
+            //arr[-id - 1] = tmp
             impl( arr, id + 1 )
         } else {
             arr

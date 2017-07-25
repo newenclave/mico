@@ -237,10 +237,22 @@ namespace mico { namespace objects {
             :collectable(e)
             ,obj_(obj)
             ,params_(std::move(p))
-        { }
+        {
+            auto en = env( );
+            while( en ) {
+                en->mark( );
+                en = en->parent( );
+            }
+        }
 
         ~impl( )
-        { }
+        {
+            auto e = env( );
+            while( e ) {
+                e->unmark( );
+                e = e->parent( );
+            }
+        }
 
         std::string str( ) const override
         {
