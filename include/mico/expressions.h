@@ -20,34 +20,4 @@
 #include "mico/expressions/unquote.h"
 #include "mico/expressions/macro.h"
 
-namespace mico { namespace ast { namespace expressions {
-
-    using ident     = impl<type::IDENT>;
-    using string    = impl<type::STRING>;
-    using array     = impl<type::ARRAY>;
-    using integer   = impl<type::INTEGER>;
-    using floating  = impl<type::FLOAT>;
-    using boolean   = impl<type::BOOLEAN>;
-
-    using prefix    = impl<type::PREFIX>;
-    using infix     = impl<type::INFIX>;
-    using index     = impl<type::INDEX>;
-
-    using function  = impl<type::FN>;
-    using call      = impl<type::CALL>;
-
-    using ifelse    = impl<type::IFELSE>;
-    using table     = impl<type::TABLE>;
-    using null      = impl<type::NONE>;
-    using registry  = impl<type::REGISTRY>;
-    using list      = impl<type::LIST>;
-
-#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
-    using quote             = impl<type::QUOTE>;
-    using unquote           = impl<type::UNQUOTE>;
-    using macro             = impl<type::MACRO>;
-#endif
-
-}}}
-
 #endif // EXPRESSIONS_H

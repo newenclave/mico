@@ -137,6 +137,7 @@ namespace mico { namespace objects {
         value_type  value_;
     };
 
+    using array = impl<type::ARRAY>;
 }}
 
 #endif // ARRAY_H

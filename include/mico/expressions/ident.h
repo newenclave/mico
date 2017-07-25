@@ -56,6 +56,8 @@ namespace mico { namespace ast { namespace expressions {
         std::string value_;
     };
 
+    using ident = impl<type::IDENT>;
+
 }}}
 
 #endif // IDENT_H

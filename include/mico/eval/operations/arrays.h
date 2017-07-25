@@ -111,6 +111,8 @@ namespace mico { namespace eval { namespace operations {
 
     };
 
+    using array = operation<objects::type::ARRAY>;
+
 }}}
 
 #endif // ARRAYS_H

@@ -162,6 +162,8 @@ namespace mico { namespace ast { namespace expressions {
         role scope_ = role::LIST_SCOPE;
     };
 
+    using list = impl<type::LIST>;
+
 }}}
 
 #endif // SCOPE_H

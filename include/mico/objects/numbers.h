@@ -92,6 +92,9 @@ namespace mico { namespace objects {
         value_type value_;
     };
 
+    using integer  = impl<type::INTEGER>;
+    using floating = impl<type::FLOAT>;
+
 }}
 
 #endif // NUMBERS_H

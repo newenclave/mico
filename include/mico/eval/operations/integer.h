@@ -216,6 +216,8 @@ namespace mico { namespace eval { namespace operations {
 
     };
 
+    using integer = operation<objects::type::INTEGER>;
+
 }}}
 
 

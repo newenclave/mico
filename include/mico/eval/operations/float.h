@@ -111,6 +111,8 @@ namespace mico { namespace eval { namespace operations {
         }
     };
 
+    using floating = operation<objects::type::FLOAT>;
+
 }}}
 
 #endif // FLOAT_OPERATION_H

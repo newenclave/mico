@@ -69,6 +69,7 @@ namespace mico { namespace objects {
 
     };
 
+    using quote = impl<type::QUOTE>;
 }}
 
 #endif // !defined(DISABLE_MACRO)

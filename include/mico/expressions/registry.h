@@ -54,6 +54,8 @@ namespace mico { namespace ast { namespace expressions {
         value_type value_;
     };
 
+    using registry = impl<type::REGISTRY>;
+
 }}}
 
 #endif

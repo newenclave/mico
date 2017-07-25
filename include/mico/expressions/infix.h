@@ -85,10 +85,12 @@ namespace mico { namespace ast { namespace expressions {
         }
 
     private:
-        tokens::type     token_;
-        node::uptr left_;
-        node::uptr right_;
+        tokens::type    token_;
+        node::uptr      left_;
+        node::uptr      right_;
     };
+
+    using infix = impl<type::INFIX>;
 
 }}}
 

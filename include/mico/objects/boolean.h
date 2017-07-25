@@ -72,6 +72,7 @@ namespace mico { namespace objects {
         bool value_;
     };
 
+    using boolean = impl<type::BOOLEAN>;
 }}
 
 #endif // BOOLEAN_H

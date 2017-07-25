@@ -97,6 +97,8 @@ namespace mico { namespace ast { namespace expressions {
         body_type    body_;
     };
 
+    using macro = impl<type::MACRO>;
+
 }}}
 
 #endif // !defined(DISABLE_MACRO)

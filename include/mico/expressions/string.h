@@ -53,6 +53,8 @@ namespace mico { namespace ast { namespace expressions {
         std::string value_;
     };
 
+    using string = impl<type::STRING>;
+
 }}}
 
 #endif // STRING_H

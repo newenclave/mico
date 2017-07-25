@@ -126,7 +126,7 @@ namespace mico { namespace objects {
         std::size_t         marked_ = 0;
     };
 
-
+    using reference = impl<type::REFERENCE>;
 }}
 
 #endif // OBJECT_REFERENCE_H

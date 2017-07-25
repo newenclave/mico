@@ -4,6 +4,7 @@
 #include "mico/numeric.h"
 
 namespace mico {
+
     struct idents {
 
         static

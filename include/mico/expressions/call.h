@@ -98,6 +98,7 @@ namespace mico { namespace ast { namespace expressions {
         param_type  params_;
     };
 
+    using call = impl<type::CALL>;
 
 }}}
 

@@ -62,6 +62,8 @@ namespace mico { namespace ast { namespace expressions {
         node::uptr   expr_;
     };
 
+    using prefix = impl<type::PREFIX>;
+
 }}}
 
 #endif // PREFIX_H

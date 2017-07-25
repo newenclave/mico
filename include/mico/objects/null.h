@@ -44,6 +44,8 @@ namespace mico { namespace objects {
 
     };
 
+    using null = impl<type::NULL_OBJ>;
+
 }}
 
 #endif // NULL_H

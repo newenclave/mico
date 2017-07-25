@@ -18,6 +18,10 @@ namespace mico { namespace eval { namespace operations {
      *  objects::sptr eval_prefix( tokens::type, objects::sptr );
      *  objects::sptr eval_infix( tokens::type, objects::sptr,
      *                            ast::node *, eval_call );
+     *
+     *  objects::sptr eval_index( index *idx, objects::sptr obj,
+     *                            eval_call ev, environment::sptr env );
+     *
     */
 }}}
 

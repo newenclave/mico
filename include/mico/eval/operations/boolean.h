@@ -120,6 +120,8 @@ namespace mico { namespace eval { namespace operations {
         }
     };
 
+    using boolean = operation<objects::type::BOOLEAN>;
+
 }}}
 
 #endif // BOOL_OPERATION_H

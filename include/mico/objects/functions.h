@@ -286,6 +286,10 @@ namespace mico { namespace objects {
         objects::slist  params_;
     };
 
+    using function   = impl<type::FUNCTION>;
+    using builtin    = impl<type::BUILTIN>;
+    using tail_call  = impl<type::TAIL_CALL>;
+
 }}
 
 #endif // FUNCTIONS_H

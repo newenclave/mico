@@ -101,6 +101,10 @@ namespace mico { namespace ast { namespace expressions {
         }
     };
 
+    using integer   = impl<type::INTEGER>;
+    using floating  = impl<type::FLOAT>;
+    using boolean   = impl<type::BOOLEAN>;
+
 }}}
 
 #endif // VALUE_H

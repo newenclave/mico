@@ -117,6 +117,8 @@ namespace mico { namespace ast { namespace expressions {
         body_type    body_;
     };
 
+    using function = impl<type::FN>;
+
 }}}
 
 #endif // FN_H

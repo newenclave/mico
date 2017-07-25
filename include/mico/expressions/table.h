@@ -77,6 +77,7 @@ namespace mico { namespace ast { namespace expressions {
         value_type value_;
     };
 
+    using table = impl<type::TABLE>;
 }}}
 
 #endif // TABLE_H

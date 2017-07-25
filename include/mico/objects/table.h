@@ -173,6 +173,8 @@ namespace mico { namespace objects {
         value_type value_;
     };
 
+    using table = impl<type::TABLE>;
+
 }}
 
 #endif // TABLE_H

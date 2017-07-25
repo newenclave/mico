@@ -101,6 +101,7 @@ namespace mico { namespace objects {
         value_type value_;
     };
 
+    using error = impl<type::FAILURE>;
 }}
 
 #endif // ERROR_H

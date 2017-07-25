@@ -62,6 +62,8 @@ namespace mico { namespace objects {
         value_type value_;
     };
 
+    using retutn_obj = impl<type::RETURN>;
+
 }}
 
 #endif // RETURN_H

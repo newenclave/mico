@@ -41,6 +41,7 @@ namespace mico { namespace ast { namespace expressions {
 
     };
 
+    using null = impl<type::NONE>;
 }}}
 
 #endif // NONE_H

@@ -114,6 +114,7 @@ namespace mico { namespace ast { namespace expressions {
         expression::uptr alt_;
     };
 
+    using ifelse = impl<type::IFELSE>;
 }}}
 
 #endif // EIFELSE_H

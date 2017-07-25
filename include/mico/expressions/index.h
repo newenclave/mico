@@ -71,6 +71,7 @@ namespace mico { namespace ast { namespace expressions {
         node::uptr expr_;
     };
 
+    using index = impl<type::INDEX>;
 }}}
 
 #endif // INDEX_H

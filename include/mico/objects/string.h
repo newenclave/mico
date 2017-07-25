@@ -75,6 +75,8 @@ namespace mico { namespace objects {
 
     };
 
+    using string = impl<type::STRING>;
+
 }}
 
 #endif // STRING_H

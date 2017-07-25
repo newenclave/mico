@@ -18,52 +18,34 @@
 
 namespace mico { namespace objects {
 
-    using null       = impl<type::NULL_OBJ>;
-    using string     = impl<type::STRING>;
-    using function   = impl<type::FUNCTION>;
-    using builtin    = impl<type::BUILTIN>;
-    using tail_call  = impl<type::TAIL_CALL>;
-    using retutn_obj = impl<type::RETURN>;
-    using boolean    = impl<type::BOOLEAN>;
-    using integer    = impl<type::INTEGER>;
-    using floating   = impl<type::FLOAT>;
-    using array      = impl<type::ARRAY>;
-    using reference  = impl<type::REFERENCE>;
-    using table      = impl<type::TABLE>;
-    using error      = impl<type::FAILURE>;
-
-#if !defined(DISABLE_MACRO) || !DISABLE_MACRO
-    using quote      = impl<type::QUOTE>;
-#endif
-
-#define MICO_DEFINE_CAST_FUNC( CallPrefix, TypeName )                   \
-    inline                                                              \
-    impl<TypeName> *cast_##CallPrefix( base *val )                   \
-    {                                                                   \
-        return objects::cast<TypeName>(val);                            \
-    }                                                                   \
-    inline                                                              \
-    std::shared_ptr<impl<TypeName> > cast_##CallPrefix( sptr val )   \
-    {                                                                   \
-        return objects::cast<TypeName>( val );                          \
+#define MICO_DEFINE_CAST_FUNC( CallPrefix, TypeName )               \
+    inline                                                          \
+    impl<TypeName> *cast_##CallPrefix( base *val )                  \
+    {                                                               \
+        return objects::cast<TypeName>(val);                        \
+    }                                                               \
+    inline                                                          \
+    std::shared_ptr<impl<TypeName> > cast_##CallPrefix( sptr val )  \
+    {                                                               \
+        return objects::cast<TypeName>( val );                      \
     }
 
-MICO_DEFINE_CAST_FUNC( null,        type::NULL_OBJ  )
-MICO_DEFINE_CAST_FUNC( int,         type::INTEGER   )
-MICO_DEFINE_CAST_FUNC( float,       type::FLOAT     )
-MICO_DEFINE_CAST_FUNC( bool,        type::BOOLEAN   )
-MICO_DEFINE_CAST_FUNC( string,      type::STRING    )
-MICO_DEFINE_CAST_FUNC( table,       type::TABLE     )
-MICO_DEFINE_CAST_FUNC( array,       type::ARRAY     )
-MICO_DEFINE_CAST_FUNC( func,        type::FUNCTION  )
-MICO_DEFINE_CAST_FUNC( builtin,     type::BUILTIN   )
-MICO_DEFINE_CAST_FUNC( tail_call,   type::TAIL_CALL )
-MICO_DEFINE_CAST_FUNC( return,      type::RETURN    )
-MICO_DEFINE_CAST_FUNC( error,       type::FAILURE   )
-MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
+    MICO_DEFINE_CAST_FUNC( null,        type::NULL_OBJ  )
+    MICO_DEFINE_CAST_FUNC( int,         type::INTEGER   )
+    MICO_DEFINE_CAST_FUNC( float,       type::FLOAT     )
+    MICO_DEFINE_CAST_FUNC( bool,        type::BOOLEAN   )
+    MICO_DEFINE_CAST_FUNC( string,      type::STRING    )
+    MICO_DEFINE_CAST_FUNC( table,       type::TABLE     )
+    MICO_DEFINE_CAST_FUNC( array,       type::ARRAY     )
+    MICO_DEFINE_CAST_FUNC( func,        type::FUNCTION  )
+    MICO_DEFINE_CAST_FUNC( builtin,     type::BUILTIN   )
+    MICO_DEFINE_CAST_FUNC( tail_call,   type::TAIL_CALL )
+    MICO_DEFINE_CAST_FUNC( return,      type::RETURN    )
+    MICO_DEFINE_CAST_FUNC( error,       type::FAILURE   )
+    MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
-MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )
+    MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )
 #endif
 
 #undef MICO_DEFINE_CAST_FUNC

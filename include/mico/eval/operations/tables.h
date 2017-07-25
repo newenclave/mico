@@ -107,6 +107,8 @@ namespace mico { namespace eval { namespace operations {
 
     };
 
+    using table = operation<objects::type::TABLE>;
+
 }}}
 
 #endif // TABLES_H

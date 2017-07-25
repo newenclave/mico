@@ -68,6 +68,8 @@ namespace mico { namespace ast { namespace expressions {
         ast::node::uptr value_;
     };
 
+    using quote = impl<type::QUOTE>;
+
 }}}
 
 #endif // !defined(DISABLE_MACRO)

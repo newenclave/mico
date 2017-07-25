@@ -147,6 +147,9 @@ namespace mico { namespace eval { namespace operations {
                                     " is not defined");
         }
     };
+
+    using string = operation<objects::type::STRING>;
+
 }}}
 
 #endif // STR_OPERATION_H

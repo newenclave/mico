@@ -49,6 +49,8 @@ namespace mico { namespace eval { namespace operations {
         }
     };
 
+    using function = operation<objects::type::FUNCTION>;
+
 }}}
 
 
