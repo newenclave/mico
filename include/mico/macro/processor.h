@@ -133,7 +133,6 @@ namespace mico { namespace macro {
             remap_set      remaped_;
         };
 
-
         static
         std::string error_param_size( ast::node *n )
         {
@@ -157,23 +156,24 @@ namespace mico { namespace macro {
 
         static
         ast::node::uptr apply_statement_expr( ast::node *n, scope *s,
-                                              error_list *e )
+                                              error_list *e, eval_call ec )
         {
             auto stm = ast::cast<ast::statements::expr>( n );
-            auto mut = macro_mutator( stm->value( ).get( ), s, e );
+            auto mut = macro_mutator( stm->value( ).get( ), s, e, ec );
             return mut ? std::move(mut) : std::move(stm->value( ));
         }
 
         static
-        ast::node::uptr apply_macro( ast::node *n, scope *s, error_list *e )
+        ast::node::uptr apply_macro( ast::node *n, scope *s,
+                                     error_list *e, eval_call ec )
         {
             using     AT  = ast::type;
             namespace AST = ast::statements;
             namespace AEX = ast::expressions;
 
             auto cn = ast::cast<AEX::call>( n );
-            auto mut = [s, e](ast::node *n) {
-                return processor::macro_mutator( n, s, e );
+            auto mut = [s, e, ec](ast::node *n) {
+                return processor::macro_mutator( n, s, e, ec );
             };
 
             ast::node::apply_mutator( cn->func( ), mut );
@@ -211,8 +211,8 @@ namespace mico { namespace macro {
                 }
 
                 auto new_body = mfunc->body( )->clone( );
-                new_body->mutate( [&mscope, e]( ast::node *n ) {
-                    return processor::macro_mutator( n, &mscope, e );
+                new_body->mutate( [&mscope, e, ec]( ast::node *n ) {
+                    return processor::macro_mutator( n, &mscope, e, ec );
                 } );
 
                 return unlist(std::move(new_body));
@@ -232,7 +232,7 @@ namespace mico { namespace macro {
 
         static
         ast::node::uptr macro_mutator( ast::node *n, scope *s,
-                                       error_list *e )
+                                       error_list *e, eval_call ec )
         {
             using     AT  = ast::type;
             namespace AST = ast::statements;
@@ -242,8 +242,8 @@ namespace mico { namespace macro {
                 return nullptr;
             }
 
-            auto me = [s, e]( ast::node *n ) {
-                return macro_mutator( n, s, e );
+            auto me = [s, e, ec]( ast::node *n ) {
+                return macro_mutator( n, s, e, ec );
             };
 
             if( n->get_type( ) == AT::LET ) {
@@ -256,19 +256,19 @@ namespace mico { namespace macro {
                 }
 
             } else if( n->get_type( ) == AT::CALL ) {
-                if( auto res = apply_macro( n, s, e ) ) {
+                if( auto res = apply_macro( n, s, e, ec ) ) {
                     return res;
                 }
             } else if( n->get_type( ) == AT::LIST ) {
                 auto ln = ast::cast<AEX::list>( n );
                 if( ln->get_role( ) == AEX::list::role::LIST_SCOPE ) {
                     scope sscope(s);
-                    ln->mutate( [&sscope, e]( ast::node *n ) {
-                        return processor::macro_mutator( n, &sscope, e );
+                    ln->mutate( [&sscope, e, ec]( ast::node *n ) {
+                        return processor::macro_mutator( n, &sscope, e, ec );
                     } );
                 }
             } else if( n->get_type( ) == AT::EXPR ) {
-                return apply_statement_expr( n, s, e );
+                return apply_statement_expr( n, s, e, ec );
             } else if( n->get_type( ) == AT::IDENT ) {
                 auto in = ast::cast<AEX::ident>( n );
 
@@ -281,6 +281,11 @@ namespace mico { namespace macro {
                     return val->clone( );
                 }
 
+            } else if( n->get_type( ) == AT::UNQUOTE ) {
+                auto re = ec( n );
+                if( re->get_type( ) != objects::type::FAILURE ) {
+                    return re->to_ast( n->pos( ) );
+                }
             }
             n->mutate( me );
 
@@ -299,7 +304,7 @@ namespace mico { namespace macro {
                       error_list &errors, eval_call ec )
         {
             node->mutate( [s, &errors, ec]( ast::node *n ) {
-                return macro_mutator( n, s, &errors );
+                return macro_mutator( n, s, &errors, ec );
             } );
         }
     };
