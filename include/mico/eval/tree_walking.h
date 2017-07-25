@@ -271,7 +271,7 @@ namespace mico { namespace eval {
                                   id->value( ), "'" );
                 }
 
-                auto rght = eval_impl_tail(inf->right( ).get( ), env);
+                auto rght = unref( eval_impl_tail(inf->right( ).get( ), env) );
                 if( is_fail( rght ) ) {
                     return rght;
                 }
@@ -282,7 +282,8 @@ namespace mico { namespace eval {
                 auto lft = eval_impl_tail( inf->left( ).get( ), env );
                 if( lft->get_type( ) == objects::type::REFERENCE ) {
                     auto cont = objects::cast_ref(lft.get( ));
-                    auto rght = eval_impl_tail(inf->right( ).get( ), env);
+                    auto rght = unref(eval_impl_tail(inf->right( ).get( ),
+                                                     env ) );
                     if( is_fail( rght ) ) {
                         return rght;
                     }

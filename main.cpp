@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "mico/tokens.h"
 #include "mico/lexer.h"
@@ -20,15 +21,70 @@ int run_repl( )
 
 using namespace mico;
 
-void run_file( )
+int run_file( std::string path )
 {
+    std::ifstream f(path, std::ifstream::binary);
+    if( !f.is_open( ) ) {
+        std::cerr << "Unable to open file " << path << "\n";
+        return 1;
+    }
+
+    f.seekg( 0, f.end );
+    auto size = f.tellg( );
+    f.seekg( 0, f.beg );
+
+    if( !size ) {
+        std::cerr << "file is empty " << path << "\n";
+        return 2;
+    }
+
+    std::string data( size, '\0' );
+    f.read( &data[0], size );
+
+    eval::tree_walking tv;
+    mico::state st;
+
+    auto ev = [&tv, &st]( ast::node *n ) {
+        return tv.eval( n, st.env( ) );
+    };
+
+    builtin::init( st, ev );
+    auto prog = parser::parse( data );
+
+    if( prog.errors( ).empty( ) ) {
+        macro::processor::process( &st.macros( ), &prog,
+                                   prog.errors( ), ev );
+    }
+
+    if( prog.errors( ).empty( ) ) {
+
+        auto obj = tv.eval( &prog, st.env( ) );
+
+        if( obj->get_type( ) == objects::type::INTEGER ) {
+            auto res = objects::cast_int( obj );
+            return static_cast<int>(res->value( ));
+        } else if( obj->get_type( ) == objects::type::FAILURE ) {
+            std::cerr << obj->str( ) << "\n";
+            return 3;
+        }
+
+    } else {
+        for( auto &e: prog.errors( ) ) {
+            std::cerr << e << "\n";
+        }
+    }
+
+    return 0;
 
 }
 
 int main_lex( );
 
-int main( int /*argc*/, char ** /*argv[ ]*/  )
+int main( int argc, char * argv[ ]  )
 {
-
-    return run_repl( );
+    if( argc > 1 ) {
+        return run_file( argv[1] );
+    } else {
+        return run_repl( );
+    }
 }

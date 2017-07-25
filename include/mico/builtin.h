@@ -157,7 +157,9 @@ namespace mico {
         }
     };
 
+    template <bool NL>
     struct puts {
+
         objects::sptr operator ( )( objects::slist &pp, environment::sptr )
         {
             static const auto line = __LINE__;
@@ -186,7 +188,9 @@ namespace mico {
                                         " for 'puts': ", p->get_type( ));
                 }
             }
-            std::cout << std::endl;
+            if( NL ) {
+                std::cout << std::endl;
+            }
             return res;
         }
     };
@@ -283,8 +287,10 @@ namespace mico {
         void init( mico::state &st, eval_call ev )
         {
             auto env = st.env( );
+            env->set( "puts",       common::make( env, puts<true> { } ) );
+            env->set( "put",        common::make( env, puts<false> { } ) );
+
             env->set( "len",        common::make( env, len { } ) );
-            env->set( "puts",       common::make( env, puts { } ) );
             env->set( "copy",       common::make( env, copy { } ) );
             env->set( "__env",      common::make( env, env_show(env) ) );
             env->set( "__macro",    common::make( env, macro_show(env) ) );
