@@ -421,7 +421,7 @@ namespace mico { namespace eval {
 
             auto new_env = create_call_env( call, fun.get( ), env, params );
             if( !new_env ) {
-                return get_null( );
+                return error( call, "Bad parameter for 'call'" );
             }
             return std::make_shared<objects::tail_call>( fun, std::move(params),
                                                          new_env );
