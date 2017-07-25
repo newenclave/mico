@@ -1,0 +1,62 @@
+
+puts( "Hello, world!" )
+
+let fib = fn( n ) {
+    let impl = fn( a, b, c ) {
+        if( c > 0 ) {
+            impl( b, a + b, c - 1 )
+        } else {
+            a
+        }
+    }
+    impl( 0, 1, n )
+}
+
+let fib_rec = fn(x) {
+    if (x == 0) {
+        0
+    } elif ( x==1 ) {
+        1
+    } else {
+        fib_rec(x - 1) + fib_rec(x - 2);
+    }
+};
+
+let show_array = fn( arr ) {
+    let impl = fn( arr, id ) {
+        if( id == (len(arr) - 1) ) {
+            put( arr[id] )
+        } elif( id < len(arr) ) {
+            put( arr[id], ", " )
+            impl( arr, id + 1 )
+        }
+    }
+    put( "["     )
+    impl( arr, 0 )
+    put( "]\n"   )
+}
+
+let reverse_array = fn( arr ) {
+    let impl = fn( arr, id ) {
+        if( id < len(arr) / 2 ) {
+            // swap
+            let tmp      = arr[id]
+            arr[id]      = arr[-id - 1]
+            arr[-id - 1] = tmp
+            impl( arr, id + 1 )
+        } else {
+            arr
+        }
+    }
+    impl( arr, 0 )
+    //arr
+}
+
+puts( "fib(20)     = ",     fib(20) )
+puts( "fib_rec(20) = ", fib_rec(20) )
+
+let arr = [1,2,3,4,5,6,7]
+
+put("Array:   ") show_array( arr )
+put("Reverse: ") show_array( reverse_array( arr ) )
+
