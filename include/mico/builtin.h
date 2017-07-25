@@ -244,26 +244,43 @@ namespace mico {
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
     struct random_name {
+
+        using eval_call = std::function<mico::objects::sptr(ast::node *)>;
+
+        random_name( eval_call ec )
+            :ev_(ec)
+        { }
+
         ast::node::uptr operator ( )( ast::node * n,
-                                      macro::processor::scope * /*s*/,
+                                      macro::processor::scope *  /*s*/,
                                       ast::node_list &p,
                                       common_macro::error_list * /*e*/ )
         {
             std::string res;
             for( auto &par: p ) {
-                if( (par->get_type( ) == ast::type::IDENT) ||
-                    (par->get_type( ) == ast::type::INTEGER ) )
-                res += par->str( );
+                auto er = ev_(par.get( ));
+                if( er->get_type( ) != objects::type::FAILURE ) {
+                    auto pp = er->to_ast( n->pos( ) );
+                    res += pp->str( );
+                } else {
+                    if( (par->get_type( ) == ast::type::IDENT) ||
+                        (par->get_type( ) == ast::type::INTEGER ) )
+                    res += par->str( );
+                }
             }
             return ast::node::make<ast::expressions::ident>( n->pos( ),
                                                              std::move(res) );
         }
+        eval_call ev_;
     };
 #endif
 
     struct builtin {
+
+        using eval_call = random_name::eval_call;
+
         static
-        void init( mico::state &st )
+        void init( mico::state &st, eval_call ev )
         {
             auto env = st.env( );
             env->set( "len",        common::make( env, len { } ) );
@@ -274,9 +291,9 @@ namespace mico {
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             st.macros( ).set_built( "__I",
-                                 common_macro::make( random_name{ } ) );
+                                 common_macro::make( random_name(ev) ) );
             st.macros( ).set_built( "__concat_idents",
-                                 common_macro::make( random_name{ } ) );
+                                 common_macro::make( random_name(ev) ) );
 #endif
         }
     };
