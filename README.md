@@ -187,7 +187,7 @@ Functions in Mico can accept a variable number of arguments.
     puts("seven is ", seven, " and zero is ", zero)
 ```
 This code shows `seven is 7 and zero is 0`.
-Here `parms` is a last parameter of the function and it is an array that contains all function's parameters.
+Here `parms` is the last parameter of the function and it's an array that contains all function's parameters.
 The array can be empty.
 
 The elipsis doesn't have a role in [partial application](#partial-application).
