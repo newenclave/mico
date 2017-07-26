@@ -47,7 +47,7 @@ Or clang
 ```bash
  mico $ clang++ -O2 mico.cpp -std=c++11 -Iinclude -Ietool/include -Wall -o mico
 ```
-Or MS SDK compiler. It sould be calld from "Visual Studio Command Prompt" for example
+Or MS SDK compiler. It sould be called from the "Visual Studio Command Prompt" for example
 ```bash
 mico> cl /I include /I etool/include mico.cpp
 mico> link /OUT:"mico.exe" mico.obj
