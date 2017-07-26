@@ -143,12 +143,21 @@ All function in Monkey are [first-class citizens](https://en.wikipedia.org/wiki/
 
     let bind  = fn( call, a ) {
         fn( b ) {
-            call( a + b )
+            call( a, b )
         }
     }
+
+    let sum10 = bind(sum, 10)
+    let res   = sum10(10) // res == 20
 ```
-Here: `sum` is a function that returns a sum of its parameters
 #### Partial application
+[Partial application](https://en.wikipedia.org/wiki/Partial_application)
+
+```swift
+    let sum  = fn(a, b, c) { a + b + c}
+    let sum2 = sum(0)
+```
+Here `sum2` is a function that accepts 2 parameters (`a, b` for example) and returns `0 + a + b`
 
 #### Variadic parameters
 
