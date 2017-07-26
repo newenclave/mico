@@ -17,6 +17,8 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Numbers](#numbers)
     * [Token position](#token-position)
     * [Mutability](#mutability)
+    * [if elif else](#if-elif-else)
+    * [Operators](#operators)
 * [Tail Call Optimization](#tail-call-optimization)
 
 ### Compile
@@ -84,6 +86,47 @@ The operator is a `right arm` operator.
     let a = [1, 2, 3, 4, 5]
     a[0] = a[1] = a[2] = a[3] = a[4] = 0
     // a == [0, 0, 0, 0, 0]
+```
+
+#### if elif else
+```swift
+    let x = 1000;
+    let res = if( x < 0 ) {
+                "too small!"
+              } elif(x == 0) {
+                "zero"
+              } elif( x < 10 ) {
+                "less than 10"
+              } elif( x < 100 ) {
+                "less than 100"
+              } else {
+                "too big!"
+              }
+```
+
+#### Operators
+Monkey has: +, -, ==, !=, <, >, <=, >=, %, |, &, ^, &&, ||, >>, <<, ~
+```swift
+    let bits = fn( value ) {
+        let impl = fn( val, acc ) {
+            if( val > 0 ) {
+                impl( val >> 1, acc + (val & 1) ) // or val % 2
+            } else {
+                acc
+            }
+        }
+        impl( value, 0 )
+    }
+    bits(0xFFFFFFFFF)               // => 36
+    bits(0b1111111000000001111111)  // => 14
+```
+Operators `&&` and `||` are lazy. `&&` doesn't eval its right side if its left side is `false`.
+`||` does the same thing. It returns `true` if its left side is `true`
+
+```swift
+    if( 10 > 100 && "100" < 100 ) { 0.005 } else { 0.0 } // ok. returns 0.0
+    if( 10 > 100 || "100" < 100 ) { 0.005 } else { 0.0 }
+    // error: [1:22] Infix operation '<' is not defined for string and integer
 ```
 
 ### Tail Call Optimization
