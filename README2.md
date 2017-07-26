@@ -137,10 +137,12 @@ Operators `&&` and `||` are lazy. `&&` doesn't eval its right side if its left s
 #### First-class Citizen
 All function in Monkey are [first-class citizens](https://en.wikipedia.org/wiki/First-class_citizen)
 ```swift
-    let sum = fn(a, b) { a + b }
-
-    let apply = fn( call, a, b ) { call(a, b) }
-
+    let sum = fn(a, b) {
+        a + b
+    }
+    let apply = fn( call, a, b ) {
+        call(a, b)
+    }
     let bind  = fn( call, a ) {
         fn( b ) {
             call( a, b )
