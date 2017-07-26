@@ -11,8 +11,8 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 
 ## Table of Contents
 
-* [Compile] (#compile)
-* [Usage] (#usage)
+* [Compile](#compile)
+* [Usage](#usage)
 
 
 ### Compile
