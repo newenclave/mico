@@ -63,7 +63,7 @@ namespace mico { namespace ast { namespace expressions {
             auto l = node::call_clone( left_ );
             auto e = node::call_clone( expr_ );
             uptr res(new this_type( std::move( l ), std::move( e ) ) );
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

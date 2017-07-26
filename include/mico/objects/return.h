@@ -55,7 +55,7 @@ namespace mico { namespace objects {
             auto obj = value_->to_ast( pos );
             ast_type::uptr res( new ast_type( ast::expression::cast(obj) ) );
             res->set_pos(pos);
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

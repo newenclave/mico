@@ -65,7 +65,7 @@ namespace mico { namespace objects {
         {
             using ast_type = ast::expressions::impl<ast::type::BOOLEAN>;
             auto res = ast::node::make<ast_type>(pos, value_);
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

@@ -106,7 +106,7 @@ namespace mico { namespace ast { namespace expressions {
             if( alt_ ) {
                 res->alt_ = expression::call_clone( alt_ );
             }
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

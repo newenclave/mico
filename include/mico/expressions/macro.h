@@ -88,7 +88,7 @@ namespace mico { namespace ast { namespace expressions {
             uptr res(new this_type);
             res->params_ = params_->clone_me( );
             res->body_   = ast::node::call_clone( body_ );
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

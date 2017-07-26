@@ -130,7 +130,7 @@ namespace mico { namespace objects {
                 auto next = v->value( )->to_ast( pos );
                 res->value( ).emplace_back( ast::expression::cast( next ) );
             }
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

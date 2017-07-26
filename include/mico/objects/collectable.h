@@ -30,7 +30,7 @@ namespace mico { namespace objects {
             return l;
         }
 
-        const environment *hold( ) const
+        const environment *hold( ) const override
         {
             return env( ).get( );
         }

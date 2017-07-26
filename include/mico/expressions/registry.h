@@ -45,8 +45,7 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr clone( ) const override
         {
-            uptr res(new this_type(value_));
-            return res;
+            return ast::node::uptr( new this_type( value_ ) );
         }
 
     private:

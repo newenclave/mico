@@ -357,7 +357,7 @@ namespace mico { namespace ast {
             for( auto &st: states_ ) {
                 res->states_.emplace_back( node::call_clone( st ) );
             }
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

@@ -81,7 +81,7 @@ namespace mico { namespace ast { namespace expressions {
         {
             uptr res(new this_type(token_, node::call_clone( left_ ) ) );
             res->right_ = node::call_clone( right_ );
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

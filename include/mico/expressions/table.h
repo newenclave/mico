@@ -69,7 +69,7 @@ namespace mico { namespace ast { namespace expressions {
                 res->value_.emplace_back( node::call_clone( v.first ),
                                           node::call_clone( v.second ) );
             }
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

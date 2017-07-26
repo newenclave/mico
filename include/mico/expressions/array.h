@@ -68,7 +68,7 @@ namespace mico { namespace ast { namespace expressions {
             for( auto &v: value_ ) {
                 res->value_.emplace_back( node::call_clone( v ) );
             }
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

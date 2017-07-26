@@ -590,10 +590,10 @@ namespace mico {
                 advance( );
                 auto call = parse_call( std::move(res) );
                 call->set_pos( current( ).where );
-                return call;
+                return ast::expression::uptr( std::move(call) );
             }
             res->set_pos( current( ).where );
-            return res;
+            return ast::expression::uptr(std::move(res));
         }
 
         ast::expressions::string::uptr parse_string( )

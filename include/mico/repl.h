@@ -84,7 +84,7 @@ namespace mico {
                                     n->pos( ), tokens::type::MINUS,
                                     std::move(c->right( ) ) );
                     res->right( ).swap( c->left( ) );
-                    return res;
+                    return ast::node::uptr(std::move(res));
                 }
             } else {
                 n->mutate( &repl::mutator );

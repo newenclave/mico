@@ -183,7 +183,7 @@ namespace mico { namespace objects {
                     throw std::logic_error( "Not valid type for ident." );
                 }
             }
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

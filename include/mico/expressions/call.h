@@ -90,7 +90,7 @@ namespace mico { namespace ast { namespace expressions {
             auto expr = node::call_clone( expr_ );
             uptr res(new this_type( std::move( expr ) ) );
             res->params_ = params_->clone_me( );
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:

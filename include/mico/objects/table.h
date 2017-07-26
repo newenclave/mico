@@ -166,7 +166,7 @@ namespace mico { namespace objects {
                 res->value( ).emplace_back( ast::expression::cast(fast),
                                             ast::expression::cast(sast) );
             }
-            return res;
+            return ast::node::uptr( std::move( res ) );
         }
 
     private:
