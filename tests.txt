@@ -550,4 +550,19 @@ let arr_sum = fn( arr ) {
     impl( arr, 0, 0 )
 }
 
+let c1 = fn(c) {
+    if( c > 0 ) {
+        c2(c - 1)
+    } else {
+        "Ok 1"
+    }
+}
+let c2 = fn(c) {
+    if( c > 0 ) {
+        c1(c - 1)
+    } else {
+        "Ok 2"
+    }
+}
+
 */

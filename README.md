@@ -264,6 +264,24 @@ Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
         "Ok"
     }
     spin( 100_000 ) /// optimized again.
+
+    let call1 = fn(c) {
+        puts("1 ", c)
+        if( c > 0 ) {
+            call2(c - 1)
+        } else {
+            "Ok 1"
+        }
+    }
+    let call2 = fn(c) {
+        puts("2 ", c)
+        if( c > 0 ) {
+            call1(c - 1)
+        } else {
+            "Ok 2"
+        }
+    }
+    call1(0xFFFFF) // Ok
 ```
 ### A Macro System For Monkey
 
