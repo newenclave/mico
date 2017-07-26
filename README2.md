@@ -2,6 +2,8 @@
 
 Monkey :monkey: the language interpreter implementation done with C++. https://interpreterbook.com/
 
+[Old README](README_old.md)
+
 ![Mico REPL Terminal](repl.png)
 
 ## Requirements
