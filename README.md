@@ -41,11 +41,15 @@ Mico is a header-only project. Well you need just compile `main.cpp`
  github $ git clone https://github.com/newenclave/mico.git
  github $ cd mico
  mico $ git submodule update --init etool
- mico $ g++ main.cpp -O2 -Iinclude -Ietool/include -Wall -o mico
+ mico $ g++ mico.cpp -O2 -Iinclude -Ietool/include -Wall -o mico
 ```
 Or clang
 ```bash
- mico $ clang++ -O2 main.cpp -std=c++11 -Iinclude -Ietool/include -Wall -o mico
+ mico $ clang++ -O2 mico.cpp -std=c++11 -Iinclude -Ietool/include -Wall -o mico
+```
+Or MS SDK compiler. It sould be calld from "Visual Studio Command Prompt" for example
+```bash
+
 ```
 Thats all.
 
