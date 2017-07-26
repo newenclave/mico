@@ -12,13 +12,13 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 ## Table of Contents
 
 * [Compile](#compile)
-* [Monkey and Mico](#Monkey-and-Mico)
+* [Monkey and Mico](#monkey-and-mico)
 
 ### Compile
 
 Mico is a header-only project. Well you need just compile `main.cpp`
 
-```
+```bash
  github λ git clone https://github.com/newenclave/mico.git
  github λ cd mico
  mico λ git submodule update --init etool
