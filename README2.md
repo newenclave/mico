@@ -143,14 +143,13 @@ All function in Monkey are [first-class citizens](https://en.wikipedia.org/wiki/
     let apply = fn( call, a, b ) {
         call(a, b)
     }
-    let bind  = fn( call, a ) {
+    let bind  = fn( call, a ) { // returns a function that accepts 1 parameter
         fn( b ) {
-            call( a, b )
+            apply( call, a, b )
         }
     }
-
-    let sum10 = bind(sum, 10)
-    let res   = sum10(10) // res == 20
+    let inc = bind(sum, 1)
+    let res = inc(10) // res == 11
 ```
 #### Partial application
 [Partial application](https://en.wikipedia.org/wiki/Partial_application)
@@ -158,10 +157,53 @@ All function in Monkey are [first-class citizens](https://en.wikipedia.org/wiki/
 ```swift
     let sum  = fn(a, b, c) { a + b + c}
     let sum2 = sum(0)
+    let res  = sum2(1, 2) // res == 3
 ```
 Here `sum2` is a function that accepts 2 parameters (`a, b` for example) and returns `0 + a + b`
+A function can be "restored" from its partial from. The prefix operator `*` can do it.
 
+```swift
+    let sum  = fn(a, b, c) { a + b + c}
+    let sum2 = sum(0)
+    let res  = (*sum2)(1, 2, 3) // res = 6
+```
 #### Variadic parameters
+Functions in Mico can accept a variable number of arguments.
+```swift
+    let param_count = fn( ...parms ) { // prefix operator elipsis must be the last one
+        return len(parms)
+    }
+    let seven = param_count( 1, 2, [], {}, fn(){ }, 6, 7 )
+    let zero  = param_count( )
+    puts("seven is ", seven, " and zero is ", zero)
+```
+This code shows `seven is 7 and zero is 0`.
+Here `parms` is a last parameter of the function and it is an array that contains all function's parameters.
+The array can be empty.
+
+The elipsis doesn't have a role in [partial application](#partial-application).
+It is "invisible" for the partial algorithm
+```swift
+    let reduce = fn( call, arr ) {
+        let impl = fn( arr, acc, id ) {
+            if( id < len(arr) ) {
+                impl( arr, call(acc, arr[id]), id + 1 )
+            } else {
+                acc
+            }
+        }
+        impl( arr, 0, 0 )
+    }
+    let sum = fn( a, b, ...args ) {
+        let arr_sum = reduce( fn(a, b){ a + b } ) // partial
+        a + b + arr_sum(args)
+    }
+    let sum_0    = sum(1, 2)           // 3
+    let sum_1    = sum(1, 2, 3)        // 6
+    let sum_2    = sum(1, 2, 3, 4, 5)  // 15
+    let sum_part = sum(0.001)          // `sum_part` is a function with 1 parameter + `...`
+    let sum_3    = sum_part( 1, 2, 3 ) // 6.001
+```
 
 #### Pipe operator
 

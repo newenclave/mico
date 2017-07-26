@@ -316,7 +316,7 @@ namespace mico { namespace eval {
             }
 
             auto inf_call = [this, env](ast::node *n ) {
-                return unref( eval_impl( n, env ) );
+                return unref( eval_impl_tail( n, env ) );
             };
 
             using OP_int   = OP<objects::type::INTEGER>;
