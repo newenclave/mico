@@ -35,7 +35,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 
 ### Compile
 
-Mico is a header-only project. Well you need just compile `main.cpp`
+Mico is a header-only project. Well you need just compile `mico.cpp`
 
 ```bash
  github $ git clone https://github.com/newenclave/mico.git
