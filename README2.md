@@ -165,7 +165,8 @@ A function can be "restored" from its partial from. The prefix operator `*` does
 ```swift
     let sum  = fn(a, b, c) { a + b + c}
     let sum2 = sum(0)
-    let res  = (*sum2)(1, 2, 3) // res = 6
+    let res0 = sum2(2, 3)       // res0 = 5
+    let res1 = (*sum2)(1, 2, 3) // res1 = 6
 ```
 #### Variadic parameters
 Functions in Mico can accept a variable number of arguments.
@@ -202,10 +203,29 @@ It is "invisible" for the partial application system
     let sum_1    = sum(1, 2, 3)        // 6
     let sum_2    = sum(1, 2, 3, 4, 5)  // 15
     let sum_part = sum(0.001)          // `sum_part` is a function with 1 parameter + `...`
-    let sum_3    = sum_part( 1, 2, 3 ) // 6.001
+    let sum_3    = sum_part( 1, 2, 3 ) // => sum( 0.001, 1, 2, 3 ) => 6.001
 ```
 
 #### Pipe operator
+The pipe operator `|` is a shortcat for the `call` operator `()`.
+The left side of the operator is passed to the right side.
+In this case the right side must be a function (builtin or not).
+```swift
+    let sum = fn( a, b ) { a + b }
+    let hello = sum("Hello, ")      // fn( a ) { "Hello, " + a } // partial
+
+    "Hello, world!" |len            // => 13
+    "world!" |hello                 // sum("Hello, ", "world!") => "Hello, world!"
+    "world!" |sum("Hello, ") |len   // len(sum("Hello, ", "world!")) => 13
+
+    /// check this out =)
+    let x = 10
+    "world!" |if(x > 0){hello} else {(*hello)("Goodbye, ")} // => Hello, world!
+    ......
+    let x = 0
+    "world!" |if(x > 0){hello} else {(*hello)("Goodbye, ")} // => Goodbye, world!
+
+```
 
 #### Tail Call Optimization
 Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
