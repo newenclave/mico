@@ -19,7 +19,12 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Mutability](#mutability)
     * [if elif else](#if-elif-else)
     * [Operators](#operators)
-* [Tail Call Optimization](#tail-call-optimization)
+* [Functions](#functions)
+    * [First-class Citizen](#first-class-citizen)
+    * [Partial application](#partial-application)
+    * [Variadic parameters](#variadic-parameters)
+    * [Pipe operator](#pipe-operator)
+    * [Tail Call Optimization](#tail-call-optimization)
 
 ### Compile
 
@@ -105,7 +110,7 @@ The operator is a `right arm` operator.
 ```
 
 #### Operators
-Monkey has: +, -, ==, !=, <, >, <=, >=, %, |, &, ^, &&, ||, >>, <<, ~
+Mico has: +, -, ==, !=, <, >, <=, >=, %, |, &, ^, &&, ||, >>, <<, ~
 ```swift
     let bits = fn( value ) {
         let impl = fn( val, acc ) {
@@ -124,13 +129,33 @@ Operators `&&` and `||` are lazy. `&&` doesn't eval its right side if its left s
 `||` does the same thing. It returns `true` if its left side is `true`
 
 ```swift
-    if( 10 > 100 && "100" < 100 ) { 0.005 } else { 0.0 } // ok. returns 0.0
-    if( 10 > 100 || "100" < 100 ) { 0.005 } else { 0.0 }
+    if( 10 > 100 && "100" < 100 ) { 1.0 } else { 0.0 } // ok. returns 0.0
+    if( 10 > 100 || "100" < 100 ) { 1.0 } else { 0.0 }
     // error: [1:22] Infix operation '<' is not defined for string and integer
 ```
+### Functions
+#### First-class Citizen
+All function in Monkey are [first-class citizens](https://en.wikipedia.org/wiki/First-class_citizen)
+```swift
+    let sum = fn(a, b) { a + b }
 
-### Tail Call Optimization
-It was the first thing I added to the interpreter. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
+    let apply = fn( call, a, b ) { call(a, b) }
+
+    let bind  = fn( call, a ) {
+        fn( b ) {
+            call( a + b )
+        }
+    }
+```
+Here: `sum` is a function that returns a sum of its parameters
+#### Partial application
+
+#### Variadic parameters
+
+#### Pipe operator
+
+#### Tail Call Optimization
+Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
 
 ```swift
     let spin = fn( count ) {
