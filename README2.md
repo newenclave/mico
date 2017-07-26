@@ -135,7 +135,7 @@ Operators `&&` and `||` are lazy. `&&` doesn't eval its right side if its left s
 ```
 ### Functions
 #### First-class Citizen
-All function in Monkey are [first-class citizens](https://en.wikipedia.org/wiki/First-class_citizen)
+All function in Monkey (i.e. in Mico also) are [first-class citizens](https://en.wikipedia.org/wiki/First-class_citizen)
 ```swift
     let sum = fn(a, b) {
         a + b
