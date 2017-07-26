@@ -13,6 +13,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 
 * [Compile](#compile)
 * [Monkey and Mico](#monkey-and-mico)
+* [Tail Call Optimization](tail-call-optimization)
 
 ### Compile
 
@@ -30,4 +31,7 @@ Thats all.
 ### Monkey and Mico
 "Mico" is an implementation but of course it has some difference.
 For now I'm pretty sure that Mico can run the major part of Monkey's code.
+
+### Tail Call Optimization
+It was the first thing I added to the interpreter. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
 
