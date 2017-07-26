@@ -160,7 +160,7 @@ All function in Monkey are [first-class citizens](https://en.wikipedia.org/wiki/
     let res  = sum2(1, 2) // res == 3
 ```
 Here `sum2` is a function that accepts 2 parameters (`a, b` for example) and returns `0 + a + b`
-A function can be "restored" from its partial from. The prefix operator `*` can do it.
+A function can be "restored" from its partial from. The prefix operator `*` does it.
 
 ```swift
     let sum  = fn(a, b, c) { a + b + c}
@@ -182,7 +182,7 @@ Here `parms` is a last parameter of the function and it is an array that contain
 The array can be empty.
 
 The elipsis doesn't have a role in [partial application](#partial-application).
-It is "invisible" for the partial algorithm
+It is "invisible" for the partial application system
 ```swift
     let reduce = fn( call, arr ) {
         let impl = fn( arr, acc, id ) {
