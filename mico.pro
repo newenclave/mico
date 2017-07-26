@@ -77,7 +77,8 @@ HEADERS += \
 
 DISTFILES += \
     drafts/tail_recursion.md \
-    tests.txt
+    tests.txt \
+    README2.md
 
 
 #DEFINES += DEBUG=1

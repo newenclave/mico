@@ -208,7 +208,7 @@ There are some tricks.
 Partial application. A function that accepts N parameters can be called with `M` = `0..N-1` parameters.
 In this case the function returns another function that accepts `N` - `M` parameters. Hello, OCaml
 
-```js
+```swift
     let sum1 = fn(a,b,c) { a + b + c }
     let sum2 = sum1(1)  // => fn(a, b) { 1 + a + b }
     let sum3 = sum2(2)  // => fn(a) { 1 + 2 + a }
@@ -250,7 +250,7 @@ In this case the function returns another function that accepts `N` - `M` parame
 #### * Pipe operator for function.
 The pipe operator `|` is a shortcat for the `call` operator. The left side of the operator  is passed to the right side.
 In this case the right side must be a function (builtin or not).
-```js
+```swift
     let sum = fn(a,b) { a + b }
     let hello = sum("Hello, ")      // fn( a ) { "Hello, " + a }
     "Hello, world!"|len             // => 13
@@ -273,7 +273,7 @@ So. First of all **quote**, **unquote**, and **macro** are keywords and I can pa
 And there are 2 types of **quote**
 
 ##### * Expression **quote**
-```js
+```swift
     /// expression quote = quote + ( + expression + )
 
     let a = quote( 2 + 2 ) /// `a` is an ast node and contains (2 + 2)
@@ -301,7 +301,7 @@ And there are 2 types of **quote**
 
 ```
 ##### * Statements **quote**
-```js
+```swift
 
     /// statements quote = quote + { + statements + }
 
@@ -312,7 +312,8 @@ And there are 2 types of **quote**
 ```
 The `macro` keyword defines a piece of code that is placed in the position where it is called.
 And this is all happening in the macro expansion phase before the evaluation.
-```js
+
+```swift
     let sum = macro( a, b ) { unquote(a) + unquote(b) }
     sum(10, 200)  // here the `ast` is replaced by body of the macro sum so => 210
 
