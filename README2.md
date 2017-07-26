@@ -159,7 +159,8 @@ All function in Monkey (i.e. in Mico also) are [first-class citizens](https://en
     let sum2 = sum(0)
     let res  = sum2(1, 2) // res == 3
 ```
-Here `sum2` is a function that accepts 2 parameters (`a, b` for example) and returns `0 + a + b`
+Here `sum2` is a function that accepts 2 parameters (`a, b` for example) and returns `0 + a + b`.
+
 A function can be "restored" from its partial from. The prefix operator `*` does it.
 
 ```swift
