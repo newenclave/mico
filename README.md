@@ -30,6 +30,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * [A Macro System For Monkey](#a-macro-system-for-monkey)
     * [Expression quote](#expression-quote)
     * [Statements quote](#statements-quote)
+    * [macro](#macro)
     * [Builtin Macroses](#builtin-macroses)
 
 ### Compile
@@ -309,6 +310,8 @@ And there are 2 types of **quote**
     unquote(a) // => eval `let a = 1000; let b = a * 2` => null
                // now `a` is 1000 and `b` is 2000
 ```
+#### macro
+
 The `macro` keyword defines a piece of code that is placed in the position where it is called.
 And this is all happening in the macro expansion phase before the evaluation.
 
