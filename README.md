@@ -49,8 +49,11 @@ Or clang
 ```
 Or MS SDK compiler. It sould be calld from "Visual Studio Command Prompt" for example
 ```bash
-
+mico> cl /I include /I etool/include mico.cpp
+mico> link /OUT:"mico.exe" mico.obj
 ```
+Or just use Visual Studio (at least version 12)
+
 Thats all.
 
 ### Monkey and Mico
