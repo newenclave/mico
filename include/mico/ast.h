@@ -19,31 +19,32 @@
 namespace mico { namespace ast {
 
     enum class type {
-        NONE = 0,
-        PROGRAM,
-        IDENT,
-        LET,
-        EXPR,
-        RETURN,
-        PREFIX,
-        INFIX,
-        STRING,
-        ARRAY,
-        INTEGER,
-        BOOLEAN,
-        FLOAT,
-        TABLE,
-        FN,
-        CALL,
-        INDEX,
-        IFELSE,
-        REGISTRY,
-        LIST,
+        NONE            =  0,
+        PROGRAM         =  1,
+        IDENT           =  2,
+        LET             =  3,
+        EXPR            =  4,
+        RETURN          =  5,
+        PREFIX          =  6,
+        INFIX           =  7,
+        STRING          =  8,
+        ARRAY           =  9,
+        INTEGER         = 10,
+        BOOLEAN         = 11,
+        FLOAT           = 12,
+        TABLE           = 13,
+        FN              = 14,
+        CALL            = 15,
+        INDEX           = 16,
+        IFELSE          = 17,
+        REGISTRY        = 18,
+        LIST            = 19,
+        ELIPSIS         = 20,
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
-        QUOTE,
-        UNQUOTE,
-        MACRO,
-        BUILTIN_MACRO,
+        QUOTE           = 21,
+        UNQUOTE         = 22,
+        MACRO           = 23,
+        BUILTIN_MACRO   = 24,
 #endif
     };
 
@@ -72,6 +73,8 @@ namespace mico { namespace ast {
             case type::IFELSE       : return "IFELSE";
             case type::REGISTRY     : return "REGISTRY";
             case type::LIST         : return "LIST";
+            case type::ELIPSIS      : return "ELIPSIS";
+
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case type::QUOTE        : return "QUOTE";
             case type::UNQUOTE      : return "UNQUOTE";

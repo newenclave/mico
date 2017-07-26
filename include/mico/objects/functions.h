@@ -15,6 +15,16 @@ namespace mico { namespace objects {
     template <>
     class impl<type::FUNCTION>: public collectable<type::FUNCTION> {
         using this_type = impl<type::FUNCTION>;
+
+        void check_elipsis( )
+        {
+            auto s = params_->value( ).size( );
+            if( s > 0 ) {
+                auto &lo(params_->value( )[s-1]);
+                elipsis_ = (lo->get_type( ) == ast::type::ELIPSIS);
+            }
+        }
+
     public:
         static const type type_value = type::FUNCTION;
         using sptr = std::shared_ptr<this_type>;
@@ -35,7 +45,9 @@ namespace mico { namespace objects {
             ,params_(par.release( ))
             ,body_(body.release( ))
             ,start_param_(start)
-        { }
+        {
+            check_elipsis( );
+        }
 
         impl( std::shared_ptr<environment> e,
                  param_ptr par,
@@ -45,7 +57,9 @@ namespace mico { namespace objects {
             ,params_(par)
             ,body_(body)
             ,start_param_(start)
-        { }
+        {
+            check_elipsis( );
+        }
 
         ~impl( )
         { }
@@ -54,10 +68,14 @@ namespace mico { namespace objects {
         {
             std::ostringstream oss;
             if( start_param_ == 0  ) {
-                oss << "fn(" << param_size( ) << ")";
+                oss << "fn(" << param_size( )
+                    << (elipsis_ ? ", ..." : "" )
+                    << ")";
             } else {
                 oss << "fn(" << param_size( ) << ":"
-                    << params_->value( ).size( ) << ")";
+                    << params_->value( ).size( )
+                    << (elipsis_ ? ", ..." : "" )
+                    << ")";
             }
             return oss.str( );
         }
@@ -92,6 +110,11 @@ namespace mico { namespace objects {
                 }
             }
             return other;
+        }
+
+        bool is_elipsis( ) const
+        {
+            return elipsis_;
         }
 
         bool is_part( ) const
@@ -168,6 +191,7 @@ namespace mico { namespace objects {
         param_ptr   params_;
         body_ptr    body_;
         std::size_t start_param_ = 0;
+        bool        elipsis_ = false;
     };
 
     template <>

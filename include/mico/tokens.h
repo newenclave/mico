@@ -79,6 +79,7 @@ namespace mico { namespace tokens {
         IF,
         ELIF,
         ELSE,
+        ELIPSIS,
 
         LAST_VISIBLE,
     };
@@ -157,6 +158,7 @@ namespace mico { namespace tokens {
             case type::IF:          return "if";
             case type::ELIF:        return "elif";
             case type::ELSE:        return "else";
+            case type::ELIPSIS:     return "...";
 
             /// unnamed
             case type::NONE:

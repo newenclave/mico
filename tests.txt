@@ -513,4 +513,18 @@ let ra = fn( arr ) {
     impl( arr, 0 )
 }
 
+let sum = fn( ) {
+    let impl = fn( arr, acc, id ) {
+        if( id < len(arr) ) {
+            impl( arr, acc + arr[id], id + 1 )
+        } else {
+            acc
+        }
+    }
+    impl( __args, 0, 0 )
+}
+
+let sum = fn(a, b, ...args) { args }
+let sum = fn(...) { *__args }
+
 */

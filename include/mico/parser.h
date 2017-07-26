@@ -90,6 +90,10 @@ namespace mico {
                     [this]( ) {
                         return parse_array( );
                     };
+            nuds_[token_type::ELIPSIS] =
+                    [this]( ) {
+                        return parse_elipsis( );
+                    };
 
             nuds_[token_type::MINUS]    =
             nuds_[token_type::BANG]     =
@@ -315,6 +319,31 @@ namespace mico {
             return !errors_.empty( );
         }
 
+        bool is_current_expression(  ) const
+        {
+            auto nud = nuds_.find( current( ).ident.name );
+            return nud != nuds_.end( );
+        }
+
+        bool is_peek_expression(  ) const
+        {
+            auto nud = nuds_.find( peek( ).ident.name );
+            return nud != nuds_.end( );
+        }
+
+        ast::expressions::elipsis::uptr parse_elipsis( )
+        {
+            using elipsis = ast::expressions::elipsis;
+            if( is_peek_expression(  ) ) {
+                advance( );
+                auto next = parse_expression( precedence::LOWEST );
+                return elipsis::uptr( new elipsis(std::move(next) ) );
+            } else {
+                auto next = ast::expressions::null::make( );
+                return elipsis::uptr( new elipsis(std::move(next) ) );
+            }
+        }
+
         ast::expressions::list::uptr parse_scope( )
         {
             auto scope = ast::expressions::list::make_scope( );
@@ -510,6 +539,9 @@ namespace mico {
                 } else {
                     break;
                 }
+            }
+            if( is_current( token_type::ELIPSIS ) ) {
+                res->value( ).emplace_back(parse_elipsis( ));
             }
             return res;
         }

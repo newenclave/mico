@@ -368,22 +368,49 @@ namespace mico { namespace eval {
         {
             //// TODO bug with built in funcions!
 
-            using ident_type = ast::expressions::ident;
+            using elipsis = ast::expressions::elipsis;
+            using ident   = ast::expressions::ident;
 
             if( fun->get_type( ) == objects::type::FUNCTION ) {
+
+
                 auto vfun = objects::cast_func(fun);
 
                 auto new_env = environment::make(vfun->env( ));
+                auto new_args = objects::array::make( new_env );
 
                 size_t id = 0;
                 for( auto &p: *vfun ) {
+
                     if( p->get_type( ) == ast::type::IDENT ) {
-                        auto n = static_cast<ident_type *>(p.get( ));
+
+                        auto n = ast::cast<ident>( p.get( ) );
                         auto v = unref( eval_impl_tail(
                                         call->param_at(id++).get( ), env ) );
-                        new_env->set(n->value( ), v);
+
+                        new_env->set( n->value( ), v );
+
+                    } else if( p->get_type( ) == ast::type::ELIPSIS ) {
+                        auto eli = ast::cast<elipsis>( p.get( ) );
+
+                        auto name = std::string( );
+                        if( eli->is_ident( ) ) {
+                            auto id = ast::cast<ident>( eli->value( ).get( ) );
+                            name = id->value( );
+                        } else {
+                            name = "__args";
+                        }
+
+                        for( ; id<call->param_list( ).size( ); id++ ) {
+                            auto v = unref( eval_impl_tail(
+                                            call->param_at(id).get( ), env ) );
+                            new_args->push( new_env.get( ), v );
+                        }
+
+                        new_env->set( name, new_args );
+
+                        break; /// last one!
                     } else {
-                        /// TODO bad param
                         return nullptr;
                     }
                 }
@@ -704,7 +731,9 @@ namespace mico { namespace eval {
                 auto vfun = objects::cast_func(fun);
 
                 std::size_t call_params = call->param_list( ).size( );
-                if( call_params < vfun->param_size( ) ) {
+                auto total = (vfun->param_size( ) - vfun->is_elipsis( ) );
+
+                if( call_params < total ) {
 
                     if( call_params == 0 ) {
                         return get_null( );
