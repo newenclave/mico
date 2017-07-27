@@ -287,7 +287,7 @@ Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
     let call1 = fn(c) {
         puts("1 ", c)
         if( c > 0 ) {
-            call2(c - 1)
+            call2(c - 1) // indirect call
         } else {
             "Ok 1"
         }
@@ -295,7 +295,7 @@ Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
     let call2 = fn(c) {
         puts("2 ", c)
         if( c > 0 ) {
-            call1(c - 1)
+            call1(c - 1) // indirect call
         } else {
             "Ok 2"
         }
