@@ -38,7 +38,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [macro](#macro)
     * [Builtin Macroses](#builtin-macroses)
 * [Modules](#modules)
-    * [Inheretence](#inheretence)
+    * [Inheritance](#inheretence)
 
 ### Compile
 
@@ -495,8 +495,8 @@ They are more like `namespaces` in c++ but modules are first-class citizens.
 
 ```
 
-#### Inheretence
-A module can inherit values from another module. In the case of inheritence
+#### Inheritance
+A module can inherit values from another module. In the case of inheritance
 all elements of the parent are available in the child. And by the child.
 ```swift
     module a {
