@@ -21,7 +21,7 @@ namespace mico { namespace objects {
 
         using value_type = std::string;
 
-        impl( const tokens::position &where, value_type val )
+        impl<type::FAILURE>( const tokens::position &where, value_type val )
             :where_(where)
             ,value_(std::move(val))
         { }
