@@ -306,8 +306,12 @@ namespace mico { namespace eval {
                 opertype = objects::cast_ref( left )->value( )->get_type( );
             }
 
-            auto inf_call = [this](ast::node *n, environment::sptr env ) {
+            auto inf_call_unref = [this](ast::node *n, environment::sptr env ) {
                 return unref( eval_impl_tail( n, env ) );
+            };
+
+            auto inf_call = [this](ast::node *n, environment::sptr env ) {
+                return unref(eval_impl_tail( n, env ));
             };
 
             using OP_int   = OP<objects::type::INTEGER>;
@@ -322,29 +326,29 @@ namespace mico { namespace eval {
             objects::sptr res;
             switch( opertype ) {
             case objects::type::INTEGER:
-                res = OP_int::eval_infix( inf, left, inf_call, env);
+                res = OP_int::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::FLOAT:
-                res = OP_float::eval_infix( inf, left, inf_call, env);
+                res = OP_float::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::BOOLEAN:
-                res = OP_bool::eval_infix( inf, left, inf_call, env);
+                res = OP_bool::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::STRING:
-                res = OP_str::eval_infix( inf, left, inf_call, env);
+                res = OP_str::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::TABLE:
-                res = OP_table::eval_infix( inf, left, inf_call, env);
+                res = OP_table::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::ARRAY:
-                res = OP_array::eval_infix( inf, left, inf_call, env);
+                res = OP_array::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::MODULE:
                 res = OP_mod::eval_infix( inf, left, inf_call, env);
                 break;
             case objects::type::FUNCTION:
             case objects::type::BUILTIN:
-                res = OP_func::eval_infix( inf, left, inf_call, env);
+                res = OP_func::eval_infix( inf, left, inf_call_unref, env);
                 break;
             default:
                 break;
