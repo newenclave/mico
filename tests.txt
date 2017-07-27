@@ -589,7 +589,7 @@ let a = 90
 module a { let val1 = "value a" }
 module b: a { let get = fn( ) { "form B: " + val1 } }
 module c: b { let get = fn( ) { "form C: " + val1 } }
-module d: c { let get = fn( ) { "form D: " + b.get( ) } }
+module d: c { module a { let ttt = "!" } let get = fn( ) { "form D: " + b.get( ) + a.ttt } }
 
 module t: d {
     let spin = fn( count )  {
