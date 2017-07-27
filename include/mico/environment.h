@@ -146,12 +146,10 @@ namespace mico {
             auto e      = current;
 
             if( my_env ) {
-                std::size_t ul = 0;
                 if( my_env->is_parent( current ) ) {
                     while( my_env.get( ) != current ) {
                         my_env->unmark( );
                         my_env = my_env->parent( );
-                        ++ul;
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
                     auto par = environment::barrier( e, my_env.get( ) );

@@ -17,7 +17,7 @@ namespace mico { namespace ast { namespace expressions {
 
         using uptr = std::unique_ptr<impl>;
 
-        impl( tokens::type tt, node::uptr lft )
+        impl<type::INFIX>( tokens::type tt, node::uptr lft )
             :token_(tt)
             ,left_(std::move(lft))
         { }

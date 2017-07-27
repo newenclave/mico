@@ -111,6 +111,7 @@ namespace mico { namespace ast { namespace expressions {
         uptr clone_me( ) const
         {
             uptr res(new this_type(scope_));
+            res->set_pos( pos( ) );
             for( auto &v: value_ ) {
                 res->value_.emplace_back( ast::node::call_clone( v ) );
             }
@@ -128,16 +129,17 @@ namespace mico { namespace ast { namespace expressions {
             auto e = value_.end( );
 
             while( b != e ) {
+
                 ast::node::apply_mutator( *b, call );
+
+                /// some optimisations
+                /// if the list has empty node we just remove it
                 if( *b && ((*b)->get_type( ) != ast::type::NONE) ) {
                     b++;
                 } else {
                     b = value_.erase( b );
                 }
             }
-//            for( auto &v: value_ ) {
-//                ast::node::apply_mutator( v, call );
-//            }
         }
 
         static

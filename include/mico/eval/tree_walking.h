@@ -28,9 +28,7 @@ namespace mico { namespace eval {
         { }
 
         ~tree_walking( )
-        {
-            delete call_stack( );
-        }
+        { }
 
     private:
 
@@ -431,6 +429,7 @@ namespace mico { namespace eval {
 
         objects::sptr create_tail_call( ast::node *n, environment::sptr env )
         {
+
             auto call = ast::cast<ast::expressions::call>( n );
             auto fun = eval_impl(call->func( ).get( ), env);
             if( is_null( fun ) || !is_func( fun ) ) {
@@ -512,6 +511,11 @@ namespace mico { namespace eval {
 
         objects::sptr eval_scope_node( ast::node *n, environment::sptr env )
         {
+            call_info::scope scp( call_stack( ), n );
+            if( call_stack( )->size( ) > 2048 ) {
+                return error( n, "Stack overflow ", n );
+            }
+
             auto scope = ast::cast<ast::expressions::list>( n );
             return eval_scope_impl( scope->value( ), env );
         }
@@ -526,6 +530,7 @@ namespace mico { namespace eval {
         objects::sptr eval_scope_impl( ast::node_list &lst,
                                        environment::sptr env )
         {
+
             using return_type = ast::statements::ret;
             using expression_type = ast::statements::expr;
             auto count = lst.size( );
@@ -559,6 +564,10 @@ namespace mico { namespace eval {
                     return last;
                 } else if( ( 0 != count ) && is_tail_call( next.get( ) ) ) {
                     last = eval_tail_return( last );
+                }
+
+                if( is_fail( last ) ) {
+                    return last;
                 }
             }
             return last;
@@ -776,6 +785,7 @@ namespace mico { namespace eval {
             struct scope {
 
                 scope( list *lst, ast::node *n )
+                    :lst_(lst)
                 {
                     lst->emplace_back( uptr(new call_info(n) ) );
                 }
@@ -793,11 +803,10 @@ namespace mico { namespace eval {
 
         call_info::list *call_stack( )
         {
-            if( !call_stack_ ) {
-                call_stack_ = new call_info::list;
-            }
+            thread_local static
+            call_info::list lst;
 
-            call_info::list *res = call_stack_;
+            call_info::list *res = &lst;
 
             return res;
         }
@@ -806,10 +815,10 @@ namespace mico { namespace eval {
                                       environment::sptr env,
                                       environment::sptr &/*work_env*/ )
         {
-//            call_info::scope scp( call_stack( ), n);
-//            if( call_stack( )->size( ) > 1000 ) {
-//                return error( n, "Stack overflow" );
-//            }
+            call_info::scope scp( call_stack( ), n);
+            if( call_stack( )->size( ) > 2048 ) {
+                return error( n, "Stack overflow" );
+            }
 
             auto call = ast::cast<ast::expressions::call>( n );
             auto fun = unref(eval_impl_tail(call->func( ).get( ), env));
@@ -1055,7 +1064,6 @@ namespace mico { namespace eval {
 
     private:
         error_list errors_;
-        call_info::list *call_stack_ = nullptr;
     };
 
 }}

@@ -265,7 +265,9 @@ Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
         "Ok"
     }
 
-    spin( 100_000 ) /// Oops. Stack overflow is here
+    spin( 100_000 )
+    /// Stack overflow is here! error:
+    /// [3:12] Stack overflow spin((count-1))
 
     let spin = fn( count ) {
         if( count > 0 ) {

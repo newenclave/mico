@@ -18,7 +18,7 @@ namespace mico { namespace objects {
         using sptr = std::shared_ptr<this_type>;
         using value_type = objects::sptr;
 
-        impl(const environment *my_env, value_type val)
+        impl<type::REFERENCE>(const environment *my_env, value_type val)
             :my_env_(my_env)
             ,value_(unref(val))
         {
@@ -26,7 +26,7 @@ namespace mico { namespace objects {
             marked_ = val->marked( );
         }
 
-        ~impl( )
+        ~impl<type::REFERENCE>( )
         {
             value_->unmark_in( my_env_ );
         }

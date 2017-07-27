@@ -347,6 +347,7 @@ namespace mico {
         ast::expressions::list::uptr parse_scope( )
         {
             auto scope = ast::expressions::list::make_scope( );
+            scope->set_pos( current( ).where );
             parse_statements( scope->value( ), token_type::RBRACE );
             return scope;
         }
@@ -589,8 +590,12 @@ namespace mico {
             if( (peek( ).ident.name == token_type::LPAREN) ) {
                 advance( );
                 auto call = parse_call( std::move(res) );
-                call->set_pos( current( ).where );
-                return ast::expression::uptr( std::move(call) );
+                if( call ) {
+                    call->set_pos( current( ).where );
+                    return ast::expression::uptr( std::move(call) );
+                } else {
+                    return nullptr;
+                }
             }
             res->set_pos( current( ).where );
             return ast::expression::uptr(std::move(res));
