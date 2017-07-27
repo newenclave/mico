@@ -499,7 +499,6 @@ They are more like `namespaces` in c++ but modules are first-class citizens.
 A module can inherit values from another module. In the case of inheritence
 all elements of parent are available in child. And by the child.
 ```swift
-
     module a {
         let value = "value a"
         let show = fn( ) { puts( value ) }
@@ -513,4 +512,26 @@ all elements of parent are available in child. And by the child.
     b.set( "changed!" )
     puts(a.value)
     a.show( )
+```
+A module can have one or more parents.
+
+```swift
+    module a {
+        let value = "value a"
+        let showa = fn( ) { puts( value ) }
+        let seta = fn( val ) { value = val }
+    }
+
+    module b { // Inheretence
+        let value = "value b"
+        let showb = fn( ) { puts( value ) }
+        let setb = fn( val ) { value = val }
+    }
+
+    module c: a, b { }
+
+    c.showa( ) // `value a`
+    c.showb( ) // `value b`
+
+
 ```
