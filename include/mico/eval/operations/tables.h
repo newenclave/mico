@@ -51,12 +51,12 @@ namespace mico { namespace eval { namespace operations {
 
         static
         objects::sptr eval_index( index *idx, objects::sptr obj,
-                                  eval_call ev, environment::sptr /*env*/  )
+                                  eval_call ev, environment::sptr env  )
         {
             common::reference<objects::type::TABLE> ref(obj);
             auto tab = ref.shared_unref( );
 
-            objects::sptr id = ev( idx->param( ).get( ) );
+            objects::sptr id = ev( idx->param( ).get( ), env );
 
             if( common::is_fail( id ) ) {
                 return id;
@@ -78,7 +78,7 @@ namespace mico { namespace eval { namespace operations {
             common::reference<objects::type::TABLE> ref(obj);
             obj = ref.shared_unref( );
 
-            objects::sptr right = ev( inf->right( ).get( ) );
+            objects::sptr right = ev( inf->right( ).get( ), env );
             if( common::is_fail( right ) ) {
                 return right;
             }

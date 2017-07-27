@@ -16,6 +16,7 @@
 #include "mico/eval/operations/tables.h"
 #include "mico/eval/operations/arrays.h"
 #include "mico/eval/operations/function.h"
+#include "mico/eval/operations/module.h"
 
 namespace mico { namespace eval {
 
@@ -305,7 +306,7 @@ namespace mico { namespace eval {
                 opertype = objects::cast_ref( left )->value( )->get_type( );
             }
 
-            auto inf_call = [this, env](ast::node *n ) {
+            auto inf_call = [this](ast::node *n, environment::sptr env ) {
                 return unref( eval_impl_tail( n, env ) );
             };
 
@@ -316,6 +317,7 @@ namespace mico { namespace eval {
             using OP_table = OP<objects::type::TABLE>;
             using OP_array = OP<objects::type::ARRAY>;
             using OP_func  = OP<objects::type::FUNCTION>;
+            using OP_mod   = OP<objects::type::MODULE>;
 
             objects::sptr res;
             switch( opertype ) {
@@ -336,6 +338,9 @@ namespace mico { namespace eval {
                 break;
             case objects::type::ARRAY:
                 res = OP_array::eval_infix( inf, left, inf_call, env);
+                break;
+            case objects::type::MODULE:
+                res = OP_mod::eval_infix( inf, left, inf_call, env);
                 break;
             case objects::type::FUNCTION:
             case objects::type::BUILTIN:
@@ -627,6 +632,30 @@ namespace mico { namespace eval {
             return get_null( );
         }
 
+        objects::sptr eval_module( ast::node *n, environment::sptr env )
+        {
+            auto mod = ast::cast<ast::statements::mod>(n);
+
+            if( mod->name( )->get_type( ) != ast::type::IDENT ) {
+                return error(n, "Bad identifier '", mod->name( )->str( ),
+                             "' for module");
+            }
+
+            auto id = mod->name( )->str( );
+
+            environment::scoped s(make_env( env ));
+            auto mod_obj = objects::module::make( s.env( ), id );
+
+            auto res = eval_impl_tail( mod->body( ).get( ), s.env( ) );
+
+            if( is_fail( res ) )  {
+                return res;
+            }
+
+            env->set( id, mod_obj );
+            return get_null( );
+        }
+
         objects::sptr eval_return( ast::node *n, environment::sptr env )
         {
             auto expr = ast::cast<ast::statements::ret>( n );
@@ -678,7 +707,7 @@ namespace mico { namespace eval {
                 return val;
             }
 
-            auto idx_call = [this, env](ast::node *n ) {
+            auto idx_call = [this](ast::node *n, environment::sptr env ) {
                 return unref( eval_impl_tail( n, env ) );
             };
 
@@ -1026,6 +1055,8 @@ namespace mico { namespace eval {
                 res = eval_registry( n, env ); break;
             case ast::type::LIST:
                 res = eval_scope_node( n, env ); break;
+            case ast::type::MODULE:
+                res = eval_module( n, env ); break;
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case ast::type::QUOTE:

@@ -184,7 +184,7 @@ namespace mico { namespace eval { namespace operations {
                 return bool_type::make( true );
             }
 
-            objects::sptr right = ev( inf->right( ).get( ) );
+            objects::sptr right = ev( inf->right( ).get( ), env );
             if( common::is_fail( right ) ) {
                 return right;
             }

@@ -565,4 +565,26 @@ let c2 = fn(c) {
     }
 }
 
+module test {
+    let fib = fn( n ) {
+        let impl = fn( a, b, n ) {
+            if(n > 0) {
+                impl( b, a + b, n -1 )
+            } else {
+                a
+            }
+        }
+        impl(0, 1, n)
+    }
+    module int {
+        let inta = 777
+    }
+    let a = 1000
+    let b = 2000
+    let s = fn( c, e ){ c + e + a }
+    let ar = [1,2,3,4,5]
+}
+let a = 90
+
+test.s(10, 10)
 */

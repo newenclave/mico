@@ -37,7 +37,7 @@ namespace mico { namespace eval { namespace operations {
             obj = objects::reference::unref( obj );
 
             if( inf->token( ) == tokens::type::BIT_OR ) {
-                objects::sptr right = ev( inf->right( ).get( ) );
+                objects::sptr right = ev( inf->right( ).get( ), env );
                 if( common::is_fail( right ) ) {
                     return right;
                 }

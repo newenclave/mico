@@ -15,10 +15,10 @@ namespace mico { namespace ast { namespace statements {
     public:
         using uptr = std::unique_ptr<impl>;
 
-        using expr_type        = expression::uptr;
-        using ident_type       = expression::uptr;
+        using expr_type        = node::uptr;
+        using ident_type       = node::uptr;
 
-        impl( expression::uptr id, expression::uptr val )
+        impl( ident_type id, expr_type val )
             :ident_(std::move(id))
             ,expr_(std::move(val))
         { }
@@ -30,36 +30,36 @@ namespace mico { namespace ast { namespace statements {
             return oss.str( );
         }
 
-        const expression::uptr &ident( ) const
+        const ident_type &ident( ) const
         {
             return ident_;
         }
 
-        expression::uptr &ident( )
+        ident_type &ident( )
         {
             return ident_;
         }
 
-        const expression::uptr &value( ) const
+        const expr_type &value( ) const
         {
             return expr_;
         }
 
-        expression::uptr &value( )
+        expr_type &value( )
         {
             return expr_;
         }
 
         static
-        uptr make( expression::uptr id, expression::uptr expr )
+        uptr make( ident_type id, expr_type expr )
         {
             return uptr( new this_type( std::move(id), std::move(expr) ) );
         }
 
         void mutate( mutator_type call ) override
         {
-            ast::expression::apply_mutator( ident_, call );
-            ast::expression::apply_mutator( expr_,  call );
+            ast::node::apply_mutator( ident_, call );
+            ast::node::apply_mutator( expr_,  call );
         }
 
         bool is_const( ) const override
@@ -70,14 +70,14 @@ namespace mico { namespace ast { namespace statements {
         ast::node::uptr clone( ) const override
         {
             return ast::node::uptr(new this_type(
-                                       expression::call_clone( ident_ ),
-                                       expression::call_clone( expr_ ) ) );
+                                       node::call_clone( ident_ ),
+                                       node::call_clone( expr_ ) ) );
         }
 
     private:
 
-        expression::uptr ident_;
-        expression::uptr expr_;
+        ident_type ident_;
+        expr_type  expr_;
     };
 
     template <>
@@ -175,6 +175,76 @@ namespace mico { namespace ast { namespace statements {
         expression::uptr expr_;
     };
 
+    template <>
+    class impl<type::MODULE>: public typed_stmt<type::MODULE> {
+
+        using this_type = impl<type::MODULE>;
+
+    public:
+
+        using ident_type    = node::uptr;
+        using uptr          = std::unique_ptr<impl>;
+        using body_type     = ast::node::uptr;
+
+        explicit
+        impl( ident_type n)
+            :name_(std::move(n))
+        { }
+
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << "module " << name_->str( ) << " {\n";
+            if( body_ ) {
+                oss << body_->str( ) << "\n";
+            }
+            oss << "}";
+            return oss.str( );
+        }
+
+        ident_type& name( )
+        {
+            return name_;
+        }
+
+        const ident_type& name( ) const
+        {
+            return name_;
+        }
+
+        const body_type &body( ) const
+        {
+            return body_;
+        }
+
+        void set_body( body_type val )
+        {
+            body_ = std::move(val);
+        }
+
+        void mutate( mutator_type call ) override
+        {
+            ast::node::apply_mutator( body_, call );
+        }
+
+        bool is_const( ) const override
+        {
+            return body_->is_const( );
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            uptr res( new this_type( name_->clone( ) ) );
+            res->body_ = ast::node::call_clone( body_ );
+            return ast::node::uptr( std::move( res ) );
+        }
+
+    private:
+        ident_type  name_;
+        body_type   body_;
+    };
+
+    using mod   = impl<type::MODULE>;
     using let   = impl<type::LET>;
     using ret   = impl<type::RETURN>;
     using expr  = impl<type::EXPR>;

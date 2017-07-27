@@ -48,13 +48,13 @@ namespace mico { namespace eval { namespace operations {
 
         static
         objects::sptr eval_index( index *inf, objects::sptr obj,
-                                  eval_call ev, environment::sptr /*env*/  )
+                                  eval_call ev, environment::sptr env  )
         {
 
             common::reference<objects::type::ARRAY> ref(obj);
             auto arr = ref.shared_unref( );
 
-            objects::sptr id = ev( inf->param( ).get( ) );
+            objects::sptr id = ev( inf->param( ).get( ), env );
             if( id->get_type( ) == objects::type::FAILURE ) {
                 return id;
             }
@@ -82,7 +82,7 @@ namespace mico { namespace eval { namespace operations {
             common::reference<objects::type::ARRAY> ref(obj);
             obj = ref.shared_unref( );
 
-            objects::sptr right = ev( inf->right( ).get( ) );
+            objects::sptr right = ev( inf->right( ).get( ), env );
             if( right->get_type( ) == objects::type::FAILURE ) {
                 return right;
             }

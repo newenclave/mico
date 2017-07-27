@@ -40,11 +40,13 @@ namespace mico { namespace ast {
         REGISTRY        = 18,
         LIST            = 19,
         ELIPSIS         = 20,
+        MODULE          = 21,
+
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
-        QUOTE           = 21,
-        UNQUOTE         = 22,
-        MACRO           = 23,
-        BUILTIN_MACRO   = 24,
+        QUOTE           = 50,
+        UNQUOTE         = 51,
+        MACRO           = 52,
+        BUILTIN_MACRO   = 53,
 #endif
     };
 
@@ -74,6 +76,7 @@ namespace mico { namespace ast {
             case type::REGISTRY     : return "REGISTRY";
             case type::LIST         : return "LIST";
             case type::ELIPSIS      : return "ELIPSIS";
+            case type::MODULE       : return "MODULE";
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case type::QUOTE        : return "QUOTE";

@@ -22,6 +22,7 @@ namespace mico { namespace operations {
         PREFIX,      // -X or !X
         CALL,        // myFunction(X)
         INDEX,       // array[index]
+        DOT,         // module.name
     };
 
 }}

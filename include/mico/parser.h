@@ -122,6 +122,7 @@ namespace mico {
         void fill_leds( )
         {
             using EP = expression_uptr;
+            leds_[token_type::DOT]          =
             leds_[token_type::MINUS]        =
             leds_[token_type::PLUS]         =
             leds_[token_type::ASTERISK]     =
@@ -182,6 +183,7 @@ namespace mico {
                 { TT::ASTERISK,     OP::PRODUCT     },
                 { TT::LPAREN,       OP::CALL        },
                 { TT::LBRACKET,     OP::INDEX       },
+                { TT::DOT,          OP::DOT         },
             };
 
             auto f = val.find( tt );
@@ -726,7 +728,7 @@ namespace mico {
             ast::expression::uptr id = parse_ident( );
 
             if( !expect_peek( token_type::ASSIGN, true ) ) {
-                return ast::statements::let::uptr( );
+                return nullptr;
             }
 
             advance( );
@@ -736,6 +738,24 @@ namespace mico {
                                                 std::move(expr) ) );
         }
 
+        ast::statements::mod::uptr parse_module( )
+        {
+            using mod_type = ast::statements::mod;
+            if( !expect_peek( token_type::IDENT ) ) {
+                return nullptr;
+            }
+            ast::node::uptr id = parse_ident( );
+
+            if( !expect_peek( token_type::LBRACE, true ) ) {
+                return nullptr;
+            }
+
+            mod_type::uptr res( new mod_type( std::move(id) ) );
+            advance( );
+            res->set_body( parse_scope( ) );
+            return res;
+        }
+
         ast::statements::ret::uptr parse_return( )
         {
             using res_type = ast::statements::ret;
@@ -743,7 +763,6 @@ namespace mico {
             auto expr = parse_expression( precedence::LOWEST );
             return res_type::uptr( new res_type( std::move(expr ) ) );
         }
-
 
         ast::expressions::function::uptr parse_function( )
         {
@@ -915,6 +934,11 @@ namespace mico {
             case token_type::RETURN:
                 stmt = parse_return( );
                 break;
+
+            case token_type::MODULE:
+                stmt = parse_module( );
+                break;
+
             case token_type::SEMICOLON:
                 break;
 

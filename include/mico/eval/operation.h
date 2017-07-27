@@ -7,10 +7,12 @@
 #include "mico/ast.h"
 #include "mico/ast.h"
 #include "mico/tokens.h"
+#include "mico/environment.h"
 
 namespace mico { namespace eval { namespace operations {
 
-    using eval_call = std::function<objects::sptr (ast::node *)>;
+    using eval_call = std::function<objects::sptr (ast::node *,
+                                                   environment::sptr)>;
 
     template <objects::type T>
     struct operation;

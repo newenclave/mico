@@ -15,6 +15,7 @@
 #include "mico/objects/return.h"
 #include "mico/objects/base.h"
 #include "mico/objects/quote.h"
+#include "mico/objects/module.h"
 
 namespace mico { namespace objects {
 
@@ -43,6 +44,7 @@ namespace mico { namespace objects {
     MICO_DEFINE_CAST_FUNC( return,      type::RETURN    )
     MICO_DEFINE_CAST_FUNC( error,       type::FAILURE   )
     MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
+    MICO_DEFINE_CAST_FUNC( mod,         type::MODULE    )
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
     MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )
