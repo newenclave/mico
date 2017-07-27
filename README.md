@@ -533,5 +533,9 @@ A module can have one or more parents.
     c.showa( ) // `value a`
     c.showb( ) // `value b`
 
-
 ```
+And what is here?
+```swift
+    puts(c.value)
+```
+Well here is `value a`. Because module `a` is the first in the inheretence tree.
