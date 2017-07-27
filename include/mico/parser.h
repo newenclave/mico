@@ -752,12 +752,10 @@ namespace mico {
         {
             using mod_type = ast::expressions::mod;
 
-            if( !id ) {
-                if( expect_peek( token_type::IDENT, false ) ) {
-                    id = parse_ident( );
-                } else {
-                    id = ast::expressions::ident::make( "" );
-                }
+            if( expect_peek( token_type::IDENT, false ) ) {
+                id = parse_ident( );
+            } else if( !id ) {
+                id = ast::expressions::ident::make( "" );
             }
 
             auto parents = ast::expressions::list::make_params( );

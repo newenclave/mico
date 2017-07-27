@@ -529,7 +529,7 @@ A module can have one or more parents.
         let setb = fn( val ) { value = val }
     }
 
-    let c = module: a, b { } // Inheretence
+    let c = module: a_var, b { } // Inheretence
 
     c.showa( ) // `value a`
     c.showb( ) // `value b`
@@ -552,8 +552,8 @@ Wrong! It can be used for the inheritance.
             let get = fn( ) { val }
         }
     }
-    let a = module: new_module(100) { }
-    let b = module: new_module(200) { }
+    let a = module a: new_module(100) { }
+    let b = module b: new_module(200) { }
     puts(a.get( )) // `100`
     puts(b.get( )) // `200`
 ```
@@ -582,3 +582,13 @@ Here `new_module0` and `new_module1` are almost equal. But the code
     module parent { let val = val }
 ```
 Doesn't change the current environment. It just makes a module with name. And as far as the module doesn't have a name in the environment it can be used as an "anonymous" module...but with name. Yeah...
+Also it's possible to chenge the module's name in the `let` expression.
+```swift
+    let a = module name {
+        let val = 1000
+    }
+    let b = module: a { }
+    puts(b.name.val) /// ok `1000`
+    puts(b.a.value)  /// oops `error: [6:7] Identifier not found 'a'`
+```
+
