@@ -582,6 +582,7 @@ Here `new_module0` and `new_module1` are almost equal. But the code
     module parent { let val = val }
 ```
 Doesn't change the current environment. It just makes a module with name. And as far as the module doesn't have a name in the environment it can be used as an "anonymous" module...but with name. Yeah...
+
 Also it's possible to chenge the module's name in the `let` expression.
 ```swift
     let a = module name {
