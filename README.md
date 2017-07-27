@@ -529,7 +529,7 @@ A module can have one or more parents.
         let setb = fn( val ) { value = val }
     }
 
-    let c = module: a_var, b { } // Inheretence
+    let c = module: a, b { } // Inheretence
 
     c.showa( ) // `value a`
     c.showb( ) // `value b`
