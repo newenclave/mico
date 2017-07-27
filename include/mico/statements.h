@@ -185,10 +185,11 @@ namespace mico { namespace ast { namespace statements {
         using ident_type    = node::uptr;
         using uptr          = std::unique_ptr<impl>;
         using body_type     = ast::node::uptr;
+        using parent_list   = ast::expressions::list::uptr;
 
-        explicit
-        impl( ident_type n)
+        impl<type::MODULE>( ident_type n, parent_list parents )
             :name_(std::move(n))
+            ,parents_(std::move(parents))
         { }
 
         std::string str( ) const override
@@ -200,6 +201,16 @@ namespace mico { namespace ast { namespace statements {
             }
             oss << "}";
             return oss.str( );
+        }
+
+        ast::expressions::list::list_type &parents( )
+        {
+            return parents_->value( );
+        }
+
+        const ast::expressions::list::list_type &parents( ) const
+        {
+            return parents_->value( );
         }
 
         ident_type& name( )
@@ -234,13 +245,15 @@ namespace mico { namespace ast { namespace statements {
 
         ast::node::uptr clone( ) const override
         {
-            uptr res( new this_type( name_->clone( ) ) );
-            res->body_ = ast::node::call_clone( body_ );
+            uptr res(new this_type( name_->clone( ), parents_->clone_me( ) ) );
+            res->body_    = ast::node::call_clone( body_ );
+            res->parents_ = parents_->clone_me( );
             return ast::node::uptr( std::move( res ) );
         }
 
     private:
         ident_type  name_;
+        parent_list parents_;
         body_type   body_;
     };
 

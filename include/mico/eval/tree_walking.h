@@ -646,6 +646,20 @@ namespace mico { namespace eval {
             environment::scoped s(make_env( env ));
             auto mod_obj = objects::module::make( s.env( ), id );
 
+            for( auto &p: mod->parents( ) ) {
+                auto e = eval_impl_tail( p.get( ), env );
+                if( is_fail( e ) ) {
+                    return e;
+                } else if( e->get_type( ) != objects::type::MODULE ) {
+                    return error( p.get( ), "Bad parent for module ",
+                                  p->str( ), e->get_type( ) );
+                }
+                auto par = objects::cast_mod( e );
+                s.env( )->set( par->name( ), par );
+                s.env( )->add_parent( par->env( ) );
+                mod_obj->parents( ).push_back( par );
+            }
+
             auto res = eval_impl_tail( mod->body( ).get( ), s.env( ) );
 
             if( is_fail( res ) )  {

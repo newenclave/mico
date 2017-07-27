@@ -3,6 +3,7 @@
 
 #include <set>
 #include <map>
+#include <list>
 #include <vector>
 #include <iostream>
 #include <memory>
@@ -33,6 +34,7 @@ namespace mico {
         using children_type = std::set<sptr>;
         using obj_reference = objects::impl<objects::type::REFERENCE>;
         using data_map      = std::map<std::string, obj_reference::sptr>;
+        using parent_list   = std::list<wptr>;
 
     protected:
 
@@ -196,6 +198,16 @@ namespace mico {
             return *state_;
         }
 
+        parent_list &parents( )
+        {
+            return parents_;
+        }
+
+        const parent_list &parents( ) const
+        {
+            return parents_;
+        }
+
         sptr parent( )
         {
             return parent_.lock( );
@@ -264,9 +276,43 @@ namespace mico {
             return nullptr;
         }
 
+        void add_parent( sptr par )
+        {
+            parents_.push_back( par );
+        }
+
         void set( const std::string &name, object_sptr val )
         {
             data_[name] = obj_reference::make( this, val );
+        }
+
+        object_sptr get_here( const std::string &name )
+        {
+            auto f = data_.find( name );
+            if( f != data_.end( ) ) {
+                return f->second->value( );
+            }
+            return nullptr;
+        }
+
+        object_sptr get_parent( const std::string &name )
+        {
+            auto b = parents_.begin( );
+            auto e = parents_.end( );
+
+            while( b != e ) {
+                auto pl = b->lock( );
+                if( pl ) {
+                    object_sptr v;
+                    if( auto v = pl->get( name ) ) {
+                        return v;
+                    }
+                    ++b;
+                } else {
+                    b = parents_.erase( b );
+                }
+            }
+            return nullptr;
         }
 
         object_sptr get( const std::string &name )
@@ -275,9 +321,10 @@ namespace mico {
             object_sptr res;
             sptr parent;
             while( cur && !res ) {
-                auto f = cur->data_.find( name );
-                if( f != cur->data_.end( ) ) {
-                    res = f->second->value( );
+                if( auto val = cur->get_here( name ) ) {
+                    res = val;
+                } else if( auto pr = cur->get_parent( name ) ) {
+                    res = pr;
                 } else {
                     parent = cur->parent( );
                     cur = parent.get( );
@@ -353,6 +400,7 @@ namespace mico {
         wptr            parent_;
         children_type   children_;
         data_map        data_;
+        parent_list     parents_;
         std::size_t     marked_ = 0;
     };
 }

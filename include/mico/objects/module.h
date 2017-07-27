@@ -17,9 +17,10 @@ namespace mico { namespace objects {
     public:
 
         static const type type_value = type::TABLE;
-        using sptr = std::shared_ptr<this_type>;
-        using cont = impl<type::REFERENCE>;
-        using cont_sptr = std::shared_ptr<cont>;
+        using sptr          = std::shared_ptr<this_type>;
+        using cont          = impl<type::REFERENCE>;
+        using cont_sptr     = std::shared_ptr<cont>;
+        using parents_list  = std::deque<sptr>;
 
         impl<type::MODULE>( environment::sptr e, const std::string &name )
             :collectable<type::MODULE>(e)
@@ -33,6 +34,11 @@ namespace mico { namespace objects {
             return oss.str( );
         }
 
+        const std::string &name( ) const
+        {
+            return name_;
+        }
+
         hash_type hash( ) const override
         {
             return 0;
@@ -41,6 +47,16 @@ namespace mico { namespace objects {
         bool equal( const base * ) const override
         {
             return false;
+        }
+
+        parents_list &parents( )
+        {
+            return parents_;
+        }
+
+        const parents_list &parents( ) const
+        {
+            return parents_;
         }
 
         static
@@ -54,9 +70,30 @@ namespace mico { namespace objects {
             return 0;
         }
 
+        objects::sptr get( const std::string &name )
+        {
+            if( auto e = env( ) ) {
+                auto f = e->data( ).find( name );
+                if( f != e->data( ).end( ) ) {
+                    return f->second;
+                }
+            }
+
+//            for( auto p: parents_ ) {
+//                if( p->name_ == name ) {
+//                    return p;
+//                }
+//                if( auto v = p->get( name ) ) {
+//                    return v;
+//                }
+//            }
+
+            return nullptr;
+        }
+
         objects::sptr clone( ) const override
         {
-            return std::make_shared<this_type>(env( ), name_);
+            return std::make_shared<this_type>( env( ), name_ );
         }
 
         ast::node::uptr to_ast( tokens::position pos ) const override
@@ -66,7 +103,10 @@ namespace mico { namespace objects {
             using lst      = ast::expressions::impl<ast::type::LIST>;
             using let      = ast::statements::impl<ast::type::LET>;
 
-            ast_type::uptr res(new ast_type(ident::uptr(new ident(name_) ) ) );
+            auto parents = ast::expressions::list::make_params( );
+
+            ast_type::uptr res(new ast_type( ident::uptr(new ident(name_) ),
+                                              std::move( parents ) ) );
             auto  body  = lst::make_scope( );
 
             res->set_pos( pos );
@@ -86,7 +126,8 @@ namespace mico { namespace objects {
         }
 
     private:
-        std::string name_;
+        std::string     name_;
+        parents_list    parents_;
     };
 
     using module = impl<type::MODULE>;

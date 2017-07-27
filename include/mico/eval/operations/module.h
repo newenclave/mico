@@ -22,6 +22,28 @@ namespace mico { namespace eval { namespace operations {
 //        }
 
         static
+        objects::sptr eval_func( infix *inf, objects::module::sptr mod,
+                                 eval_call ev )
+        {
+            using call_type = ast::expressions::call;
+            auto call = ast::cast<call_type>( inf->right( ).get( ) );
+            if( call->func( )->get_type( ) == ast::type::IDENT ) {
+                auto id = call->func( )->str( );
+
+                if( mod->get( id ) ) {
+                    return ev( inf->right( ).get( ), mod->env( ) );
+                } else {
+                    return common::error_type::make( inf->right( )->pos( ),
+                                "Identifier not found '", id, "'");
+                }
+            }
+
+            return common::error_type::make( inf->right( )->pos( ),
+                                             "Bad ident for module ",
+                                             inf->right( )->str( ));
+        }
+
+        static
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr /*env*/ )
         {
@@ -33,21 +55,15 @@ namespace mico { namespace eval { namespace operations {
 
                     auto id = inf->right( )->str( );
 
-                    if( auto e = mod->env( ) ) {
-                        auto val = e->data( ).find( id );
-                        if( val != e->data( ).end( ) ) {
-                            return val->second;
-                        } else {
-                            return common::error_type::make(
-                                        inf->right( )->pos( ),
-                                        "Identifier not found '", id, "'");
-                        }
+                    if( auto val = mod->get( id ) ) {
+                        return val;
+                    } else {
+                        return common::error_type::make( inf->right( )->pos( ),
+                                    "Identifier not found '", id, "'");
                     }
 
                 } else if( inf->right( )->get_type( ) == ast::type::CALL ) {
-                    //// very special case
-                    return ev( inf->right( ).get( ), mod->env( ) );
-
+                    return eval_func( inf, mod, ev );
                 } else {
                     return common::error_type::make( inf->right( )->pos( ),
                                                      "Bad ident for module ",

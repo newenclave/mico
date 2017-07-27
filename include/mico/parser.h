@@ -744,13 +744,21 @@ namespace mico {
             if( !expect_peek( token_type::IDENT ) ) {
                 return nullptr;
             }
+
             ast::node::uptr id = parse_ident( );
+            auto parents = ast::expressions::list::make_params( );
+
+            if( expect_peek( token_type::COLON, false ) ) {
+                advance( );
+                parents = parse_ident_list( );
+            }
 
             if( !expect_peek( token_type::LBRACE, true ) ) {
                 return nullptr;
             }
 
-            mod_type::uptr res( new mod_type( std::move(id) ) );
+            mod_type::uptr res( new mod_type( std::move(id),
+                                              std::move(parents) ) );
             advance( );
             res->set_body( parse_scope( ) );
             return res;
