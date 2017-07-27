@@ -20,5 +20,6 @@
 #include "mico/expressions/unquote.h"
 #include "mico/expressions/macro.h"
 #include "mico/expressions/elipsis.h"
+#include "mico/expressions/module.h"
 
 #endif // EXPRESSIONS_H

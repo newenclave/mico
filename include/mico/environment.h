@@ -34,6 +34,7 @@ namespace mico {
         using children_type = std::set<sptr>;
         using obj_reference = objects::impl<objects::type::REFERENCE>;
         using data_map      = std::map<std::string, obj_reference::sptr>;
+        using data_set      = std::set<obj_reference::sptr>;
         using parent_list   = std::list<wptr>;
 
     protected:
@@ -286,6 +287,11 @@ namespace mico {
             data_[name] = obj_reference::make( this, val );
         }
 
+        void keep( object_sptr val )
+        {
+            hide_.insert( obj_reference::make( this, val ) );
+        }
+
         object_sptr get_here( const std::string &name )
         {
             auto f = data_.find( name );
@@ -377,6 +383,19 @@ namespace mico {
                 std::cout << std::endl;
             }
 
+            std::size_t cnt = 0;
+            for( auto &a: hide_ ) {
+                std::cout << space << "hidden_" << cnt++
+                          << " => " << a->value( );
+                if( a->value( )->hold( ) ) {
+                    std::cout << " [" << blue
+                              << a->value( )->hold( )
+                              << none << "]"
+                                 ;
+                }
+                std::cout << std::endl;
+            }
+
             for( auto &c: children_ ) {
                 auto cl = c;
                 if( !cl ) continue;
@@ -409,6 +428,7 @@ namespace mico {
         wptr            parent_;
         children_type   children_;
         data_map        data_;
+        data_set        hide_;
         parent_list     parents_;
         std::size_t     marked_ = 0;
     };

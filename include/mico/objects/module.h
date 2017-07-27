@@ -30,7 +30,8 @@ namespace mico { namespace objects {
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << "module " << name_;
+            oss << "module "
+                << (name_.empty( ) ? "<anonymous>" : name_);
             return oss.str( );
         }
 
@@ -75,27 +76,21 @@ namespace mico { namespace objects {
             if( auto e = env( ) ) {
                 return e->get_parents_only(name);
             }
-
-//            for( auto p: parents_ ) {
-//                if( p->name_ == name ) {
-//                    return p;
-//                }
-//                if( auto v = p->get( name ) ) {
-//                    return v;
-//                }
-//            }
-
             return nullptr;
         }
 
         objects::sptr clone( ) const override
         {
-            return std::make_shared<this_type>( env( ), name_ );
+            auto res = std::make_shared<this_type>( env( ), name_ );
+            for( auto &p: parents_ ) {
+                res->parents_.push_back(p);
+            }
+            return res;
         }
 
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
-            using ast_type = ast::statements::impl<ast::type::MODULE>;
+            using ast_type = ast::expressions::impl<ast::type::MODULE>;
             using ident    = ast::expressions::impl<ast::type::IDENT>;
             using lst      = ast::expressions::impl<ast::type::LIST>;
             using let      = ast::statements::impl<ast::type::LET>;
@@ -117,6 +112,10 @@ namespace mico { namespace objects {
 
                     body->value( ).emplace_back( std::move(ls) );
                 }
+            }
+
+            for( auto &p: parents_ ) {
+                res->parents( ).emplace_back( p->to_ast( pos ) );
             }
 
             return ast::node::uptr( std::move( res ) );

@@ -64,6 +64,10 @@ namespace mico {
                     [this]( ) {
                         return parse_function( );
                     };
+            nuds_[token_type::MODULE]   =
+                    [this]( ) {
+                        return parse_module( nullptr );
+                    };
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             nuds_[token_type::MACRO]   =
@@ -733,24 +737,36 @@ namespace mico {
 
             advance( );
 
-            auto expr = parse_expression( precedence::LOWEST );
-            return let_type::uptr(new let_type( std::move(id),
-                                                std::move(expr) ) );
+            if( is_current( tokens::type::MODULE ) ) {
+                auto expr = parse_module( id->clone( ) );
+                return let_type::uptr(new let_type( std::move(id),
+                                                    std::move(expr) ) );
+            } else {
+                auto expr = parse_expression( precedence::LOWEST );
+                return let_type::uptr(new let_type( std::move(id),
+                                                    std::move(expr) ) );
+            }
         }
 
-        ast::statements::mod::uptr parse_module( )
+        ast::expressions::mod::uptr parse_module( ast::node::uptr id )
         {
-            using mod_type = ast::statements::mod;
-            if( !expect_peek( token_type::IDENT ) ) {
-                return nullptr;
+            using mod_type = ast::expressions::mod;
+
+            if( !id ) {
+                if( expect_peek( token_type::IDENT, false ) ) {
+                    id = parse_ident( );
+                } else {
+                    id = ast::expressions::ident::make( "" );
+                }
             }
 
-            ast::node::uptr id = parse_ident( );
             auto parents = ast::expressions::list::make_params( );
 
             if( expect_peek( token_type::COLON, false ) ) {
-                advance( );
-                parents = parse_ident_list( );
+                if( !is_peek( token_type::LBRACE ) ) {
+                    advance( );
+                    parents = parse_expression_list( );
+                }
             }
 
             if( !expect_peek( token_type::LBRACE, true ) ) {
@@ -943,9 +959,9 @@ namespace mico {
                 stmt = parse_return( );
                 break;
 
-            case token_type::MODULE:
-                stmt = parse_module( );
-                break;
+//            case token_type::MODULE:
+//                stmt = parse_module( );
+//                break;
 
             case token_type::SEMICOLON:
                 break;

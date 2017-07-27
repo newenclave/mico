@@ -39,6 +39,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Builtin Macroses](#builtin-macroses)
 * [Modules](#modules)
     * [Inheritance](#inheretence)
+    * [Anonymous](#anonymous)
 
 ### Compile
 
@@ -469,23 +470,21 @@ It just returns a concatination of all of the parameters it has. Well the parame
 
 ### Modules
 
-!! will be changed
-
 Modules are just pieces of the environment.
-Modules have names and all elements of the module are available outside using the names.
 They are more like `namespaces` in c++ but modules are first-class citizens.
 
 ```swift
 
-    module a {
+    let a = module {
         let value = "value a"
         let show = fn( ) { puts( value ) }
     }
     a.show( ) // shows `value a`
-    module b {
+    let b = module {
         let a = a // shadowing
         let show = fn( ) { puts( "module b: " + a.value ) }
     }
+
     b.a.show( ) // same as a.show( )
     b.show( )   // `module b: value a`
 
@@ -502,13 +501,13 @@ They are more like `namespaces` in c++ but modules are first-class citizens.
 A module can inherit values from another module. In the case of inheritance
 all elements of the parent are available in the child. And by the child.
 ```swift
-    module a {
+    let a = module {
         let value = "value a"
         let show = fn( ) { puts( value ) }
         let set = fn( val ) { value = val }
     }
 
-    module b: a { // Inheretence
+    let b = module: a { // Inheretence
     }
 
     b.show( )           // `value a`
@@ -519,19 +518,19 @@ all elements of the parent are available in the child. And by the child.
 A module can have one or more parents.
 
 ```swift
-    module a {
+    let a = module {
         let value = "value a"
         let showa = fn( ) { puts( value ) }
         let seta = fn( val ) { value = val }
     }
 
-    module b { // Inheretence
+    let b = module { // Inheretence
         let value = "value b"
         let showb = fn( ) { puts( value ) }
         let setb = fn( val ) { value = val }
     }
 
-    module c: a, b { }
+    let c = module: a, b { }
 
     c.showa( ) // `value a`
     c.showb( ) // `value b`
@@ -542,3 +541,45 @@ And what is here?
     puts(c.value)
 ```
 Well here is `value a`. Because module `a` is the first in the inheretence tree.
+
+#### Anonymous
+
+Anonymouses modules are also available. They are almoust useless because we can't obtain values from them right?
+Wrong! It can be used for the inheritance.
+```swift
+    let new_module = fn( val ) {
+        module {
+            let val = val
+            let get = fn( ) { val }
+        }
+    }
+    let a = module: new_module(100) { }
+    let b = module: new_module(200) { }
+    puts(a.get( )) // `100`
+    puts(b.get( )) // `200`
+```
+By the way we can add a name to a module without `let` expression
+```swift
+    let new_module0 = fn( val ) {
+        module parent {
+            let val = val
+        }
+    }
+
+    let new_module1 = fn( val ) {
+        let parent = module  {
+            let val = val
+        }
+        parent
+    }
+
+    let a = module: new_module0(100) { }
+    let b = module: new_module1(200) { }
+    puts(a.parent.val) // `100`
+    puts(b.parent.val) // `200`
+```
+Here `new_module0` and `new_module1` are almost equal. But the code
+```swift
+    module parent { let val = val }
+```
+Doesn't change the current environment. It just makes a module with name. And as far as the module doesn't have a name in the environment it can be used as an "anonymous" module...but with name. Yeah...

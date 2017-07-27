@@ -638,7 +638,7 @@ namespace mico { namespace eval {
 
         objects::sptr eval_module( ast::node *n, environment::sptr env )
         {
-            auto mod = ast::cast<ast::statements::mod>(n);
+            auto mod = ast::cast<ast::expressions::mod>(n);
 
             if( mod->name( )->get_type( ) != ast::type::IDENT ) {
                 return error(n, "Bad identifier '", mod->name( )->str( ),
@@ -656,10 +656,14 @@ namespace mico { namespace eval {
                     return e;
                 } else if( e->get_type( ) != objects::type::MODULE ) {
                     return error( p.get( ), "Bad parent for module ",
-                                  p->str( ), e->get_type( ) );
+                                  e->get_type( ), " ", p->str( ) );
                 }
                 auto par = objects::cast_mod( e );
-                s.env( )->set( par->name( ), par );
+                if( !par->name( ).empty( ) ) {
+                    s.env( )->set( par->name( ), par );
+                } else {
+                    s.env( )->keep( par );
+                }
                 s.env( )->add_parent( par->env( ) );
                 mod_obj->parents( ).push_back( par );
             }
@@ -670,8 +674,8 @@ namespace mico { namespace eval {
                 return res;
             }
 
-            env->set( id, mod_obj );
-            return get_null( );
+            //env->set( id, mod_obj );
+            return mod_obj;
         }
 
         objects::sptr eval_return( ast::node *n, environment::sptr env )

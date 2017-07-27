@@ -76,7 +76,8 @@ HEADERS += \
     include/mico/expressions/elipsis.h \
     include/mico/expressions/module.h \
     include/mico/objects/module.h \
-    include/mico/eval/operations/module.h
+    include/mico/eval/operations/module.h \
+    include/mico/expressions/module.h
 
 DISTFILES += \
     drafts/tail_recursion.md \
