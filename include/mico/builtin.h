@@ -184,7 +184,8 @@ namespace mico {
                     std::cout << s->value( );
                 } else if(p->get_type( ) == objects::type::BOOLEAN ) {
                     auto s = objects::cast_bool(p.get( ));
-                    std::cout << std::boolalpha << s->value( );
+                    std::cout << std::boolalpha << s->value( )
+                              << std::noboolalpha;
                 } else {
                     return error::make( tokens::position( line, 0),
                                         "Invalid parameter ", count,

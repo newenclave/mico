@@ -312,9 +312,8 @@ namespace mico {
                     default:
                         return std::make_pair( std::move(value),
                                                next.iterator( ) );
-                        break;
                     }
-                    begin = next.iterator( );
+                    //begin = next.iterator( );
                 } else if( idents::is_digit( *bb ) ) {
                     value.name = token_type::INT_DEC;
                     value.literal = read_float(bb, end, &ffound );

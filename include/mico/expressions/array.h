@@ -27,7 +27,7 @@ namespace mico { namespace ast { namespace expressions {
                 if( !first ) {
                     oss << ", ";
                 } else {
-                    first = true;
+                    first = false;
                 }
                 oss << e->str( );
             }

@@ -82,9 +82,14 @@ int main_lex( );
 
 int main( int argc, char * argv[ ]  )
 {
-    if( argc > 1 ) {
-        return run_file( argv[1] );
-    } else {
-        return run_repl( );
+    try {
+        if( argc > 1 ) {
+            return run_file( argv[1] );
+        } else {
+            return run_repl( );
+        }
+    } catch ( const std::exception &ex ) {
+        std::cerr << "Something wrong: " << ex.what( ) << "\n";
+        return 10;
     }
 }
