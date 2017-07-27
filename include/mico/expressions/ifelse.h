@@ -20,6 +20,8 @@ namespace mico { namespace ast { namespace expressions {
         using uptr = std::unique_ptr<impl>;
 
         struct node {
+
+            explicit
             node( expression::uptr val )
                 :cond(std::move(val))
                 ,body(scope_type::make_scope( ))

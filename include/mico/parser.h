@@ -31,6 +31,7 @@ namespace mico {
 
         using precedence      = operations::precedence;
 
+        explicit
         parser( lexer lex )
             :lexer_(std::move(lex))
         {
@@ -585,7 +586,8 @@ namespace mico {
         ast::expression::uptr parse_ident( )
         {
             using ident_type = ast::expressions::ident;
-            ident_type::uptr res( new ident_type(current( ).ident.literal ) );
+
+            auto res = ident_type::make(current( ).ident.literal );
 
             if( (peek( ).ident.name == token_type::LPAREN) ) {
                 advance( );
@@ -605,6 +607,7 @@ namespace mico {
         {
             using res_type = ast::expressions::string;
             res_type::uptr res( new res_type("") );
+
             res->set_pos( current( ).where );
 
             do {

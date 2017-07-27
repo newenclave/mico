@@ -15,8 +15,8 @@ namespace mico { namespace ast { namespace expressions {
     public:
         using uptr = std::unique_ptr<this_type>;
 
-        impl(std::string val)
-            :value_(std::move(val))
+        impl(const std::string &val)
+            :value_(val)
         { }
 
         std::string str( ) const override

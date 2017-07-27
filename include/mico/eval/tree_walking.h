@@ -45,14 +45,6 @@ namespace mico { namespace eval {
                                          "operation '", tt, "' not found" );
         }
 
-        static
-        objects::sptr error_index_inval( const ast::node *n,
-                                         objects::sptr val )
-        {
-            return objects::error::make( n->pos( ),
-                                         "invalid index for '", val, "'" );
-        }
-
         template <typename ...Args>
         static
         objects::sptr error( const ast::node *n, Args&&...args )
@@ -517,18 +509,10 @@ namespace mico { namespace eval {
             }
 
             auto scope = ast::cast<ast::expressions::list>( n );
-            return eval_scope_impl( scope->value( ), env );
+            return eval_scope( scope->value( ), env );
         }
 
-        objects::sptr eval_scope( ast::node_list &lst,
-                                  environment::sptr env )
-        {
-            objects::sptr res = eval_scope_impl(lst, env);
-            return eval_tail( res );
-        }
-
-        objects::sptr eval_scope_impl( ast::node_list &lst,
-                                       environment::sptr env )
+        objects::sptr eval_scope( ast::node_list &lst, environment::sptr env )
         {
 
             using return_type = ast::statements::ret;
@@ -778,6 +762,7 @@ namespace mico { namespace eval {
             using uptr = std::unique_ptr<call_info>;
             using list = std::deque<uptr>;
 
+            explicit
             call_info( ast::node *n )
                 :val_(n)
             { }

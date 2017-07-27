@@ -16,6 +16,7 @@ namespace mico { namespace ast { namespace expressions {
         using uptr       = std::unique_ptr<value_expr>;
         using value_type = ValueT;
 
+        explicit
         value_expr( value_type val )
             :value_(val)
         { }

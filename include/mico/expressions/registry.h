@@ -17,6 +17,7 @@ namespace mico { namespace ast { namespace expressions {
         using uptr = std::unique_ptr<this_type>;
         using value_type = std::uintptr_t;
 
+        explicit
         impl<type::REGISTRY>( value_type val )
             :value_(val)
         { }

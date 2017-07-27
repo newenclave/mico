@@ -11,20 +11,21 @@ namespace mico { namespace objects {
 
     public:
 
-        collectable( std::shared_ptr<environment> e )
+        explicit
+        collectable( environment::sptr &e )
             :env_(e)
         { }
 
         ~collectable( )
         { }
 
-        std::shared_ptr<environment> env( )
+        environment::sptr env( )
         {
             auto l = env_.lock( );
             return l;
         }
 
-        const std::shared_ptr<environment> env( ) const
+        const environment::sptr env( ) const
         {
             auto l = env_.lock( );
             return l;

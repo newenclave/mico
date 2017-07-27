@@ -53,6 +53,8 @@ namespace mico { namespace macro {
         struct scope {
 
             scope( ) = default;
+
+            explicit
             scope( scope *p )
                 :parent_(p)
             { }

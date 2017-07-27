@@ -17,6 +17,7 @@ namespace mico { namespace ast { namespace expressions {
 
         using uptr = std::unique_ptr<this_type>;
 
+        explicit
         impl<type::QUOTE>( ast::node::uptr val )
             :value_(std::move(val))
         { }

@@ -18,6 +18,7 @@ namespace mico { namespace objects {
         static const type type_value = type::BOOLEAN;
         using sptr = std::shared_ptr<this_type>;
 
+        explicit
         impl<type::BOOLEAN>( bool v )
             :value_(v)
         { }

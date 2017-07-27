@@ -42,6 +42,7 @@ namespace mico {
 
         struct scoped {
 
+            explicit
             scoped( sptr v )
                 :env_(v)
             {

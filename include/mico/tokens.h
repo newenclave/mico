@@ -178,14 +178,15 @@ namespace mico { namespace tokens {
         type_ident( const type_ident & ) = default;
         type_ident& operator = ( const type_ident & ) = default;
 
+        explicit
         type_ident( type tt )
             :name(tt)
             ,literal(name::get(tt))
         { }
 
-        type_ident( type tt, std::string val )
+        type_ident( type tt, const std::string &val )
             :name(tt)
-            ,literal(std::move(val))
+            ,literal(val)
         { }
 
         type_ident( type_ident &&other )
@@ -222,12 +223,12 @@ namespace mico { namespace tokens {
         info( const info & ) = default;
         info& operator = ( const info & ) = default;
 
-
+        explicit
         info( type t )
             :ident(t)
         { }
 
-        info( type t, std::string value )
+        info( type t, const std::string &value )
             :ident(t, std::move(value))
         { }
 

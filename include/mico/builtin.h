@@ -100,6 +100,8 @@ namespace mico {
     };
 
     struct env_show {
+
+        explicit
         env_show( environment::sptr e )
             :env(e)
         { }
@@ -116,6 +118,7 @@ namespace mico {
 
     struct macro_show {
 
+        explicit
         macro_show( environment::sptr e )
             :env(e)
         { }
@@ -204,6 +207,7 @@ namespace mico {
 
         using uptr = std::unique_ptr<common_macro>;
 
+        explicit
         common_macro( call_type val )
             :call_(std::move(val))
         { }
@@ -267,6 +271,7 @@ namespace mico {
 
         using eval_call = std::function<mico::objects::sptr(ast::node *)>;
 
+        explicit
         random_name( eval_call ec )
             :ev_(ec)
         { }

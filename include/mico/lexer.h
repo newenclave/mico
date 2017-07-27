@@ -22,6 +22,8 @@ namespace mico {
         using error_list  = std::vector<std::string>;
 
         struct state {
+
+            explicit
             state( std::string::const_iterator b )
                 :line_itr(b)
                 ,begin_itr(b)

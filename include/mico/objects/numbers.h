@@ -32,6 +32,7 @@ namespace mico { namespace objects {
 
         using value_type = typename type2object<TN>::native_type;
 
+        explicit
         impl(value_type val)
             :value_(val)
         { }

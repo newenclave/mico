@@ -27,6 +27,7 @@ namespace mico { namespace eval { namespace operations {
             using derive_type = objects::impl<T>;
             using shared_derive = std::shared_ptr<derive_type>;
 
+            explicit
             reference( objects::sptr o )
                 :value_(o)
             { }

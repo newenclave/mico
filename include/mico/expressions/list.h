@@ -39,6 +39,7 @@ namespace mico { namespace ast { namespace expressions {
         using sptr      = std::shared_ptr<this_type>;
         using list_type = node_list;
 
+        explicit
         impl<type::LIST>( role scope )
             :scope_(scope)
         { }

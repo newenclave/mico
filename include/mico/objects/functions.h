@@ -37,10 +37,8 @@ namespace mico { namespace objects {
         using param_type = ast::expressions::list;
         using param_ptr  = param_type::sptr;
 
-        impl( std::shared_ptr<environment> e,
-                 param_type::uptr par,
-                 body_type::uptr body,
-                 std::size_t start = 0)
+        impl( environment::sptr e, param_type::uptr par,
+              body_type::uptr body, std::size_t start = 0)
             :collectable(e)
             ,params_(par.release( ))
             ,body_(body.release( ))
@@ -49,10 +47,8 @@ namespace mico { namespace objects {
             check_elipsis( );
         }
 
-        impl( std::shared_ptr<environment> e,
-                 param_ptr par,
-                 body_ptr body,
-                 std::size_t start = 0)
+        impl( environment::sptr e, param_ptr par,
+              body_ptr body, std::size_t start = 0 )
             :collectable(e)
             ,params_(par)
             ,body_(body)
@@ -81,22 +77,19 @@ namespace mico { namespace objects {
         }
 
         static
-        sptr make( std::shared_ptr<environment> e,
-                   param_type::uptr par,
-                   ast::node::uptr body,
-                   std::size_t start = 0 )
+        sptr make( environment::sptr e, param_type::uptr par,
+                   ast::node::uptr body, std::size_t start = 0 )
         {
-            return std::make_shared<impl>( e, std::move(par), std::move(body),
-                                           start );
+            return std::make_shared<impl>( e, std::move(par),
+                                           std::move(body), start );
         }
 
         static
-        sptr make( std::shared_ptr<environment> e,
+        sptr make( environment::sptr e,
                    this_type &other, std::size_t start )
         {
-            return std::make_shared<impl>( e, other.params_,
-                                              other.body_,
-                                              start + other.start_param_ );
+            return std::make_shared<impl>( e, other.params_, other.body_,
+                                           start + other.start_param_ );
         }
 
         static
@@ -202,7 +195,7 @@ namespace mico { namespace objects {
 
         using sptr = std::shared_ptr<this_type>;
 
-        impl( std::shared_ptr<environment> e )
+        impl( environment::sptr &e )
             :collectable(e)
         { }
 
