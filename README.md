@@ -1,5 +1,10 @@
 # Mico
 
+<a href="https://scan.coverity.com/projects/newenclave-mico">
+  <img alt="Coverity Scan Build Status"
+       src="https://img.shields.io/coverity/scan/13291.svg"/>
+</a>
+
 Monkey :monkey: the language interpreter implementation done with C++. https://interpreterbook.com/
 
 [Old README](README_old.md)
