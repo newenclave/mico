@@ -471,7 +471,7 @@ It just returns a concatination of all of the parameters it has. Well the parame
 ### Modules
 
 Modules are just pieces of the environment.
-They are more like `namespaces` in c++ but modules are first-class citizens.
+They are more like `namespaces` in c++ but in Mico modules are first-class citizens.
 
 ```swift
 
@@ -507,8 +507,7 @@ all elements of the parent are available in the child. And by the child.
         let set = fn( val ) { value = val }
     }
 
-    let b = module: a { // Inheretence
-    }
+    let b = module: a { } // Inheretence
 
     b.show( )           // `value a`
     b.set( "changed!" )
@@ -524,13 +523,13 @@ A module can have one or more parents.
         let seta = fn( val ) { value = val }
     }
 
-    let b = module { // Inheretence
+    let b = module {
         let value = "value b"
         let showb = fn( ) { puts( value ) }
         let setb = fn( val ) { value = val }
     }
 
-    let c = module: a, b { }
+    let c = module: a, b { } // Inheretence
 
     c.showa( ) // `value a`
     c.showb( ) // `value b`
