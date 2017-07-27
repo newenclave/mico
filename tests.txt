@@ -591,5 +591,15 @@ module b: a { let get = fn( ) { "form B: " + val1 } }
 module c: b { let get = fn( ) { "form C: " + val1 } }
 module d: c { let get = fn( ) { "form D: " + b.get( ) } }
 
+module t: d {
+    let spin = fn( count )  {
+        if( count > 0 ) {
+            spin( count - 1 )
+        } else {
+            val1
+        }
+    }
+}
+
 test.s(10, 10)
 */

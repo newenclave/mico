@@ -73,10 +73,7 @@ namespace mico { namespace objects {
         objects::sptr get( const std::string &name )
         {
             if( auto e = env( ) ) {
-                auto f = e->data( ).find( name );
-                if( f != e->data( ).end( ) ) {
-                    return f->second;
-                }
+                return e->get_parents_only(name);
             }
 
 //            for( auto p: parents_ ) {

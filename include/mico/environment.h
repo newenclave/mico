@@ -295,7 +295,7 @@ namespace mico {
             return nullptr;
         }
 
-        object_sptr get_parent( const std::string &name )
+        object_sptr get_parent( const std::string &name, bool here_only )
         {
             auto b = parents_.begin( );
             auto e = parents_.end( );
@@ -303,8 +303,9 @@ namespace mico {
             while( b != e ) {
                 auto pl = b->lock( );
                 if( pl ) {
-                    object_sptr v;
-                    if( auto v = pl->get( name ) ) {
+                    object_sptr v = here_only ? pl->get_parents_only( name )
+                                              : pl->get( name );
+                    if( v ) {
                         return v;
                     }
                     ++b;
@@ -315,6 +316,14 @@ namespace mico {
             return nullptr;
         }
 
+        object_sptr get_parents_only( const std::string &name )
+        {
+            if( auto v = get_here( name ) ) {
+                return v;
+            }
+            return get_parent( name, true );
+        }
+
         object_sptr get( const std::string &name )
         {
             auto cur = this;
@@ -323,7 +332,7 @@ namespace mico {
             while( cur && !res ) {
                 if( auto val = cur->get_here( name ) ) {
                     res = val;
-                } else if( auto pr = cur->get_parent( name ) ) {
+                } else if( auto pr = cur->get_parent( name, false ) ) {
                     res = pr;
                 } else {
                     parent = cur->parent( );
