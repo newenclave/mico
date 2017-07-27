@@ -49,7 +49,7 @@ Mico is a header-only project. Well you need just compile `mico.cpp`
  github $ git clone https://github.com/newenclave/mico.git
  github $ cd mico
  mico $ git submodule update --init etool
- mico $ g++ mico.cpp -O2 -Iinclude -Ietool/include -Wall -o mico
+ mico $ g++ -std=c++11  mico.cpp -O2 -Iinclude -Ietool/include -Wall -o mico
 ```
 Or clang
 ```bash
