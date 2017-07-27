@@ -37,6 +37,8 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Statements quote](#statements-quote)
     * [macro](#macro)
     * [Builtin Macroses](#builtin-macroses)
+* [Modules](#modules)
+    * [Inheretence](#inheretence)
 
 ### Compile
 
@@ -462,5 +464,38 @@ It just returns a concatination of all of the parameters it has. Well the parame
     let __concat_idents(sum, 2) = fn(a,b) { a + b }
     __concat_idents(sum, 2)(1, 2) /// => sum2(1, 2) => 3
     sum2(1, 2) // => 3
+
+```
+
+### Modules
+Modules are just pieces of the environment.
+Modules have names and all elements of the module are available outside using the names.
+They are more like `namespaces` in c++ but modules are first-class citizens.
+
+```swift
+
+    module a {
+        let value = "value a"
+        let show = fn( ) { puts( value ) }
+    }
+    a.show( ) // shows `value a`
+    module b {
+        let a = a // shadowing
+        let show = fn( ) { puts( "module b: " + a.value ) }
+    }
+    b.a.show( ) // same as a.show( )
+    b.show( )   // `module b: value a`
+
+    let show = fn( mod ) { // accepts module like a parameter
+        mod.show( )
+    }
+
+    show( a ) /// `value a`
+    show( b ) /// `module b: value a`
+
+```
+
+#### Inheretence
+```swift
 
 ```
