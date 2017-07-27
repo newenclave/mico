@@ -38,7 +38,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [macro](#macro)
     * [Builtin Macroses](#builtin-macroses)
 * [Modules](#modules)
-    * [Inheritance](#inheretence)
+    * [Inheritance](#inheritance)
     * [Anonymous](#anonymous)
 
 ### Compile
