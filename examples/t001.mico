@@ -1,5 +1,8 @@
 
-puts( "Hello, world!" )
+let put  = io.put
+let puts = io.puts
+
+io.puts( "Hello, world!" )
 
 let fib = fn( n ) {
     let impl = fn( a, b, c ) {
@@ -25,15 +28,15 @@ let fib_rec = fn(x) {
 let show_array = fn( arr ) {
     let impl = fn( arr, id ) {
         if( id == (len(arr) - 1) ) {
-            put( arr[id] )
+            io.put( arr[id] )
         } elif( id < len(arr) ) {
-            put( arr[id], ", " )
+            io.put( arr[id], ", " )
             impl( arr, id + 1 )
         }
     }
-    put( "["     )
+    io.put( "["     )
     impl( arr, 0 )
-    put( "]\n"   )
+    io.put( "]\n"   )
 }
 
 let reverse = fn( arr ) {
@@ -51,23 +54,23 @@ let reverse = fn( arr ) {
     impl( arr, 0 )
 }
 
-puts( "fib(20)     = ",     fib(20) )
-puts( "fib_rec(20) = ", fib_rec(20) )
+io.puts( "fib(20)     = ",     fib(20) )
+io.puts( "fib_rec(20) = ", fib_rec(20) )
 
 let arr = [1,2,3,4,5,6,7]
 
-put("Array:   ") show_array( arr )
-put("Reverse: ") show_array( reverse( arr ) )
+io.put("Array:   ") show_array( arr )
+io.put("Reverse: ") show_array( reverse( arr ) )
 
 let unless = macro(condition, consequence, alternative) {
-    puts("Here the macro inlined!")
+    io.puts("Here the macro inlined!")
     if(!(unquote(condition))) {
         unquote(consequence);
     } else {
         unquote(alternative);
     };
 }
-unless(10 > 5, puts("not greater"), puts("greater"))
+unless(10 > 5, io.puts("not greater"), io.puts("greater"))
 
 let bits = fn( value ) {
     let impl = fn( val, acc ) {
@@ -79,5 +82,5 @@ let bits = fn( value ) {
     }
     impl( value, 0 )
 }
-bits(0xfffffffff) | puts               // => 36
-bits(0b1111111000000001111111) | puts  // => 14
+bits(0xfffffffff) | io.puts              // => 36
+bits(0b1111111000000001111111) | io.puts // => 14

@@ -310,8 +310,15 @@ namespace mico { namespace eval {
                 return unref( eval_impl_tail( n, env ) );
             };
 
-            auto inf_call = [this](ast::node *n, environment::sptr env ) {
-                return unref(eval_impl_tail( n, env ));
+//            auto inf_call = [this](ast::node *n, environment::sptr env ) {
+//                return unref(eval_impl_tail( n, env ));
+//            };
+
+            auto func_call = [this](ast::expressions::call *n,
+                                    objects::sptr func,
+                                    environment::sptr env )
+            {
+                return eval_call_obj( n, func, env );
             };
 
             using OP_int   = OP<objects::type::INTEGER>;
@@ -344,7 +351,7 @@ namespace mico { namespace eval {
                 res = OP_array::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::MODULE:
-                res = OP_mod::eval_infix( inf, left, inf_call, env);
+                res = OP_mod::eval_infix( inf, left, func_call, env);
                 break;
             case objects::type::FUNCTION:
             case objects::type::BUILTIN:
@@ -847,26 +854,10 @@ namespace mico { namespace eval {
             return res;
         }
 
-        objects::sptr eval_call_impl( ast::node *n,
-                                      environment::sptr env,
-                                      environment::sptr &/*work_env*/ )
+        objects::sptr eval_call_obj( ast::expressions::call *call,
+                                     objects::sptr fun,
+                                     environment::sptr env )
         {
-            call_info::scope scp( call_stack( ), n);
-            if( call_stack( )->size( ) > 2048 ) {
-                return error( n, "Stack overflow" );
-            }
-
-            auto call = ast::cast<ast::expressions::call>( n );
-            auto fun = unref(eval_impl_tail(call->func( ).get( ), env));
-            if( is_fail( fun ) ) {
-                return fun;
-            }
-            if( is_null( fun ) || !is_func( fun ) ) {
-                return error( call->func( ).get( ),
-                              fun->get_type( ), "(", fun, ")",
-                              " is not a callable object" );
-            }
-
             if( fun->get_type( ) == objects::type::FUNCTION ) {
 
                 auto vfun = objects::cast_func(fun.get( ));
@@ -912,6 +903,32 @@ namespace mico { namespace eval {
             }
             return error( call->func( ).get( ), "Internal error: ",
                           fun, " is function, but it is not in the call list" );
+        }
+
+        objects::sptr eval_call_impl( ast::node *n,
+                                      environment::sptr env,
+                                      environment::sptr &/*work_env*/ )
+        {
+            call_info::scope scp( call_stack( ), n);
+            if( call_stack( )->size( ) > 2048 ) {
+                return error( n, "Stack overflow" );
+            }
+
+            auto call = ast::cast<ast::expressions::call>( n );
+
+
+            auto fun = unref(eval_impl_tail(call->func( ).get( ), env));
+            if( is_fail( fun ) ) {
+                return fun;
+            }
+            if( is_null( fun ) || !is_func( fun ) ) {
+                return error( call->func( ).get( ),
+                              fun->get_type( ), "(", fun, ")",
+                              " is not a callable object" );
+            }
+            return eval_call_obj( call, fun, env );
+
+
         }
 
         objects::sptr eval_call( ast::node *n, environment::sptr env )

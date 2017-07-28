@@ -11,6 +11,7 @@ namespace mico { namespace eval { namespace operations {
         using error_type = objects::impl<objects::type::FAILURE>;
         using prefix     = ast::expressions::prefix;
         using infix      = ast::expressions::infix;
+        using call_type  = ast::expressions::call;
 
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )

@@ -1,6 +1,8 @@
 #ifndef MICO_EVAL_MODULE_H
 #define MICO_EVAL_MODULE_H
 
+#include <functional>
+
 #include "mico/tokens.h"
 #include "mico/expressions/infix.h"
 #include "mico/expressions/prefix.h"
@@ -15,6 +17,11 @@ namespace mico { namespace eval { namespace operations {
         using infix  = ast::expressions::infix;
         using index  = ast::expressions::index;
 
+        using eval_function_call = std::function<objects::sptr
+                                    (ast::expressions::call *,
+                                     objects::sptr ,
+                                     environment::sptr)>;
+
 //        static
 //        objects::sptr eval_prefix( tokens::type, objects::sptr )
 //        {
@@ -22,16 +29,18 @@ namespace mico { namespace eval { namespace operations {
 //        }
 
         static
-        objects::sptr eval_func( infix *inf, objects::module::sptr mod,
-                                 eval_call ev )
+        objects::sptr eval_call( infix *inf, objects::module::sptr mod,
+                                 eval_function_call ev, environment::sptr env )
         {
             using call_type = ast::expressions::call;
             auto call = ast::cast<call_type>( inf->right( ).get( ) );
             if( call->func( )->get_type( ) == ast::type::IDENT ) {
                 auto id = call->func( )->str( );
 
-                if( mod->get( id ) ) {
-                    return ev( inf->right( ).get( ), mod->env( ) );
+                if( auto call = mod->get( id ) ) {
+                    auto n = inf->right( ).get( );
+                    auto call_node = ast::cast<ast::expressions::call>(n);
+                    return ev( call_node, call, env );
                 } else {
                     return common::error_type::make( inf->right( )->pos( ),
                                 "Identifier not found '", id, "'");
@@ -45,7 +54,7 @@ namespace mico { namespace eval { namespace operations {
 
         static
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
-                                  eval_call ev, environment::sptr /*env*/ )
+                                  eval_function_call ev, environment::sptr env )
         {
             common::reference<objects::type::MODULE> ref(obj);
             auto mod = ref.shared_unref( );
@@ -63,7 +72,7 @@ namespace mico { namespace eval { namespace operations {
                     }
 
                 } else if( inf->right( )->get_type( ) == ast::type::CALL ) {
-                    return eval_func( inf, mod, ev );
+                    return eval_call( inf, mod, ev, env );
                 } else {
                     return common::error_type::make( inf->right( )->pos( ),
                                                      "Bad ident for module ",
