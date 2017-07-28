@@ -520,7 +520,6 @@ The inheritance list as a list of the expression. Every expression returns a mod
     // error: [1:18] Bad parent for module OBJ_INTEGER 2
 ```
 
-
 A module can have one or more parents.
 
 ```swift
