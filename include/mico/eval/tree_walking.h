@@ -663,7 +663,7 @@ namespace mico { namespace eval {
                     return e;
                 } else if( e->get_type( ) != objects::type::MODULE ) {
                     return error( p.get( ), "Bad parent for module ",
-                                  e->get_type( ), " ", p->str( ) );
+                                  e->get_type( ), " ", e->str( ) );
                 }
                 auto par = objects::cast_mod( e );
                 if( !par->name( ).empty( ) ) {
