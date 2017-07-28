@@ -9,6 +9,45 @@
 
 namespace mico { namespace modules {
 
+    struct to_float {
+
+        using ERR = objects::error;
+        using INT = objects::integer;
+        using FLT = objects::floating;
+
+        objects::sptr operator ( )( objects::slist &par, environment::sptr )
+        {
+            if( par.size( ) > 0 ) {
+                if( par[0]->get_type( ) != objects::type::STRING ) {
+                    return ERR::make( par[0]->get_type( ),
+                            " is not a string" );
+                }
+                auto str = objects::cast_string( par[0].get( ) )->value( );
+                if( str.empty( ) ) {
+                    return FLT::make( 0.0 );
+                }
+                bool minus = str[0] == '-';
+                if( minus ) {
+                    str.erase(str.begin( ));
+                }
+
+                int inval = -1;
+                auto res = numeric::parse_float( str );
+
+                if( inval > 0 ) {
+                    auto is = static_cast<std::size_t>(inval);
+                    if( is < str.size( ) ) {
+                        ERR::make( par[0]->get_type( ),
+                                " Invalid symbol '",  str[is],
+                                "' in the string" );
+                    }
+                }
+                return FLT::make(minus ? -res : res);
+            }
+            return objects::null::make( );
+        }
+    };
+
     struct to_int {
 
         using ERR = objects::error;
@@ -86,7 +125,8 @@ namespace mico { namespace modules {
             auto mod_e = environment::make(env);
             auto mod = objects::module::make( mod_e, name );
 
-            mod_e->set( "to_int", BIC::make( mod_e, to_int { } ) );
+            mod_e->set( "to_int",   BIC::make( mod_e, to_int { } ) );
+            mod_e->set( "to_float", BIC::make( mod_e, to_float { } ) );
             env->set( name, mod );
         }
     };

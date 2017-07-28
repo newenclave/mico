@@ -31,7 +31,19 @@ namespace mico { namespace objects {
         {
             std::ostringstream oss;
             oss << "module "
-                << (name_.empty( ) ? "<anonymous>" : name_);
+                << (name_.empty( ) ? "<anonym>" : name_);
+            if(!parents_.empty( )) {
+                oss << ": ";
+                bool first = true;
+                for( auto &p: parents_ ) {
+                    if( first ) {
+                        first = false;
+                    } else {
+                        oss << ", ";
+                    }
+                    oss << (p->name( ).empty( ) ? "<anonym>" : p->name( ));
+                }
+            }
             return oss.str( );
         }
 
