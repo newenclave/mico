@@ -40,6 +40,10 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * [Modules](#modules)
     * [Inheritance](#inheritance)
     * [Anonymous](#anonymous)
+* [Standart Library](#standart-library)
+    * [io](#io)
+    * [string](#string)
+    * [dbg](#dbg)
 
 ### Compile
 
@@ -600,4 +604,12 @@ Also it's possible to chenge the module's name in the `let` expression.
     io.puts(b.name.val) /// ok `1000`
     io.puts(b.a.value)  /// oops `error: [6:7] Identifier not found 'a'`
 ```
+
+### Standart Library
+
+#### io
+
+#### string
+
+#### dbg
 
