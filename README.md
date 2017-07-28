@@ -450,20 +450,20 @@ And this is all happening in the macro expansion phase before the evaluation.
 
 ```
 #### Builtin Macroses
-Yes, it is possible to add them. One test macro `__concat_idents` I've added to the macro processor.
-It just returns a concatination of all of the parameters it has. Well the parameter must be an ident or a number.
+Yes, it is possible to add them. One test macro `__I` I've added to the macro processor.
+It just returns an ident that contains a concatination of all of the parameters it has.
 ```js
-    let __concat_idents(name, 1) = "this is the first one"
+    let __I(name, 1) = "this is the first one"
 
     io.puts(name1)
-    io.puts(__concat_idents(name, 1)) // also should work
+    io.puts(__I(name, 1)) // also should work
     /// this is the firts one
 
-    io.puts(__concat_idents(name, 2))
+    io.puts(__I(name, 2))
     /// error: [1:29] Identifier not found 'name2'
 
-    let __concat_idents(sum, 2) = fn(a,b) { a + b }
-    __concat_idents(sum, 2)(1, 2) /// => sum2(1, 2) => 3
+    let __I(sum, 2) = fn(a,b) { a + b }
+    __I(sum, 2)(1, 2) /// => sum2(1, 2) => 3
     sum2(1, 2) // => 3
 
 ```
