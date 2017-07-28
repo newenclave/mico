@@ -18,9 +18,11 @@ namespace mico { namespace objects {
         using sptr = std::shared_ptr<this_type>;
         using value_type = objects::sptr;
 
-        impl<type::REFERENCE>(const environment *my_env, value_type val)
+        impl<type::REFERENCE>( const environment *my_env,
+                               value_type val, bool var )
             :my_env_(my_env)
             ,value_(unref(val))
+            ,variable_(var)
         {
             value_->mark_in( my_env_ );
             marked_ = val->marked( );
@@ -59,6 +61,11 @@ namespace mico { namespace objects {
             }
         }
 
+        bool is_const( ) const
+        {
+            return !variable_;
+        }
+
         void set_value( const environment *my_env, value_type val )
         {
             if( value_ != val ) {
@@ -74,9 +81,15 @@ namespace mico { namespace objects {
         }
 
         static
-        sptr make( const environment *my_env, value_type val )
+        sptr make_var( const environment *my_env, value_type val )
         {
-            return std::make_shared<this_type>(my_env, val);
+            return std::make_shared<this_type>(my_env, val, true);
+        }
+
+        static
+        sptr make_const( const environment *my_env, value_type val )
+        {
+            return std::make_shared<this_type>(my_env, val, false);
         }
 
         const environment *env( ) const
@@ -106,7 +119,9 @@ namespace mico { namespace objects {
 
         objects::sptr clone( ) const override
         {
-            auto res = std::make_shared<this_type>( my_env_, value_->clone( ) );
+            auto res = std::make_shared<this_type>( my_env_,
+                                                    value_->clone( ),
+                                                    variable_ );
             return res;
         }
 
@@ -124,6 +139,7 @@ namespace mico { namespace objects {
         const environment  *my_env_;
         value_type          value_;
         std::size_t         marked_ = 0;
+        bool                variable_ = true;
     };
 
     using reference = impl<type::REFERENCE>;

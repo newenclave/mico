@@ -75,7 +75,7 @@ namespace mico { namespace objects {
 
         bool set( const environment *env, objects::sptr key, objects::sptr val )
         {
-            value_[key->clone( )] = cont::make(env, val);
+            value_[key->clone( )] = cont::make_var(env, val);
             return true;
         }
 
@@ -148,8 +148,8 @@ namespace mico { namespace objects {
             auto res = make( env( ) );
             for( auto &v: value( ) ) {
                 auto kc = v.first->clone( );
-                auto vc = ref::make( v.second->env( ),
-                                     v.second->value( )->clone( ) );
+                auto vc = ref::make_var( v.second->env( ),
+                                         v.second->value( )->clone( ) );
                 res->value( ).insert( std::make_pair(kc, vc) );
             }
             return res;

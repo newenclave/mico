@@ -224,6 +224,16 @@ namespace mico {
             return parent_.lock( );
         }
 
+        const objects::base *owner( ) const
+        {
+            return owner_;
+        }
+
+        void set_owner( const objects::base *own )
+        {
+            owner_ = own;
+        }
+
         // lowest common ancestor
         static
         const environment *barrier( const environment *l, const environment *r )
@@ -291,12 +301,12 @@ namespace mico {
 
         void set( const std::string &name, object_sptr val )
         {
-            data_[name] = obj_reference::make( this, val );
+            data_[name] = obj_reference::make_var( this, val );
         }
 
         void keep( object_sptr val )
         {
-            hide_.insert( obj_reference::make( this, val ) );
+            hide_.insert( obj_reference::make_var( this, val ) );
         }
 
         object_sptr get_here( const std::string &name )
@@ -431,13 +441,14 @@ namespace mico {
 
     private:
 
-        state          *state_;
-        wptr            parent_;
-        children_type   children_;
-        data_map        data_;
-        data_set        hide_;
-        parent_list     parents_;
-        std::size_t     marked_ = 0;
+        state                *state_;
+        wptr                  parent_;
+        children_type         children_;
+        data_map              data_;
+        data_set              hide_;
+        parent_list           parents_;
+        std::size_t           marked_ = 0;
+        const objects::base  *owner_ = nullptr;
     };
 }
 

@@ -86,7 +86,9 @@ HEADERS += \
 DISTFILES += \
     drafts/tail_recursion.md \
     tests.txt \
-    README2.md
+    README2.md \
+    examples/t002.mico \
+    examples/t001.mico
 
 
 #DEFINES += DEBUG=1

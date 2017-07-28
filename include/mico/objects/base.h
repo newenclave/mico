@@ -149,6 +149,7 @@ namespace mico { namespace objects {
     class impl;
 
     using sptr  = std::shared_ptr<base>;
+    using wptr  = std::weak_ptr<base>;
     using uptr  = std::unique_ptr<base>;
     using slist = std::vector<sptr>;
     using ulist = std::vector<uptr>;

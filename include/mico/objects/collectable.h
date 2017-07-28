@@ -14,7 +14,9 @@ namespace mico { namespace objects {
         explicit
         collectable( environment::sptr &e )
             :env_(e)
-        { }
+        {
+            e->set_owner( this );
+        }
 
         ~collectable( )
         { }

@@ -618,4 +618,18 @@ let b = module: new(200) { }
 a.get( )
 b.get( )
 
+let a = module {
+    let val = 100
+}
+let new = fn( init ) {
+    module {
+        let val = init
+    }
+}
+let b = module: a, new(400) {
+    let get = fn( ) {
+        return val
+    }
+}
+
 */

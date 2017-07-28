@@ -127,9 +127,8 @@ namespace mico { namespace ast { namespace expressions {
         void mutate( node::mutator_type call ) override
         {
             auto b = value_.begin( );
-            auto e = value_.end( );
 
-            while( b != e ) {
+            while( b != value_.end( ) ) {
 
                 ast::node::apply_mutator( *b, call );
 
@@ -140,6 +139,7 @@ namespace mico { namespace ast { namespace expressions {
                 } else {
                     b = value_.erase( b );
                 }
+
             }
         }
 
