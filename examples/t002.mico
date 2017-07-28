@@ -18,13 +18,28 @@ let t002 = module {
     let __I( 1 ) = "This is and ident with value 1"
     let __I("2") = "This is and ident with value \"2\""
     let __I(0.0) = "This is and ident with value 0.0"
+
+    let new = fn( init ) {
+        module {
+            let value = init
+            let get = fn( ) { value }
+        }
+    }
+    let module_int   = new(  1234 )
+    let module_float = new( -0.01 )
+    let module_str   = new( "This is a string" )
 }
 
 t002.call( 10 > 5 )
 t002.call( 10 < 5 )
 
-io.puts(t002.__I( 1 ))
-io.puts(t002.__I("2"))
-io.puts(t002.__I(0.0))
+io.puts( t002.__I( 1 ) )
+io.puts( t002.__I("2") )
+io.puts( t002.__I(0.0) )
 
-__env( )
+io.puts( t002.module_int  .get( ) )
+io.puts( t002.module_float.get( ) )
+io.puts( t002.module_str  .get( ) )
+
+//__env( )
+dbg.env( )
