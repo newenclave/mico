@@ -86,9 +86,10 @@ namespace mico { namespace ast { namespace statements {
         using this_type = impl<type::RETURN>;
 
     public:
+
         using uptr = std::unique_ptr<impl>;
 
-        impl( expression::uptr val )
+        impl( node::uptr val )
             :expr_(std::move(val))
         { }
 
@@ -99,19 +100,25 @@ namespace mico { namespace ast { namespace statements {
             return oss.str( );
         }
 
-        const expression *value( ) const
+        const node *value( ) const
         {
             return expr_.get( );
         }
 
-        expression *value( )
+        node *value( )
         {
             return expr_.get( );
+        }
+
+        static
+        uptr make( node::uptr val  )
+        {
+            return uptr( new this_type( std::move(val ) ) );
         }
 
         void mutate( mutator_type call ) override
         {
-            ast::expression::apply_mutator( expr_, call );
+            ast::node::apply_mutator( expr_, call );
         }
 
         bool is_const( ) const override
@@ -121,12 +128,11 @@ namespace mico { namespace ast { namespace statements {
 
         ast::node::uptr clone( ) const override
         {
-            return ast::node::uptr(new this_type(
-                                       expression::call_clone( expr_ ) ) );
+            return ast::node::uptr(new this_type( node::call_clone( expr_ ) ) );
         }
 
     private:
-        expression::uptr expr_;
+        node::uptr expr_;
     };
 
     template <>

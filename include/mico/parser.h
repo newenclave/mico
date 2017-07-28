@@ -328,14 +328,26 @@ namespace mico {
 
         bool is_current_expression(  ) const
         {
-            auto nud = nuds_.find( current( ).ident.name );
-            return nud != nuds_.end( );
+            if( !is_current( token_type::END_OF_FILE ) ) {
+                auto nud = nuds_.find( current( ).ident.name );
+                return nud != nuds_.end( );
+            }
+            return false;
         }
 
         bool is_peek_expression(  ) const
         {
-            auto nud = nuds_.find( peek( ).ident.name );
-            return nud != nuds_.end( );
+            if( !is_current( token_type::END_OF_FILE ) ) {
+                auto nud = nuds_.find( peek( ).ident.name );
+                return nud != nuds_.end( );
+            }
+            return false;
+        }
+
+        static
+        ast::node::uptr null( )
+        {
+            return ast::expressions::null::make( );
         }
 
         ast::expressions::elipsis::uptr parse_elipsis( )
@@ -782,8 +794,12 @@ namespace mico {
         {
             using res_type = ast::statements::ret;
             advance( );
-            auto expr = parse_expression( precedence::LOWEST );
-            return res_type::uptr( new res_type( std::move(expr ) ) );
+            if( is_current_expression( ) ) {
+                auto expr = parse_expression( precedence::LOWEST );
+                return res_type::make( std::move(expr ) );
+            } else {
+                return res_type::make( null( ) );
+            }
         }
 
         ast::expressions::function::uptr parse_function( )
