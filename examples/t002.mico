@@ -11,16 +11,17 @@ let t002 = module {
         };
     }
 
-    let call  = fn(  ) {
+    let call  = fn( cond ) {
         // here we are building a function with the body from macro `unless`
-        unless(10 > 5, io.puts("not greater"), io.puts("greater"))
+        unless( cond, io.puts("not greater"), io.puts("greater") )
     }
     let __I( 1 ) = "This is and ident with value 1"
     let __I("2") = "This is and ident with value \"2\""
     let __I(0.0) = "This is and ident with value 0.0"
 }
 
-t002.call( )
+t002.call( 10 > 5 )
+t002.call( 10 < 5 )
 
 io.puts(t002.__I( 1 ))
 io.puts(t002.__I("2"))
