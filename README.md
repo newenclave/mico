@@ -514,7 +514,7 @@ all elements of the parent are available in the child. And by the child.
     io.puts(b.value)       // `changed!`
     a.show( )           // `changed!`
 ```
-The inheritance list as a list of the expression. Every expression returns a module object. And if don't...
+The inheritance list is a list of the expression. Every expression returns a module object. And if doesn't...
 ```swift
     let a = module: 1 + 1 { }
     // error: [1:18] Bad parent for module OBJ_INTEGER 2
