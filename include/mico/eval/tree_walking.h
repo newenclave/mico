@@ -967,8 +967,9 @@ namespace mico { namespace eval {
                     return key;
                 }
 
-                if( (key->get_type( ) == objects::type::FUNCTION) ||
-                    (key->get_type( ) == objects::type::BUILTIN ) ) {
+                if( (key->get_type( ) == objects::type::FUNCTION)
+                 || (key->get_type( ) == objects::type::BUILTIN )
+                 || (key->get_type( ) == objects::type::MODULE ) ) {
                     return error( v.first.get( ), "unusable as hash key: ",
                                                    key->get_type( ));
                 }
