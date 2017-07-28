@@ -507,7 +507,7 @@ all elements of the parent are available in the child. And by the child.
         let set = fn( val ) { value = val }
     }
 
-    let b = module: a { } // Inheretence
+    let b = module: a { } // Inheritance
 
     b.show( )           // `value a`
     b.set( "changed!" )
@@ -529,7 +529,7 @@ A module can have one or more parents.
         let setb = fn( val ) { value = val }
     }
 
-    let c = module: a, b { } // Inheretence
+    let c = module: a, b { } // Inheritance
 
     c.showa( )      // `value a`
     c.showb( )      // `value b`
@@ -541,7 +541,7 @@ And what is here?
 ```swift
     io.puts(c.value)
 ```
-Well here is `value a`. Because module `a` is the first in the inheretence tree.
+Well here is `value a`. Because module `a` is the first in the inheritance tree.
 
 #### Anonymous
 
