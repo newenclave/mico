@@ -286,7 +286,7 @@ Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
     spin( 100_000 ) /// optimized again.
 
     let call1 = fn(c) {
-        puts("1 ", c)
+        io.puts("1 ", c)
         if( c > 0 ) {
             call2(c - 1) // indirect call
         } else {
@@ -294,7 +294,7 @@ Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
         }
     }
     let call2 = fn(c) {
-        puts("2 ", c)
+        io.puts("2 ", c)
         if( c > 0 ) {
             call1(c - 1) // indirect call
         } else {
@@ -383,14 +383,14 @@ And this is all happening in the macro expansion phase before the evaluation.
 
     /// and `The Mighty Unless Macro` of course
     let unless = macro(condition, consequence, alternative) {
-        puts("Here the macro inlined!")
+        io.puts("Here the macro inlined!")
         if(!(unquote(condition))) {
             unquote(consequence);
         } else {
             unquote(alternative);
         };
     }
-    unless(10 > 5, puts("not greater"), puts("greater"))
+    unless(10 > 5, io.puts("not greater"), io.puts("greater"))
     // Here the macro inlined!
     // greater
     // =)
@@ -419,7 +419,7 @@ And this is all happening in the macro expansion phase before the evaluation.
     // }
     // ==========
     // unless => macro(condition, consequence, alternative) {
-    //  puts("Here the macro inlined!");
+    //  io.puts("Here the macro inlined!");
     //  if ((!unquote(condition))) {
     //      unquote(consequence)
     //  } else {
@@ -455,11 +455,11 @@ It just returns a concatination of all of the parameters it has. Well the parame
 ```js
     let __concat_idents(name, 1) = "this is the first one"
 
-    puts(name1)
-    puts(__concat_idents(name, 1)) // also should work
+    io.puts(name1)
+    io.puts(__concat_idents(name, 1)) // also should work
     /// this is the firts one
 
-    puts(__concat_idents(name, 2))
+    io.puts(__concat_idents(name, 2))
     /// error: [1:29] Identifier not found 'name2'
 
     let __concat_idents(sum, 2) = fn(a,b) { a + b }
@@ -477,12 +477,12 @@ They are more like `namespaces` in c++ but in Mico modules are first-class citiz
 
     let a = module {
         let value = "value a"
-        let show = fn( ) { puts( value ) }
+        let show = fn( ) { io.puts( value ) }
     }
     a.show( ) // shows `value a`
     let b = module {
         let a = a // shadowing
-        let show = fn( ) { puts( "module b: " + a.value ) }
+        let show = fn( ) { io.puts( "module b: " + a.value ) }
     }
 
     b.a.show( ) // same as a.show( )
@@ -503,7 +503,7 @@ all elements of the parent are available in the child. And by the child.
 ```swift
     let a = module {
         let value = "value a"
-        let show = fn( ) { puts( value ) }
+        let show = fn( ) { io.puts( value ) }
         let set = fn( val ) { value = val }
     }
 
@@ -511,7 +511,7 @@ all elements of the parent are available in the child. And by the child.
 
     b.show( )           // `value a`
     b.set( "changed!" )
-    puts(b.value)       // `changed!`
+    io.puts(b.value)       // `changed!`
     a.show( )           // `changed!`
 ```
 A module can have one or more parents.
@@ -519,13 +519,13 @@ A module can have one or more parents.
 ```swift
     let a = module {
         let value = "value a"
-        let showa = fn( ) { puts( value ) }
+        let showa = fn( ) { io.puts( value ) }
         let seta = fn( val ) { value = val }
     }
 
     let b = module {
         let value = "value b"
-        let showb = fn( ) { puts( value ) }
+        let showb = fn( ) { io.puts( value ) }
         let setb = fn( val ) { value = val }
     }
 
@@ -533,13 +533,13 @@ A module can have one or more parents.
 
     c.showa( )      // `value a`
     c.showb( )      // `value b`
-    puts(c.a.value) // `value a`
-    puts(c.b.value) // `value b`
+    io.puts(c.a.value) // `value a`
+    io.puts(c.b.value) // `value b`
 
 ```
 And what is here?
 ```swift
-    puts(c.value)
+    io.puts(c.value)
 ```
 Well here is `value a`. Because module `a` is the first in the inheretence tree.
 
@@ -556,8 +556,8 @@ Wrong! It can be used for the inheritance.
     }
     let a = module a: new_module(100) { }
     let b = module b: new_module(200) { }
-    puts(a.get( )) // `100`
-    puts(b.get( )) // `200`
+    io.puts(a.get( )) // `100`
+    io.puts(b.get( )) // `200`
 ```
 By the way we can add a name to a module without `let` expression
 ```swift
@@ -576,8 +576,8 @@ By the way we can add a name to a module without `let` expression
 
     let a = module: new_module0(100) { }
     let b = module: new_module1(200) { }
-    puts(a.parent.val) // `100`
-    puts(b.parent.val) // `200`
+    io.puts(a.parent.val) // `100`
+    io.puts(b.parent.val) // `200`
 ```
 Here `new_module0` and `new_module1` are almost equal. But the code
 ```swift
@@ -591,7 +591,7 @@ Also it's possible to chenge the module's name in the `let` expression.
         let val = 1000
     }
     let b = module: a { }
-    puts(b.name.val) /// ok `1000`
-    puts(b.a.value)  /// oops `error: [6:7] Identifier not found 'a'`
+    io.puts(b.name.val) /// ok `1000`
+    io.puts(b.a.value)  /// oops `error: [6:7] Identifier not found 'a'`
 ```
 

@@ -79,7 +79,8 @@ HEADERS += \
     include/mico/eval/operations/module.h \
     include/mico/expressions/module.h \
     include/mico/modules/io.h \
-    include/mico/builtin/common.h
+    include/mico/builtin/common.h \
+    include/mico/modules/debug.h
 
 DISTFILES += \
     drafts/tail_recursion.md \
