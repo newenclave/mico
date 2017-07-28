@@ -2,4 +2,28 @@
 
 let t002 = module {
 
+    /// The Mighty Unless Macro
+    let unless = macro(condition, consequence, alternative) {
+        if(!(unquote(condition))) {
+            unquote(consequence);
+        } else {
+            unquote(alternative);
+        };
+    }
+
+    let call  = fn(  ) {
+        // here we are building a function with the body from macro `unless`
+        unless(10 > 5, io.puts("not greater"), io.puts("greater"))
+    }
+    let __I( 1 ) = "This is and ident with value 1"
+    let __I("2") = "This is and ident with value \"2\""
+    let __I(0.0) = "This is and ident with value 0.0"
 }
+
+t002.call( )
+
+io.puts(t002.__I( 1 ))
+io.puts(t002.__I("2"))
+io.puts(t002.__I(0.0))
+
+__env( )
