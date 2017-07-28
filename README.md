@@ -531,8 +531,10 @@ A module can have one or more parents.
 
     let c = module: a, b { } // Inheretence
 
-    c.showa( ) // `value a`
-    c.showb( ) // `value b`
+    c.showa( )      // `value a`
+    c.showb( )      // `value b`
+    puts(c.a.value) // `value a`
+    puts(c.b.value) // `value b`
 
 ```
 And what is here?

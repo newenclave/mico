@@ -55,7 +55,7 @@ namespace mico {
             if( n->is_const( ) ) {
                 mico::eval::tree_walking tv;
                 mico::state st;
-                builtin::init( st, [&tv, &st]( ast::node *n ) {
+                all::init( st, [&tv, &st]( ast::node *n ) {
                     return tv.eval( n, st.env( ) );
                 } );
                 auto obj = tv.eval( n, st.env( ) );
@@ -121,7 +121,7 @@ namespace mico {
                 return tv.eval( n, st.env( ) );
             };
 
-            builtin::init( st, ev );
+            all::init( st, ev );
 
             std::string data;
             std::cout << logo << ">>> ";

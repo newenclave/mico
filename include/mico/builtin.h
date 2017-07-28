@@ -5,70 +5,12 @@
 #include "mico/eval/tree_walking.h"
 #include "mico/state.h"
 #include "etool/console/colors.h"
+#include "mico/builtin/common.h"
+#include "mico/modules/io.h"
 
 namespace mico {
 
-    class common: public objects::builtin {
-
-        static
-        void def_init( environment::sptr )
-        { }
-
-        objects::sptr call( objects::slist &params,
-                            environment::sptr e) override
-        {
-            return call_( params, e );
-        }
-
-        void init( environment::sptr e ) override
-        {
-            return init_( e );
-        }
-
-    public:
-
-        using call_type = std::function< objects::sptr
-                                        (objects::slist &, environment::sptr)>;
-        using init_type = std::function<void (environment::sptr)>;
-
-        common( environment::sptr e, call_type c )
-            :objects::builtin(e)
-            ,init_(&common::def_init)
-            ,call_(std::move(c))
-        { }
-
-        common( environment::sptr e, init_type i, call_type c )
-            :objects::builtin(e)
-            ,init_(i ? std::move(i) : &common::def_init)
-            ,call_(std::move(c))
-        { }
-
-        std::uintptr_t stub_number( ) const override
-        {
-            return reinterpret_cast<std::uintptr_t>(this);
-        }
-
-        static
-        objects::sptr make( environment::sptr e, call_type c )
-        {
-            return std::make_shared<common>( e, std::move(c) );
-        }
-
-        static
-        objects::sptr make( environment::sptr e, init_type i, call_type c )
-        {
-            return std::make_shared<common>( e, std::move(i), std::move(c) );
-        }
-
-        objects::sptr clone( ) const override
-        {
-            return std::make_shared<common>( env( ), init_, call_ );
-        }
-
-    private:
-        init_type init_;
-        call_type call_;
-    };
+    using common = builtin::common;
 
     struct len {
         objects::sptr operator ( )( objects::slist &params, environment::sptr )
@@ -157,45 +99,6 @@ namespace mico {
                 return p[0]->clone( );
             }
             return objects::null::make( );
-        }
-    };
-
-    template <bool NL>
-    struct puts {
-
-        objects::sptr operator ( )( objects::slist &pp, environment::sptr )
-        {
-            static const auto line = __LINE__;
-            using objects::error;
-
-            static auto res = objects::null::make( );
-
-            std::size_t count = 0;
-            for( auto &p: pp ) {
-                ++count;
-                if( p->get_type( ) == objects::type::STRING ) {
-                    auto s = objects::cast_string(p.get( ));
-                    std::cout << s->value( );
-                } else if(p->get_type( ) == objects::type::INTEGER ) {
-                    auto s = objects::cast_int(p.get( ));
-                    std::cout << s->value( );
-                } else if(p->get_type( ) == objects::type::FLOAT ) {
-                    auto s = objects::cast_float(p.get( ));
-                    std::cout << s->value( );
-                } else if(p->get_type( ) == objects::type::BOOLEAN ) {
-                    auto s = objects::cast_bool(p.get( ));
-                    std::cout << std::boolalpha << s->value( )
-                              << std::noboolalpha;
-                } else {
-                    return error::make( tokens::position( line, 0),
-                                        "Invalid parameter ", count,
-                                        " for 'puts': ", p->get_type( ));
-                }
-            }
-            if( NL ) {
-                std::cout << std::endl;
-            }
-            return res;
         }
     };
 
@@ -301,7 +204,7 @@ namespace mico {
     };
 #endif
 
-    struct builtin {
+    struct all {
 
         using eval_call = random_name::eval_call;
 
@@ -309,13 +212,12 @@ namespace mico {
         void init( mico::state &st, eval_call ev )
         {
             auto env = st.env( );
-            env->set( "puts",       common::make( env, puts<true> { } ) );
-            env->set( "put",        common::make( env, puts<false> { } ) );
-
             env->set( "len",        common::make( env, len { } ) );
             env->set( "copy",       common::make( env, copy { } ) );
             env->set( "__env",      common::make( env, env_show(env) ) );
             env->set( "__macro",    common::make( env, macro_show(env) ) );
+
+            modules::io::load( env, "io" );
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             st.macros( ).set_built( "__str",

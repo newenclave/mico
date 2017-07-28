@@ -140,11 +140,6 @@ namespace mico { namespace eval { namespace operations {
             default:
                 return common::common_infix( inf, obj, right, env );
             }
-            return error_type::make(inf->pos( ), "Infix operation ",
-                                    obj->get_type( )," '",
-                                    inf->token( ), "' ",
-                                    right->get_type( ),
-                                    " is not defined");
         }
     };
 

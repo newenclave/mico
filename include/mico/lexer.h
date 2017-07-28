@@ -330,7 +330,6 @@ namespace mico {
                 } else {
                     return std::make_pair( I(token_type::NONE), begin );
                 }
-                begin = skip_whitespaces( begin, end );
             }
 
             return std::make_pair( I(token_type::END_OF_FILE), end);

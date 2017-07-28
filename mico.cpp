@@ -48,7 +48,7 @@ int run_file( std::string path )
         return tv.eval( n, st.env( ) );
     };
 
-    builtin::init( st, ev );
+    all::init( st, ev );
     auto prog = parser::parse( data );
 
     if( prog.errors( ).empty( ) ) {

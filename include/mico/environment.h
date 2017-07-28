@@ -16,6 +16,7 @@
 namespace mico {
 
 #define DEBUG 0
+#define CHECK_ENV_PARENTS 0
 
 #if DEBUG
     static int c = 0;
@@ -130,12 +131,14 @@ namespace mico {
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
                     auto par = environment::barrier( e, my_env.get( ) );
+#if CHECK_ENV_PARENTS
                     if( !e->is_parent( par ) ) {
                         throw std::logic_error( "Lock. Not a parent!" );
                     }
                     if( !my_env->is_parent( par ) ) {
                         throw std::logic_error( "Lock. Not a parent!" );
                     }
+#endif
                     mark_in( remote, par );
                 }
                 return true;
@@ -158,12 +161,14 @@ namespace mico {
                 } else if( !e->is_parent( my_env.get( ) ) ) {
                     auto par = environment::barrier( e, my_env.get( ) );
                     if( par ) {
+#if CHECK_ENV_PARENTS
                         if( !e->is_parent( par ) ) {
                             throw std::logic_error( "Unlock. Not a parent!" );
                         }
                         if( !my_env->is_parent( par ) ) {
                             throw std::logic_error( "Unlock. Not a parent!" );
                         }
+#endif
                         unmark_in( remote, par );
                     }
                 }
@@ -255,9 +260,11 @@ namespace mico {
 
         void unmark( )
         {
+#if CHECK_ENV_PARENTS
             if( marked_ == 0  ) {
                 throw std::logic_error( "Unmark. This item is not marked." );
             }
+#endif
             marked_--;
         }
 
@@ -433,5 +440,9 @@ namespace mico {
         std::size_t     marked_ = 0;
     };
 }
+
+#ifdef CHECK_ENV_PARENTS
+#   undef CHECK_ENV_PARENTS
+#endif
 
 #endif // ENVIROMENT_H
