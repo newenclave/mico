@@ -6,7 +6,10 @@
 #include "mico/state.h"
 #include "etool/console/colors.h"
 #include "mico/builtin/common.h"
+
 #include "mico/modules/io.h"
+#include "mico/modules/debug.h"
+#include "mico/modules/string.h"
 
 namespace mico {
 
@@ -217,7 +220,9 @@ namespace mico {
             env->set( "__env",      common::make( env, env_show(env) ) );
             env->set( "__macro",    common::make( env, macro_show(env) ) );
 
-            modules::io::load( env, "io" );
+            modules::io::load( env );
+            modules::debug::load( env );
+            modules::string::load( env );
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             st.macros( ).set_built( "__str",

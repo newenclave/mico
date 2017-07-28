@@ -80,7 +80,8 @@ HEADERS += \
     include/mico/expressions/module.h \
     include/mico/modules/io.h \
     include/mico/builtin/common.h \
-    include/mico/modules/debug.h
+    include/mico/modules/debug.h \
+    include/mico/modules/string.h
 
 DISTFILES += \
     drafts/tail_recursion.md \
