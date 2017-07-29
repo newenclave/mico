@@ -388,7 +388,7 @@ namespace mico { namespace objects {
             static
             sptr make( value_type start, value_type stop )
             {
-                return make( start, stop, ( ( start > stop ) ?  1 : -1 ) );
+                return make( start, stop, ( ( start < stop ) ?  1 : -1 ) );
             }
 
             static

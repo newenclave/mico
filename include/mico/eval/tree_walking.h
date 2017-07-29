@@ -596,7 +596,7 @@ namespace mico { namespace eval {
         {
             call_info::scope scp( call_stack( ), n );
             if( call_stack( )->size( ) > 2048 ) {
-                return error( n, "Stack overflow ", n );
+                return error( n, "Stack overflow '", n, "'" );
             }
 
             auto scope = ast::cast<ast::expressions::list>( n );
@@ -814,10 +814,7 @@ namespace mico { namespace eval {
 
                 env->get_state( ).GC( env );
                 auto next = eval_scope_node( fori->body( ).get( ), s.env( ) );
-
-                if( gen->has_next( ) ) {
-                    next = eval_tail_return( next );
-                }
+                next = eval_tail_return( next );
 
                 if( is_return( next ) || is_fail( next ) ) {
                     return next;
@@ -1182,7 +1179,7 @@ namespace mico { namespace eval {
         {
             call_info::scope scp( call_stack( ), n);
             if( call_stack( )->size( ) > 2048 ) {
-                return error( n, "Stack overflow" );
+                return error( n, "Stack overflow '", n, "'" );
             }
 
             auto call = ast::cast<ast::expressions::call>( n );

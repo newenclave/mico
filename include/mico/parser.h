@@ -73,9 +73,7 @@ namespace mico {
             reset( );
             fill_nuds( );
             fill_leds( );
-
-            special_[token_type::BREAK].disabled = true;
-
+            fill_special( );
         }
 
         void reset( )
@@ -85,6 +83,12 @@ namespace mico {
                 ++peek_;
             }
             errors_.clear( );
+        }
+
+        void fill_special( )
+        {
+            special_[token_type::BREAK].disabled    = true;
+            special_[token_type::CONTINUE].disabled = true;
         }
 
         void fill_nuds( )
