@@ -158,8 +158,8 @@ The operator can have a `step` value that can change loop's increment and even m
     io.puts( )
     // 0 2 4 6 8
 
-    for i, v in -7, -0.7 {
-        io.put(i, ":", v, " ")
+    for i in -7, -0.7 {
+        io.put(i, " ")
     }
     io.puts( )
     // 0 -0.7 -1.4 -2.1 -2.8 -3.5 -4.2 -4.9 -5.6 -6.3
