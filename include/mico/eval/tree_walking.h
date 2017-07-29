@@ -767,6 +767,7 @@ namespace mico { namespace eval {
                     }
                 }
 
+                env->get_state( ).GC( env );
                 res = eval_scope_node( fori->body( ).get( ), s.env( ) );
 
                 if( gen->has_next( ) ) {
