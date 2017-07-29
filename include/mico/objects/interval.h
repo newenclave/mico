@@ -9,6 +9,8 @@
 #include "mico/objects/string.h"
 #include "mico/objects/numbers.h"
 
+#include "etool/intervals/interval.h"
+
 namespace mico { namespace objects {
 
     template<>
@@ -32,12 +34,26 @@ namespace mico { namespace objects {
 
     };
 
+    using interval = impl<type::INTERVAL>;
+
     namespace impls {
 
         template <objects::type NumT>
         struct obj;
 
+        template<>
+        struct obj<type::INTEGER>: public interval {
 
+            using this_type = obj<type::INTEGER>;
+
+        public:
+
+            using interval_type = etool::intervals::interval<std::int64_t>;
+
+        private:
+
+            interval_type ival_;
+        };
     }
 
 }}
