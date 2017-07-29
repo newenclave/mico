@@ -206,7 +206,7 @@ Functions in Mico can accept a variable number of arguments.
     }
     let seven = param_count( 1, 2, [], {}, fn(){ }, 6, 7 )
     let zero  = param_count( )
-    puts("seven is ", seven, " and zero is ", zero)
+    io.puts("seven is ", seven, " and zero is ", zero)
 ```
 This code shows `seven is 7 and zero is 0`.
 Here `parms` is the last parameter of the function and it's an array that contains all function's parameters.

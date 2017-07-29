@@ -38,6 +38,7 @@ namespace mico { namespace objects {
         FAILURE     = 12,
         QUOTE       = 13,
         MODULE      = 14,
+        GENERATOR   = 15,
     };
 
     struct name {
@@ -60,6 +61,7 @@ namespace mico { namespace objects {
             case type::FAILURE    : return "OBJ_FAILURE";
             case type::QUOTE      : return "OBJ_QUOTE";
             case type::MODULE     : return "OBJ_MODULE";
+            case type::GENERATOR  : return "OBJ_GENERATOR";
             }
             return "<invalid>";
         }
@@ -73,9 +75,7 @@ namespace mico { namespace objects {
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
         virtual std::shared_ptr<base> clone( ) const = 0;
-
-        virtual
-        ast::node::uptr to_ast( tokens::position ) const = 0;
+        virtual ast::node::uptr to_ast( tokens::position ) const = 0;
 
         virtual
         hash_type hash( ) const

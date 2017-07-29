@@ -82,6 +82,14 @@ int main_lex( );
 
 int main( int argc, char * argv[ ]  )
 {
+
+//    auto gen = objects::gens::floating::make( 0, -100, -1.10 );
+//    while( !gen->end( ) ) {
+//        std::cout << gen->get( )->str( ) << "\n";
+//        gen->next( );
+//    }
+
+//    return 0;
     try {
         if( argc > 1 ) {
             return run_file( argv[1] );

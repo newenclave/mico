@@ -81,7 +81,8 @@ HEADERS += \
     include/mico/modules/io.h \
     include/mico/builtin/common.h \
     include/mico/modules/debug.h \
-    include/mico/modules/string.h
+    include/mico/modules/string.h \
+    include/mico/objects/generator.h
 
 DISTFILES += \
     drafts/tail_recursion.md \

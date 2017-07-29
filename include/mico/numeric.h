@@ -155,7 +155,6 @@ namespace mico {
                     }
                 }
             }
-
             return res;
         }
 

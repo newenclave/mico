@@ -54,8 +54,8 @@ let reverse = fn( arr ) {
     impl( arr, 0 )
 }
 
-io.puts( "fib(20)     = ",     fib(20) )
-io.puts( "fib_rec(20) = ", fib_rec(20) )
+io.puts( "fib(20)     = ", 20 | fib     )
+io.puts( "fib_rec(20) = ", 20 | fib_rec )
 
 let arr = [1,2,3,4,5,6,7]
 
