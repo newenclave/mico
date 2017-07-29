@@ -785,15 +785,16 @@ namespace mico { namespace eval {
 
                 environment::scoped s(make_env(env));
 
-                size_t last_id = 2;
+                size_t last_id = 1;
 
-                if( !ident[1].empty( ) ) {
+                if( ident[1].empty( ) ) {
+                    s.env( )->set(ident[0], gen->get_val( ));
+                } else {
                     s.env( )->set(ident[0], gen->get_id( ));
                     s.env( )->set(ident[1], gen->get_val( ));
-                } else {
-                    s.env( )->set(ident[0], gen->get_val( ));
-                    last_id = 1;
+                    last_id = 2;
                 }
+
                 if( !ident[last_id].empty( ) ) {
                     s.env( )->set(ident[last_id], objects::integer::make(id++));
                 }
