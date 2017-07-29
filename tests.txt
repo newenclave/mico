@@ -658,4 +658,9 @@ let s = fn( c ) {
 let sum = 0
 let r = for val in [1,2,3,4,5,6,7] { sum = sum + val }
 
+let t = { 1: "frst", 2: "sec", 3: "trd", 4: "frs" }
+for k, v, i in t, -10 {
+    io.puts( k, " ", v, " ", i )
+}
+
 */

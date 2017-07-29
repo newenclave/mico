@@ -6,6 +6,7 @@
 #include "mico/objects/base.h"
 #include "mico/expressions/none.h"
 #include "mico/objects/array.h"
+#include "mico/objects/table.h"
 #include "mico/objects/string.h"
 #include "mico/objects/numbers.h"
 #include "mico/objects/interval.h"
@@ -37,7 +38,12 @@ namespace mico { namespace objects {
         virtual void next( ) = 0;
         virtual bool end( ) const = 0;
         virtual bool has_next( ) const = 0;
+
         virtual objects::sptr get( ) = 0;
+        virtual objects::sptr get2( )
+        {
+            return get( );
+        }
     };
 
     using generator = impl<type::GENERATOR>;
@@ -124,6 +130,108 @@ namespace mico { namespace objects {
         };
 
         using array = obj<type::ARRAY>;
+
+
+        template <>
+        struct obj<type::TABLE>: public generator {
+
+            using this_type = obj<type::TABLE>;
+            using iterator  = objects::table::value_type::iterator;
+            using const_iterator  = objects::table::value_type::const_iterator;
+
+            obj<type::TABLE>( objects::table::sptr &obj )
+                :object_(obj)
+            {
+                id_ = ibegin( );
+            }
+
+            std::string str( ) const override
+            {
+                std::ostringstream oss;
+                oss << "gen(table)";
+                return oss.str( );
+            }
+
+            objects::sptr clone( ) const override
+            {
+                return make( object_ );
+            }
+
+            void reset( ) override
+            {
+                id_ = ibegin( );
+            }
+
+            void next( ) override
+            {
+                if( !end( ) ) {
+                    ++id_;
+                }
+            }
+
+            iterator ibegin( )
+            {
+                return object_->value( ).begin( );
+            }
+
+            iterator iend( )
+            {
+                return object_->value( ).end( );
+            }
+
+            const_iterator cbegin( ) const
+            {
+                return object_->value( ).cbegin( );
+            }
+
+            const_iterator cend( ) const
+            {
+                return object_->value( ).cend( );
+            }
+
+            bool end( ) const override
+            {
+                return is_end( id_ );
+            }
+
+            bool is_end( const_iterator id ) const
+            {
+                return id == cend( );
+            }
+
+            bool has_next( ) const override
+            {
+                return !end( ) && !is_end( std::next( id_ ) );
+            }
+
+            objects::sptr get( ) override
+            {
+                if( !end( ) ) {
+                    return id_->second;
+                }
+                return nullptr;
+            }
+
+            objects::sptr get2( ) override
+            {
+                if( !end( ) ) {
+                    return id_->first->clone( );
+                }
+                return nullptr;
+            }
+
+            static
+            sptr make( objects::table::sptr obj )
+            {
+                return std::make_shared<this_type>( obj );
+            }
+
+        private:
+            table::sptr    object_;
+            iterator       id_;
+        };
+
+        using table = obj<type::TABLE>;
 
         template <>
         struct obj<type::STRING>: public generator {

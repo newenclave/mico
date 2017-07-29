@@ -640,11 +640,16 @@ namespace mico { namespace eval {
             }
 
             switch ( from->get_type( ) ) {
+
             case objects::type::ARRAY:
-                return objects::generators::array::make(
-                            objects::cast_array(from), istep );
+                return GEN::array::make( objects::cast_array(from), istep );
+
             case objects::type::STRING:
                 return GEN::string::make( objects::cast_string(from), istep );
+
+            case objects::type::TABLE:
+                return GEN::table::make( objects::cast_table(from) );
+
             case objects::type::INTEGER: {
                 auto i = objects::cast_int(from);
                 return GEN::integer::make( 0, i->value( ), istep );
@@ -721,10 +726,13 @@ namespace mico { namespace eval {
                 nodes[id]    = e.get( );
                 expres[id++] = obj;
 
-                if( obj->get_type( ) == objects::type::TABLE ) {
+                /// table doesn't have direction
+                if( is_table( obj ) ) {
                     break;
                 }
             }
+
+            bool table = is_table( expres[0] );
 
             auto gen_obj = create_generator( expres[0], nodes[0],
                                              expres[1], nodes[1] );
@@ -740,10 +748,23 @@ namespace mico { namespace eval {
             while( !gen->end( ) ) {
 
                 environment::scoped s(make_env(env));
-                auto next = gen->get( );
-                s.env( )->set( ident[0], next );
-                if( !ident[1].empty( ) ) {
-                    s.env( )->set(ident[1], objects::integer::make(id++));
+
+                if( !table ) {
+                    s.env( )->set( ident[0], gen->get( ) );
+                    if( !ident[1].empty( ) ) {
+                        s.env( )->set(ident[1], objects::integer::make(id++));
+                    }
+                } else {
+
+                    if( !ident[1].empty( ) ) {
+                        s.env( )->set(ident[0], gen->get2( ));
+                        s.env( )->set(ident[1], gen->get( ));
+                    } else {
+                        s.env( )->set(ident[0], gen->get( ));
+                    }
+                    if( !ident[2].empty( ) ) {
+                        s.env( )->set(ident[2], objects::integer::make(id++));
+                    }
                 }
 
                 res = eval_scope_node( fori->body( ).get( ), s.env( ) );
