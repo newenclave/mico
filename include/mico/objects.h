@@ -17,6 +17,7 @@
 #include "mico/objects/quote.h"
 #include "mico/objects/module.h"
 #include "mico/objects/generator.h"
+#include "mico/objects/interval.h"
 
 namespace mico { namespace objects {
 
@@ -47,6 +48,7 @@ namespace mico { namespace objects {
     MICO_DEFINE_CAST_FUNC( ref,         type::REFERENCE )
     MICO_DEFINE_CAST_FUNC( mod,         type::MODULE    )
     MICO_DEFINE_CAST_FUNC( get,         type::GENERATOR )
+    MICO_DEFINE_CAST_FUNC( ival,        type::INTERVAL  )
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
     MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )

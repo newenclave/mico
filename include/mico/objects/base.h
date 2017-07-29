@@ -39,6 +39,7 @@ namespace mico { namespace objects {
         QUOTE       = 13,
         MODULE      = 14,
         GENERATOR   = 15,
+        INTERVAL    = 16,
     };
 
     struct name {
@@ -62,6 +63,7 @@ namespace mico { namespace objects {
             case type::QUOTE      : return "OBJ_QUOTE";
             case type::MODULE     : return "OBJ_MODULE";
             case type::GENERATOR  : return "OBJ_GENERATOR";
+            case type::INTERVAL   : return "OBJ_INTERVAL";
             }
             return "<invalid>";
         }

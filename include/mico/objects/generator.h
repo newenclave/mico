@@ -1,7 +1,6 @@
 #ifndef MICO_OBJECTS_GENERATOR_H
 #define MICO_OBJECTS_GENERATOR_H
 
-
 #include <string>
 #include <sstream>
 #include "mico/objects/base.h"
@@ -41,16 +40,17 @@ namespace mico { namespace objects {
 
     using generator = impl<type::GENERATOR>;
 
-    namespace gens {
+    namespace impls {
+
         template <type ObjT>
-        struct obj_impl;
+        struct obj;
 
         template <>
-        struct obj_impl<type::ARRAY>: public generator {
+        struct obj<type::ARRAY>: public generator {
 
-            using this_type = obj_impl<type::ARRAY>;
+            using this_type = obj<type::ARRAY>;
 
-            obj_impl<type::ARRAY>( objects::array::sptr &obj )
+            obj<type::ARRAY>( objects::array::sptr &obj )
                 :object_(obj)
             { }
 
@@ -73,7 +73,7 @@ namespace mico { namespace objects {
 
             void next( ) override
             {
-                if( id_ < object_->size( ) ) {
+                if( !end( ) ) {
                     ++id_;
                 }
             }
@@ -85,7 +85,7 @@ namespace mico { namespace objects {
 
             objects::sptr get( ) override
             {
-                if( id_ < object_->size( ) ) {
+                if( !end( ) ) {
                     return object_->value( )[id_]->value( );
                 }
                 return nullptr;
@@ -101,14 +101,14 @@ namespace mico { namespace objects {
             array::sptr object_;
             std::size_t id_ = 0;
         };
-        using array = obj_impl<type::ARRAY>;
+        using array = obj<type::ARRAY>;
 
         template <>
-        struct obj_impl<type::STRING>: public generator {
+        struct obj<type::STRING>: public generator {
 
-            using this_type = obj_impl<type::STRING>;
+            using this_type = obj<type::STRING>;
 
-            obj_impl<type::STRING>( objects::string::sptr &obj )
+            obj<type::STRING>( objects::string::sptr &obj )
                 :object_(obj)
             { }
 
@@ -131,7 +131,7 @@ namespace mico { namespace objects {
 
             void next( ) override
             {
-                if( id_ < object_->size( ) ) {
+                if( !end( ) ) {
                     ++id_;
                 }
             }
@@ -143,7 +143,7 @@ namespace mico { namespace objects {
 
             objects::sptr get( ) override
             {
-                if( id_ < object_->size( ) ) {
+                if( !end( ) ) {
                     auto v = static_cast<std::int64_t>(object_->value( )[id_]);
                     return objects::integer::make(v);
                 }
@@ -160,7 +160,7 @@ namespace mico { namespace objects {
             objects::string::sptr object_;
             std::size_t           id_ = 0;
         };
-        using string = obj_impl<type::ARRAY>;
+        using string = obj<type::ARRAY>;
 
         template <typename NumT>
         struct numeric: public generator {
@@ -168,8 +168,7 @@ namespace mico { namespace objects {
             using this_type  = numeric;
             using value_type = typename NumT::value_type;
 
-            numeric( value_type start, value_type stop,
-                     value_type step = 1 )
+            numeric( value_type start, value_type stop, value_type step )
                 :start_(start)
                 ,stop_(stop)
                 ,step_(step)
@@ -178,7 +177,7 @@ namespace mico { namespace objects {
             std::string str( ) const override
             {
                 std::ostringstream oss;
-                oss << "gen(int)";
+                oss << "gen(num)";
                 return oss.str( );
             }
 
@@ -194,7 +193,7 @@ namespace mico { namespace objects {
 
             void next( ) override
             {
-                if( id_ != stop_ ) {
+                if( !end( ) ) {
                     id_ += step_;
                 }
             }
@@ -215,12 +214,11 @@ namespace mico { namespace objects {
             static
             sptr make( value_type start, value_type stop )
             {
-                return make( start, stop, 1 );
+                return make( start, stop, ( ( start > stop ) ?  1 : -1 ) );
             }
 
             static
-            sptr make( value_type start, value_type stop,
-                       value_type step )
+            sptr make( value_type start, value_type stop, value_type step )
             {
                 return std::make_shared<this_type>( start, stop, step );
             }
