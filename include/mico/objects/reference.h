@@ -21,7 +21,7 @@ namespace mico { namespace objects {
         impl<type::REFERENCE>( const environment *my_env,
                                value_type val, bool var )
             :my_env_(my_env)
-            ,value_(unref(val))
+            ,value_(val)
             ,variable_(var)
         {
             value_->mark_in( my_env_ );

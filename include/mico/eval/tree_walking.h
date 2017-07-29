@@ -333,8 +333,13 @@ namespace mico { namespace eval {
                 if( is_fail( rght ) ) {
                     return rght;
                 }
-
-                cont_env->set( id->value( ), unref(rght) );
+                auto val = cont_env->get_here( id->value( ) );
+                if( val->get_type( ) == objects::type::REFERENCE ) {
+                    auto cont = objects::cast_ref(val.get( ));
+                    cont->set_value( env.get( ), unref(rght) );
+                } else {
+                    cont_env->set( id->value( ), unref(rght) );
+                }
                 return rght;
             } else {
                 auto lft = eval_impl_tail( inf->left( ).get( ), env );
@@ -751,7 +756,7 @@ namespace mico { namespace eval {
 
             id = 0;
             for( auto &e: fori->expres( )->value( ) ) {
-                auto obj = unref(eval_impl_tail( e.get( ), env ) );
+                auto obj = eval_impl_tail( e.get( ), env );
                 if( is_fail( obj ) ) {
                     return obj;
                 }
@@ -764,8 +769,6 @@ namespace mico { namespace eval {
                     break;
                 }
             }
-
-            bool table = is_table( expres[0] );
 
             auto gen_obj = create_generator( expres[0], nodes[0],
                                              expres[1], nodes[1] );
@@ -782,22 +785,17 @@ namespace mico { namespace eval {
 
                 environment::scoped s(make_env(env));
 
-                if( !table ) {
-                    s.env( )->set( ident[0], gen->get( ) );
-                    if( !ident[1].empty( ) ) {
-                        s.env( )->set(ident[1], objects::integer::make(id++));
-                    }
-                } else {
+                size_t last_id = 2;
 
-                    if( !ident[1].empty( ) ) {
-                        s.env( )->set(ident[0], gen->get2( ));
-                        s.env( )->set(ident[1], gen->get( ));
-                    } else {
-                        s.env( )->set(ident[0], gen->get( ));
-                    }
-                    if( !ident[2].empty( ) ) {
-                        s.env( )->set(ident[2], objects::integer::make(id++));
-                    }
+                if( !ident[1].empty( ) ) {
+                    s.env( )->set(ident[0], gen->get_id( ));
+                    s.env( )->set(ident[1], gen->get_val( ));
+                } else {
+                    s.env( )->set(ident[0], gen->get_val( ));
+                    last_id = 1;
+                }
+                if( !ident[last_id].empty( ) ) {
+                    s.env( )->set(ident[last_id], objects::integer::make(id++));
                 }
 
                 env->get_state( ).GC( env );
@@ -812,14 +810,14 @@ namespace mico { namespace eval {
                 }
 
                 if( is_break( next ) ) {
-                    return res;
+                    return expres[0];
                 }
 
                 res = next;
                 gen->next( );
             }
 
-            return res;
+            return expres[0];
         }
 
         objects::sptr eval_ifelse( ast::node *n, environment::sptr env )

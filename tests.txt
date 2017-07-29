@@ -683,6 +683,13 @@ for i in 20 {
     }
 }
 
+let a = [1]
+for i in a {
+    i = i + 1
+    io.puts(i)
+    __env()
+}
+
 for i in 100000000 {
     if( i % 100000 == 0 ) {
         if( i == 500000 ) {
@@ -694,6 +701,25 @@ for i in 100000000 {
         io.puts(i)
         break
     }
+}
+
+let map = fn( x, call ) {
+    for v in x {
+        v = call(v)
+    }
+}
+let r = map([1,2,3,4,5,6,7,8,9], fn(i){ i * i })
+
+let r = map(1..9, fn(i){ i * i })
+
+let z = map( {1:1, 2:2, 3:3, 4:4,5:5, 6:6, 7:7, 8:8, 9:9}, fn( i ) { i * i * i } )
+
+let t = fn( max ) {
+    let res = {}
+    for i in 1..max+1 {
+        res = res + {i: i}
+    }
+    res
 }
 
 */

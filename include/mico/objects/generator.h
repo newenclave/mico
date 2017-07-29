@@ -39,11 +39,9 @@ namespace mico { namespace objects {
         virtual bool end( ) const = 0;
         virtual bool has_next( ) const = 0;
 
-        virtual objects::sptr get( ) = 0;
-        virtual objects::sptr get2( )
-        {
-            return get( );
-        }
+        virtual objects::sptr get_val( ) = 0;
+        virtual objects::sptr get_id( ) = 0;
+
     };
 
     using generator = impl<type::GENERATOR>;
@@ -103,10 +101,15 @@ namespace mico { namespace objects {
                 return !end( ) && !is_end( id_ + step_ );
             }
 
-            objects::sptr get( ) override
+            objects::sptr get_id( )  override
+            {
+                return objects::integer::make( id_ );
+            }
+
+            objects::sptr get_val( ) override
             {
                 if( !end( ) ) {
-                    return object_->at( id_ )->value( );
+                    return object_->at( id_ );
                 }
                 return nullptr;
             }
@@ -204,7 +207,7 @@ namespace mico { namespace objects {
                 return !end( ) && !is_end( std::next( id_ ) );
             }
 
-            objects::sptr get( ) override
+            objects::sptr get_val( ) override
             {
                 if( !end( ) ) {
                     return id_->second;
@@ -212,7 +215,7 @@ namespace mico { namespace objects {
                 return nullptr;
             }
 
-            objects::sptr get2( ) override
+            objects::sptr get_id( ) override
             {
                 if( !end( ) ) {
                     return id_->first->clone( );
@@ -283,13 +286,18 @@ namespace mico { namespace objects {
                 return !end( ) && !is_end( id_ + step_ );
             }
 
-            objects::sptr get( ) override
+            objects::sptr get_val( ) override
             {
                 if( !end( ) ) {
                     auto v = static_cast<std::int64_t>(object_->at(id_));
                     return objects::integer::make(v);
                 }
                 return nullptr;
+            }
+
+            objects::sptr get_id( )  override
+            {
+                return objects::integer::make( id_ );
             }
 
             static
@@ -322,6 +330,7 @@ namespace mico { namespace objects {
                 :start_(start)
                 ,stop_(stop)
                 ,step_(step)
+                ,id_(start)
             { }
 
             std::string str( ) const override
@@ -363,12 +372,17 @@ namespace mico { namespace objects {
                 return !end( ) && !is_end( id_ + step_ );
             }
 
-            objects::sptr get( ) override
+            objects::sptr get_val( ) override
             {
                 if( !end( ) ) {
                     return object_type::make( id_ );
                 }
                 return nullptr;
+            }
+
+            objects::sptr get_id( ) override
+            {
+                return object_type::make( id_ );
             }
 
             static
