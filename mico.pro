@@ -26,7 +26,6 @@ DEFINES += DISABLE_MACRO=0
 #CONFIG += c++14
 
 HEADERS += \
-    etool/include/etool/details/aligned_buffer.h \
     etool/include/etool/details/byte_order.h \
     etool/include/etool/details/byte_swap.h \
     etool/include/etool/details/dummy_mutex.h \
