@@ -29,8 +29,6 @@ HEADERS += \
     etool/include/etool/details/byte_order.h \
     etool/include/etool/details/byte_swap.h \
     etool/include/etool/details/dummy_mutex.h \
-    etool/include/etool/details/host_byte_order.h \
-    etool/include/etool/details/list.h \
     etool/include/etool/details/operators.h \
     etool/include/etool/details/result.h \
     etool/include/etool/details/type_uid.h \
@@ -113,4 +111,5 @@ HEADERS += \
     include/mico/repl.h \
     include/mico/state.h \
     include/mico/statements.h \
-    include/mico/tokens.h
+    include/mico/tokens.h \
+    include/mico/expressions/interval.h

@@ -40,7 +40,7 @@ namespace mico { namespace objects {
 
     using generator = impl<type::GENERATOR>;
 
-    namespace impls {
+    namespace generators {
 
         template <type ObjT>
         struct obj;
@@ -160,7 +160,7 @@ namespace mico { namespace objects {
             objects::string::sptr object_;
             std::size_t           id_ = 0;
         };
-        using string = obj<type::ARRAY>;
+        using string = obj<type::STRING>;
 
         template <typename NumT>
         struct numeric: public generator {

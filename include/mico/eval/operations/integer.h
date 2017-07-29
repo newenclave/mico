@@ -5,6 +5,7 @@
 #include "mico/tokens.h"
 #include "mico/eval/operations/common.h"
 
+#include "mico/objects/interval.h"
 #include "mico/ast.h"
 
 namespace mico { namespace eval { namespace operations {
@@ -12,12 +13,14 @@ namespace mico { namespace eval { namespace operations {
     template <>
     struct operation<objects::type::INTEGER> {
 
-        using float_type    = objects::impl<objects::type::FLOAT>;
-        using value_type    = objects::impl<objects::type::INTEGER>;
-        using error_type    = objects::impl<objects::type::FAILURE>;
-        using bool_type     = objects::impl<objects::type::BOOLEAN>;
-        using builtin_type  = objects::impl<objects::type::BUILTIN>;
-        using function_type = objects::impl<objects::type::FUNCTION>;
+        using float_type     = objects::impl<objects::type::FLOAT>;
+        using value_type     = objects::impl<objects::type::INTEGER>;
+        using error_type     = objects::impl<objects::type::FAILURE>;
+        using bool_type      = objects::impl<objects::type::BOOLEAN>;
+        using builtin_type   = objects::impl<objects::type::BUILTIN>;
+        using function_type  = objects::impl<objects::type::FUNCTION>;
+        using int_interval   = objects::intervals::integer;
+        using float_interval = objects::intervals::floating;
 
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
@@ -53,6 +56,8 @@ namespace mico { namespace eval { namespace operations {
         objects::sptr eval_float( infix *inf, double lft, double rht )
         {
             switch (inf->token( )) {
+            case tokens::type::DOTDOT:
+                return float_interval::make( lft, rht );
             case tokens::type::MINUS:
                 return float_type::make( lft  - rht );
             case tokens::type::PLUS:
@@ -66,7 +71,6 @@ namespace mico { namespace eval { namespace operations {
                     return error_type::make( inf->pos( ),
                                              "Division by zero. '/'" );
                 }
-
             case tokens::type::LOGIC_AND:
                 return  bool_type::make( (lft != 0.0) && (rht != 0.0) );
             case tokens::type::LOGIC_OR:
@@ -98,6 +102,8 @@ namespace mico { namespace eval { namespace operations {
             auto urgt = static_cast<std::uint64_t>(rht);
 
             switch (inf->token( )) {
+            case tokens::type::DOTDOT:
+                return int_interval::make( lft, rht );
             case tokens::type::MINUS:
                 return value_type::make( lft  - rht );
             case tokens::type::PLUS:

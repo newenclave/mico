@@ -165,13 +165,18 @@ namespace mico {
             bool float_found = false;
             while( begin != end && !float_found ) {
                 char c = *begin++;
-                if( (c == 'e') || (c == 'E') || (c == '.') ) {
+                if( (c == 'e') || (c == 'E') ) {
                     float_found = true;
+                } else if( c == '.' ) {
+                    if( (begin != end) && (*begin == '.') ) {
+                        return false;
+                    } else {
+                        float_found = true;
+                    }
                 } else if( !valid_for_dec_( c ) ) {
                     return false;
                 }
             }
-
             return float_found;
         }
 

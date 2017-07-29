@@ -3,19 +3,21 @@
 
 #include "mico/tokens.h"
 #include "mico/eval/operations/common.h"
+#include "mico/objects/interval.h"
 
 namespace mico { namespace eval { namespace operations {
 
     template <>
     struct operation<objects::type::STRING> {
 
-        using str_type   = objects::impl<objects::type::STRING>;
-        using bool_type  = objects::impl<objects::type::BOOLEAN>;
-        using error_type = objects::impl<objects::type::FAILURE>;
-        using int_type   = objects::impl<objects::type::INTEGER>;
-        using prefix     = ast::expressions::prefix;
-        using infix      = ast::expressions::infix;
-        using index      = ast::expressions::index;
+        using str_type      = objects::impl<objects::type::STRING>;
+        using bool_type     = objects::impl<objects::type::BOOLEAN>;
+        using error_type    = objects::impl<objects::type::FAILURE>;
+        using int_type      = objects::impl<objects::type::INTEGER>;
+        using prefix        = ast::expressions::prefix;
+        using infix         = ast::expressions::infix;
+        using index         = ast::expressions::index;
+        using str_interval  = objects::intervals::string;
 
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr /*obj*/ )
@@ -30,6 +32,8 @@ namespace mico { namespace eval { namespace operations {
                                  const std::string &rht )
         {
             switch( inf->token( )) {
+            case tokens::type::DOTDOT:
+                return  str_interval::make( lft, rht );
             case tokens::type::PLUS:
                 return  str_type::make( lft  + rht );
             case tokens::type::EQ:

@@ -20,6 +20,13 @@ namespace mico { namespace objects {
 
     public:
 
+        std::string str( ) const override
+        {
+            std::ostringstream oss;
+            oss << begin( )->str( ) << ".." << end( )->str( );
+            return oss.str( );
+        }
+
         impl<type::INTERVAL>( )
         { }
 
@@ -27,33 +34,79 @@ namespace mico { namespace objects {
         { }
 
         virtual
-        objects::sptr begin( ) = 0;
+        objects::sptr begin( ) const = 0;
 
         virtual
-        objects::sptr end( ) = 0;
+        objects::sptr end( ) const = 0;
 
+        ast::node::uptr to_ast( tokens::position ) const override
+        {
+            /// fix
+            return nullptr;
+        }
     };
 
     using interval = impl<type::INTERVAL>;
 
-    namespace impls {
+    namespace intervals {
 
         template <objects::type NumT>
-        struct obj;
+        struct obj: public interval {
 
-        template<>
-        struct obj<type::INTEGER>: public interval {
-
-            using this_type = obj<type::INTEGER>;
+            using this_type = obj<NumT>;
 
         public:
 
-            using interval_type = etool::intervals::interval<std::int64_t>;
+            using object_type = objects::impl<NumT>;
+            using value_type = typename object_type::value_type;
+
+            using sptr = std::shared_ptr<this_type>;
+            using interval_type = etool::intervals::interval<value_type>;
+            using obj_type = objects::integer;
+
+            obj<NumT>( value_type left, value_type right )
+                :ival_(interval_type::left_closed(left, right))
+            { }
+
+            objects::sptr begin( ) const override
+            {
+                return object_type::make( ival_.left( ) );
+            }
+
+            objects::sptr end( ) const override
+            {
+                return object_type::make( ival_.right( ) );
+            }
+
+            static
+            sptr make( value_type left, value_type right )
+            {
+                return std::make_shared<this_type>(left, right);
+            }
+
+            objects::sptr clone( ) const override
+            {
+                return make( ival_.left( ), ival_.right( ) );
+            }
+
+            interval_type &native( )
+            {
+                return ival_;
+            }
+
+            const interval_type &native( ) const
+            {
+                return ival_;
+            }
 
         private:
 
             interval_type ival_;
         };
+
+        using string    = obj<objects::type::STRING>;
+        using integer   = obj<objects::type::INTEGER>;
+        using floating  = obj<objects::type::FLOAT>;
     }
 
 }}

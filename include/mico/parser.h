@@ -146,6 +146,7 @@ namespace mico {
             leds_[token_type::BIT_AND]      =
             leds_[token_type::SHIFT_LEFT]   =
             leds_[token_type::SHIFT_RIGHT]  =
+            leds_[token_type::DOTDOT]       =
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
                     };
@@ -188,6 +189,7 @@ namespace mico {
                 { TT::LPAREN,       OP::CALL        },
                 { TT::LBRACKET,     OP::INDEX       },
                 { TT::DOT,          OP::DOT         },
+                { TT::DOTDOT,       OP::DOTDOT      },
             };
 
             auto f = val.find( tt );

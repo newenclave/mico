@@ -80,6 +80,7 @@ namespace mico { namespace tokens {
         ELIF,
         ELSE,
         ELIPSIS,
+        DOTDOT,
         MODULE,
 
         LAST_VISIBLE,
@@ -160,6 +161,7 @@ namespace mico { namespace tokens {
             case type::ELIF:        return "elif";
             case type::ELSE:        return "else";
             case type::ELIPSIS:     return "...";
+            case type::DOTDOT:      return "..";
             case type::MODULE:      return "module";
 
             /// unnamed
