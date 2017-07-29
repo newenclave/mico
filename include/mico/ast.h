@@ -42,6 +42,8 @@ namespace mico { namespace ast {
         ELIPSIS         = 20,
         MODULE          = 21,
         FORIN           = 22,
+        BREAK           = 23,
+        CONTINUE        = 24,
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         QUOTE           = 50,
@@ -79,6 +81,8 @@ namespace mico { namespace ast {
             case type::ELIPSIS      : return "ELIPSIS";
             case type::MODULE       : return "MODULE";
             case type::FORIN        : return "FORIN";
+            case type::BREAK        : return "BREAK";
+            case type::CONTINUE     : return "CONTINUE";
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case type::QUOTE        : return "QUOTE";

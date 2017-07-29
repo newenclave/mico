@@ -136,6 +136,75 @@ namespace mico { namespace ast { namespace statements {
     };
 
     template <>
+    class impl<type::BREAK>: public typed_stmt<type::BREAK> {
+        using this_type = impl<type::BREAK>;
+    public:
+
+        using uptr = std::unique_ptr<this_type>;
+
+        std::string str( ) const override
+        {
+            return "break";
+        }
+
+        void mutate( mutator_type ) override
+        { }
+
+        static
+        uptr make( )
+        {
+            return uptr(new this_type);
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new this_type);
+        }
+
+        bool is_const( ) const override
+        {
+            return true;
+        }
+    };
+
+    using break_expr = impl<type::BREAK>;
+
+    template <>
+    class impl<type::CONTINUE>: public typed_stmt<type::CONTINUE> {
+        using this_type = impl<type::CONTINUE>;
+    public:
+
+        using uptr = std::unique_ptr<this_type>;
+
+        std::string str( ) const override
+        {
+            return "continue";
+        }
+
+        void mutate( mutator_type ) override
+        { }
+
+        static
+        uptr make( )
+        {
+            return uptr(new this_type);
+        }
+
+        ast::node::uptr clone( ) const override
+        {
+            return ast::node::uptr(new this_type);
+        }
+
+        bool is_const( ) const override
+        {
+            return true;
+        }
+    };
+
+    using cont_expr = impl<type::CONTINUE>;
+
+
+    template <>
     class impl<type::EXPR>: public typed_stmt<type::EXPR> {
         using this_type = impl<type::EXPR>;
     public:

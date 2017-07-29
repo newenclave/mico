@@ -2,6 +2,7 @@
 #define MICO_PARSER_H
 
 #include <map>
+#include <set>
 #include <memory>
 #include <functional>
 
@@ -14,6 +15,39 @@
 namespace mico {
 
     class parser {
+
+        struct spetial_token {
+            bool disabled = false;
+
+            struct scope_disable {
+
+                scope_disable( )                                   = delete;
+                scope_disable( const scope_disable& )              = delete;
+                scope_disable( scope_disable && )                  = delete;
+                scope_disable &operator = ( const scope_disable& ) = delete;
+                scope_disable &operator = ( scope_disable && )     = delete;
+
+                scope_disable( spetial_token *st, bool disable )
+                    :state_(st)
+                {
+                    if( state_ ) {
+                        old_ = state_->disabled;
+                        state_->disabled = disable;
+                    }
+                }
+
+                ~scope_disable( )
+                {
+                    if( state_ ) {
+                        state_->disabled = old_;
+                    }
+                }
+
+            private:
+                spetial_token *state_;
+                bool           old_;
+            };
+        };
 
     public:
 
@@ -28,6 +62,7 @@ namespace mico {
         using leds_map        = std::map<token_type, leds_call>;
 
         using errors_list     = std::vector<std::string>;
+        using special_map     = std::map<token_type, spetial_token>;
 
         using precedence      = operations::precedence;
 
@@ -38,6 +73,9 @@ namespace mico {
             reset( );
             fill_nuds( );
             fill_leds( );
+
+            special_[token_type::BREAK].disabled = true;
+
         }
 
         void reset( )
@@ -218,6 +256,14 @@ namespace mico {
             errors_.emplace_back(oss.str( ));
         }
 
+        void error_unexpect( )
+        {
+            std::ostringstream oss;
+            oss << current( ).where
+                << " Unexpected token " << current( ).ident;
+            errors_.emplace_back(oss.str( ));
+        }
+
         void error_expect( token_type tt )
         {
             std::ostringstream oss;
@@ -247,6 +293,16 @@ namespace mico {
                 << peek( ).ident
                 << "' found";
             errors_.emplace_back(oss.str( ));
+        }
+
+        void error_break( )
+        {
+            error_unexpect( );
+        }
+
+        void error_continue( )
+        {
+            error_unexpect( );
         }
 
         void error_inval_data( int pos )
@@ -324,6 +380,15 @@ namespace mico {
             return errors_;
         }
 
+        spetial_token *get_spec_tok( token_type tt )
+        {
+            auto f = special_.find( tt );
+            if( f != special_.end( ) ) {
+                return &f->second;
+            }
+            return nullptr;
+        }
+
     public: /////////////////// PARSING
 
         bool failed( ) const
@@ -378,7 +443,9 @@ namespace mico {
 
         ast::expressions::forin::uptr parse_for( )
         {
+            using TD = spetial_token::scope_disable;
             using res_type = ast::expressions::forin;
+
             advance( );
 
             auto idents = parse_ident_list( );
@@ -399,6 +466,9 @@ namespace mico {
             }
 
             advance( );
+            TD tdb( get_spec_tok( token_type::BREAK ), false );
+            TD tdc( get_spec_tok( token_type::CONTINUE ), false );
+
             auto body = parse_scope( );
 
             auto res = res_type::make( );
@@ -684,6 +754,28 @@ namespace mico {
             return res;
         }
 
+        ast::statements::break_expr::uptr parse_break( )
+        {
+            using break_type = ast::statements::break_expr;
+            auto st = get_spec_tok( token_type::BREAK );
+            if( st && st->disabled ) {
+                error_break( );
+                return nullptr;
+            }
+            return break_type::make( );
+        }
+
+        ast::statements::cont_expr::uptr parse_continue( )
+        {
+            using cont_type = ast::statements::cont_expr;
+            auto st = get_spec_tok( token_type::CONTINUE );
+            if( st && st->disabled ) {
+                error_continue( );
+                return nullptr;
+            }
+            return cont_type::make( );
+        }
+
         ast::expressions::integer::uptr parse_int( )
         {
             ast::expressions::integer::uptr res;
@@ -801,6 +893,7 @@ namespace mico {
 
         ast::expressions::mod::uptr parse_module( ast::node::uptr id )
         {
+            using TD = spetial_token::scope_disable;
             using mod_type = ast::expressions::mod;
 
             if( expect_peek( token_type::IDENT, false ) ) {
@@ -825,6 +918,10 @@ namespace mico {
             mod_type::uptr res( new mod_type( std::move(id),
                                               std::move(parents) ) );
             advance( );
+
+            TD tdb( get_spec_tok( token_type::BREAK ), true );
+            TD tdc( get_spec_tok( token_type::CONTINUE ), false );
+
             res->set_body( parse_scope( ) );
             return res;
         }
@@ -843,7 +940,9 @@ namespace mico {
 
         ast::expressions::function::uptr parse_function( )
         {
+            using TD = spetial_token::scope_disable;
             using fn_type = ast::expressions::function;
+
             fn_type::uptr res(new fn_type);
             res->set_pos( current( ).where );
 
@@ -864,6 +963,10 @@ namespace mico {
             }
 
             advance( );
+
+            TD tdb( get_spec_tok( token_type::BREAK ), true );
+            TD tdc( get_spec_tok( token_type::CONTINUE ), false );
+
             res->set_body( parse_scope( ) );
 
             return res;
@@ -1012,6 +1115,14 @@ namespace mico {
                 stmt = parse_return( );
                 break;
 
+            case token_type::BREAK:
+                stmt = parse_break( );
+                break;
+
+            case token_type::CONTINUE:
+                stmt = parse_continue( );
+                break;
+
 //            case token_type::MODULE:
 //                stmt = parse_module( );
 //                break;
@@ -1091,6 +1202,7 @@ namespace mico {
         token_iterator  peek_;
         nuds_map        nuds_;
         leds_map        leds_;
+        special_map    special_;
 
         errors_list     errors_;
     };

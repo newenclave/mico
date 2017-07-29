@@ -670,9 +670,29 @@ for i in 1..10 {
     }
 }
 
+for i in 20 {
+    if( i % 2 == 0 ) {
+        if( i == 8 ) {
+            io.puts("continue")
+            continue;
+        }
+        io.puts(i)
+    }
+    if( i == 14 ) {
+        break
+    }
+}
+
 for i in 100000000 {
     if( i % 100000 == 0 ) {
+        if( i == 500000 ) {
+            continue
+        }
         io.puts( i )
+    }
+    if( i == 666666 ) {
+        io.puts(i)
+        break
     }
 }
 

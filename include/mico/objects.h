@@ -18,6 +18,8 @@
 #include "mico/objects/module.h"
 #include "mico/objects/generator.h"
 #include "mico/objects/interval.h"
+#include "mico/objects/break.h"
+#include "mico/objects/continue.h"
 
 namespace mico { namespace objects {
 

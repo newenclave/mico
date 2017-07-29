@@ -40,6 +40,8 @@ namespace mico { namespace objects {
         MODULE      = 14,
         GENERATOR   = 15,
         INTERVAL    = 16,
+        BREAK_OBJ   = 17,
+        CONT_OBJ    = 18,
     };
 
     struct name {
@@ -64,6 +66,8 @@ namespace mico { namespace objects {
             case type::MODULE     : return "OBJ_MODULE";
             case type::GENERATOR  : return "OBJ_GENERATOR";
             case type::INTERVAL   : return "OBJ_INTERVAL";
+            case type::BREAK_OBJ  : return "OBJ_BREAK";
+            case type::CONT_OBJ   : return "OBJ_CONTINUE";
             }
             return "<invalid>";
         }

@@ -113,4 +113,6 @@ HEADERS += \
     include/mico/statements.h \
     include/mico/tokens.h \
     include/mico/expressions/interval.h \
-    include/mico/expressions/forin.h
+    include/mico/expressions/forin.h \
+    include/mico/objects/break.h \
+    include/mico/objects/continue.h
