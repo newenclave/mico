@@ -712,15 +712,17 @@ namespace mico { namespace eval {
                     if( use_float ) {
                         auto ibf = static_cast<double>(ib->value( ));
                         auto ief = static_cast<double>(ie->value( ));
-                        return GEN::floating::make( ibf, ief, fstep );
+                        return GEN::floating::make( ibf, ief + fstep, fstep );
                     } else {
-                        return GEN::integer::make( ib->value( ), ie->value( ),
+                        return GEN::integer::make( ib->value( ),
+                                                   ie->value( ) + istep,
                                                    istep );
                     }
                 } else if( i->contain( ) == objects::type::FLOAT ) {
                     auto ib = objects::cast_float(i->begin( ));
                     auto ie = objects::cast_float(i->end( ));
-                    return GEN::floating::make( ib->value( ), ie->value( ),
+                    return GEN::floating::make( ib->value( ),
+                                                ie->value( ) + fstep,
                                                 fstep );
                 }
                 break;

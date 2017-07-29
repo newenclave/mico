@@ -924,7 +924,7 @@ namespace mico {
             advance( );
 
             TD tdb( get_spec_tok( token_type::BREAK ), true );
-            TD tdc( get_spec_tok( token_type::CONTINUE ), false );
+            TD tdc( get_spec_tok( token_type::CONTINUE ), true );
 
             res->set_body( parse_scope( ) );
             return res;
@@ -969,7 +969,7 @@ namespace mico {
             advance( );
 
             TD tdb( get_spec_tok( token_type::BREAK ), true );
-            TD tdc( get_spec_tok( token_type::CONTINUE ), false );
+            TD tdc( get_spec_tok( token_type::CONTINUE ), true );
 
             res->set_body( parse_scope( ) );
 

@@ -24,7 +24,10 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Numbers](#numbers)
     * [Token position](#token-position)
     * [Mutability](#mutability)
+    * [Intervals](#intervals)
     * [if elif else](#if-elif-else)
+    * [for in](#for-in)
+        * [break and continue keywords](#break-and-continue-keywords)
     * [Operators](#operators)
 * [Functions](#functions)
     * [First-class Citizen](#first-class-citizen)
@@ -73,14 +76,16 @@ Thats all.
 For now I'm pretty sure that Mico can run the major part of Monkey's code.
 
 ### View
-Mico supports: integers, floats, strings, arrays, tables, functions
+Mico supports: integers, floats, strings, arrays, tables, functions, modules, intervals
 ```swift
-    let int = 1_000_000                     // int is an integer
-    let f   = 0.1e-3                        // f is a float `0.0001`
-    let s   = "This is a string"            // string
-    let t   = { "x": 0, "y": 0, "z": 0 }    // table (or Hash)
-    let a   = [1, 2, 3, 4, 5, 6, [0, 0, 0]] // array (that contains another array)
-    let fun = fn(a, b){ (a - b) * (a + b) } // function
+    let int  = 1_000_000                     // int is an integer
+    let f    = 0.1e-3                        // f is a float `0.0001`
+    let s    = "This is a string"            // string
+    let t    = { "x": 0, "y": 0, "z": 0 }    // table (or Hash)
+    let a    = [1, 2, 3, 4, 5, 6, [0, 0, 0]] // array (that contains another array)
+    let fun  = fn(a, b){ (a - b) * (a + b) } // function
+    let mod  = module { let var1 = 1; let var2 = 2 } // module
+    let ival = 1..100                                // interval
 ```
 #### Numbers
 Numbers can contain a gap symbol `_`. The symbol can be included both in integers and in floats.
@@ -120,6 +125,175 @@ The operator is a `right arm` operator.
     let a = [1, 2, 3, 4, 5]
     a[0] = a[1] = a[2] = a[3] = a[4] = 0
     // a == [0, 0, 0, 0, 0]
+```
+
+#### Intervals
+
+Intervals are pairs of values. Values can be integers, floats, strings or boolean. Operator `..` creates an interval.
+For now there are not a lot of operations with intervals.
+```swift
+    let float   = 1.0..100.0
+    let int     = 1..100
+    let bool    = false..true
+    let strings = "a".."z"
+```
+
+#### for in
+The operator makes a for-loop. It's an expression and always returns its `value` as the result. There are several types of the operator.
+
+Simple counter loop. Accepts an integer or a float as a `value` and makes a loop that is repeated `value` times
+```swift
+    for i in 10 {
+        io.put(i, " ")
+    }
+    io.puts( )
+```
+This code shows `0 1 2 3 4 5 6 7 8 9`.
+
+The operator can have a `step` value that can change loop's increment and even make it negative
+```swift
+    for i in 10, 2 {
+        io.put(i, " ")
+    }
+    io.puts( )
+    // 0 2 4 6 8
+
+    for i, v in -7, -0.7 {
+        io.put(i, ":", v, " ")
+    }
+    io.puts( )
+    // 0 -0.7 -1.4 -2.1 -2.8 -3.5 -4.2 -4.9 -5.6 -6.3
+```
+An interval loop acccepts a numeric (float or integer) interval and repats `[start..stop]` times. It means that this type of the loop includes right side of the interval.
+```swift
+    for i in 0..10 {
+        io.put(i, " ")
+    }
+    io.puts( )
+    // 0 1 2 3 4 5 6 7 8 9 10
+
+    // the `reverse` variant is also available
+
+    for i in .15..-12, -1.66 {
+        io.put(i, " ")
+    }
+    io.puts( )
+    // 0.15 -1.51 -3.17 -4.83 -6.49 -8.15 -9.81 -11.47 -13.13
+```
+A container loop accepts containers (i.e. arrays or tables) and iterates those values.
+```swift
+    for v in [1, "Hello", 0.19, -100] {
+        io.put(v, " ")
+    }
+    io.puts( )
+    // 1 Hello 0.19 -100
+
+    for v in {1: 1, 2: -0.2, 3: "zero.3"} {
+        io.put(v, " ")
+    }
+    io.puts( )
+    // zero.3 -0.2 1
+    // yep. table doesn't have an order
+```
+For loop that accepts an array it's also possible to use negative `step`.
+```swift
+    for v in [1, 2, 3, 4, 5], -1 {
+        io.put(v, " ")
+    }
+    io.puts( )
+    // 5 4 3 2 1
+
+    // And of course it doesn't have to be `1` or `-1`
+    for v in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], -2 {
+        io.put(v, " ")
+    }
+    io.puts( )
+    // 10 8 6 4 2
+```
+For `table` loops `step` is not available.
+
+Key-Value syntax.
+
+```swift
+    for k, v in [8,8,8,8,8,8,8,8,8] {
+        io.put(k, ":'", v, "' ")
+    }
+    io.puts( )
+    /// 0:'8' 1:'8' 2:'8' 3:'8' 4:'8' 5:'8' 6:'8' 7:'8' 8:'8'
+
+    // for the tables key is the value of the current table key.
+    for k, v in { "x": 0, "y": -100, "z": -1, "t": "00:00:00" } {
+        io.put(k, ":'", v, "' ")
+    }
+    io.puts( )
+    // z:'-1' t:'00:00:00' y:'-100' x:'0'
+```
+Containers loops always set next value variable of the loop as a reference. It means that values in the container can be changed in the loop. And as far as loops are expressions we can easily create and change a container in the place
+
+```swift
+    // helper function. Shows a container value
+    let show = fn( arr ) { for i in arr  { io.put( i, " " ) } io.puts( ) }
+
+    let r = for v in [1,2,3,4,5] {
+        v = v + v * v
+    }
+    show( r )
+    // shows 2 6 12 20 30
+```
+##### break and continue keywords
+
+Of course they exist. And they do what they do always. They interupt current loop and then `continue` makes the loop continue and `break` just breaks it (of course!).
+
+```swift
+    for i in [1,2,3,4,5,6,7,0,-1,-2,-3,-4] {
+        if( i == 0 ) {
+            break
+        }
+        io.put(i)
+    }
+    io.puts( )
+    // 1234567
+
+    for i in [1,2,3,4,5,6,7,0,-1,-2,-3,-4] {
+        if( i == 0 ) {
+            continue
+        }
+        io.put(i)
+    }
+    io.puts( )
+    // 1234567-1-2-3-4
+```
+
+`continue` and `break` must be in the body of a loop.
+
+```swift
+
+    for i in 10 {
+        if( i == 5 ) {
+            if( true ) {
+                if( true ) {
+                    if( true ) { /// just an example
+                        continue
+                    }
+                }
+            }
+        }
+        io.put(i)
+    }
+    // 012346789
+
+    let r = fn( ) {
+        break
+    }
+    // 2:8 Unexpected token break
+
+    for i in 10 {
+        let r = fn( ) {
+            continue
+        }
+        r( )
+    }
+    // 3:12 Unexpected token continue
 ```
 
 #### if elif else
