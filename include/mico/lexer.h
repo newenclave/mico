@@ -286,11 +286,16 @@ namespace mico {
                         return std::make_pair( std::move(value), bb );
                     case token_type::INT_OCT:
                         bb = std::prev(next.iterator( ));
-                        value.literal = read_float(bb, end, &ffound);
-                        if( ffound != 0 ) {
+
+                        if( numeric::check_if_float( bb, end ) ) {
                             value.name = token_type::FLOAT;
+                            value.literal = read_float(bb, end, &ffound );
+                        } else {
+                            value.name = token_type::INT_DEC;
+                            value.literal = read_number(bb, end );
                         }
                         return std::make_pair( std::move(value), bb );
+
                     case token_type::DOT:
                         bb = std::prev(next.iterator( ));
                         if( idents::is_digit( *next.iterator( ) ) ) {

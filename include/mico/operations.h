@@ -8,7 +8,6 @@ namespace mico { namespace operations {
     /// http://en.cppreference.com/w/cpp/language/operator_precedence
     enum class precedence {
         LOWEST,
-        DOTDOT,      // dot dot
         ASSIGN,      // var = val
         LOGIC_OR,    // ||
         LOGIC_AND,   // &&
@@ -16,6 +15,7 @@ namespace mico { namespace operations {
         BIT_XOR,     // &
         BIT_AND,     // ^
         EQUALS,      // ==
+        DOTDOT,      // dot dot
         LESSGREATER, // > or <
         BIT_SHIFT,   // >> or <<
         SUM,         // +

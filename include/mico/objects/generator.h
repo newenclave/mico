@@ -36,6 +36,7 @@ namespace mico { namespace objects {
         virtual void reset( ) = 0;
         virtual void next( ) = 0;
         virtual bool end( ) const = 0;
+        virtual bool has_next( ) const = 0;
         virtual objects::sptr get( ) = 0;
     };
 
@@ -51,8 +52,10 @@ namespace mico { namespace objects {
 
             using this_type = obj<type::ARRAY>;
 
-            obj<type::ARRAY>( objects::array::sptr &obj )
+            obj<type::ARRAY>( objects::array::sptr &obj, std::int64_t step )
                 :object_(obj)
+                ,step_(step)
+                ,id_(step_ < 0 ? -1 : 0)
             { }
 
             std::string str( ) const override
@@ -69,25 +72,35 @@ namespace mico { namespace objects {
 
             void reset( ) override
             {
-                id_ = 0;
+                id_ = (step_ < 0 ? -1 : 0);
             }
 
             void next( ) override
             {
                 if( !end( ) ) {
-                    ++id_;
+                    id_ += step_;
                 }
             }
 
             bool end( ) const override
             {
-                return id_ == object_->size( );
+                return is_end( id_ );
+            }
+
+            bool is_end( std::int64_t id ) const
+            {
+                return !object_->valid_id( id );
+            }
+
+            bool has_next( ) const override
+            {
+                return !end( ) && !is_end( id_ + step_ );
             }
 
             objects::sptr get( ) override
             {
                 if( !end( ) ) {
-                    return object_->value( )[id_]->value( );
+                    return object_->at( id_ )->value( );
                 }
                 return nullptr;
             }
@@ -95,13 +108,21 @@ namespace mico { namespace objects {
             static
             sptr make( objects::array::sptr obj )
             {
-                return std::make_shared<this_type>( obj );
+                return std::make_shared<this_type>( obj, 1 );
+            }
+
+            static
+            sptr make( objects::array::sptr obj, std::int64_t step )
+            {
+                return std::make_shared<this_type>( obj, step );
             }
 
         private:
-            array::sptr object_;
-            std::size_t id_ = 0;
+            array::sptr    object_;
+            std::int64_t   step_;
+            std::int64_t   id_ = 0;
         };
+
         using array = obj<type::ARRAY>;
 
         template <>
@@ -109,8 +130,10 @@ namespace mico { namespace objects {
 
             using this_type = obj<type::STRING>;
 
-            obj<type::STRING>( objects::string::sptr &obj )
+            obj<type::STRING>( objects::string::sptr &obj, std::int64_t step )
                 :object_(obj)
+                ,step_(step)
+                ,id_(step_ < 0 ? -1 : 0)
             { }
 
             std::string str( ) const override
@@ -127,39 +150,56 @@ namespace mico { namespace objects {
 
             void reset( ) override
             {
-                id_ = 0;
+                id_ = (step_ < 0 ? -1 : 0);
             }
 
             void next( ) override
             {
                 if( !end( ) ) {
-                    ++id_;
+                    id_ += step_;
                 }
             }
 
             bool end( ) const override
             {
-                return id_ == object_->size( );
+                return is_end( id_ );
+            }
+
+            bool is_end( std::int64_t id ) const
+            {
+                return !object_->valid_id( id );
+            }
+
+            bool has_next( ) const override
+            {
+                return !end( ) && !is_end( id_ + step_ );
             }
 
             objects::sptr get( ) override
             {
                 if( !end( ) ) {
-                    auto v = static_cast<std::int64_t>(object_->value( )[id_]);
+                    auto v = static_cast<std::int64_t>(object_->at(id_));
                     return objects::integer::make(v);
                 }
                 return nullptr;
             }
 
             static
+            sptr make( objects::string::sptr obj, std::int64_t step )
+            {
+                return std::make_shared<this_type>( obj, step );
+            }
+
+            static
             sptr make( objects::string::sptr obj )
             {
-                return std::make_shared<this_type>( obj );
+                return std::make_shared<this_type>( obj, 1 );
             }
 
         private:
             objects::string::sptr object_;
-            std::size_t           id_ = 0;
+            std::int64_t          step_;
+            std::int64_t          id_ = 0;
         };
         using string = obj<type::STRING>;
 
@@ -202,7 +242,17 @@ namespace mico { namespace objects {
 
             bool end( ) const override
             {
-                return (step_ < 0) ? (id_ <= stop_) : (id_ >= stop_);
+                return is_end( id_ );
+            }
+
+            bool is_end( std::int64_t id ) const
+            {
+                return (step_ < 0) ? ( id <= stop_ ) : ( id >= stop_ );
+            }
+
+            bool has_next( ) const override
+            {
+                return !end( ) && !is_end( id_ + step_ );
             }
 
             objects::sptr get( ) override
@@ -250,7 +300,7 @@ namespace mico { namespace objects {
         };
 
         using integer  = numeric<type::INTEGER>;
-        using floating = numeric<type::STRING>;
+        using floating = numeric<type::FLOAT>;
     }
 }}
 

@@ -41,7 +41,7 @@ namespace mico { namespace ast {
         LIST            = 19,
         ELIPSIS         = 20,
         MODULE          = 21,
-        FOR             = 22,
+        FORIN           = 22,
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         QUOTE           = 50,
@@ -78,13 +78,13 @@ namespace mico { namespace ast {
             case type::LIST         : return "LIST";
             case type::ELIPSIS      : return "ELIPSIS";
             case type::MODULE       : return "MODULE";
-            case type::FOR          : return "FOR";
+            case type::FORIN        : return "FORIN";
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case type::QUOTE        : return "QUOTE";
             case type::UNQUOTE      : return "UNQUOTE";
-            case type::MACRO        : return "MACO";
-            case type::BUILTIN_MACRO: return "MACO";
+            case type::MACRO        : return "MACRO";
+            case type::BUILTIN_MACRO: return "BUILTIN_MACRO";
 #endif
             }
             return "<INVALID>"; /// sould not be here

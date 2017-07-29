@@ -641,4 +641,21 @@ for a,b,c in 1..2, -1 {
 }
 )
 
+for v, i in [1, 2.2, "Hello!", -1.000001] {
+    io.puts(v, " ", i)
+}
+
+let s = fn( c ) {
+    if( c > 0 ) {
+        for i in 2 {
+            s(c - 1)
+        }
+    } else {
+        "Ok"
+    }
+}
+
+let sum = 0
+let r = for val in [1,2,3,4,5,6,7] { sum = sum + val }
+
 */

@@ -18,7 +18,8 @@ namespace mico { namespace objects {
         static const type type_value = type::STRING;
 
         using sptr = std::shared_ptr<this_type>;
-        using value_type = std::string;
+        using value_type  = std::string;
+        using symbol_type = value_type::value_type;
 
         std::string str( ) const override
         {
@@ -42,6 +43,30 @@ namespace mico { namespace objects {
         {
             std::hash<std::string> h;
             return h(value_);
+        }
+
+        bool valid_id( std::int64_t id ) const
+        {
+            auto siz = static_cast<std::size_t>(id);
+            if( id < 0 ) {
+                siz = value_.size( ) - static_cast<std::size_t>(-1 * id);
+            }
+            return siz < value_.size( );
+        }
+
+        symbol_type at( std::int64_t id )
+        {
+            auto siz = static_cast<std::size_t>(id);
+
+            if( id < 0 ) {
+                siz = value_.size( ) - static_cast<std::size_t>(-1 * id);
+            }
+
+            if( siz < value_.size( ) ) {
+                return value_[siz];
+            } else {
+                return 0;
+            }
         }
 
         static

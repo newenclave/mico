@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+#include <map>
 #include "mico/objects/base.h"
 #include "mico/expressions/none.h"
 #include "mico/objects/array.h"
@@ -42,10 +43,24 @@ namespace mico { namespace objects {
         virtual
         objects::type contain( ) const = 0;
 
-        ast::node::uptr to_ast( tokens::position ) const override
+        bool equal( const base *other ) const override
         {
-            /// fix
-            return nullptr;
+            if( other->get_type( ) == this->get_type( ) ) {
+                auto o = static_cast<const this_type *>( other );
+                return begin( )->equal( o->begin( ).get( ) )
+                    && end( )->equal( o->end( ).get( ) );
+            }
+            return false;
+        }
+
+        ast::node::uptr to_ast( tokens::position pos ) const override
+        {
+            using ast_type = ast::expressions::infix;
+            auto res = ast_type::make( tokens::type::DOTDOT,
+                                       begin( )->to_ast( pos ) );
+            res->set_right( end( )->to_ast( pos ) );
+
+            return ast::node::uptr(std::move( res ) );
         }
     };
 
@@ -67,7 +82,6 @@ namespace mico { namespace objects {
 
             using sptr          = std::shared_ptr<this_type>;
             using interval_type = etool::intervals::interval<value_type>;
-            using obj_type      = objects::integer;
 
             obj<NumT>( value_type left, value_type right )
                 :ival_(interval_type::left_closed(left, right))
@@ -97,6 +111,21 @@ namespace mico { namespace objects {
             objects::sptr clone( ) const override
             {
                 return make( ival_.left( ), ival_.right( ) );
+            }
+
+            static
+            void hash_combine( std::size_t &seed, value_type key)
+            {
+                std::hash<value_type> hasher;
+                seed ^= hasher(key) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+
+            std::size_t hash( ) const override
+            {
+                std::size_t seed = 0;
+                hash_combine(seed, ival_.left( ));
+                hash_combine(seed, ival_.right( ));
+                return seed;
             }
 
             interval_type &native( )

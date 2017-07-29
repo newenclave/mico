@@ -80,6 +80,42 @@ namespace mico { namespace eval {
         }
 
         static
+        bool is_array( const objects::sptr &obj )
+        {
+            return obj->get_type( ) == objects::type::ARRAY;
+        }
+
+        static
+        bool is_table( const objects::sptr &obj )
+        {
+            return obj->get_type( ) == objects::type::TABLE;
+        }
+
+        static
+        bool is_string( const objects::sptr &obj )
+        {
+            return obj->get_type( ) == objects::type::STRING;
+        }
+
+        static
+        bool is_int( const objects::sptr &obj )
+        {
+            return obj->get_type( ) == objects::type::INTEGER;
+        }
+
+        static
+        bool is_float( const objects::sptr &obj )
+        {
+            return obj->get_type( ) == objects::type::FLOAT;
+        }
+
+        static
+        bool is_interval( const objects::sptr &obj )
+        {
+            return obj->get_type( ) == objects::type::INTERVAL;
+        }
+
+        static
         bool is_return( const objects::sptr &obj )
         {
             return ((!!obj) && (obj->get_type( ) == objects::type::RETURN));
@@ -103,6 +139,12 @@ namespace mico { namespace eval {
         bool is_tail_call( const objects::base *exp )
         {
             return (exp->get_type( ) == objects::type::TAIL_CALL );
+        }
+
+        static
+        bool is_ident( const ast::node *exp )
+        {
+            return ( exp->get_type( ) == ast::type::IDENT );
         }
 
         static
@@ -571,6 +613,153 @@ namespace mico { namespace eval {
                 }
             }
             return last;
+        }
+
+        objects::sptr create_generator( objects::sptr from,  ast::node *f,
+                                        objects::sptr step,  ast::node *s )
+        {
+
+            namespace GEN = objects::generators;
+
+            std::int64_t istep = 1;
+            double       fstep = 1.0;
+
+            if( step ) {
+                if( is_int( step ) ) {
+                    auto is = objects::cast_int( step.get( ) );
+                    istep = is->value( );
+                    fstep = static_cast<double>(is->value( ));
+                } else if( is_float( step ) ) {
+                    auto fs = objects::cast_float( step.get( ) );
+                    istep = static_cast<std::int64_t>( fs->value( ) );
+                    fstep = fs->value( );
+                } else {
+                    return error( s, "Bad step type for expresion ",
+                                  step->get_type( ) );
+                }
+            }
+
+            switch ( from->get_type( ) ) {
+            case objects::type::ARRAY:
+                return objects::generators::array::make(
+                            objects::cast_array(from), istep );
+            case objects::type::STRING:
+                return GEN::string::make( objects::cast_string(from), istep );
+            case objects::type::INTEGER: {
+                auto i = objects::cast_int(from);
+                return GEN::integer::make( 0, i->value( ), istep );
+            }
+            case objects::type::FLOAT: {
+                auto i = objects::cast_float(from);
+                return GEN::floating::make( 0, i->value( ), fstep );
+            }
+
+            case objects::type::INTERVAL: {
+                auto i = objects::cast_ival(from);
+                if( i->contain( ) == objects::type::INTEGER ) {
+                    auto ib = objects::cast_int(i->begin( ));
+                    auto ie = objects::cast_int(i->end( ));
+                    return GEN::integer::make( ib->value( ), ie->value( ),
+                                               istep );
+                } else if( i->contain( ) == objects::type::FLOAT ) {
+                    auto ib = objects::cast_float(i->begin( ));
+                    auto ie = objects::cast_float(i->end( ));
+                    return GEN::floating::make( ib->value( ), ie->value( ),
+                                                fstep );
+                }
+                break;
+            }
+            default:
+                break;
+            }
+            return error( f, "Is not an itarable object ", from->get_type( ) );
+        }
+
+        objects::sptr eval_forin( ast::node *n, environment::sptr env )
+        {
+            auto fori = ast::cast<ast::expressions::forin>( n );
+
+            static const auto ident_size    = 3;
+            static const auto express_size  = 2;
+
+            /// try to get idents;
+            std::string     ident[ident_size];
+            objects::sptr   expres[express_size];
+            ast::node      *nodes[express_size];
+
+            std::size_t id = 0;
+
+            auto isize = fori->idents( )->value( ).size( );
+            auto esize = fori->expres( )->value( ).size( );
+
+            if( isize > ident_size ) {
+                return error( n, "Bad idents count '", isize,
+                              "' for expression. sould be 1..", ident_size);
+            }
+
+            if( esize > express_size ) {
+                return error( n, "Bad expression count '", isize,
+                              "' for expression. sould be 1..", express_size );
+            }
+
+            for( auto &i: fori->idents( )->value( ) ) {
+                if( !is_ident( i.get( ) ) )  {
+                    return error(i.get( ), "Bad identifier '", i->str( ), "'");
+                }
+                auto ii = ast::cast<ast::expressions::ident>(i.get( ));
+                ident[id++] = ii->value( );
+            }
+
+
+            id = 0;
+            for( auto &e: fori->expres( )->value( ) ) {
+                auto obj = unref(eval_impl_tail( e.get( ), env ) );
+                if( is_fail( obj ) ) {
+                    return obj;
+                }
+
+                nodes[id]    = e.get( );
+                expres[id++] = obj;
+
+                if( obj->get_type( ) == objects::type::TABLE ) {
+                    break;
+                }
+            }
+
+            auto gen_obj = create_generator( expres[0], nodes[0],
+                                             expres[1], nodes[1] );
+            if( is_fail( gen_obj ) ) {
+                return gen_obj;
+            }
+
+            auto gen = objects::cast_gen( gen_obj );
+            id = 0;
+
+            objects::sptr res = get_null( );
+
+            while( !gen->end( ) ) {
+
+                environment::scoped s(make_env(env));
+                auto next = gen->get( );
+                s.env( )->set( ident[0], next );
+                if( !ident[1].empty( ) ) {
+                    s.env( )->set(ident[1], objects::integer::make(id++));
+                }
+
+                res = eval_scope_node( fori->body( ).get( ), s.env( ) );
+
+                if( gen->has_next( ) ) {
+                    res = eval_tail_return( res );
+                }
+
+                if( is_return( res ) || is_fail( res ) ) {
+                    return res;
+                }
+
+                gen->next( );
+            }
+
+            return res;
         }
 
         objects::sptr eval_ifelse( ast::node *n, environment::sptr env )
@@ -1077,6 +1266,8 @@ namespace mico { namespace eval {
                 res = eval_infix( n, env ); break;
             case ast::type::IFELSE:
                 res = eval_ifelse( n, env ); break;
+            case ast::type::FORIN:
+                res = eval_forin( n, env ); break;
             case ast::type::INDEX:
                 res = eval_index( n, env ); break;
             case ast::type::IDENT:

@@ -10,9 +10,9 @@
 namespace mico { namespace ast { namespace expressions {
 
     template <>
-    class impl<type::FOR>: public typed_expr<type::FOR> {
+    class impl<type::FORIN>: public typed_expr<type::FORIN> {
 
-        using this_type = impl<type::FOR>;
+        using this_type = impl<type::FORIN>;
 
     public:
 
@@ -95,7 +95,7 @@ namespace mico { namespace ast { namespace expressions {
         body_value   body_;
     };
 
-    using forin = impl<type::FOR>;
+    using forin = impl<type::FORIN>;
 
 }}}
 

@@ -60,6 +60,11 @@ namespace mico { namespace ast { namespace expressions {
             return right_;
         }
 
+        static
+        uptr make( tokens::type tt, node::uptr lft )
+        {
+            return uptr(new this_type(tt, std::move(lft) ) );
+        }
 
         tokens::type token( ) const
         {

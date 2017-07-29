@@ -17,9 +17,9 @@ namespace mico { namespace objects {
 
         static const type type_value = type::ARRAY;
 
-        using sptr = std::shared_ptr<this_type>;
-        using cont = impl<type::REFERENCE>;
-        using cont_sptr = std::shared_ptr<cont>;
+        using sptr       = std::shared_ptr<this_type>;
+        using cont       = impl<type::REFERENCE>;
+        using cont_sptr  = std::shared_ptr<cont>;
         using value_type = std::deque<cont_sptr>;
 
         impl( environment::sptr env )
@@ -58,7 +58,16 @@ namespace mico { namespace objects {
             return value_;
         }
 
-        objects::sptr at( std::int64_t id )
+        bool valid_id( std::int64_t id ) const
+        {
+            auto siz = static_cast<std::size_t>(id);
+            if( id < 0 ) {
+                siz = value_.size( ) - static_cast<std::size_t>(-1 * id);
+            }
+            return siz < value_.size( );
+        }
+
+        cont_sptr at( std::int64_t id )
         {
             auto siz = static_cast<std::size_t>(id);
 
