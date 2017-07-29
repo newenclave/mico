@@ -8,6 +8,7 @@
 #include "mico/objects/array.h"
 #include "mico/objects/string.h"
 #include "mico/objects/numbers.h"
+#include "mico/objects/interval.h"
 
 namespace mico { namespace objects {
 
@@ -162,11 +163,12 @@ namespace mico { namespace objects {
         };
         using string = obj<type::STRING>;
 
-        template <typename NumT>
+        template <objects::type NumT>
         struct numeric: public generator {
 
-            using this_type  = numeric;
-            using value_type = typename NumT::value_type;
+            using object_type = objects::impl<NumT>;
+            using this_type   = numeric<NumT>;
+            using value_type  = typename object_type::value_type;
 
             numeric( value_type start, value_type stop, value_type step )
                 :start_(start)
@@ -206,7 +208,7 @@ namespace mico { namespace objects {
             objects::sptr get( ) override
             {
                 if( !end( ) ) {
-                    return NumT::make( id_ );
+                    return object_type::make( id_ );
                 }
                 return nullptr;
             }
@@ -223,6 +225,22 @@ namespace mico { namespace objects {
                 return std::make_shared<this_type>( start, stop, step );
             }
 
+            static
+            sptr make( typename objects::intervals::obj<NumT>::sptr &obj )
+            {
+                return std::make_shared<this_type>( obj->native( ).left( ),
+                                                    obj->native( ).right( ) );
+            }
+
+            static
+            sptr make( typename objects::intervals::obj<NumT>::sptr &obj,
+                       value_type step )
+            {
+                return std::make_shared<this_type>( obj->native( ).left( ),
+                                                    obj->native( ).right( ),
+                                                    step );
+            }
+
         private:
 
             value_type start_;
@@ -231,8 +249,8 @@ namespace mico { namespace objects {
             value_type id_   = 0;
         };
 
-        using integer  = numeric<objects::integer>;
-        using floating = numeric<objects::floating>;
+        using integer  = numeric<type::INTEGER>;
+        using floating = numeric<type::STRING>;
     }
 }}
 

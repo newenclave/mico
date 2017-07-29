@@ -76,6 +76,8 @@ namespace mico { namespace tokens {
 #endif
         BOOL_TRUE,
         BOOL_FALSE,
+        FOR,
+        IN,
         IF,
         ELIF,
         ELSE,
@@ -157,6 +159,8 @@ namespace mico { namespace tokens {
 #endif
             case type::BOOL_TRUE:   return "true";
             case type::BOOL_FALSE:  return "false";
+            case type::FOR:         return "for";
+            case type::IN:          return "in";
             case type::IF:          return "if";
             case type::ELIF:        return "elif";
             case type::ELSE:        return "else";

@@ -8,16 +8,20 @@
 #include "mico/eval/operations/integer.h"
 #include "mico/eval/operations/common.h"
 
+#include "mico/objects/interval.h"
+
 namespace mico { namespace eval { namespace operations {
 
     template <>
     struct operation<objects::type::BOOLEAN> {
-        using float_type = objects::impl<objects::type::FLOAT>;
-        using int_type   = objects::impl<objects::type::INTEGER>;
-        using error_type = objects::impl<objects::type::FAILURE>;
-        using bool_type  = objects::impl<objects::type::BOOLEAN>;
-        using prefix = ast::expressions::prefix;
-        using infix  = ast::expressions::infix;
+        using float_type    = objects::impl<objects::type::FLOAT>;
+        using int_type      = objects::impl<objects::type::INTEGER>;
+        using error_type    = objects::impl<objects::type::FAILURE>;
+        using bool_type     = objects::impl<objects::type::BOOLEAN>;
+        using bool_interval = objects::intervals::boolean;
+
+        using prefix        = ast::expressions::prefix;
+        using infix         = ast::expressions::infix;
 
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
@@ -50,6 +54,8 @@ namespace mico { namespace eval { namespace operations {
         objects::sptr eval_bool( infix *inf, bool lft, bool rht)
         {
             switch (inf->token( )) {
+            case tokens::type::DOTDOT:
+                return  bool_interval::make( lft, rht );
             case tokens::type::LOGIC_AND:
                 return  bool_type::make( lft && rht );
             case tokens::type::LOGIC_OR:

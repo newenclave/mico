@@ -21,5 +21,6 @@
 #include "mico/expressions/macro.h"
 #include "mico/expressions/elipsis.h"
 #include "mico/expressions/module.h"
+#include "mico/expressions/forin.h"
 
 #endif // EXPRESSIONS_H

@@ -39,6 +39,9 @@ namespace mico { namespace objects {
         virtual
         objects::sptr end( ) const = 0;
 
+        virtual
+        objects::type contain( ) const = 0;
+
         ast::node::uptr to_ast( tokens::position ) const override
         {
             /// fix
@@ -57,12 +60,14 @@ namespace mico { namespace objects {
 
         public:
 
-            using object_type = objects::impl<NumT>;
-            using value_type = typename object_type::value_type;
+            static const objects::type type_name = NumT;
 
-            using sptr = std::shared_ptr<this_type>;
+            using object_type   = objects::impl<type_name>;
+            using value_type    = typename object_type::value_type;
+
+            using sptr          = std::shared_ptr<this_type>;
             using interval_type = etool::intervals::interval<value_type>;
-            using obj_type = objects::integer;
+            using obj_type      = objects::integer;
 
             obj<NumT>( value_type left, value_type right )
                 :ival_(interval_type::left_closed(left, right))
@@ -76,6 +81,11 @@ namespace mico { namespace objects {
             objects::sptr end( ) const override
             {
                 return object_type::make( ival_.right( ) );
+            }
+
+            objects::type contain( ) const override
+            {
+                return type_name;
             }
 
             static
@@ -107,6 +117,7 @@ namespace mico { namespace objects {
         using string    = obj<objects::type::STRING>;
         using integer   = obj<objects::type::INTEGER>;
         using floating  = obj<objects::type::FLOAT>;
+        using boolean   = obj<objects::type::BOOLEAN>;
     }
 
 }}

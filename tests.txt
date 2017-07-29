@@ -634,4 +634,11 @@ let b = module: a, new(400) {
     }
 }
 
+__str(
+for a,b,c in 1..2, -1 {
+    let test = a
+    return 100;
+}
+)
+
 */

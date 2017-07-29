@@ -59,6 +59,7 @@ namespace mico {
             nuds_[token_type::BOOL_TRUE]  = [this]( ) { return parse_bool( ); };
             nuds_[token_type::BOOL_FALSE] = [this]( ) { return parse_bool( ); };
             nuds_[token_type::IF]         = [this]( ) { return parse_if( );   };
+            nuds_[token_type::FOR]        = [this]( ) { return parse_for( );  };
 
             nuds_[token_type::FUNCTION]   =
                     [this]( ) {
@@ -147,6 +148,7 @@ namespace mico {
             leds_[token_type::SHIFT_LEFT]   =
             leds_[token_type::SHIFT_RIGHT]  =
             leds_[token_type::DOTDOT]       =
+            leds_[token_type::IN]           =
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
                     };
@@ -190,6 +192,7 @@ namespace mico {
                 { TT::LBRACKET,     OP::INDEX       },
                 { TT::DOT,          OP::DOT         },
                 { TT::DOTDOT,       OP::DOTDOT      },
+                { TT::IN,           OP::EQUALS      },
             };
 
             auto f = val.find( tt );
@@ -371,6 +374,40 @@ namespace mico {
             scope->set_pos( current( ).where );
             parse_statements( scope->value( ), token_type::RBRACE );
             return scope;
+        }
+
+        ast::expressions::forin::uptr parse_for( )
+        {
+            using res_type = ast::expressions::forin;
+            advance( );
+
+            auto idents = parse_ident_list( );
+
+            if( failed( ) ) {
+                return nullptr;
+            }
+
+            if( !expect_peek( token_type::IN ) ) {
+                return nullptr;
+            }
+
+            advance( );
+            auto expr = parse_expression_list( );
+
+            if( !expect_peek( token_type::LBRACE ) ) {
+                return nullptr;
+            }
+
+            advance( );
+            auto body = parse_scope( );
+
+            auto res = res_type::make( );
+
+            res->set_body( std::move(body) );
+            res->set_idents( std::move(idents) );
+            res->set_expres( std::move(expr) );
+
+            return res;
         }
 
         ast::expressions::ifelse::node parse_if_node( )
