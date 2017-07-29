@@ -722,4 +722,8 @@ let t = fn( max ) {
     res
 }
 
+for i in 0..10, .1 {
+    io.puts(i)
+}
+
 */

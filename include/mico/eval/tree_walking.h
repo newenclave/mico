@@ -662,12 +662,14 @@ namespace mico { namespace eval {
             std::int64_t istep = 1;
             double       fstep = 1.0;
 
+            bool use_float = false;
             if( step ) {
                 if( is_int( step ) ) {
                     auto is = objects::cast_int( step.get( ) );
                     istep = is->value( );
                     fstep = static_cast<double>(is->value( ));
                 } else if( is_float( step ) ) {
+                    use_float = true;
                     auto fs = objects::cast_float( step.get( ) );
                     istep = static_cast<std::int64_t>( fs->value( ) );
                     fstep = fs->value( );
@@ -690,7 +692,12 @@ namespace mico { namespace eval {
 
             case objects::type::INTEGER: {
                 auto i = objects::cast_int(from);
-                return GEN::integer::make( 0, i->value( ), istep );
+                if( use_float ) {
+                    auto val = static_cast<double>(i->value( ));
+                    return GEN::floating::make( 0.0, val, fstep );
+                } else {
+                    return GEN::integer::make( 0, i->value( ), istep );
+                }
             }
             case objects::type::FLOAT: {
                 auto i = objects::cast_float(from);
@@ -702,8 +709,14 @@ namespace mico { namespace eval {
                 if( i->contain( ) == objects::type::INTEGER ) {
                     auto ib = objects::cast_int(i->begin( ));
                     auto ie = objects::cast_int(i->end( ));
-                    return GEN::integer::make( ib->value( ), ie->value( ),
-                                               istep );
+                    if( use_float ) {
+                        auto ibf = static_cast<double>(ib->value( ));
+                        auto ief = static_cast<double>(ie->value( ));
+                        return GEN::floating::make( ibf, ief, fstep );
+                    } else {
+                        return GEN::integer::make( ib->value( ), ie->value( ),
+                                                   istep );
+                    }
                 } else if( i->contain( ) == objects::type::FLOAT ) {
                     auto ib = objects::cast_float(i->begin( ));
                     auto ie = objects::cast_float(i->end( ));
