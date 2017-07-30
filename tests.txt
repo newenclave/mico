@@ -726,12 +726,9 @@ for i in 0..10, .1 {
     io.puts(i)
 }
 
-let arr = [0]
-for i in 1..1 {
-    arr[0] = fn( ) { i * i }
-    if( i == 2 ) {
-        dbg.env( )
-    }
+let arr = []
+for i in 1..2 {
+    arr = arr + [fn( ) { i * i }]
 }
 arr[0]()
 
@@ -739,7 +736,6 @@ let t = fn( ) {
     let a = [1,2,3,4,5]
     fn( ) { a }
 }
-
 let a = t( )
 
 let tt = fn( i ) {
