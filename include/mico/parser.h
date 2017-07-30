@@ -89,6 +89,7 @@ namespace mico {
         {
             special_[token_type::BREAK].disabled    = true;
             special_[token_type::CONTINUE].disabled = true;
+            special_[token_type::ELIPSIS].disabled  = true;
         }
 
         void fill_nuds( )
@@ -263,8 +264,8 @@ namespace mico {
         void error_unexpect( )
         {
             std::ostringstream oss;
-            oss << current( ).where
-                << " Unexpected token " << current( ).ident;
+            oss << "parser error: " << current( ).where
+                << " Unexpected '" << current( ).ident << "'";
             errors_.emplace_back(oss.str( ));
         }
 
@@ -297,16 +298,6 @@ namespace mico {
                 << peek( ).ident
                 << "' found";
             errors_.emplace_back(oss.str( ));
-        }
-
-        void error_break( )
-        {
-            error_unexpect( );
-        }
-
-        void error_continue( )
-        {
-            error_unexpect( );
         }
 
         void error_inval_data( int pos )
@@ -427,6 +418,13 @@ namespace mico {
         ast::expressions::elipsis::uptr parse_elipsis( )
         {
             using elipsis = ast::expressions::elipsis;
+
+            auto st = get_spec_tok( token_type::ELIPSIS );
+            if( st && st->disabled ) {
+                error_unexpect( );
+                return nullptr;
+            }
+
             if( is_peek_expression(  ) ) {
                 advance( );
                 auto next = parse_expression( precedence::LOWEST );
@@ -664,6 +662,9 @@ namespace mico {
 
         ast::expressions::list::uptr parse_ident_list( )
         {
+            using TD = spetial_token::scope_disable;
+            TD tde( get_spec_tok( token_type::ELIPSIS ), false );
+
             auto res = ast::expressions::list::make_params( );
             while( is_current( token_type::IDENT ) ) {
                 res->value( ).emplace_back(parse_ident( ));
@@ -674,7 +675,11 @@ namespace mico {
                 }
             }
             if( is_current( token_type::ELIPSIS ) ) {
-                res->value( ).emplace_back(parse_elipsis( ));
+                if(auto el = parse_elipsis( )) {
+                    res->value( ).emplace_back( std::move(el) );
+                } else {
+                    return nullptr;
+                }
             }
             return res;
         }
@@ -763,7 +768,7 @@ namespace mico {
             using break_type = ast::statements::break_expr;
             auto st = get_spec_tok( token_type::BREAK );
             if( st && st->disabled ) {
-                error_break( );
+                error_unexpect( );
                 return nullptr;
             }
             return break_type::make( );
@@ -774,7 +779,7 @@ namespace mico {
             using cont_type = ast::statements::cont_expr;
             auto st = get_spec_tok( token_type::CONTINUE );
             if( st && st->disabled ) {
-                error_continue( );
+                error_unexpect( );
                 return nullptr;
             }
             return cont_type::make( );
