@@ -726,4 +726,13 @@ for i in 0..10, .1 {
     io.puts(i)
 }
 
+let arr = [0]
+for i in 1..1 {
+    arr[0] = fn( ) { i * i }
+    if( i == 2 ) {
+        dbg.env( )
+    }
+}
+arr[0]()
+
 */

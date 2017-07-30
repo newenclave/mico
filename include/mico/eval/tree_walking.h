@@ -799,6 +799,7 @@ namespace mico { namespace eval {
             while( !gen->end( ) ) {
 
                 environment::scoped s(make_env(env));
+                //env->get_state( ).GC( env );
 
                 size_t last_id = 1;
 
@@ -814,7 +815,6 @@ namespace mico { namespace eval {
                     s.env( )->set(ident[last_id], objects::integer::make(id++));
                 }
 
-                env->get_state( ).GC( env );
                 auto next = eval_scope_node( fori->body( ).get( ), s.env( ) );
                 next = eval_tail_return( next );
 
