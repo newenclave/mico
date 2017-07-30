@@ -727,7 +727,7 @@ for i in 0..10, .1 {
 }
 
 let arr = []
-for i in 1..2 {
+for i in 1..4 {
     arr = arr + [fn( ) { i * i }]
 }
 arr[0]()
