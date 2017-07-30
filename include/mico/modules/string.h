@@ -31,18 +31,9 @@ namespace mico { namespace modules {
                     str.erase(str.begin( ));
                 }
 
-                int inval = -1;
                 auto res = numeric::parse_float( str );
+                return FLT::make( minus ? -res : res );
 
-                if( inval > 0 ) {
-                    auto is = static_cast<std::size_t>(inval);
-                    if( is < str.size( ) ) {
-                        ERR::make( par[0]->get_type( ),
-                                " Invalid symbol '",  str[is],
-                                "' in the string" );
-                    }
-                }
-                return FLT::make(minus ? -res : res);
             }
             return objects::null::make( );
         }

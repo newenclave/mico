@@ -29,6 +29,7 @@ namespace mico {
 
                 scope_disable( spetial_token *st, bool disable )
                     :state_(st)
+                    ,old_(true)
                 {
                     if( state_ ) {
                         old_ = state_->disabled;

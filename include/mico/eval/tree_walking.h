@@ -740,9 +740,12 @@ namespace mico { namespace eval {
             static const auto express_size  = 2;
 
             /// try to get idents;
-            std::string     ident[ident_size];
-            objects::sptr   expres[express_size];
-            ast::node      *nodes[express_size];
+
+            std::array<std::string,   ident_size>   ident;
+            std::array<objects::sptr, ident_size>   expres;
+            std::array<ast::node *,   express_size> nodes = {
+                nullptr, nullptr
+            };
 
             std::size_t id = 0;
 
