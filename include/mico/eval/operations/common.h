@@ -133,6 +133,47 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
+        objects::sptr eval_in_table( infix * /*inf*/,
+                                     objects::sptr lft, objects::sptr rght,
+                                     environment::sptr /*env*/  )
+        {
+            auto tbl = objects::cast_table( rght.get( ) );
+            auto f = tbl->value( ).find( lft );
+            return objects::boolean::make(f != tbl->value( ).end( ));
+        }
+
+        static
+        objects::sptr eval_in_ival( infix * /*inf*/,
+                                    objects::sptr lft, objects::sptr rght,
+                                    environment::sptr /*env*/  )
+        {
+            auto ivl = objects::cast_ival( rght.get( ) );
+            switch (ivl->domain( )) {
+            case objects::type::STRING:
+                if( lft->get_type( ) == objects::type::STRING ) {
+                    return objects::boolean::make(ivl->contains(lft.get( ) ) );
+                }
+                break;
+            case objects::type::BOOLEAN:
+                if(auto o = objects::numeric::to_bool(lft)) {
+                    return objects::boolean::make(ivl->contains(o.get( ) ) );
+                }
+                break;
+            case objects::type::INTEGER:
+                if(auto o = objects::numeric::to_int(lft)) {
+                    return objects::boolean::make(ivl->contains(o.get( ) ) );
+                }
+                break;
+            case objects::type::FLOAT:
+                if(auto o = objects::numeric::to_float(lft)) {
+                    return objects::boolean::make(ivl->contains(o.get( ) ) );
+                }
+                break;
+            }
+            return objects::boolean::make(false);;
+        }
+
+        static
         objects::sptr common_infix( infix *inf,
                                     objects::sptr left, objects::sptr right,
                                     environment::sptr env )
@@ -150,7 +191,17 @@ namespace mico { namespace eval { namespace operations {
                     return eval_func( inf, left, right, env);
                 }
                 break;
+            case objects::type::TABLE:
+                if( inf->token( ) == tokens::type::IN ) {
+                    return eval_in_table( inf, left, right, env );
+                }
+                break;
+            case objects::type::INTERVAL:
+                if( inf->token( ) == tokens::type::IN ) {
+                    return eval_in_ival( inf, left, right, env );
+                }
             }
+
             return error_type::make(inf->pos( ), "Infix operation ",
                                     left->get_type( )," '",
                                     inf->token( ), "' ",

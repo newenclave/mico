@@ -115,4 +115,5 @@ HEADERS += \
     include/mico/expressions/interval.h \
     include/mico/expressions/forin.h \
     include/mico/objects/break.h \
-    include/mico/objects/continue.h
+    include/mico/objects/continue.h \
+    include/mico/eval/operations/interval.h

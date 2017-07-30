@@ -82,9 +82,10 @@ namespace mico { namespace objects {
             }
         }
 
-        void push( const environment *menv, objects::sptr val )
+        void push( const environment * /*menv*/, objects::sptr val )
         {
-            value_.emplace_back( cont::make_var(env().get(), val) );
+            // mark in MY environment
+            value_.emplace_back( cont::make_var( env( ).get( ), val) );
         }
 
         static

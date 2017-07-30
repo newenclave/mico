@@ -727,8 +727,15 @@ for i in 0..10, .1 {
 }
 
 let arr = []
-for i in 1..4 {
-    arr = arr + [fn( ) { i * i }]
+for i in 1..5 {
+    arr = arr + [fn( ) {
+        let res = 1
+        for j in i {
+            io.puts(i, " ", res)
+            res = res * i
+        }
+        return res
+    } ]
 }
 arr[0]()
 
@@ -741,5 +748,19 @@ let a = t( )
 let tt = fn( i ) {
     fn( ) { i }
 }
+
+let test = fn ( ) {
+    let t = fn( ) {
+        let a = [1,2,3]
+        fn( ) { a }
+    }
+    let a = t( )
+    let b = t( )
+    a( )[0] = b
+    b = 0
+    a()
+}
+
+
 
 */

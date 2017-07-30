@@ -706,19 +706,18 @@ namespace mico { namespace eval {
 
             case objects::type::INTERVAL: {
                 auto i = objects::cast_ival(from);
-                if( i->contain( ) == objects::type::INTEGER ) {
+                if( i->domain( ) == objects::type::INTEGER ) {
                     auto ib = objects::cast_int(i->begin( ));
                     auto ie = objects::cast_int(i->end( ));
                     if( use_float ) {
                         auto ibf = static_cast<double>(ib->value( ));
                         auto ief = static_cast<double>(ie->value( ));
-                        return GEN::floating::make( ibf, ief + fstep, fstep );
+                        return GEN::floating::make( ibf, ief, fstep );
                     } else {
-                        return GEN::integer::make( ib->value( ),
-                                                   ie->value( ) + istep,
+                        return GEN::integer::make( ib->value( ), ie->value( ),
                                                    istep );
                     }
-                } else if( i->contain( ) == objects::type::FLOAT ) {
+                } else if( i->domain( ) == objects::type::FLOAT ) {
                     auto ib = objects::cast_float(i->begin( ));
                     auto ie = objects::cast_float(i->end( ));
                     return GEN::floating::make( ib->value( ),
@@ -895,7 +894,7 @@ namespace mico { namespace eval {
                              "' for let statement");
             }
             auto id   = expr->ident( )->str( );
-            auto val  = eval_impl( expr->value( ).get( ), env );
+            auto val  = eval_impl_tail( expr->value( ).get( ), env );
             if( is_fail( val ) ) {
                 return val;
             }

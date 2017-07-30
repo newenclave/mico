@@ -41,7 +41,10 @@ namespace mico { namespace objects {
         objects::sptr end( ) const = 0;
 
         virtual
-        objects::type contain( ) const = 0;
+        objects::type domain( ) const = 0;
+
+        virtual
+        bool contains( const base *other ) const = 0;
 
         bool equal( const base *other ) const override
         {
@@ -84,7 +87,7 @@ namespace mico { namespace objects {
             using interval_type = etool::intervals::interval<value_type>;
 
             obj<NumT>( value_type left, value_type right )
-                :ival_(interval_type::left_closed(left, right))
+                :ival_(interval_type::closed(left, right))
             { }
 
             objects::sptr begin( ) const override
@@ -97,7 +100,7 @@ namespace mico { namespace objects {
                 return object_type::make( ival_.right( ) );
             }
 
-            objects::type contain( ) const override
+            objects::type domain( ) const override
             {
                 return type_name;
             }
@@ -111,6 +114,15 @@ namespace mico { namespace objects {
             objects::sptr clone( ) const override
             {
                 return make( ival_.left( ), ival_.right( ) );
+            }
+
+            bool contains( const base *other ) const
+            {
+                if( other->get_type( ) == type_name ) {
+                    auto val = objects::cast<type_name>(other);
+                    return native( ).contains( val->value( ) );
+                }
+                return false;
             }
 
             static

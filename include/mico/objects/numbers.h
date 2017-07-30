@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include "mico/objects/base.h"
+#include "mico/objects/boolean.h"
 #include "mico/expressions/value.h"
 
 namespace mico { namespace objects {
@@ -95,6 +96,64 @@ namespace mico { namespace objects {
 
     using integer  = impl<type::INTEGER>;
     using floating = impl<type::FLOAT>;
+
+    struct numeric {
+        static
+        objects::floating::sptr to_float( objects::sptr obj )
+        {
+            if( obj->get_type( ) == type::FLOAT ) {
+                return objects::cast<type::FLOAT>(obj);
+            } else if( obj->get_type( ) == type::INTEGER ) {
+                auto in = objects::cast<type::INTEGER>( obj );
+                auto val = static_cast<double>(in->value( ));
+                return objects::floating::make(val);
+            } else if( obj->get_type( ) == type::BOOLEAN ) {
+                auto in = objects::cast<type::BOOLEAN>( obj );
+                auto val = in->value( ) ? 1.0 : 0.0;
+                return objects::floating::make(val);
+            }
+            return nullptr;
+        }
+
+        static
+        objects::integer::sptr to_int( objects::sptr obj )
+        {
+            if( obj->get_type( ) == type::INTEGER ) {
+                return objects::cast<type::INTEGER>(obj);
+
+            } else if( obj->get_type( ) == type::FLOAT ) {
+                auto in = objects::cast<type::FLOAT>( obj );
+                auto val = static_cast<std::int64_t>(in->value( ));
+                return objects::integer::make(val);
+
+            } else if( obj->get_type( ) == type::BOOLEAN ) {
+                auto in = objects::cast<type::BOOLEAN>( obj );
+                std::int64_t val = in->value( ) ? 1 : 0;
+                return objects::integer::make(val);
+            }
+            return nullptr;
+        }
+
+        static
+        objects::boolean::sptr to_bool( objects::sptr obj )
+        {
+            if( obj->get_type( ) == type::BOOLEAN ) {
+                return objects::cast<type::BOOLEAN>(obj);
+
+            } else if( obj->get_type( ) == type::FLOAT ) {
+                auto in = objects::cast<type::FLOAT>( obj );
+                auto val = in->value( );
+                return objects::boolean::make( (val > 0) || (val < 0) );
+
+            } else if( obj->get_type( ) == type::INTEGER ) {
+                auto in = objects::cast<type::INTEGER>( obj );
+                std::int64_t val = in->value( );
+                return objects::boolean::make(!!val);
+
+            }
+            return nullptr;
+        }
+    };
 
 }}
 

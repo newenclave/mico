@@ -174,6 +174,18 @@ namespace mico { namespace objects {
 
     template <type ToT>
     inline
+    const impl<ToT> *cast( const base *val )
+    {
+#if defined(CHECK_CASTS)
+        if( ToT != val->get_type( ) ) {
+            throw  std::runtime_error( "Bad object* cast" );
+        }
+#endif
+        return static_cast<const impl<ToT> *>(val);
+    }
+
+    template <type ToT>
+    inline
     std::shared_ptr<impl<ToT> > cast( sptr &val )
     {
 #if defined(CHECK_CASTS)

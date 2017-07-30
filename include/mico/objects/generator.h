@@ -364,7 +364,7 @@ namespace mico { namespace objects {
 
             bool is_end( std::int64_t id ) const
             {
-                return (step_ < 0) ? ( id <= stop_ ) : ( id >= stop_ );
+                return (step_ < 0) ? ( id < stop_ ) : ( id > stop_ );
             }
 
             bool has_next( ) const override

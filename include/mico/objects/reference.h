@@ -66,7 +66,7 @@ namespace mico { namespace objects {
             return !variable_;
         }
 
-        void set_value( const environment *my_env, value_type val )
+        void set_value( const environment * /*my_env*/, value_type val )
         {
             if( value_ != val ) {
                 //// unlock
