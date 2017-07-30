@@ -74,7 +74,7 @@ namespace mico { namespace objects {
 
                 ///replace lock
                 value_ = val;
-                my_env_ = my_env;
+                //my_env_ = my_env;
                 value_->mark_in( my_env_ );
                 marked_ = val->marked( );
             }
