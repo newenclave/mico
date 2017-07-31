@@ -279,6 +279,7 @@ namespace mico { namespace eval {
         }
 
         template <typename Res>
+        static
         Res obj2num( objects::base *oper )
         {
             switch (oper->get_type( )) {
@@ -301,6 +302,7 @@ namespace mico { namespace eval {
         }
 
         template <typename NumObj>
+        static
         objects::sptr obj2num_obj( objects::base *oper )
         {
             switch (oper->get_type( )) {

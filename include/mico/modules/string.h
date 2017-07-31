@@ -91,7 +91,8 @@ namespace mico { namespace modules {
                 }
 
                 int inval = -1;
-                auto res = numeric::parse_int( str, tt, &inval );
+                auto res = static_cast<std::int64_t>
+                                ( numeric::parse_int( str, tt, &inval ) );
 
                 if( inval > 0 ) {
                     auto is = static_cast<std::size_t>(inval);
