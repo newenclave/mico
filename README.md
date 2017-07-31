@@ -368,8 +368,8 @@ Logical operators `&&` and `||` are lazy. `&&` doesn't eval its right side if it
 ##### Operator `in`
 Checks if a value exists in a container or in an interval
 ```swift
-    io.puts( 1 in { 1: "one", 2: "two", 2: "three" } )  // `true`
-    io.puts( 4 in { 1: "one", 2: "two", 2: "three" } )  // `false`
+    io.puts( 1 in { 1: "one", 2: "two", 3: "three" } )  // `true`
+    io.puts( 4 in { 1: "one", 2: "two", 3: "three" } )  // `false`
     io.puts( 0 in 0..100 )                              // `true`
     io.puts( 7 in 0..6   )                              // `false`
     io.puts( 7 in [1,2,3,4,5,6]   )                     // `false`
