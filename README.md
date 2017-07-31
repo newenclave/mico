@@ -180,7 +180,16 @@ An interval loop acccepts a numeric (float or integer) interval and repats `[sta
     }
     io.puts( )
     // 0.15 -1.51 -3.17 -4.83 -6.49 -8.15 -9.81 -11.47
+
+    for i in -12..0.15, 1.66 {
+        io.put(i, " ")
+    }
+    io.puts( )
+    // -12 -10.34 -8.68 -7.02 -5.36 -3.7 -2.04 -0.38
 ```
+As you can see values `-13.13` (next to -11.47 for first) and `1.28` (next to -0.38 for second) are not shown because they lie out of the intervals
+
+
 A container loop accepts containers (i.e. arrays or tables) and iterates those values.
 ```swift
     for v in [1, "Hello", 0.19, -100] {
