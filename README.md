@@ -248,14 +248,14 @@ The `pow` array. Let's make an array that contains functions and they make a `po
         let res = [ ]               // result is an array
         for i in 0..max {           // array starts from 0
             res = res + [ fn( c ) { // add an element to the result
-                let res = 1
+                let res = 1         // internal `res`
                 for i in 1..i {
                     res = res * c
                 }
                 res
             } ]
         }
-        res                         // return
+        res     // return
     }
     let arr = make_pows( 10 )       // makes an array 0..10.
     io.puts( arr[0](1000) ) // `1`
