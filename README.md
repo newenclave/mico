@@ -29,6 +29,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [for in](#for-in)
         * [break and continue keywords](#break-and-continue-keywords)
     * [Operators](#operators)
+        * [Operator in](#operator-in)
 * [Functions](#functions)
     * [First-class Citizen](#first-class-citizen)
     * [Partial application](#partial-application)
@@ -354,6 +355,16 @@ Mico has: +, -, ==, !=, <, >, <=, >=, %, |, &, ^, &&, ||, >>, <<, ~
     bits(0xFFFFFFFFF)               // => 36
     bits(0b1111111000000001111111)  // => 14
 ```
+
+##### Operator `in`
+The checks if a value exists in a container or in an interval
+```swift
+    io.puts( 1 in { 1: "one", 2: "two", 2: "three" } )  // `true`
+    io.puts( 4 in { 1: "one", 2: "two", 2: "three" } )  // `false`
+    io.puts( 0 in 0..100 )                              // `true`
+    io.puts( 7 in 0..6   )                              // `false`
+```
+
 Operators `&&` and `||` are lazy. `&&` doesn't eval its right side if its left side is `false`.
 `||` does the same thing. It returns `true` if its left side is `true`
 
