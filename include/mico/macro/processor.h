@@ -291,6 +291,9 @@ namespace mico { namespace macro {
                     return val->clone( );
                 }
 
+            } else if( n->get_type( ) == AT::QUOTE ) { // ignore quotes
+                //auto quo = ast::cast<ast::expressions::quote>(n);
+                return nullptr;
             }
 //            else if( n->get_type( ) == AT::UNQUOTE ) {
 //                auto quo = ast::cast<ast::expressions::unquote>(n);

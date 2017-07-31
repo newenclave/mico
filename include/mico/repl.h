@@ -132,11 +132,12 @@ namespace mico {
 
                     auto prog = parser::parse( data );
 
+                    std::cout << prog.str( ) << "\n============\n";
                     if( prog.errors( ).empty( ) ) {
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
                         macro::processor::process( &st.macros( ), &prog,
                                                    prog.errors( ), ev );
-//                        std::cout << prog.str( ) << "\n============\n";
+                        std::cout << prog.str( ) << "\n============\n";
 #endif
                     }
 
