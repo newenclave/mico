@@ -16,7 +16,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * C++ compiler (c++11 or later)
 * The book https://interpreterbook.com/. If you have not read it yet.
 
-## Table of Contents
+# Table of Contents
 
 * [Compile](#compile)
 * [Monkey and Mico](#monkey-and-mico)
@@ -49,7 +49,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [string](#string)
     * [dbg](#dbg)
 
-### Compile
+## Compile
 
 Mico is a header-only project. Well you need just compile `mico.cpp`
 
@@ -72,11 +72,11 @@ Or just use Visual Studio (at least version 12)
 
 Thats all.
 
-### Monkey and Mico
+## Monkey and Mico
 "Mico" is an implementation but of course it has some difference.
 For now I'm pretty sure that Mico can run the major part of Monkey's code.
 
-### View
+## View
 Mico supports: integers, floats, strings, arrays, tables, functions, modules, intervals
 ```swift
     let int  = 1_000_000                     // int is an integer
@@ -88,7 +88,7 @@ Mico supports: integers, floats, strings, arrays, tables, functions, modules, in
     let mod  = module { let var1 = 1; let var2 = 2 } // module
     let ival = 1..100                                // interval
 ```
-#### Numbers
+### Numbers
 Numbers can contain a gap symbol `_`. The symbol can be included both in integers and in floats.
 ```swift
     let int = 1_000_000             // 1000000
@@ -98,14 +98,14 @@ Numbers can contain a gap symbol `_`. The symbol can be included both in integer
     let oct = 0_777_111_222_333     // 68604470491
     let flt = 10.1000_0002          // 10.10000002
 ```
-#### Token position
+### Token position
 Every token has its position.
 ```swift
     let test_val = someUnknownCall()
     error: [1:15] Identifier not found 'someUnknownCall'
 ```
 
-#### Mutability
+### Mutability
 Every variable is a real variable and can be changed by assignmet operator `=`.
 Arrays' values also can be changed by the operator
 ```swift
@@ -128,7 +128,7 @@ The operator is a `right arm` operator.
     // a == [0, 0, 0, 0, 0]
 ```
 
-#### Intervals
+### Intervals
 
 Intervals are pairs of values. Values can be integers, floats, strings or boolean. Operator `..` creates an interval.
 For now there are not a lot of operations with intervals.
@@ -139,7 +139,7 @@ For now there are not a lot of operations with intervals.
     let strings = "a".."z"
 ```
 
-#### for in
+### for in
 The operator makes a for-loop. It's an expression and always returns its `value` as the result. There are several types of the operator.
 
 Simple counter loop. Accepts an integer or a float as a `value` and makes a loop that is repeated `value` times
@@ -267,7 +267,7 @@ The `pow` array. Let's make an array that contains functions and they make a `po
 ```
 
 
-##### break and continue keywords
+#### break and continue keywords
 
 Of course they exist. And they do what they do always. They interupt current loop and then `continue` makes the loop continue and `break` just breaks it (of course!).
 
@@ -323,7 +323,7 @@ Of course they exist. And they do what they do always. They interupt current loo
     // 3:12 Unexpected 'continue'
 ```
 
-#### if elif else
+### if elif else
 ```swift
     let x = 1000;
     let res = if( x < 0 ) {
@@ -339,7 +339,7 @@ Of course they exist. And they do what they do always. They interupt current loo
               }
 ```
 
-#### Operators
+### Operators
 Mico has: +, -, ==, !=, <, >, <=, >=, %, |, &, ^, &&, ||, >>, <<, ~
 ```swift
     let bits = fn( value ) {
@@ -365,7 +365,7 @@ Logical operators `&&` and `||` are lazy. `&&` doesn't eval its right side if it
     // error: [1:22] Infix operation '<' is not defined for string and integer
 ```
 
-##### Operator `in`
+#### Operator `in`
 Checks if a value exists in a container or in an interval
 ```swift
     io.puts( 1 in { 1: "one", 2: "two", 3: "three" } )  // `true`
@@ -382,8 +382,8 @@ Complexity
     i in [...] //  O(n)
 ```
 
-### Functions
-#### First-class Citizen
+## Functions
+### First-class Citizen
 All function in Monkey (i.e. in Mico also) are [first-class citizens](https://en.wikipedia.org/wiki/First-class_citizen)
 ```swift
     let sum = fn(a, b) {
@@ -400,7 +400,7 @@ All function in Monkey (i.e. in Mico also) are [first-class citizens](https://en
     let inc = bind(sum, 1)
     let res = inc(10) // res == 11
 ```
-#### Partial application
+### Partial application
 [Partial application](https://en.wikipedia.org/wiki/Partial_application)
 
 ```swift
@@ -418,7 +418,7 @@ A function can be "restored" from its partial from. The prefix operator `*` does
     let res0 = sum2(2, 3)       // res0 = 5
     let res1 = (*sum2)(1, 2, 3) // res1 = 6
 ```
-#### Variadic parameters
+### Variadic parameters
 Functions in Mico can accept a variable number of arguments.
 ```swift
     let param_count = fn( ...parms ) { // prefix operator elipsis must be the last one
@@ -456,7 +456,7 @@ It is "invisible" for the partial application system
     let sum_3    = sum_part( 1, 2, 3 ) // => sum( 0.001, 1, 2, 3 ) => 6.001
 ```
 
-#### Pipe operator
+### Pipe operator
 The pipe operator `|` is a shortcat for the `call` operator `()`.
 The left side of the operator is passed to the right side.
 In this case the right side must be a function (builtin or not).
@@ -477,7 +477,7 @@ In this case the right side must be a function (builtin or not).
 
 ```
 
-#### Tail Call Optimization
+### Tail Call Optimization
 Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
 
 ```swift
@@ -527,14 +527,14 @@ Well. Mico supports it. [Tail Call](https://en.wikipedia.org/wiki/Tail_call)
     }
     call1(0xFFFFFF) // Ok
 ```
-### A Macro System For Monkey
+## A Macro System For Monkey
 
 
 Yes. Finally I've had some free time to add the system; https://interpreterbook.com/lost/
 So. First of all **quote**, **unquote**, and **macro** are keywords and I can parse them as I wish.
 And there are 2 types of **quote**
 
-#### Expression quote
+### Expression quote
 ```swift
     /// expression quote = quote + ( + expression + )
 
@@ -562,7 +562,7 @@ And there are 2 types of **quote**
     unquote(quote_call)     // 6
 
 ```
-#### Statements quote
+### Statements quote
 ```swift
 
     /// statements quote = quote + { + statements + }
@@ -572,7 +572,7 @@ And there are 2 types of **quote**
     unquote(a) // => eval `let a = 1000; let b = a * 2` => null
                // now `a` is 1000 and `b` is 2000
 ```
-#### macro
+### macro
 
 The `macro` keyword defines a piece of code that is placed in the position where it is called.
 And this is all happening in the macro expansion phase before the evaluation.
@@ -673,7 +673,7 @@ And this is all happening in the macro expansion phase before the evaluation.
     ///   Child: 1 [0x56085881ed10]
 
 ```
-#### Builtin Macroses
+### Builtin Macroses
 Yes, it is possible to add them. One test macro `__I` I've added to the macro processor.
 It just returns an ident that contains a concatination of all of the parameters it has.
 ```js
@@ -692,7 +692,7 @@ It just returns an ident that contains a concatination of all of the parameters 
 
 ```
 
-### Modules
+## Modules
 
 Modules are just pieces of the environment.
 They are more like `namespaces` in c++ but in Mico modules are first-class citizens.
@@ -721,7 +721,7 @@ They are more like `namespaces` in c++ but in Mico modules are first-class citiz
 
 ```
 
-#### Inheritance
+### Inheritance
 A module can inherit values from another module. In the case of inheritance
 all elements of the parent are available in the child. And by the child.
 ```swift
@@ -773,7 +773,7 @@ And what is here?
 ```
 Well here is `value a`. Because module `a` is the first in the inheritance tree.
 
-#### Anonymous
+### Anonymous
 
 Anonymouses modules are also available. They are almoust useless because we can't obtain values from them right?
 Wrong! It can be used for the inheritance.
@@ -825,11 +825,11 @@ Also it's possible to chenge the module's name in the `let` expression.
     io.puts(b.a.value)  /// oops `error: [6:7] Identifier not found 'a'`
 ```
 
-### Standart Library
+## Standart Library
 
-#### io
+### io
 
-#### string
+### string
 
-#### dbg
+### dbg
 
