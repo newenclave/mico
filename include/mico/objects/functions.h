@@ -97,9 +97,10 @@ namespace mico { namespace objects {
         {
             if( other->start_param_ != 0 ) {
                 if( auto p = other->env( ) ) {
+                    //auto np = environment::make( p->parent( ) );
                     return std::make_shared<impl>( p->parent( ),
-                                                      other->params_,
-                                                      other->body_, 0 );
+                                                   other->params_,
+                                                   other->body_, 0 );
                 }
             }
             return other;

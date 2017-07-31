@@ -798,4 +798,10 @@ let make_pows = fn( max ) {
 
 let a = fn( c ) { 1 * unquote(c) }
 
+let sum  = fn(a, b, c) { a + b + c}
+let sum2 = sum(0)
+let sum1 = (*sum2)(1, 2)
+let sum3 = (*sum1)(1, 2)
+let res0 = sum2(2, 3)       // res0 = 5
+
 */
