@@ -694,14 +694,14 @@ namespace mico { namespace eval {
                 auto i = objects::cast_int(from);
                 if( use_float ) {
                     auto val = static_cast<double>(i->value( ));
-                    return GEN::floating::make( 0.0, val, fstep );
+                    return GEN::floating::make( 0.0, val - fstep, fstep );
                 } else {
-                    return GEN::integer::make( 0, i->value( ), istep );
+                    return GEN::integer::make( 0, i->value( ) - istep, istep );
                 }
             }
             case objects::type::FLOAT: {
                 auto i = objects::cast_float(from);
-                return GEN::floating::make( 0, i->value( ), fstep );
+                return GEN::floating::make( 0, i->value( ) - fstep, fstep );
             }
 
             case objects::type::INTERVAL: {
