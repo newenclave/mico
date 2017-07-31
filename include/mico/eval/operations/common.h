@@ -228,17 +228,17 @@ namespace mico { namespace eval { namespace operations {
                 }
                 break;
             case objects::type::TABLE:
-                if( inf->token( ) == tokens::type::IN ) {
+                if( inf->token( ) == tokens::type::OP_IN ) {
                     return eval_in_table( inf, left, right, env );
                 }
                 break;
             case objects::type::INTERVAL:
-                if( inf->token( ) == tokens::type::IN ) {
+                if( inf->token( ) == tokens::type::OP_IN ) {
                     return eval_in_ival( inf, left, right, env );
                 }
                 break;
             case objects::type::ARRAY:
-                if( inf->token( ) == tokens::type::IN ) {
+                if( inf->token( ) == tokens::type::OP_IN ) {
                     return eval_in_array( inf, left, right, env );
                 }
                 break;

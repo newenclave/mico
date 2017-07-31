@@ -192,7 +192,7 @@ namespace mico {
             leds_[token_type::SHIFT_LEFT]   =
             leds_[token_type::SHIFT_RIGHT]  =
             leds_[token_type::DOTDOT]       =
-            leds_[token_type::IN]           =
+            leds_[token_type::OP_IN]           =
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
                     };
@@ -236,7 +236,7 @@ namespace mico {
                 { TT::LBRACKET,     OP::INDEX       },
                 { TT::DOT,          OP::DOT         },
                 { TT::DOTDOT,       OP::DOTDOT      },
-                { TT::IN,           OP::EQUALS      },
+                { TT::OP_IN,           OP::EQUALS      },
             };
 
             auto f = val.find( tt );
@@ -457,7 +457,7 @@ namespace mico {
                 return nullptr;
             }
 
-            if( !expect_peek( token_type::IN ) ) {
+            if( !expect_peek( token_type::OP_IN ) ) {
                 return nullptr;
             }
 

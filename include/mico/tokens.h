@@ -77,7 +77,7 @@ namespace mico { namespace tokens {
         BOOL_TRUE,
         BOOL_FALSE,
         FOR,
-        IN,
+        OP_IN,
         BREAK,
         CONTINUE,
         IF,
@@ -162,7 +162,7 @@ namespace mico { namespace tokens {
             case type::BOOL_TRUE:   return "true";
             case type::BOOL_FALSE:  return "false";
             case type::FOR:         return "for";
-            case type::IN:          return "in";
+            case type::OP_IN:          return "in";
             case type::BREAK:       return "break";
             case type::CONTINUE:    return "continue";
             case type::IF:          return "if";
