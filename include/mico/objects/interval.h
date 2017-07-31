@@ -116,7 +116,7 @@ namespace mico { namespace objects {
                 return make( ival_.left( ), ival_.right( ) );
             }
 
-            bool contains( const base *other ) const
+            bool contains( const base *other ) const override
             {
                 if( other->get_type( ) == type_name ) {
                     auto val = objects::cast<type_name>(other);
