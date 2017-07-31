@@ -143,6 +143,32 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
+        objects::sptr eval_in_array( infix * /*inf*/,
+                                     objects::sptr lft, objects::sptr rght,
+                                     environment::sptr /*env*/  )
+        {
+            using OB = objects::boolean;
+            auto arr = objects::cast_array( rght.get( ) );
+
+            for( auto &a: arr->value( ) ) {
+                auto &val(a->value( ));
+                if( val->get_type( ) == objects::type::INTEGER ) {
+                    if( auto o = objects::numeric::to_int(lft) ) {
+                        return OB::make( o->equal(lft.get( ) ) );
+                    }
+                } else if( val->get_type( ) == objects::type::FLOAT ) {
+                    if( auto o = objects::numeric::to_float(lft) ) {
+                        return OB::make( o->equal(lft.get( ) ) );
+                    }
+                } else {
+                    return OB::make( val->equal( lft.get( )) );
+                }
+            }
+
+            return objects::boolean::make(false);
+        }
+
+        static
         objects::sptr eval_in_ival( infix * /*inf*/,
                                     objects::sptr lft, objects::sptr rght,
                                     environment::sptr /*env*/  )
@@ -200,6 +226,14 @@ namespace mico { namespace eval { namespace operations {
                 if( inf->token( ) == tokens::type::IN ) {
                     return eval_in_ival( inf, left, right, env );
                 }
+                break;
+            case objects::type::ARRAY:
+                if( inf->token( ) == tokens::type::IN ) {
+                    return eval_in_array( inf, left, right, env );
+                }
+                break;
+            default:
+                break;
             }
 
             return error_type::make(inf->pos( ), "Infix operation ",
@@ -208,7 +242,6 @@ namespace mico { namespace eval { namespace operations {
                                     right->get_type( ),
                                     " is not defined");
         }
-
 
         static
         objects::sptr eval_builtin( infix * /*inf*/,

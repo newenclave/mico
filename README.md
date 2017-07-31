@@ -357,12 +357,20 @@ Mico has: +, -, ==, !=, <, >, <=, >=, %, |, &, ^, &&, ||, >>, <<, ~
 ```
 
 ##### Operator `in`
-The checks if a value exists in a container or in an interval
+Checks if a value exists in a container or in an interval
 ```swift
     io.puts( 1 in { 1: "one", 2: "two", 2: "three" } )  // `true`
     io.puts( 4 in { 1: "one", 2: "two", 2: "three" } )  // `false`
     io.puts( 0 in 0..100 )                              // `true`
     io.puts( 7 in 0..6   )                              // `false`
+    io.puts( 7 in [1,2,3,4,5,6]   )                     // `false`
+    io.puts( 5 in [1,2,3,4,5,6]   )                     // `true`
+```
+Complexity
+```swift
+    i in a..b  //  O(1)
+    i in {...} //  O(1) aprox. see `hash tables`
+    i in [...] //  O(n)
 ```
 
 Operators `&&` and `||` are lazy. `&&` doesn't eval its right side if its left side is `false`.
