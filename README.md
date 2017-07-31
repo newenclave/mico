@@ -240,6 +240,32 @@ Containers loops always set next value variable of the loop as a reference. It m
     show( r )
     // shows 2 6 12 20 30
 ```
+
+The `pow` array. Let's make an array that contains functions and they make a `pow` of those arguments. Just as an example
+
+```swift
+    let make_pows = fn( max ) {
+        let res = [ ]               // result is an array
+        for i in 0..max {           // array starts from 0
+            res = res + [ fn( c ) { // add an element to the result
+                let res = 1
+                for i in 1..i {
+                    res = res * c
+                }
+                res
+            } ]
+        }
+        res                         // return
+    }
+    let arr = make_pows( 10 )       // makes an array 0..10.
+    io.puts( arr[0](1000) ) // `1`
+    io.puts( arr[1](1000) ) // `1000`
+    io.puts( arr[2](1000) ) // `1000000`
+    io.puts( arr[10](2)   ) // `1024`
+
+```
+
+
 ##### break and continue keywords
 
 Of course they exist. And they do what they do always. They interupt current loop and then `continue` makes the loop continue and `break` just breaks it (of course!).

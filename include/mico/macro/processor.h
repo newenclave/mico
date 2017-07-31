@@ -292,7 +292,6 @@ namespace mico { namespace macro {
                 }
 
             } else if( n->get_type( ) == AT::QUOTE ) { // ignore quotes
-                //auto quo = ast::cast<ast::expressions::quote>(n);
                 return nullptr;
             }
 //            else if( n->get_type( ) == AT::UNQUOTE ) {

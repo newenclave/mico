@@ -762,21 +762,17 @@ let test = fn ( ) {
 }
 
 
-let pow = macro( c, x ) {
-    if( unquote(c) > 0 ) {
-        let res = unquote(c)
-        for i in 1..unquote(x) - 1 {
-            res = res * unquote(c)
-        }
-        res
-    } else {
-        0
-    }
-}
+
 let make_pows = fn( max ) {
-    let res = []
-    for i in 1..max {
-        res = res + [ fn( c ) { pow( c, i ) } ]
+    let res = [ ]
+    for i in 0..max {
+        res = res + [ fn( c ) {
+            let res = 1
+            for i in 1..i {
+                res = res * c
+            }
+            res
+        } ]
     }
     res
 }
