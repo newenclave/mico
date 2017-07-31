@@ -167,7 +167,7 @@ The operator can have a `step` value that can change loop's increment and even m
 ```
 An interval loop acccepts a numeric (float or integer) interval and repats `[start..stop]` times. It means that this type of the loop includes right side of the interval.
 ```swift
-    for i in 0..3 {
+    for i in 0..10 {
         io.put(i, " ")
     }
     io.puts( )
@@ -175,11 +175,11 @@ An interval loop acccepts a numeric (float or integer) interval and repats `[sta
 
     // the `reverse` variant is also available
 
-    for i in .15..-12, -1.66 {
+    for i in 0.15..-12, -1.66 {
         io.put(i, " ")
     }
     io.puts( )
-    // 0.15 -1.51 -3.17 -4.83 -6.49 -8.15 -9.81 -11.47 -13.13
+    // 0.15 -1.51 -3.17 -4.83 -6.49 -8.15 -9.81 -11.47
 ```
 A container loop accepts containers (i.e. arrays or tables) and iterates those values.
 ```swift

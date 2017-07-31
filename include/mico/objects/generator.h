@@ -134,7 +134,6 @@ namespace mico { namespace objects {
 
         using array = obj<type::ARRAY>;
 
-
         template <>
         struct obj<type::TABLE>: public generator {
 
@@ -325,12 +324,20 @@ namespace mico { namespace objects {
             using object_type = objects::impl<NumT>;
             using this_type   = numeric<NumT>;
             using value_type  = typename object_type::value_type;
+            using ival_type   = etool::intervals::interval<value_type>;
 
-            numeric( value_type start, value_type stop, value_type step )
-                :start_(start)
-                ,stop_(stop)
+            static
+            ival_type make_ival( value_type start, value_type stop )
+            {
+                return (start < stop)
+                        ? ival_type::left_closed(start, stop)
+                        : ival_type::right_closed(stop, start);
+            }
+
+            numeric( value_type stop, value_type step )
+                :ival_(make_ival( 0, stop ))
                 ,step_(step)
-                ,id_(start)
+                ,id_(0)
             { }
 
             std::string str( ) const override
@@ -342,12 +349,12 @@ namespace mico { namespace objects {
 
             objects::sptr clone( ) const override
             {
-                return make( start_, stop_, step_ );
+                return make( ival_.right( ), step_ );
             }
 
             void reset( ) override
             {
-                id_ = start_;
+                id_ = ival_.left( );
             }
 
             void next( ) override
@@ -362,9 +369,9 @@ namespace mico { namespace objects {
                 return is_end( id_ );
             }
 
-            bool is_end( std::int64_t id ) const
+            bool is_end( value_type id ) const
             {
-                return (step_ < 0) ? ( id < stop_ ) : ( id > stop_ );
+                return !ival_.contains(id);
             }
 
             bool has_next( ) const override
@@ -386,22 +393,101 @@ namespace mico { namespace objects {
             }
 
             static
-            sptr make( value_type start, value_type stop )
+            sptr make( value_type stop )
             {
-                return make( start, stop, ( ( start < stop ) ?  1 : -1 ) );
+                return make( stop, ( ( 0 < stop ) ?  1 : -1 ) );
+            }
+
+            static
+            sptr make( value_type stop, value_type step )
+            {
+                return std::make_shared<this_type>( stop, step );
+            }
+
+        private:
+            ival_type  ival_;
+            value_type step_ = 1;
+            value_type id_   = 0;
+        };
+
+        template <objects::type NumT>
+        struct interval: public generator {
+
+            using object_type = objects::impl<NumT>;
+            using this_type   = interval<NumT>;
+            using value_type  = typename object_type::value_type;
+            using ival_type   = etool::intervals::interval<value_type>;
+
+            static
+            ival_type make_ival( value_type start, value_type stop )
+            {
+                return (start < stop)
+                        ? ival_type::closed(start, stop)
+                        : ival_type::closed(stop, start);
+            }
+
+            interval( value_type start, value_type stop, value_type step )
+                :ival_(make_ival(start, stop))
+                ,step_(step)
+                ,id_(start)
+            { }
+
+            std::string str( ) const override
+            {
+                std::ostringstream oss;
+                oss << "gen(ival)";
+                return oss.str( );
+            }
+
+            objects::sptr clone( ) const override
+            {
+                return make( ival_.left( ), ival_.right( ), step_ );
+            }
+
+            void reset( ) override
+            {
+                id_ = ival_.left( );
+            }
+
+            void next( ) override
+            {
+                if( !end( ) ) {
+                    id_ += step_;
+                }
+            }
+
+            bool end( ) const override
+            {
+                return is_end( id_ );
+            }
+
+            bool is_end( value_type id ) const
+            {
+                return !ival_.contains( id );
+            }
+
+            bool has_next( ) const override
+            {
+                return !end( ) && !is_end( id_ + step_ );
+            }
+
+            objects::sptr get_val( ) override
+            {
+                if( !end( ) ) {
+                    return object_type::make( id_ );
+                }
+                return nullptr;
+            }
+
+            objects::sptr get_id( ) override
+            {
+                return object_type::make( id_ );
             }
 
             static
             sptr make( value_type start, value_type stop, value_type step )
             {
                 return std::make_shared<this_type>( start, stop, step );
-            }
-
-            static
-            sptr make( typename objects::intervals::obj<NumT>::sptr &obj )
-            {
-                return std::make_shared<this_type>( obj->native( ).left( ),
-                                                    obj->native( ).right( ) );
             }
 
             static
@@ -414,15 +500,17 @@ namespace mico { namespace objects {
             }
 
         private:
-
-            value_type start_;
-            value_type stop_;
+            ival_type  ival_;
             value_type step_ = 1;
             value_type id_   = 0;
         };
 
+
         using integer  = numeric<type::INTEGER>;
         using floating = numeric<type::FLOAT>;
+
+        using int_ival   = interval<type::INTEGER>;
+        using float_ival = interval<type::FLOAT>;
     }
 }}
 

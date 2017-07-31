@@ -694,14 +694,14 @@ namespace mico { namespace eval {
                 auto i = objects::cast_int(from);
                 if( use_float ) {
                     auto val = static_cast<double>(i->value( ));
-                    return GEN::floating::make( 0.0, val - fstep, fstep );
+                    return GEN::floating::make( val, fstep );
                 } else {
-                    return GEN::integer::make( 0, i->value( ) - istep, istep );
+                    return GEN::integer::make( i->value( ), istep );
                 }
             }
             case objects::type::FLOAT: {
                 auto i = objects::cast_float(from);
-                return GEN::floating::make( 0, i->value( ) - fstep, fstep );
+                return GEN::floating::make( i->value( ), fstep );
             }
 
             case objects::type::INTERVAL: {
@@ -712,17 +712,16 @@ namespace mico { namespace eval {
                     if( use_float ) {
                         auto ibf = static_cast<double>(ib->value( ));
                         auto ief = static_cast<double>(ie->value( ));
-                        return GEN::floating::make( ibf, ief, fstep );
+                        return GEN::float_ival::make( ibf, ief, fstep );
                     } else {
-                        return GEN::integer::make( ib->value( ), ie->value( ),
-                                                   istep );
+                        return GEN::int_ival::make( ib->value( ), ie->value( ),
+                                                    istep );
                     }
                 } else if( i->domain( ) == objects::type::FLOAT ) {
                     auto ib = objects::cast_float(i->begin( ));
                     auto ie = objects::cast_float(i->end( ));
-                    return GEN::floating::make( ib->value( ),
-                                                ie->value( ) + fstep,
-                                                fstep );
+                    return GEN::float_ival::make( ib->value( ), ie->value( ),
+                                                  fstep );
                 }
                 break;
             }
