@@ -356,6 +356,15 @@ Mico has: +, -, ==, !=, <, >, <=, >=, %, |, &, ^, &&, ||, >>, <<, ~
     bits(0b1111111000000001111111)  // => 14
 ```
 
+Logical operators `&&` and `||` are lazy. `&&` doesn't eval its right side if its left side is `false`.
+`||` does the same thing. It returns `true` if its left side is `true`
+
+```swift
+    if( 10 > 100 && "100" < 100 ) { 1.0 } else { 0.0 } // ok. returns 0.0
+    if( 10 > 100 || "100" < 100 ) { 1.0 } else { 0.0 }
+    // error: [1:22] Infix operation '<' is not defined for string and integer
+```
+
 ##### Operator `in`
 Checks if a value exists in a container or in an interval
 ```swift
@@ -373,14 +382,6 @@ Complexity
     i in [...] //  O(n)
 ```
 
-Operators `&&` and `||` are lazy. `&&` doesn't eval its right side if its left side is `false`.
-`||` does the same thing. It returns `true` if its left side is `true`
-
-```swift
-    if( 10 > 100 && "100" < 100 ) { 1.0 } else { 0.0 } // ok. returns 0.0
-    if( 10 > 100 || "100" < 100 ) { 1.0 } else { 0.0 }
-    // error: [1:22] Infix operation '<' is not defined for string and integer
-```
 ### Functions
 #### First-class Citizen
 All function in Monkey (i.e. in Mico also) are [first-class citizens](https://en.wikipedia.org/wiki/First-class_citizen)
