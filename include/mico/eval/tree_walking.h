@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <limits>
+#include <array>
 
 #include "mico/eval/evaluator.h"
 #include "mico/expressions.h"
@@ -953,12 +954,12 @@ namespace mico { namespace eval {
             return std::make_shared<objects::retutn_obj>(val);
         }
 
-        objects::sptr eval_break( ast::node */*n*/, environment::sptr /*env*/ )
+        objects::sptr eval_break( ast::node * /*n*/, environment::sptr /*env*/ )
         {
             return objects::break_obj::make( );
         }
 
-        objects::sptr eval_cont( ast::node */*n*/, environment::sptr /*env*/ )
+        objects::sptr eval_cont( ast::node * /*n*/, environment::sptr /*env*/ )
         {
             return objects::cont_obj::make( );
         }
