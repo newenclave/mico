@@ -803,7 +803,7 @@ namespace mico { namespace eval {
             while( !gen->end( ) ) {
 
                 environment::scoped s(make_env(env));
-                //env->get_state( ).GC( env );
+                env->get_state( ).GC( env );
 
                 size_t last_id = 1;
 
