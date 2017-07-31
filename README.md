@@ -258,8 +258,11 @@ The `pow` array. Let's make an array that contains functions and they make a `po
         let res = [ ]               // result is an array
         for i in 0..max {           // array starts from 0
             res = res + [ fn( c ) { // add an element to the result
+                if( i == 0 ) {
+                    return 1
+                }
                 let res = 1         // internal `res`
-                for i in 1..i {
+                for j in 1..i {
                     res = res * c
                 }
                 res

@@ -743,7 +743,7 @@ namespace mico { namespace eval {
             std::array<std::string,   ident_size>   ident;
             std::array<objects::sptr, ident_size>   expres;
             std::array<ast::node *,   express_size> nodes = {
-                nullptr, nullptr
+                { nullptr, nullptr } /// for c++11
             };
 
             std::size_t id = 0;
