@@ -98,6 +98,24 @@ namespace mico { namespace objects {
     using floating = impl<type::FLOAT>;
 
     struct numeric {
+
+        static
+        bool is_numeric( objects::sptr obj )
+        {
+            return ( obj->get_type( ) == type::FLOAT   )
+                || ( obj->get_type( ) == type::INTEGER )
+                 ;
+        }
+
+        static
+        bool should_float( objects::sptr obj1, objects::sptr obj2 )
+        {
+            return is_numeric( obj1 ) && is_numeric( obj2 ) &&
+                  ( (obj1->get_type( ) == type::FLOAT) ||
+                    (obj2->get_type( ) == type::FLOAT) )
+                 ;
+        }
+
         static
         objects::floating::sptr to_float( objects::sptr obj )
         {

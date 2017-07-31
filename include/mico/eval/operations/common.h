@@ -152,20 +152,26 @@ namespace mico { namespace eval { namespace operations {
 
             for( auto &a: arr->value( ) ) {
                 auto &val(a->value( ));
-                if( val->get_type( ) == objects::type::INTEGER ) {
-                    if( auto o = objects::numeric::to_int(lft) ) {
-                        if( val->equal(lft.get( ) ) ) {
-                            return OB::make(true);
-                        };
-                    }
-                } else if( val->get_type( ) == objects::type::FLOAT ) {
+                if( val->get_type( ) == objects::type::FLOAT ) {
+
                     if( auto o = objects::numeric::to_float(lft) ) {
-                        if( val->equal(lft.get( ) ) ) {
-                            return OB::make(true);
+                        if( val->equal( o.get( ) ) ) {
+                            return OB::make( true );
                         };
                     }
+
+                } else if( lft->get_type( ) == objects::type::FLOAT ) {
+
+                    if( auto o = objects::numeric::to_float(val) ) {
+                        if( val->equal( o.get( ) ) ) {
+                            return OB::make( true );
+                        };
+                    }
+
                 } else {
-                    return OB::make( val->equal( lft.get( )) );
+                    if( val->equal( lft.get( ) ) ) {
+                        return OB::make( true );
+                    }
                 }
             }
 
