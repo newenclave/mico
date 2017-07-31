@@ -167,11 +167,11 @@ The operator can have a `step` value that can change loop's increment and even m
 ```
 An interval loop acccepts a numeric (float or integer) interval and repats `[start..stop]` times. It means that this type of the loop includes right side of the interval.
 ```swift
-    for i in 0..10 {
+    for i in 1..10 {
         io.put(i, " ")
     }
     io.puts( )
-    // 0 1 2 3 4 5 6 7 8 9 10
+    // 1 2 3 4 5 6 7 8 9 10
 
     // the `reverse` variant is also available
 
