@@ -187,7 +187,7 @@ An interval loop acccepts a numeric (float or integer) interval and repats `[sta
     io.puts( )
     // -12 -10.34 -8.68 -7.02 -5.36 -3.7 -2.04 -0.38
 ```
-As you can see values `-13.13` (next to -11.47 for first) and `1.28` (next to -0.38 for second) are not shown because they lie out of the intervals
+As you can see values `-13.13` (next to -11.47 for first) and `1.28` (next to -0.38 for second) are not shown because they lie outside the intervals
 
 
 A container loop accepts containers (i.e. arrays or tables) and iterates those values.
