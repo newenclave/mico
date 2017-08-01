@@ -33,8 +33,8 @@ namespace mico { namespace charset {
                 std::vector<char> data;
                 data.resize( cch + 1 );
 
-                cch = WideCharToMultiByte( CodePage, 0, src, -1, &data[0],
-                            static_cast<DWORD>(data.size( )), 0, 0 );
+                WideCharToMultiByte( CodePage, 0, src, -1, &data[0],
+                                     static_cast<DWORD>(data.size( )), 0, 0 );
                 return &data.front();
             }
             return "";
@@ -48,8 +48,8 @@ namespace mico { namespace charset {
 
                 std::vector<wchar_t> data;
                 data.resize( cch + 1 );
-                cch = MultiByteToWideChar( CodePage, 0, src, -1, &data[0],
-                        static_cast<DWORD>(data.size( ) ) );
+                MultiByteToWideChar( CodePage, 0, src, -1, &data[0],
+                                     static_cast<DWORD>(data.size( ) ) );
 
                 return &data.front();
             }

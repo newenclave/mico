@@ -83,21 +83,9 @@ namespace mico { namespace eval {
         }
 
         static
-        bool is_array( const objects::sptr &obj )
-        {
-            return obj->get_type( ) == objects::type::ARRAY;
-        }
-
-        static
         bool is_table( const objects::sptr &obj )
         {
             return obj->get_type( ) == objects::type::TABLE;
-        }
-
-        static
-        bool is_string( const objects::sptr &obj )
-        {
-            return obj->get_type( ) == objects::type::STRING;
         }
 
         static
@@ -110,12 +98,6 @@ namespace mico { namespace eval {
         bool is_float( const objects::sptr &obj )
         {
             return obj->get_type( ) == objects::type::FLOAT;
-        }
-
-        static
-        bool is_interval( const objects::sptr &obj )
-        {
-            return obj->get_type( ) == objects::type::INTERVAL;
         }
 
         static

@@ -142,6 +142,7 @@ namespace mico { namespace objects {
             using iterator  = objects::table::value_type::iterator;
             using const_iterator  = objects::table::value_type::const_iterator;
 
+            explicit
             obj<type::TABLE>( objects::table::sptr &obj )
                 :object_(obj)
             {
