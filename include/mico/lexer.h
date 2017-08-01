@@ -107,6 +107,53 @@ namespace mico {
             return b;
         }
 
+
+        template <typename ItrT>
+        static
+        std::string read_character( ItrT &begin, ItrT end )
+        {
+            std::string res;
+            for( ; (begin != end) && (*begin != '\''); ++begin ) {
+
+                auto next = std::next(begin);
+
+                if( *begin == '\\' && next != end ) {
+                    switch (*next) {
+                    case 'n':
+                        res.push_back('\n');
+                        break;
+                    case 'r':
+                        res.push_back('\r');
+                        break;
+                    case 't':
+                        res.push_back('\t');
+                        break;
+                    case '\\':
+                        res.push_back('\\');
+                        break;
+                    case '"':
+                        res.push_back('"');
+                        break;
+                    case '\'':
+                        res.push_back('\'');
+                        break;
+                    default:
+                        res.push_back('\\');
+                        res.push_back(*next);
+                        break;
+                    }
+                    begin = next;
+                } else {
+                    res.push_back( *begin );
+                }
+            }
+
+            if( begin != end ) {
+                ++begin;
+            }
+            return res;
+        }
+
         template <typename ItrT>
         static
         std::string read_string( ItrT &begin, ItrT end, state *lstate )
@@ -314,6 +361,10 @@ namespace mico {
                     case token_type::STRING:
                         bb = next.iterator( );
                         value.literal = read_string( bb, end, lstate );
+                        return std::make_pair( std::move(value), bb );
+                    case token_type::CHARACTER:
+                        bb = next.iterator( );
+                        value.literal = read_character( bb, end );
                         return std::make_pair( std::move(value), bb );
                     default:
                         return std::make_pair( std::move(value),

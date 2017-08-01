@@ -105,6 +105,11 @@ namespace mico {
             nuds_[token_type::IF]         = [this]( ) { return parse_if( );   };
             nuds_[token_type::FOR]        = [this]( ) { return parse_for( );  };
 
+            nuds_[token_type::CHARACTER]  =
+                    [this]( ) {
+                        return parse_char( );
+                    };
+
             nuds_[token_type::FUNCTION]   =
                     [this]( ) {
                         return parse_function( );
@@ -192,7 +197,7 @@ namespace mico {
             leds_[token_type::SHIFT_LEFT]   =
             leds_[token_type::SHIFT_RIGHT]  =
             leds_[token_type::DOTDOT]       =
-            leds_[token_type::OP_IN]           =
+            leds_[token_type::OP_IN]        =
                     [this]( EP e ) {
                         return parse_infix(std::move(e));
                     };
@@ -236,7 +241,7 @@ namespace mico {
                 { TT::LBRACKET,     OP::INDEX       },
                 { TT::DOT,          OP::DOT         },
                 { TT::DOTDOT,       OP::DOTDOT      },
-                { TT::OP_IN,           OP::EQUALS      },
+                { TT::OP_IN,        OP::EQUALS      },
             };
 
             auto f = val.find( tt );
@@ -259,6 +264,14 @@ namespace mico {
             std::ostringstream oss;
             oss << "parser error: " << current( ).where
                 << " unexpected EOF";
+            errors_.emplace_back(oss.str( ));
+        }
+
+        void error_character( )
+        {
+            std::ostringstream oss;
+            oss << "parser error: " << current( ).where
+                << " bad char value '" << current( ).ident.literal << "'";
             errors_.emplace_back(oss.str( ));
         }
 
@@ -738,6 +751,16 @@ namespace mico {
             }
             res->set_pos( current( ).where );
             return ast::expression::uptr(std::move(res));
+        }
+
+        ast::expressions::character::uptr parse_char( )
+        {
+            auto res = charset::encoding::from_file( current( ).ident.literal );
+            if( res.size( ) != 1 ) {
+                error_character( );
+                return nullptr;
+            }
+            return ast::expressions::character::make(res[0]);
         }
 
         ast::expressions::string::uptr parse_string( )

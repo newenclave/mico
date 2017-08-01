@@ -804,4 +804,9 @@ let sum1 = (*sum2)(1, 2)
 let sum3 = (*sum1)(1, 2)
 let res0 = sum2(2, 3)       // res0 = 5
 
+for i in "Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί χαρακτήρες", -1 {
+    io.put(i)
+}
+io.puts( )
+
 */

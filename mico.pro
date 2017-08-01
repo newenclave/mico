@@ -118,4 +118,6 @@ HEADERS += \
     include/mico/objects/continue.h \
     include/mico/eval/operations/interval.h \
     include/mico/charset/encoding.h \
-    include/mico/types.h
+    include/mico/types.h \
+    include/mico/expressions/character.h \
+    include/mico/objects/character.h

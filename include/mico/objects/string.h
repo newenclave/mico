@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include "mico/objects/base.h"
+#include "mico/objects/character.h"
 #include "mico/expressions/string.h"
 
 #include "mico/types.h"

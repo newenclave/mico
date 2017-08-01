@@ -10,6 +10,7 @@
 #include "mico/objects/string.h"
 #include "mico/objects/numbers.h"
 #include "mico/objects/interval.h"
+#include "mico/objects/character.h"
 
 namespace mico { namespace objects {
 
@@ -288,8 +289,7 @@ namespace mico { namespace objects {
             objects::sptr get_val( ) override
             {
                 if( !end( ) ) {
-                    auto v = static_cast<std::int64_t>(object_->at(id_));
-                    return objects::integer::make(v);
+                    return objects::character::make(object_->at(id_));
                 }
                 return nullptr;
             }

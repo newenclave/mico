@@ -4,6 +4,7 @@
 #include "mico/builtin.h"
 #include "mico/builtin/common.h"
 #include "mico/objects/module.h"
+
 #include "mico/charset/encoding.h"
 
 namespace mico { namespace modules {
@@ -17,6 +18,7 @@ namespace mico { namespace modules {
             {
                 static const auto line = __LINE__;
                 using objects::error;
+                using CS = charset::encoding;
 
                 static auto res = objects::null::make( );
 
@@ -25,17 +27,25 @@ namespace mico { namespace modules {
                     ++count;
                     if( p->get_type( ) == objects::type::STRING ) {
                         auto s = objects::cast_string(p.get( ));
-                        std::cout << charset::encoding::to_console(s->value( ));
+                        std::cout << CS::to_console(s->value( ));
+
                     } else if(p->get_type( ) == objects::type::INTEGER ) {
                         auto s = objects::cast_int(p.get( ));
                         std::cout << s->value( );
+
+                    } else if(p->get_type( ) == objects::type::CHARACTER ) {
+                        auto s = objects::cast_char(p.get( ));
+                        std::cout << CS::to_console(s->to_str( ));
+
                     } else if(p->get_type( ) == objects::type::FLOAT ) {
                         auto s = objects::cast_float(p.get( ));
                         std::cout << s->value( );
+
                     } else if(p->get_type( ) == objects::type::BOOLEAN ) {
                         auto s = objects::cast_bool(p.get( ));
                         std::cout << std::boolalpha << s->value( )
                                   << std::noboolalpha;
+
                     } else {
                         return error::make( tokens::position( line, 0),
                                             "Invalid parameter ", count,

@@ -10,6 +10,7 @@
 #include "mico/objects/array.h"
 #include "mico/objects/functions.h"
 #include "mico/objects/string.h"
+#include "mico/objects/character.h"
 #include "mico/objects/error.h"
 #include "mico/objects/boolean.h"
 #include "mico/objects/return.h"
@@ -40,6 +41,7 @@ namespace mico { namespace objects {
     MICO_DEFINE_CAST_FUNC( float,       type::FLOAT     )
     MICO_DEFINE_CAST_FUNC( bool,        type::BOOLEAN   )
     MICO_DEFINE_CAST_FUNC( string,      type::STRING    )
+    MICO_DEFINE_CAST_FUNC( char,        type::CHARACTER )
     MICO_DEFINE_CAST_FUNC( table,       type::TABLE     )
     MICO_DEFINE_CAST_FUNC( array,       type::ARRAY     )
     MICO_DEFINE_CAST_FUNC( func,        type::FUNCTION  )

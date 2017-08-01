@@ -29,20 +29,21 @@ namespace mico { namespace objects {
         INTEGER     =  2,
         FLOAT       =  3,
         STRING      =  4,
-        TABLE       =  5,
-        ARRAY       =  6,
-        REFERENCE   =  7,
-        RETURN      =  8,
-        FUNCTION    =  9,
-        TAIL_CALL   = 10,
-        BUILTIN     = 11,
-        FAILURE     = 12,
-        QUOTE       = 13,
-        MODULE      = 14,
-        GENERATOR   = 15,
-        INTERVAL    = 16,
-        BREAK_OBJ   = 17,
-        CONT_OBJ    = 18,
+        CHARACTER   =  5,
+        TABLE       =  6,
+        ARRAY       =  7,
+        REFERENCE   =  8,
+        RETURN      =  9,
+        FUNCTION    = 10,
+        TAIL_CALL   = 11,
+        BUILTIN     = 12,
+        FAILURE     = 13,
+        QUOTE       = 14,
+        MODULE      = 15,
+        GENERATOR   = 16,
+        INTERVAL    = 17,
+        BREAK_OBJ   = 18,
+        CONT_OBJ    = 19,
     };
 
     struct name {
@@ -55,6 +56,7 @@ namespace mico { namespace objects {
             case type::INTEGER    : return "OBJ_INTEGER";
             case type::FLOAT      : return "OBJ_FLOAT";
             case type::STRING     : return "OBJ_STRING";
+            case type::CHARACTER  : return "OBJ_CHARACTER";
             case type::TABLE      : return "OBJ_TABLE";
             case type::ARRAY      : return "OBJ_ARRAY";
             case type::REFERENCE  : return "OBJ_REFERENCE";

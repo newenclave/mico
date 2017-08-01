@@ -231,7 +231,13 @@ namespace mico { namespace eval {
         {
             auto val = ast::cast<ast::expressions::string>(n);
             auto int_str = charset::encoding::from_file( val->value( ) );
-            return std::make_shared<objects::string>( int_str );
+            return objects::string::make( std::move(int_str) );
+        }
+
+        objects::character::sptr eval_charset( ast::node *n )
+        {
+            auto val = ast::cast<ast::expressions::character>(n);
+            return objects::character::make( val->value( ) );
         }
 
         objects::sptr eval_prefix( ast::node *n, environment::sptr env )
@@ -1346,6 +1352,8 @@ namespace mico { namespace eval {
                 res = eval_float( n ); break;
             case ast::type::STRING:
                 res = eval_string( n ); break;
+            case ast::type::CHARACTER:
+                res = eval_charset( n ); break;
             case ast::type::ARRAY:
                 res = eval_array( n, env ); break;
             case ast::type::PREFIX:

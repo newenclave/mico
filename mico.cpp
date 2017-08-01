@@ -39,7 +39,7 @@ int run_file( std::string path )
         return 2;
     }
 
-    std::string data( size, '\0' );
+    mico::file_string data( size, '\0' );
     f.read( &data[0], size );
 
     eval::tree_walking tv;
@@ -83,14 +83,6 @@ int main_lex( );
 
 int main( int argc, char * argv[ ]  )
 {
-
-//    auto gen = objects::gens::floating::make( 0, -100, -1.10 );
-//    while( !gen->end( ) ) {
-//        std::cout << gen->get( )->str( ) << "\n";
-//        gen->next( );
-//    }
-
-//    return 0;
     try {
         if( argc > 1 ) {
             return run_file( argv[1] );

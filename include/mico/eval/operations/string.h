@@ -110,7 +110,7 @@ namespace mico { namespace eval { namespace operations {
             }
 
             if( fix < str->value( ).size( ) ) {
-                return objects::integer::make( str->value( )[fix] );
+                return objects::character::make( str->value( )[fix] );
             } else {
                 return error_type::make(
                             idx->param( ).get( ), idx->param( ).get( ),

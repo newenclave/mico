@@ -28,22 +28,23 @@ namespace mico { namespace ast {
         PREFIX          =  6,
         INFIX           =  7,
         STRING          =  8,
-        ARRAY           =  9,
-        INTEGER         = 10,
-        BOOLEAN         = 11,
-        FLOAT           = 12,
-        TABLE           = 13,
-        FN              = 14,
-        CALL            = 15,
-        INDEX           = 16,
-        IFELSE          = 17,
-        REGISTRY        = 18,
-        LIST            = 19,
-        ELIPSIS         = 20,
-        MODULE          = 21,
-        FORIN           = 22,
-        BREAK           = 23,
-        CONTINUE        = 24,
+        CHARACTER       =  9,
+        ARRAY           = 10,
+        INTEGER         = 11,
+        BOOLEAN         = 12,
+        FLOAT           = 13,
+        TABLE           = 14,
+        FN              = 15,
+        CALL            = 16,
+        INDEX           = 17,
+        IFELSE          = 18,
+        REGISTRY        = 19,
+        LIST            = 20,
+        ELIPSIS         = 21,
+        MODULE          = 22,
+        FORIN           = 23,
+        BREAK           = 24,
+        CONTINUE        = 25,
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         QUOTE           = 50,
@@ -67,6 +68,7 @@ namespace mico { namespace ast {
             case type::PREFIX       : return "PREFIX";
             case type::INFIX        : return "INFIX";
             case type::STRING       : return "STRING";
+            case type::CHARACTER    : return "CHARSET";
             case type::ARRAY        : return "ARRAY";
             case type::INTEGER      : return "INTEGER";
             case type::BOOLEAN      : return "BOOLEAN";
