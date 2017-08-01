@@ -1,6 +1,7 @@
 #ifndef MICO_TYPES_H
 #define MICO_TYPES_H
 
+#include <iostream>
 #include "mico/charset/encoding.h"
 
 namespace mico {
