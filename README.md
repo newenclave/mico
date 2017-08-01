@@ -78,7 +78,7 @@ Thats all.
 For now I'm pretty sure that Mico can run the major part of Monkey's code.
 
 ## View
-Mico supports: integers, floats, strings, arrays, tables, functions, modules, intervals
+Mico supports: integers, floats, chars, strings, arrays, tables, functions, modules, intervals
 ```swift
     let int  = 1_000_000                     // int is an integer
     let f    = 0.1e-3                        // f is a float `0.0001`
@@ -88,6 +88,7 @@ Mico supports: integers, floats, strings, arrays, tables, functions, modules, in
     let fun  = fn(a, b){ (a - b) * (a + b) } // function
     let mod  = module { let var1 = 1; let var2 = 2 } // module
     let ival = 1..100                                // interval
+    let c    = '🐒'     // character
 ```
 ### Numbers
 Numbers can contain a gap symbol `_`. The symbol can be included both in integers and in floats.
@@ -304,7 +305,46 @@ The `pow` array. Let's make an array that contains functions and they make a `po
     io.puts( arr[10](2)   ) // `1024`
 
 ```
+Five little monkey
 
+```swift
+
+    let the_monkey_song = fn( monkeys ) {
+        let sing = " little monkey jumping on the bed\n"
+                    "She fell off and bumped her head\n"
+                    "Momma called the doctor and the doctor said\n"
+                    "\"No more monkeys jumping on the bed!\"\n"
+        let plur = " little monkeys jumping on the bed\n"
+                     "One fell off and bumped his head\n"
+                     "Momma called the doctor and the doctor said\n"
+                     "\"No more monkeys jumping on the bed!\"\n"
+        if( monkeys == 0 ) {
+            "\"No more monkeys jumping on the bed!\""
+        } elif ( monkeys == 1 ) {
+            io.puts( "🐒", sing )
+        } else {
+            io.puts( "🐒" * monkeys, plur)
+            the_monkey_song( monkeys - 1 )
+        }
+    }
+    the_monkey_song( 3 )
+
+    //🐒🐒🐒 little monkeys jumping on the bed
+    //One fell off and bumped his head
+    //Momma called the doctor and the doctor said
+    //"No more monkeys jumping on the bed!"
+    //
+    //🐒🐒 little monkeys jumping on the bed
+    //One fell off and bumped his head
+    //Momma called the doctor and the doctor said
+    //"No more monkeys jumping on the bed!"
+    //
+    //🐒 little monkey jumping on the bed
+    //She fell off and bumped her head
+    //Momma called the doctor and the doctor said
+    //"No more monkeys jumping on the bed!"
+
+```
 
 #### break and continue keywords
 

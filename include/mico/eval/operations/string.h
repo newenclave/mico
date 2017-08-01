@@ -64,8 +64,8 @@ namespace mico { namespace eval { namespace operations {
             switch( inf->token( )) {
             case tokens::type::ASTERISK: {
                 if( rht > 0 ) {
-                    std::string res;
-                    res.reserve( lft.size( ) * rht );
+                    mico::string res;
+                    res.reserve( lft.size( ) * static_cast<std::size_t>(rht) );
                     while( rht-- ) {
                         res.insert( res.end( ), lft.begin( ), lft.end( ) );
                     }
