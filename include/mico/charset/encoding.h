@@ -69,6 +69,20 @@ namespace mico { namespace charset {
         }
 
         static
+        file_string con2file( const con_string &enter )
+        {
+            auto ent = from_console( enter );
+            return to_file( ent );
+        }
+
+        static
+        con_string file2con( const file_string &enter )
+        {
+            auto ent = from_file(enter);
+            return to_console( ent );
+        }
+
+        static
         file_string to_file( const internal_string &enter )
         {
             return make_mb_string( enter.c_str( ), CP_UTF8 );
@@ -110,6 +124,18 @@ namespace mico { namespace charset {
         internal_string from_console( const con_string &enter )
         {
             return etool::charset::utf8::utf8_to_ucs4( enter );
+        }
+
+        static
+        file_string con2file( const con_string &enter )
+        {
+            return enter;
+        }
+
+        static
+        con_string file2con( const file_string &enter )
+        {
+            return enter;
         }
 
         static

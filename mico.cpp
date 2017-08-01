@@ -91,12 +91,6 @@ int main( int argc, char * argv[ ]  )
 //    }
 
 //    return 0;
-    std::string inp;
-    std::cin >> inp;
-
-    auto t = mico::charset::encoding::from_console( inp );
-    std::cout << mico::charset::encoding::to_console( t );
-
     try {
         if( argc > 1 ) {
             return run_file( argv[1] );

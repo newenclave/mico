@@ -8,6 +8,7 @@
 #include "mico/builtin.h"
 #include "mico/objects.h"
 #include "mico/state.h"
+#include "mico/types.h"
 #include "mico/macro/processor.h"
 
 #include "etool/console/colors.h"
@@ -123,10 +124,11 @@ namespace mico {
 
             all::init( st, ev );
 
-            std::string data;
+            mico::file_string data;
             std::cout << logo << ">>> ";
-            while( true ) {
-                std::string tmp;
+            while( true )
+            {
+                mico::con_string tmp;
                 std::getline( std::cin, tmp );
                 if( tmp.empty( ) ) {
 
@@ -173,7 +175,7 @@ namespace mico {
                     if( !data.empty( ) ) {
                         data += "\n";
                     }
-                    data += tmp;
+                    data += charset::encoding::con2file(tmp);
                     std::cout << "  > ";
                 }
             }
