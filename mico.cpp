@@ -8,6 +8,7 @@
 #include "mico/parser.h"
 #include "mico/eval/tree_walking.h"
 #include "mico/repl.h"
+#include "mico/charset/encoding.h"
 
 #include <stdio.h>
 #include <thread>
@@ -90,6 +91,12 @@ int main( int argc, char * argv[ ]  )
 //    }
 
 //    return 0;
+    std::string inp;
+    std::cin >> inp;
+
+    auto t = mico::encoding::sys::from_console( inp );
+    std::cout << mico::encoding::sys::to_console( t );
+
     try {
         if( argc > 1 ) {
             return run_file( argv[1] );

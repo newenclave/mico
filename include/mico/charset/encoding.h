@@ -35,7 +35,7 @@ namespace mico { namespace encoding {
         }
 
         static
-        std::string make_ws_string( LPCSTR src, UINT CodePage = CP_ACP ) {
+        std::wstring make_ws_string( LPCSTR src, UINT CodePage = CP_ACP ) {
 
             int cch = MultiByteToWideChar( CodePage, 0, src, -1, 0, 0 );
             if( 0 != cch ) {
@@ -53,25 +53,25 @@ namespace mico { namespace encoding {
         static
         con_string to_console( const internal_string &inter )
         {
-            return make_mb_string(  );
+            return make_mb_string( inter.c_str( ), CP_OEMCP );
         }
 
         static
         internal_string from_console( const con_string &inter )
         {
-            return etool::charset::utf8::utf8_to_ucs4( inter );
+            return make_ws_string( inter.c_str( ), CP_OEMCP );
         }
 
         static
         con_string to_file( const internal_string &inter )
         {
-            return etool::charset::utf8::ucs4_to_utf8( inter );
+            return make_mb_string( inter.c_str( ), CP_UTF8 );
         }
 
         static
         internal_string from_file( const con_string &inter )
         {
-            return etool::charset::utf8::utf8_to_ucs4( inter );
+            return make_ws_string( inter.c_str( ), CP_UTF8 );
         }
 
     }
