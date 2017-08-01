@@ -1,20 +1,24 @@
 #ifndef MICO_CHARSET_ENCODING_H
 #define MICO_CHARSET_ENCODING_H
 
+#include <ostream>
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 #include "etool/charset/utf8.h"
 
-namespace mico { namespace encoding {
+namespace mico { namespace charset {
+
+    using file_string     = std::string;
 
 #ifdef _WIN32
-    namespace sys {
+    using con_string      = std::string;
+    using sys_string      = std::wstring;
+    using internal_string = std::wstring;
 
-        using con_string      = std::string;
-        using fil_string      = std::string;
-        using internal_string = std::wstring;
+    struct encoding {
 
         static
         std::string make_mb_string( LPCWSTR src, UINT CodePage = CP_ACP )
@@ -51,65 +55,86 @@ namespace mico { namespace encoding {
         }
 
         static
-        con_string to_console( const internal_string &inter )
+        con_string to_console( const internal_string &enter )
         {
-            return make_mb_string( inter.c_str( ), CP_OEMCP );
+            return make_mb_string( enter.c_str( ), CP_OEMCP );
         }
 
         static
-        internal_string from_console( const con_string &inter )
+        internal_string from_console( const con_string &enter )
         {
-            return make_ws_string( inter.c_str( ), CP_OEMCP );
+            return make_ws_string( enter.c_str( ), CP_OEMCP );
         }
 
         static
-        con_string to_file( const internal_string &inter )
+        file_string to_file( const internal_string &enter )
         {
-            return make_mb_string( inter.c_str( ), CP_UTF8 );
+            return make_mb_string( enter.c_str( ), CP_UTF8 );
         }
 
         static
-        internal_string from_file( const con_string &inter )
+        internal_string from_file( const file_string &enter )
         {
-            return make_ws_string( inter.c_str( ), CP_UTF8 );
+            return make_ws_string( enter.c_str( ), CP_UTF8 );
         }
 
-    }
+        static
+        sys_string to_file( const internal_string &enter )
+        {
+            return enter;
+        }
+
+        static
+        internal_string from_sys( const sys_string &enter )
+        {
+            return enter;
+        }
+    };
 #else
-    namespace sys {
-        using con_string      = std::string;
-        using fil_string      = std::string;
-        using internal_string = etool::charset::utf8::ucs4string;
-        struct charset {
 
-            static
-            con_string to_console( const internal_string &inter )
-            {
-                return etool::charset::utf8::ucs4_to_utf8( inter );
-            }
+    using con_string      = std::string;
+    using sys_string      = std::string;
+    using internal_string = etool::charset::utf8::ucs4string;
 
-            static
-            internal_string from_console( const con_string &inter )
-            {
-                return etool::charset::utf8::utf8_to_ucs4( inter );
-            }
+    struct encoding {
 
-            static
-            con_string to_file( const internal_string &inter )
-            {
-                return etool::charset::utf8::ucs4_to_utf8( inter );
-            }
+        static
+        con_string to_console( const internal_string &enter )
+        {
+            return etool::charset::utf8::ucs4_to_utf8( enter );
+        }
 
-            static
-            internal_string from_file( const con_string &inter )
-            {
-                return etool::charset::utf8::utf8_to_ucs4( inter );
-            }
+        static
+        internal_string from_console( const con_string &enter )
+        {
+            return etool::charset::utf8::utf8_to_ucs4( enter );
+        }
 
-        };
-    }
+        static
+        file_string to_file( const internal_string &enter )
+        {
+            return etool::charset::utf8::ucs4_to_utf8( enter );
+        }
+
+        static
+        internal_string from_file( const file_string &enter )
+        {
+            return etool::charset::utf8::utf8_to_ucs4( enter );
+        }
+
+        static
+        sys_string to_sys( const internal_string &enter )
+        {
+            return etool::charset::utf8::ucs4_to_utf8( enter );
+        }
+
+        static
+        internal_string from_sys( const sys_string &enter )
+        {
+            return etool::charset::utf8::utf8_to_ucs4( enter );
+        }
+    };
 #endif
-
 
 }}
 

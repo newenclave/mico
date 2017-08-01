@@ -4,6 +4,7 @@
 #include "mico/builtin.h"
 #include "mico/builtin/common.h"
 #include "mico/objects/module.h"
+#include "mico/charset/encoding.h"
 
 namespace mico { namespace modules {
 
@@ -24,7 +25,7 @@ namespace mico { namespace modules {
                     ++count;
                     if( p->get_type( ) == objects::type::STRING ) {
                         auto s = objects::cast_string(p.get( ));
-                        std::cout << s->value( );
+                        std::cout << charset::encoding::to_console(s->value( ));
                     } else if(p->get_type( ) == objects::type::INTEGER ) {
                         auto s = objects::cast_int(p.get( ));
                         std::cout << s->value( );

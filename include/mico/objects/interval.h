@@ -125,18 +125,11 @@ namespace mico { namespace objects {
                 return false;
             }
 
-            static
-            void hash_combine( std::size_t &seed, value_type key)
-            {
-                std::hash<value_type> hasher;
-                seed ^= hasher(key) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            }
-
             std::size_t hash( ) const override
             {
                 std::size_t seed = 0;
-                hash_combine(seed, ival_.left( ));
-                hash_combine(seed, ival_.right( ));
+                hash_combine( seed, ival_.left( ) );
+                hash_combine( seed, ival_.right( ));
                 return seed;
             }
 

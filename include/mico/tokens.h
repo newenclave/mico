@@ -24,6 +24,7 @@ namespace mico { namespace tokens {
         FLOAT,
         IDENT,
         STRING,
+        CHARACTER,
 
         FIRST_VISIBLE = 100,
 
@@ -110,6 +111,7 @@ namespace mico { namespace tokens {
             case type::INT_HEX:     return "INT_16";
             case type::FLOAT:       return "FLOAT";
             case type::STRING:      return "STRING";
+            case type::CHARACTER:   return "CHAR";
 
             /// tokens that have names
             case type::SEMICOLON:   return ";";

@@ -6,6 +6,8 @@
 #include "mico/objects/base.h"
 #include "mico/expressions/string.h"
 
+#include "mico/types.h"
+
 namespace mico { namespace objects {
 
     template <>
@@ -15,21 +17,27 @@ namespace mico { namespace objects {
 
     public:
 
+        using internal_type = mico::string;
+        using system_type   = mico::sys_string;
+
         static const type type_value = type::STRING;
 
-        using sptr = std::shared_ptr<this_type>;
-        using value_type  = std::string;
+        using sptr        = std::shared_ptr<this_type>;
+        using value_type  = internal_type;
         using symbol_type = value_type::value_type;
 
         std::string str( ) const override
         {
             std::ostringstream oss;
-            oss << "\"" << value( ) << "\"";
+            auto file_str = charset::encoding::to_file( value( ) );
+            oss << "\"" << file_str << "\"";
             return oss.str( );
         }
+
         impl( value_type val )
             :value_(std::move(val))
         { }
+
         const value_type &value( ) const
         {
             return value_;
@@ -41,8 +49,11 @@ namespace mico { namespace objects {
 
         hash_type hash( ) const override
         {
-            std::hash<std::string> h;
-            return h(value_);
+            auto seed = static_cast<std::size_t>(get_type( ));
+            for( auto &a: value_ ) {
+                seed = hash_combine( seed, a );
+            }
+            return seed;
         }
 
         bool valid_id( std::int64_t id ) const
@@ -75,6 +86,13 @@ namespace mico { namespace objects {
             return std::make_shared<this_type>( std::move(val) );
         }
 
+        static
+        sptr make( system_type val )
+        {
+            auto internal = charset::encoding::from_sys( val );
+            return std::make_shared<this_type>( std::move(internal) );
+        }
+
         bool equal( const base *other ) const override
         {
             if( other->get_type( ) == get_type( ) ) {
@@ -92,7 +110,8 @@ namespace mico { namespace objects {
         ast::node::uptr to_ast( tokens::position pos ) const override
         {
             using ast_type = ast::expressions::impl<ast::type::STRING>;
-            return ast::node::make<ast_type>( pos, value( ) );
+            auto fil_str = charset::encoding::to_file( value( ) );
+            return ast::node::make<ast_type>( pos, fil_str );
         }
 
     private:

@@ -4,8 +4,10 @@
 #include "mico/builtin.h"
 #include "mico/builtin/common.h"
 #include "mico/objects/module.h"
+#include "mico/objects/string.h"
 
 #include "mico/numeric.h"
+#include "mico/types.h"
 
 namespace mico { namespace modules {
 
@@ -46,7 +48,7 @@ namespace mico { namespace modules {
         using FLT = objects::floating;
 
         static
-        tokens::type get_token( const std::string &inp )
+        tokens::type get_token( const mico::string &inp )
         {
             if( (inp.size( ) > 1) && (inp[0] == '0') ) {
                 switch ( inp[1] ) {
@@ -90,9 +92,11 @@ namespace mico { namespace modules {
                     str.erase(str.begin( ), str.begin( ) + 2);
                 }
 
+                auto fil_str = charset::encoding::to_file(str);
+
                 int inval = -1;
                 auto res = static_cast<std::int64_t>
-                                ( numeric::parse_int( str, tt, &inval ) );
+                                ( numeric::parse_int( fil_str, tt, &inval ) );
 
                 if( inval > 0 ) {
                     auto is = static_cast<std::size_t>(inval);

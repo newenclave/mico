@@ -19,6 +19,8 @@
 #include "mico/eval/operations/function.h"
 #include "mico/eval/operations/module.h"
 
+#include "mico/charset/encoding.h"
+
 namespace mico { namespace eval {
 
     class tree_walking: public base {
@@ -228,7 +230,8 @@ namespace mico { namespace eval {
         objects::string::sptr eval_string( ast::node *n )
         {
             auto val = ast::cast<ast::expressions::string>(n);
-            return std::make_shared<objects::string>( val->value( ) );
+            auto int_str = charset::encoding::from_file( val->value( ) );
+            return std::make_shared<objects::string>( int_str );
         }
 
         objects::sptr eval_prefix( ast::node *n, environment::sptr env )

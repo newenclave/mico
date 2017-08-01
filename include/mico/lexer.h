@@ -72,6 +72,7 @@ namespace mico {
             add_token( res, "0",    tokens::type::INT_OCT );
 
             add_token( res, "\"",   tokens::type::STRING );
+            add_token( res, "'",    tokens::type::CHARACTER );
 
             add_token( res, "\n",   tokens::type::END_OF_LINE );
             add_token( res, "\r\n", tokens::type::END_OF_LINE );

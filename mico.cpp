@@ -94,8 +94,8 @@ int main( int argc, char * argv[ ]  )
     std::string inp;
     std::cin >> inp;
 
-    auto t = mico::encoding::sys::from_console( inp );
-    std::cout << mico::encoding::sys::to_console( t );
+    auto t = mico::charset::encoding::from_console( inp );
+    std::cout << mico::charset::encoding::to_console( t );
 
     try {
         if( argc > 1 ) {

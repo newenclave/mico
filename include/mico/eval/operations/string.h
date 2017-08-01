@@ -19,6 +19,8 @@ namespace mico { namespace eval { namespace operations {
         using index         = ast::expressions::index;
         using str_interval  = objects::intervals::string;
 
+        using string_type   = objects::string::value_type;
+
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr /*obj*/ )
         {
@@ -28,8 +30,8 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
-        objects::sptr eval_str( infix *inf, const std::string &lft,
-                                 const std::string &rht )
+        objects::sptr eval_str( infix *inf, const string_type &lft,
+                                 const string_type &rht )
         {
             switch( inf->token( )) {
             case tokens::type::DOTDOT:
@@ -56,7 +58,7 @@ namespace mico { namespace eval { namespace operations {
 
         }
         static
-        objects::sptr eval_int( infix *inf, const std::string &lft,
+        objects::sptr eval_int( infix *inf, const string_type &lft,
                                  std::int64_t rht )
         {
             switch( inf->token( )) {

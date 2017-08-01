@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "mico/ast.h"
+#include "mico/types.h"
 
 #if defined(DISABLE_SWITCH_WARNINGS)
 #ifdef __clang__
@@ -82,6 +83,25 @@ namespace mico { namespace objects {
         virtual std::string str( ) const = 0;
         virtual std::shared_ptr<base> clone( ) const = 0;
         virtual ast::node::uptr to_ast( tokens::position ) const = 0;
+
+        template <typename T>
+        static
+        std::size_t hash_combine( std::size_t seed, const T &key )
+        {
+            std::hash<T> hasher;
+            seed ^= hasher(key) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            return seed;
+        }
+
+        static
+        std::size_t hash_combine( std::size_t s, const mico::string &key )
+        {
+            std::size_t seed = s;
+            for( auto &a: key ) {
+                seed = hash_combine( seed, a );
+            }
+            return seed;
+        }
 
         virtual
         hash_type hash( ) const
