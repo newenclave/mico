@@ -103,7 +103,7 @@ Numbers can contain a gap symbol `_`. The symbol can be included both in integer
 ```swift
     let s = "string"
     io.puts(s[1])
-    // 't'
+    // `t`
     let s = "中國"
     io.puts(s, " ", len(s), " ", s[0])
     // `中國 2 中`
