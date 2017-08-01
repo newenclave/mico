@@ -22,7 +22,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * [Monkey and Mico](#monkey-and-mico)
 * [View](#view)
     * [Numbers](#numbers)
-    * [Strings](#string)
+    * [Strings](#strings)
     * [Token position](#token-position)
     * [Mutability](#mutability)
     * [Intervals](#intervals)
