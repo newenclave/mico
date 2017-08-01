@@ -190,7 +190,7 @@ An interval loop acccepts a numeric (float or integer) interval and repats `[sta
 As you can see values `-13.13` (next to -11.47 for first) and `1.28` (next to -0.38 for second) are not shown because they lie outside the intervals
 
 
-A container loop accepts containers (i.e. arrays or tables) and iterates those values.
+A container loop accepts containers (i.e. arrays, strings or tables) and iterates those values.
 ```swift
     for v in [1, "Hello", 0.19, -100] {
         io.put(v, " ")
@@ -205,7 +205,7 @@ A container loop accepts containers (i.e. arrays or tables) and iterates those v
     // zero.3 -0.2 1
     // yep. table doesn't have an order
 ```
-For loop that accepts an array it's also possible to use negative `step`.
+For loop that accepts an array and a string it's also possible to use negative `step`.
 ```swift
     for v in [1, 2, 3, 4, 5], -1 {
         io.put(v, " ")
@@ -219,7 +219,20 @@ For loop that accepts an array it's also possible to use negative `step`.
     }
     io.puts( )
     // 10 8 6 4 2
+
+    for i in "Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί χαρακτήρες", -1 {
+        io.put(i)
+    }
+    io.puts( )
+    // ςερήτκαραχ ίολλοπ จรคะลวัตีม นีจ 國中 ,cinital ,ацилириК
+
+    for i in "Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί χαρακτήρες", -3 {
+        io.put(i)
+    }
+    io.puts( )
+    // ςήαχοοจะัมี國,na,ир
 ```
+
 For `table` loops `step` is not available.
 
 Key-Value syntax.
