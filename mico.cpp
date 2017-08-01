@@ -87,6 +87,7 @@ int main( int argc, char * argv[ ]  )
         if( argc > 1 ) {
             return run_file( argv[1] );
         } else {
+            mico::charset::encoding::init_console( );
             return run_repl( );
         }
     } catch ( const std::exception &ex ) {

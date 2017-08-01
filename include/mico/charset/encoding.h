@@ -105,6 +105,11 @@ namespace mico { namespace charset {
         {
             return enter;
         }
+        static
+        void init_console( )
+        {
+
+        }
     };
 #else
 
@@ -161,6 +166,13 @@ namespace mico { namespace charset {
         {
             return etool::charset::utf8::utf8_to_ucs4( enter );
         }
+
+        static
+        void init_console( )
+        {
+
+        }
+
     };
 #endif
 
