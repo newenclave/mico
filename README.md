@@ -318,13 +318,12 @@ Five little monkey
                      "One fell off and bumped his head\n"
                      "Momma called the doctor and the doctor said\n"
                      "\"No more monkeys jumping on the bed!\"\n"
-        if( monkeys == 0 ) {
-            "\"No more monkeys jumping on the bed!\""
-        } elif ( monkeys == 1 ) {
-            io.puts( "🐒", sing )
-        } else {
-            io.puts( "🐒" * monkeys, plur)
-            the_monkey_song( monkeys - 1 )
+        for i in monkeys..1, -1 {
+            if ( i == 1 ) {
+                io.puts( "🐒", sing )
+            } else {
+                io.puts( "🐒" * i, plur)
+            }
         }
     }
     the_monkey_song( 3 )
