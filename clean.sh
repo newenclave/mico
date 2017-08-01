@@ -1,6 +1,6 @@
 #!/bin/sh
 
 rm mico.tgz 
-cov-int/
+rm -Rf cov-int/
 rm mico
 
