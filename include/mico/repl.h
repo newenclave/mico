@@ -114,6 +114,7 @@ namespace mico {
         {
             static const auto fail_type = objects::type::FAILURE;
             using namespace etool::console::ccout;
+            using CE = charset::encoding;
 
             eval::tree_walking tv;
             mico::state st;
@@ -153,7 +154,8 @@ namespace mico {
                                     std::cout << red;
                                 }
 
-                                std::cout << obj->str( ) << "\n";
+                                std::cout << CE::file2con(obj->str( ))
+                                          << "\n";
 
                                 if( failed ) {
                                     std::cout << none;
@@ -175,7 +177,7 @@ namespace mico {
                     if( !data.empty( ) ) {
                         data += "\n";
                     }
-                    data += charset::encoding::con2file(tmp);
+                    data += CE::con2file(tmp);
                     std::cout << "  > ";
                 }
             }
