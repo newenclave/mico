@@ -22,6 +22,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * [Monkey and Mico](#monkey-and-mico)
 * [View](#view)
     * [Numbers](#numbers)
+    * [Strings](#string)
     * [Token position](#token-position)
     * [Mutability](#mutability)
     * [Intervals](#intervals)
@@ -98,6 +99,19 @@ Numbers can contain a gap symbol `_`. The symbol can be included both in integer
     let oct = 0_777_111_222_333     // 68604470491
     let flt = 10.1000_0002          // 10.10000002
 ```
+### Strings
+```swift
+    let s = "string"
+    io.puts(s[1])
+    // 't'
+    let s = "中國"
+    io.puts(s, " ", len(s), " ", s[0])
+    // `中國 2 中`
+```
+Yes. It supports the unicode. Not completely of course.
+I've written a small utf8 parser and I think it's enough for this toy language.
+And for Windows it uses native API for encoding.
+
 ### Token position
 Every token has its position.
 ```swift
