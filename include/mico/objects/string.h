@@ -18,7 +18,7 @@ namespace mico { namespace objects {
     public:
 
         using internal_type = mico::string;
-        using system_type   = mico::sys_string;
+        using system_type   = mico::file_string;
 
         static const type type_value = type::STRING;
 
@@ -89,7 +89,7 @@ namespace mico { namespace objects {
         static
         sptr make( system_type val )
         {
-            auto internal = charset::encoding::from_sys( val );
+            auto internal = charset::encoding::from_file( val );
             return std::make_shared<this_type>( std::move(internal) );
         }
 

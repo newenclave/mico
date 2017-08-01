@@ -4,7 +4,9 @@
 #include <ostream>
 
 #ifdef _WIN32
+#define NOMINMAX
 #include <windows.h>
+#undef NOMINMAX
 #endif
 
 #include "etool/charset/utf8.h"
@@ -79,7 +81,7 @@ namespace mico { namespace charset {
         }
 
         static
-        sys_string to_file( const internal_string &enter )
+        sys_string to_sys( const internal_string &enter )
         {
             return enter;
         }
