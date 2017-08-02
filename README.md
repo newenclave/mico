@@ -315,7 +315,7 @@ Five little monkeys
                     "Momma called the doctor and the doctor said\n"
                     "\"No more monkeys jumping on the bed!\"\n"
         let plur = " little monkeys jumping on the bed\n"
-                     "One fell off and bumped his head\n"
+                     "🐒 fell off and bumped his head\n"
                      "Momma called the doctor and the doctor said\n"
                      "\"No more monkeys jumping on the bed!\"\n"
         for i in monkeys..1, -1 {
