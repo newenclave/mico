@@ -305,7 +305,7 @@ The `pow` array. Let's make an array that contains functions and they make a `po
     io.puts( arr[10](2)   ) // `1024`
 
 ```
-Five little monkey
+Five little monkeys
 
 ```swift
 
