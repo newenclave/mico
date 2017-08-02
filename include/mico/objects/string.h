@@ -86,6 +86,11 @@ namespace mico { namespace objects {
             }
         }
 
+        objects::sptr at_obj( std::int64_t id )
+        {
+            return objects::character::make( at(id) );
+        }
+
         static
         sptr make( value_type val )
         {

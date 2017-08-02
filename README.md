@@ -23,6 +23,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * [View](#view)
     * [Numbers](#numbers)
     * [Strings](#strings)
+    * [Slices](#slices)
     * [Token position](#token-position)
     * [Mutability](#mutability)
     * [Intervals](#intervals)
@@ -112,6 +113,26 @@ Numbers can contain a gap symbol `_`. The symbol can be included both in integer
 Yes. It supports the unicode. Not completely of course.
 I've written a small utf8 parser and I think it's enough for this toy language.
 And for Windows it uses native API for encoding.
+
+### Slices
+Slice is a part of an array or a string. Slice holds the object (string or array) and an interval could be accessed.
+The slice can be created with `index` operator `[]`. Both the left side and the right side of the interval are included.
+I.e. `0..1` has 2 values and `0..0` only one
+```swift
+    let str = "This is a string"
+    let this = str[0..3]
+    io.puts(this)
+    // shows `This`
+```
+Arrays slices
+```swift
+    let arr = [0,1,2,3,4,5,6,7,8,9]
+    let  = arr[0..3]
+    io.puts(this)
+    // shows `This`
+```
+
+
 
 ### Token position
 Every token has its position.

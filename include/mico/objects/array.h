@@ -83,6 +83,11 @@ namespace mico { namespace objects {
             }
         }
 
+        cont_sptr at_obj( std::int64_t id )
+        {
+            return at(id);
+        }
+
         void push( const environment * /*menv*/, objects::sptr val )
         {
             // mark in MY environment

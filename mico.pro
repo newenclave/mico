@@ -14,7 +14,8 @@ DISTFILES += \
     tests.txt \
     README2.md \
     examples/t002.mico \
-    examples/t001.mico
+    examples/t001.mico \
+    README.md
 
 
 #DEFINES += DEBUG=1
@@ -121,7 +122,5 @@ HEADERS += \
     include/mico/types.h \
     include/mico/expressions/character.h \
     include/mico/objects/character.h \
-    include/mico/objects/sslice.h \
-    include/mico/eval/operations/sslice.h \
-    include/mico/objects/aslice.h \
-    include/mico/eval/operations/aslice.h
+    include/mico/objects/slices.h \
+    include/mico/eval/operations/slices.h

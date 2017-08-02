@@ -5,6 +5,8 @@
 #include "mico/builtin/common.h"
 #include "mico/objects/module.h"
 
+#include "mico/objects/slices.h"
+
 #include "mico/charset/encoding.h"
 
 namespace mico { namespace modules {
@@ -46,6 +48,9 @@ namespace mico { namespace modules {
                         std::cout << std::boolalpha << s->value( )
                                   << std::noboolalpha;
 
+                    } else if(p->get_type( ) == objects::type::SSLICE ) {
+                        auto s = objects::cast_sslice(p.get( ))->make_string( );
+                        std::cout << CS::to_console( s );
                     } else {
                         return error::make( tokens::position( line, 0),
                                             "Invalid parameter ", count,

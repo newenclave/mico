@@ -61,7 +61,13 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr clone( ) const override
         {
-            return uptr(new this_type(value( ) ) );
+            return make(value( ));
+        }
+
+        static
+        uptr make( std::int64_t val )
+        {
+            return uptr(new this_type( val ) );
         }
     };
 
@@ -82,6 +88,12 @@ namespace mico { namespace ast { namespace expressions {
             return uptr(new this_type(value( ) ) );
         }
 
+        static
+        uptr make( double val )
+        {
+            return uptr(new this_type( val ) );
+        }
+
     };
 
     template <>
@@ -99,6 +111,12 @@ namespace mico { namespace ast { namespace expressions {
         ast::node::uptr clone( ) const override
         {
             return uptr(new this_type(value( ) ) );
+        }
+
+        static
+        uptr make( bool val )
+        {
+            return uptr(new this_type( val ) );
         }
     };
 

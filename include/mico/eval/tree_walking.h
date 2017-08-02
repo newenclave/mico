@@ -18,8 +18,7 @@
 #include "mico/eval/operations/arrays.h"
 #include "mico/eval/operations/function.h"
 #include "mico/eval/operations/module.h"
-#include "mico/eval/operations/sslice.h"
-#include "mico/eval/operations/aslice.h"
+#include "mico/eval/operations/slices.h"
 
 #include "mico/charset/encoding.h"
 
@@ -315,7 +314,6 @@ namespace mico { namespace eval {
         objects::sptr eval_assign( ast::expressions::infix *inf,
                                    environment::sptr env )
         {
-
             if(inf->left( )->get_type( ) == ast::type::IDENT) {
                 using ident_type = ast::expressions::ident;
                 auto id = static_cast<ident_type *>(inf->left( ).get( ));

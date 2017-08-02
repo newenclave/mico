@@ -47,6 +47,12 @@ namespace mico { namespace ast { namespace expressions {
             return expr_;
         }
 
+        static
+        uptr make( node::uptr left, node::uptr param )
+        {
+            return uptr(new this_type(std::move(left), std::move(param) ) );
+        }
+
         void mutate( mutator_type call ) override
         {
             ast::node::apply_mutator( left_, call );

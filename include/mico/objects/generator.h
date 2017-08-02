@@ -12,8 +12,7 @@
 #include "mico/objects/interval.h"
 #include "mico/objects/character.h"
 
-#include "mico/objects/sslice.h"
-#include "mico/objects/aslice.h"
+#include "mico/objects/slices.h"
 
 namespace mico { namespace objects {
 

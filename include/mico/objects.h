@@ -10,10 +10,8 @@
 #include "mico/objects/functions.h"
 
 #include "mico/objects/array.h"
-#include "mico/objects/aslice.h"
-
 #include "mico/objects/string.h"
-#include "mico/objects/sslice.h"
+#include "mico/objects/slices.h"
 
 #include "mico/objects/character.h"
 #include "mico/objects/error.h"

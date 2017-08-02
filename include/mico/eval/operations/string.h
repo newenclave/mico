@@ -99,7 +99,12 @@ namespace mico { namespace eval { namespace operations {
             std::int64_t start = common::to_index( ival->begin( ) );
             std::int64_t stop  = common::to_index( ival->end( ) );
 
-            if( !str->valid_id( start ) || !str->valid_id( stop ) ) {
+            bool valid_start = str->valid_id( start );
+                            //|| ( start == str->size( ) );
+            bool valid_stop = str->valid_id( stop );
+                            //|| ( stop == str->size( ) );
+
+            if( !valid_start || !valid_stop ) {
                 return error_type::make( idx->param( )->pos( ),
                                          idx->param( ).get( ),
                                          " has invalid range" );
