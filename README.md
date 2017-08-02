@@ -325,6 +325,7 @@ Five little monkeys
                 io.puts( "🐒" * i, plur)
             }
         }
+        return
     }
     the_monkey_song( 5 )
 
