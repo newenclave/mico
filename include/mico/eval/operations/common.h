@@ -104,11 +104,17 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
+        bool is_numeric( objects::type tt )
+        {
+            return ( tt == objects::type::INTEGER )
+                || ( tt == objects::type::FLOAT )
+                 ;
+        }
+
+        static
         bool is_numeric( const objects::base *obj )
         {
-            return ( obj->get_type( ) == objects::type::INTEGER )
-                || ( obj->get_type( ) == objects::type::FLOAT )
-                 ;
+            return is_numeric( obj->get_type( ) );
         }
 
         static
@@ -116,6 +122,7 @@ namespace mico { namespace eval { namespace operations {
         {
             return is_numeric( obj.get( ) );
         }
+
 
         static
         std::int64_t to_index( const objects::sptr &id )
@@ -319,6 +326,24 @@ namespace mico { namespace eval { namespace operations {
                 call_env->set( p->str( ), obj );
             }
             return objects::tail_call::make( call, call_env );
+        }
+
+        static
+        objects::sptr eval_infix( infix *inf, objects::sptr obj,
+                                  eval_call ev, environment::sptr env  )
+        {
+            obj = objects::reference::unref( obj );
+
+            if( inf->token( ) == tokens::type::BIT_OR ) {
+                objects::sptr right = ev( inf->right( ).get( ), env );
+                if( common::is_fail( right ) ) {
+                    return right;
+                }
+                return common_infix( inf, obj, right, env );
+            }
+            return error_type::make(inf->pos( ), "Infix operation '",
+                                    inf->token( ), "' is not defined for ",
+                                                   obj->get_type( ));
         }
 
     };

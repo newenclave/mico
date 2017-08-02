@@ -120,4 +120,8 @@ HEADERS += \
     include/mico/charset/encoding.h \
     include/mico/types.h \
     include/mico/expressions/character.h \
-    include/mico/objects/character.h
+    include/mico/objects/character.h \
+    include/mico/objects/sslice.h \
+    include/mico/eval/operations/sslice.h \
+    include/mico/objects/aslice.h \
+    include/mico/eval/operations/aslice.h

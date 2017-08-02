@@ -44,6 +44,8 @@ namespace mico { namespace objects {
         INTERVAL    = 17,
         BREAK_OBJ   = 18,
         CONT_OBJ    = 19,
+        SSLICE      = 20,
+        ASLICE      = 21,
     };
 
     struct name {
@@ -71,6 +73,8 @@ namespace mico { namespace objects {
             case type::INTERVAL   : return "OBJ_INTERVAL";
             case type::BREAK_OBJ  : return "OBJ_BREAK";
             case type::CONT_OBJ   : return "OBJ_CONTINUE";
+            case type::SSLICE     : return "OBJ_SLICE_STR";
+            case type::ASLICE     : return "OBJ_SLICE_ARR";
             }
             return "<invalid>";
         }

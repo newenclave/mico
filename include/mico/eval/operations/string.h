@@ -84,6 +84,35 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
+        objects::sptr eval_ival_index( index *idx,
+                                       objects::string::sptr str,
+                                       objects::sptr id )
+        {
+            auto ival = objects::cast_ival( id.get( ) );
+
+            if( !common::is_numeric( ival->domain( )) ) {
+                return error_type::make( idx->param( )->pos( ),
+                                         idx->param( ).get( ),
+                              " has invalid type; must be numeric" );
+            }
+
+            std::int64_t start = common::to_index( ival->begin( ) );
+            std::int64_t stop  = common::to_index( ival->end( ) );
+
+            if( !str->valid_id( start ) || !str->valid_id( stop ) ) {
+                return error_type::make( idx->param( )->pos( ),
+                                         idx->param( ).get( ),
+                                         " has invalid range" );
+            }
+
+            auto res = objects::sslice::make( str,
+                                              str->fix_id(start),
+                                              str->fix_id(stop) );
+
+            return res;
+        }
+
+        static
         objects::sptr eval_index( index *idx, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
@@ -95,10 +124,14 @@ namespace mico { namespace eval { namespace operations {
                 return id;
             }
 
+            if( id->get_type( )  == objects::type::INTERVAL ) {
+                return eval_ival_index( idx, str, id );
+            }
+
             if( !common::is_numeric( id ) ) {
-                return error_type::make( idx->pos( ),
+                return error_type::make( idx->param( )->pos( ),
                                          idx->param( ).get( ),
-                              " has invalid type; must be integer" );
+                              " has invalid type; must be numeric" );
             }
 
             std::int64_t index = common::to_index( id );

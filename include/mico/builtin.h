@@ -7,6 +7,8 @@
 #include "etool/console/colors.h"
 #include "mico/builtin/common.h"
 
+#include "mico/objects.h"
+
 #include "mico/modules/io.h"
 #include "mico/modules/debug.h"
 #include "mico/modules/string.h"
@@ -38,6 +40,12 @@ namespace mico {
             } else if( dat->get_type( ) == objects::type::TABLE ) {
                 auto s = objects::cast_table(dat.get( ));
                 return integer::make( s->value( ).size( ));
+            } else if( dat->get_type( ) == objects::type::SSLICE ) {
+                auto s = objects::cast_sslice(dat.get( ));
+                return integer::make( s->size( ) );
+            } else if( dat->get_type( ) == objects::type::ASLICE ) {
+                auto s = objects::cast_aslice(dat.get( ));
+                return integer::make( s->size( ) );
             }
             return error::make( tokens::position( line, 0),
                                 "Invalid parameter for 'len'");

@@ -58,22 +58,23 @@ namespace mico { namespace objects {
             return value_;
         }
 
-        bool valid_id( std::int64_t id ) const
+        std::size_t fix_id( std::int64_t id ) const
         {
             auto siz = static_cast<std::size_t>(id);
             if( id < 0 ) {
-                siz = value_.size( ) - static_cast<std::size_t>(-1 * id);
+                siz = size( ) - static_cast<std::size_t>(-1 * id);
             }
-            return siz < value_.size( );
+            return siz;
+        }
+
+        bool valid_id( std::int64_t id ) const
+        {
+            return fix_id(id) < value_.size( );
         }
 
         cont_sptr at( std::int64_t id )
         {
-            auto siz = static_cast<std::size_t>(id);
-
-            if( id < 0 ) {
-                siz = value_.size( ) - static_cast<std::size_t>(-1 * id);
-            }
+            auto siz = fix_id( id );
 
             if( siz < value_.size( ) ) {
                 return value_[siz];

@@ -18,6 +18,8 @@
 #include "mico/eval/operations/arrays.h"
 #include "mico/eval/operations/function.h"
 #include "mico/eval/operations/module.h"
+#include "mico/eval/operations/sslice.h"
+#include "mico/eval/operations/aslice.h"
 
 #include "mico/charset/encoding.h"
 
@@ -37,7 +39,8 @@ namespace mico { namespace eval {
     private:
 
         template <objects::type T>
-        using OP = operations::operation<T>;
+        using OP  = operations::operation<T>;
+        using OPC = operations::common;
 
         ////////////// errors /////////////
 
@@ -424,7 +427,7 @@ namespace mico { namespace eval {
                 res = OP_func::eval_infix( inf, left, inf_call_unref, env);
                 break;
             default:
-                break;
+                res = OPC::eval_infix( inf, left, inf_call_unref, env);
             }
             if( res ) {
                 return eval_tail( res );
@@ -677,6 +680,12 @@ namespace mico { namespace eval {
 
             case objects::type::ARRAY:
                 return GEN::array::make( objects::cast_array(from), istep );
+
+            case objects::type::SSLICE:
+                return GEN::sslice::make( objects::cast_sslice(from), istep );
+
+            case objects::type::ASLICE:
+                return GEN::aslice::make( objects::cast_aslice(from), istep );
 
             case objects::type::STRING:
                 return GEN::string::make( objects::cast_string(from), istep );
@@ -1008,6 +1017,8 @@ namespace mico { namespace eval {
             using OP_array  = operations::operation<objects::type::ARRAY>;
             using OP_string = operations::operation<objects::type::STRING>;
             using OP_table  = operations::operation<objects::type::TABLE>;
+            using OP_sslice = operations::operation<objects::type::SSLICE>;
+            using OP_aslice = operations::operation<objects::type::ASLICE>;
 
             switch ( val->get_type( ) ) {
             case objects::type::ARRAY:
@@ -1016,6 +1027,10 @@ namespace mico { namespace eval {
                 return OP_string::eval_index( idx, val, idx_call, env );
             case objects::type::TABLE:
                 return OP_table::eval_index( idx, val, idx_call, env );
+            case objects::type::SSLICE:
+                return OP_sslice::eval_index( idx, val, idx_call, env );
+            case objects::type::ASLICE:
+                return OP_aslice::eval_index( idx, val, idx_call, env );
             }
 
             return objects::error::make( n->pos( ),

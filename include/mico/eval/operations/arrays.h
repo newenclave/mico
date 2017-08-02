@@ -47,20 +47,52 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
-        objects::sptr eval_index( index *inf, objects::sptr obj,
+        objects::sptr eval_ival_index( index *idx,
+                                       objects::array::sptr str,
+                                       objects::sptr id )
+        {
+            auto ival = objects::cast_ival( id.get( ) );
+
+            if( !common::is_numeric( ival->domain( )) ) {
+                return error_type::make( idx->param( )->pos( ),
+                                         idx->param( ).get( ),
+                              " has invalid type; must be numeric" );
+            }
+
+            std::int64_t start = common::to_index( ival->begin( ) );
+            std::int64_t stop  = common::to_index( ival->end( ) );
+
+            if( !str->valid_id( start ) || !str->valid_id( stop ) ) {
+                return error_type::make( idx->param( )->pos( ),
+                                         idx->param( ).get( ),
+                                         " has invalid range" );
+            }
+
+            auto res = objects::aslice::make( str,
+                                              str->fix_id(start),
+                                              str->fix_id(stop) );
+
+            return res;
+        }
+
+        static
+        objects::sptr eval_index( index *idx, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-
             common::reference<objects::type::ARRAY> ref(obj);
             auto arr = ref.shared_unref( );
 
-            objects::sptr id = ev( inf->param( ).get( ), env );
+            objects::sptr id = ev( idx->param( ).get( ), env );
             if( id->get_type( ) == objects::type::FAILURE ) {
                 return id;
             }
 
+            if( id->get_type( )  == objects::type::INTERVAL ) {
+                return eval_ival_index( idx, arr, id );
+            }
+
             if( !common::is_numeric( id ) ) {
-                return error_type::make( inf->pos( ), inf->param( ).get( ),
+                return error_type::make( idx->pos( ), idx->param( ).get( ),
                                          " has invalid type; must be integer" );
             }
 
@@ -70,8 +102,8 @@ namespace mico { namespace eval { namespace operations {
                 return res;
             }
 
-            return error_type::make( inf->param( )->pos( ),
-                                     inf->param( ).get( ),
+            return error_type::make( idx->param( )->pos( ),
+                                     idx->param( ).get( ),
                           " is not a valid index for the array" );
         }
 

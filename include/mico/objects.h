@@ -7,9 +7,14 @@
 #include "mico/objects/numbers.h"
 #include "mico/objects/null.h"
 #include "mico/objects/table.h"
-#include "mico/objects/array.h"
 #include "mico/objects/functions.h"
+
+#include "mico/objects/array.h"
+#include "mico/objects/aslice.h"
+
 #include "mico/objects/string.h"
+#include "mico/objects/sslice.h"
+
 #include "mico/objects/character.h"
 #include "mico/objects/error.h"
 #include "mico/objects/boolean.h"
@@ -53,6 +58,8 @@ namespace mico { namespace objects {
     MICO_DEFINE_CAST_FUNC( mod,         type::MODULE    )
     MICO_DEFINE_CAST_FUNC( gen,         type::GENERATOR )
     MICO_DEFINE_CAST_FUNC( ival,        type::INTERVAL  )
+    MICO_DEFINE_CAST_FUNC( sslice,      type::SSLICE    )
+    MICO_DEFINE_CAST_FUNC( aslice,      type::ASLICE    )
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
     MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )

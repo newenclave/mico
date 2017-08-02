@@ -12,6 +12,9 @@
 #include "mico/objects/interval.h"
 #include "mico/objects/character.h"
 
+#include "mico/objects/sslice.h"
+#include "mico/objects/aslice.h"
+
 namespace mico { namespace objects {
 
     template<>
@@ -506,12 +509,95 @@ namespace mico { namespace objects {
             value_type id_   = 0;
         };
 
+        template <typename SliceT>
+        struct slice_gen: public generator {
+            using value_type = typename SliceT::sptr;
+            using this_type = slice_gen<SliceT>;
 
-        using integer  = numeric<type::INTEGER>;
-        using floating = numeric<type::FLOAT>;
+            slice_gen<SliceT>( value_type &obj, std::int64_t step )
+                :object_(obj)
+                ,step_(step)
+                ,id_(step_ < 0 ? -1 : 0)
+            { }
+
+            std::string str( ) const override
+            {
+                std::ostringstream oss;
+                oss << "gen(slice)";
+                return oss.str( );
+            }
+
+            objects::sptr clone( ) const override
+            {
+                return make( object_ );
+            }
+
+            void reset( ) override
+            {
+                id_ = (step_ < 0 ? -1 : 0);
+            }
+
+            void next( ) override
+            {
+                if( !end( ) ) {
+                    id_ += step_;
+                }
+            }
+
+            bool end( ) const override
+            {
+                return is_end( id_ );
+            }
+
+            bool is_end( std::int64_t id ) const
+            {
+                return !object_->valid_id( id );
+            }
+
+            bool has_next( ) const override
+            {
+                return !end( ) && !is_end( id_ + step_ );
+            }
+
+            objects::sptr get_id( )  override
+            {
+                return objects::integer::make( id_ );
+            }
+
+            objects::sptr get_val( ) override
+            {
+                if( !end( ) ) {
+                    return object_->at( id_ );
+                }
+                return nullptr;
+            }
+
+            static
+            sptr make( value_type obj )
+            {
+                return std::make_shared<this_type>( obj, 1 );
+            }
+
+            static
+            sptr make( value_type obj, std::int64_t step )
+            {
+                return std::make_shared<this_type>( obj, step );
+            }
+
+        private:
+            value_type     object_;
+            std::int64_t   step_;
+            std::int64_t   id_ = 0;
+        };
+
+        using integer    = numeric<type::INTEGER>;
+        using floating   = numeric<type::FLOAT>;
 
         using int_ival   = interval<type::INTEGER>;
         using float_ival = interval<type::FLOAT>;
+
+        using aslice     = slice_gen<objects::aslice>;
+        using sslice     = slice_gen<objects::sslice>;
     }
 }}
 

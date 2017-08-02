@@ -63,6 +63,11 @@ namespace mico { namespace objects {
             return oss.str( );
         }
 
+        std::size_t size( ) const override
+        {
+            return value_.size( );
+        }
+
         const value_type &value( ) const
         {
             return value_;
