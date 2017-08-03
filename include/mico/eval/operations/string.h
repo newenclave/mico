@@ -88,43 +88,7 @@ namespace mico { namespace eval { namespace operations {
                                        objects::string::sptr str,
                                        objects::sptr id )
         {
-            auto ival = objects::cast_ival( id.get( ) );
-
-            if( !common::is_numeric( ival->domain( )) ) {
-                return error_type::make( idx->param( )->pos( ),
-                                         idx->param( ).get( ),
-                              " has invalid type; must be numeric" );
-            }
-
-            std::int64_t start = common::to_index( ival->begin( ) );
-            std::int64_t stop  = common::to_index( ival->end( ) );
-
-            if( start < 0 ) {
-                std::int64_t siz = static_cast<std::int64_t>(str->size( ));
-                start = siz + start + 1;
-            }
-
-            if( stop < 0 ) {
-                std::int64_t siz = static_cast<std::int64_t>(str->size( ));
-                stop = siz + stop + 1;
-            }
-
-            bool valid_start = str->valid_id( start )
-                    || ( static_cast<std::size_t>(start) == str->size( ) );
-            bool valid_stop = str->valid_id( stop )
-                    || ( static_cast<std::size_t>(stop) == str->size( ) );
-
-            if( !valid_start || !valid_stop ) {
-                return error_type::make( idx->param( )->pos( ),
-                                         idx->param( ).get( ),
-                                         " has invalid range" );
-            }
-
-            auto res = objects::sslice::make( str,
-                                              str->fix_id(start),
-                                              str->fix_id(stop) );
-
-            return res;
+            return common::eval_ival_index<objects::string>(idx, str, id);
         }
 
         static

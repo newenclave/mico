@@ -123,6 +123,53 @@ namespace mico { namespace eval { namespace operations {
             return is_numeric( obj.get( ) );
         }
 
+        template <typename TargetT>
+        static
+        objects::sptr eval_ival_index( index *idx,
+                                       typename TargetT::sptr tgt,
+                                       objects::sptr id )
+        {
+            using target_type  = TargetT;
+            using target_slice = typename target_type::slice_type;
+
+            auto ival = objects::cast_ival( id.get( ) );
+
+            if( !common::is_numeric( ival->domain( )) ) {
+                return error_type::make( idx->param( )->pos( ),
+                                         idx->param( ).get( ),
+                              " has invalid type; must be numeric" );
+            }
+
+            std::int64_t start = common::to_index( ival->begin( ) );
+            std::int64_t stop  = common::to_index( ival->end( ) );
+
+            if( start < 0 ) {
+                std::int64_t siz = static_cast<std::int64_t>(tgt->size( ));
+                start = siz + start + 1;
+            }
+
+            if( stop < 0 ) {
+                std::int64_t siz = static_cast<std::int64_t>(tgt->size( ));
+                stop = siz + stop + 1;
+            }
+
+            bool valid_start = tgt->valid_id( start )
+                    || ( static_cast<std::size_t>(start) == tgt->size( ) );
+            bool valid_stop = tgt->valid_id( stop )
+                    || ( static_cast<std::size_t>(stop) == tgt->size( ) );
+
+            if( !valid_start || !valid_stop ) {
+                return error_type::make( idx->param( )->pos( ),
+                                         idx->param( ).get( ),
+                                         " has invalid range" );
+            }
+
+            auto res = target_slice::make( tgt, tgt->fix_id(start),
+                                                tgt->fix_id(stop) );
+
+            return res;
+        }
+
 
         static
         std::int64_t to_index( const objects::sptr &id )

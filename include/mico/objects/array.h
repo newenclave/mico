@@ -22,6 +22,8 @@ namespace mico { namespace objects {
         using cont_sptr  = std::shared_ptr<cont>;
         using value_type = std::deque<cont_sptr>;
 
+        using slice_type = impl<type::ASLICE>;
+
         impl( environment::sptr env )
             :collectable<type::ARRAY>(env)
         { }

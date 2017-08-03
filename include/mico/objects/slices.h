@@ -129,7 +129,8 @@ namespace mico { namespace objects {
         using this_type = impl<type::SSLICE>;
     public:
 
-        using sptr = std::shared_ptr<this_type>;
+        using sptr       = std::shared_ptr<this_type>;
+        using slice_type = this_type;
 
         impl<type::SSLICE>( objects::string::sptr obj,
                             std::size_t start, std::size_t stop )
@@ -147,6 +148,14 @@ namespace mico { namespace objects {
                    std::size_t start, std::size_t stop )
         {
             auto val = std::make_shared<this_type>( obj, start, stop );
+            return val;
+        }
+
+        static
+        sptr make( sptr obj, std::size_t start, std::size_t stop )
+        {
+            auto val = std::make_shared<this_type>( obj->value( ),
+                                                    start, stop );
             return val;
         }
 
@@ -170,7 +179,8 @@ namespace mico { namespace objects {
         using this_type = impl<type::ASLICE>;
     public:
 
-        using sptr = std::shared_ptr<this_type>;
+        using sptr       = std::shared_ptr<this_type>;
+        using slice_type = this_type;
 
         impl<type::ASLICE>( objects::array::sptr obj,
                             std::size_t start, std::size_t stop )
@@ -188,6 +198,14 @@ namespace mico { namespace objects {
                    std::size_t start, std::size_t stop )
         {
             auto val = std::make_shared<this_type>( obj, start, stop );
+            return val;
+        }
+
+        static
+        sptr make( sptr obj, std::size_t start, std::size_t stop )
+        {
+            auto val = std::make_shared<this_type>( obj->value( ),
+                                                    start, stop );
             return val;
         }
 

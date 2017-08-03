@@ -27,6 +27,8 @@ namespace mico { namespace objects {
         using value_type  = internal_type;
         using symbol_type = value_type::value_type;
 
+        using slice_type = impl<type::SSLICE>;
+
         std::string str( ) const override
         {
             std::ostringstream oss;
