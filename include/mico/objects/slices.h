@@ -28,7 +28,7 @@ namespace mico { namespace objects {
             ,stop_(start < stop ? stop : start)
             ,negative_(stop < start)
         {
-            stop_++;
+            //stop_++;
         }
 
         std::string str( ) const override

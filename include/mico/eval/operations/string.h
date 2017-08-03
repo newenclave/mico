@@ -99,10 +99,20 @@ namespace mico { namespace eval { namespace operations {
             std::int64_t start = common::to_index( ival->begin( ) );
             std::int64_t stop  = common::to_index( ival->end( ) );
 
-            bool valid_start = str->valid_id( start );
-                            //|| ( start == str->size( ) );
-            bool valid_stop = str->valid_id( stop );
-                            //|| ( stop == str->size( ) );
+            if( start < 0 ) {
+                std::int64_t siz = static_cast<std::int64_t>(str->size( ));
+                start = siz + start + 1;
+            }
+
+            if( stop < 0 ) {
+                std::int64_t siz = static_cast<std::int64_t>(str->size( ));
+                stop = siz + stop + 1;
+            }
+
+            bool valid_start = str->valid_id( start )
+                    || ( static_cast<std::size_t>(start) == str->size( ) );
+            bool valid_stop = str->valid_id( stop )
+                    || ( static_cast<std::size_t>(stop) == str->size( ) );
 
             if( !valid_start || !valid_stop ) {
                 return error_type::make( idx->param( )->pos( ),

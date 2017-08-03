@@ -24,6 +24,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Numbers](#numbers)
     * [Strings](#strings)
     * [Slices](#slices)
+    * [Negative index](#negative-index)
     * [Token position](#token-position)
     * [Mutability](#mutability)
     * [Intervals](#intervals)
@@ -115,19 +116,61 @@ I've written a small utf8 parser and I think it's enough for this toy language.
 And for Windows it uses native API for encoding.
 
 ### Slices
-Slice is a part of an array or a string. Slice holds the object (string or array) and an interval could be accessed.
-The slice can be created with `index` operator `[]`. Both the left side and the right side of the interval are included.
-I.e. `0..1` has 2 values and `0..0` only one
+Slice is a part of an array or a string. Slice holds the object (string or array) and an interval `[left..right]`.
+The slice can be created with `index` operator `[]`. Interval includes only its left side (i.e. the intervals are `left closed, right open`).
+Full container interval can be created with the interval `[0..len(cont)]` or `[0..-1]` (see "Negative index" above)
 ```swift
     let str = "This is a string"
-    let this = str[0..3]
+    let this = str[0..4]
     io.puts(this)
     // shows `This`
 ```
 Arrays slices
 ```swift
     let arr = [0,1,2,3,4,5,6,7,8,9]
-    let  = arr[0..3]
+    let s = arr[0..3]
+    for i in s { io.put( i, " " ) } // shows `0 1 2`
+```
+Slice can change its direction. If the left part of the interval is greater then right, interval changes its direction.
+```swift
+    let arr = [0,1,2,3,4,5,6,7,8,9]
+    let s = arr[8..2]
+    for i in s { io.put( i, " " ) } // shows `7 6 5 4 3 2`
+```
+Of cource it's only valid when an element is accessed by index
+```swift
+    let str = "Hello, world!"
+    let s = str[len(str)..0]
+    for i in s { io.put( i ) } // shows `!dlrow ,olleH`
+    /// but!
+    io.puts(s) // Hello, world!
+```
+Slices are not copyes!
+
+Slice can be also created from another slice.
+```swift
+    let arr = [0,1,2,3,4,5,6,7,8,9]
+    let s = arr[1..10] // s is a slice[1,2,3,4,5,6,7,8,9]
+    let t = s[2..5]    // t is a slice[3, 4, 5]
+    for i in t { io.put( i, " " ) } // shows `3 4 5`
+```
+
+### Negative index
+Elements of arrays or strings can be obtained by negative index. `-1` means `the last element of the array/string`
+```swift
+    let arr = [0,1,2,3,4,5,6,7,8,9]
+    io.puts(arr[-1]) // 9
+    io.puts(arr[-2]) // 8
+    let s = "中國"
+    io.puts(s[-2]) // 中
+```
+Well, slices also can be created by adding a negative index
+```swift
+    let str = "Hello, world!Äáç¶"
+    let sym = str[-5..-1]
+    let hello = str[0..-5]
+    io.puts(sym) // Äáç¶
+    io.puts(hello) // Hello, world!
 ```
 
 ### Token position
@@ -222,7 +265,7 @@ An interval loop acccepts a numeric (float or integer) interval and repats `[sta
 As you can see values `-13.13` (next to -11.47 for first) and `1.28` (next to -0.38 for second) are not shown because they lie outside the intervals
 
 
-A container loop accepts containers (i.e. arrays, strings or tables) and iterates those values.
+A container loop accepts containers (i.e. arrays, strings, slices or tables) and iterates those values.
 ```swift
     for v in [1, "Hello", 0.19, -100] {
         io.put(v, " ")
@@ -283,7 +326,8 @@ Key-Value syntax.
     io.puts( )
     // z:'-1' t:'00:00:00' y:'-100' x:'0'
 ```
-Containers loops always set next value variable of the loop as a reference. It means that values in the container can be changed in the loop. And as far as loops are expressions we can easily create and change a container in the place
+Containers loops always set next value variable of the loop as a reference.
+It means that values in the container can be changed in the loop. And as far as loops are expressions we can easily create and change a container in the place
 
 ```swift
     // helper function. Shows a container value
