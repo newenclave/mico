@@ -502,9 +502,9 @@ Logical operators `&&` and `||` are lazy. `&&` doesn't eval its right side if it
 `||` does the same thing. It returns `true` if its left side is `true`
 
 ```swift
-    if( 10 > 100 && "100" < 100 ) { 1.0 } else { 0.0 } // ok. returns 0.0
-    if( 10 > 100 || "100" < 100 ) { 1.0 } else { 0.0 }
-    // error: [1:22] Infix operation '<' is not defined for string and integer
+    let f = 10 > 100 && "100" < 100 // ok. `f` is `false`
+    let t = 10 > 100 || "100" < 100 // failed
+    // error: [1:26] Infix operation '<' is not defined for string and integer
 ```
 
 #### Operator `in`
