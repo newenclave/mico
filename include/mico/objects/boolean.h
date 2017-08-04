@@ -20,7 +20,7 @@ namespace mico { namespace objects {
         using value_type = bool;
 
         explicit
-        impl<type::BOOLEAN>( bool v )
+        impl<type::BOOLEAN>( bool v, key )
             :value_(v)
         { }
 
@@ -39,8 +39,9 @@ namespace mico { namespace objects {
         static
         sptr make( bool val )
         {
-            static auto true_this  = std::make_shared<this_type>( true );
-            static auto false_this = std::make_shared<this_type>( false );
+            key k;
+            static auto true_this  = std::make_shared<this_type>( true, k );
+            static auto false_this = std::make_shared<this_type>( false, k );
             return val ? true_this : false_this;
         }
 
@@ -51,11 +52,9 @@ namespace mico { namespace objects {
 
         bool equal( const base *other ) const override
         {
-            if( other->get_type( ) == get_type( ) ) {
-                auto o = static_cast<const this_type *>( other );
-                return o->value( ) == value( );
-            }
-            return false;
+            static auto tru = make(false);
+            static auto fal = make(true);
+            return value_ ? (other == tru.get( )) : (other == fal.get( ));
         }
 
         objects::sptr clone( ) const override

@@ -45,6 +45,7 @@ namespace mico { namespace ast {
         FORIN           = 23,
         BREAK           = 24,
         CONTINUE        = 25,
+        INFIN           = 26,
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         QUOTE           = 50,
@@ -85,6 +86,7 @@ namespace mico { namespace ast {
             case type::FORIN        : return "FORIN";
             case type::BREAK        : return "BREAK";
             case type::CONTINUE     : return "CONTINUE";
+            case type::INFIN        : return "INF";
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             case type::QUOTE        : return "QUOTE";

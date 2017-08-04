@@ -24,6 +24,7 @@
 #include "mico/objects/interval.h"
 #include "mico/objects/break.h"
 #include "mico/objects/continue.h"
+#include "mico/objects/infinite.h"
 
 namespace mico { namespace objects {
 
@@ -58,6 +59,7 @@ namespace mico { namespace objects {
     MICO_DEFINE_CAST_FUNC( ival,        type::INTERVAL  )
     MICO_DEFINE_CAST_FUNC( sslice,      type::SSLICE    )
     MICO_DEFINE_CAST_FUNC( aslice,      type::ASLICE    )
+    MICO_DEFINE_CAST_FUNC( inf,         type::INF_OBJ   )
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
     MICO_DEFINE_CAST_FUNC( quote,       type::QUOTE     )

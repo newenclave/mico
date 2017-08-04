@@ -46,6 +46,7 @@ namespace mico { namespace objects {
         CONT_OBJ    = 19,
         SSLICE      = 20,
         ASLICE      = 21,
+        INF_OBJ     = 22,
     };
 
     struct name {
@@ -75,6 +76,7 @@ namespace mico { namespace objects {
             case type::CONT_OBJ   : return "OBJ_CONTINUE";
             case type::SSLICE     : return "OBJ_SLICE_STR";
             case type::ASLICE     : return "OBJ_SLICE_ARR";
+            case type::INF_OBJ    : return "OBJ_INFINITE";
             }
             return "<invalid>";
         }

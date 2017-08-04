@@ -96,6 +96,7 @@ namespace mico {
         void fill_nuds( )
         {
             nuds_[token_type::IDENT]  = [this]( ) { return parse_ident( ); };
+            nuds_[token_type::INFIN]  = [this]( ) { return parse_inf( ); };
             nuds_[token_type::STRING] = [this]( ) { return parse_string( );};
             nuds_[token_type::FLOAT]  = [this]( ) { return parse_float( ); };
             nuds_[token_type::LPAREN] = [this]( ) { return parse_paren( ); };
@@ -731,6 +732,11 @@ namespace mico {
                 }
             } while( true );
             return true;
+        }
+
+        ast::expressions::infinite::uptr parse_inf( )
+        {
+            return ast::expressions::infinite::make( );
         }
 
         ast::expression::uptr parse_ident( )

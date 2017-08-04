@@ -123,4 +123,7 @@ HEADERS += \
     include/mico/expressions/character.h \
     include/mico/objects/character.h \
     include/mico/objects/slices.h \
-    include/mico/eval/operations/slices.h
+    include/mico/eval/operations/slices.h \
+    include/mico/expressions/infinite.h \
+    include/mico/objects/infinite.h \
+    include/mico/eval/operations/infinite.h

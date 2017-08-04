@@ -19,6 +19,7 @@
 #include "mico/eval/operations/function.h"
 #include "mico/eval/operations/module.h"
 #include "mico/eval/operations/slices.h"
+#include "mico/eval/operations/infinite.h"
 
 #include "mico/charset/encoding.h"
 
@@ -240,6 +241,7 @@ namespace mico { namespace eval {
             using OP_table = OP<objects::type::TABLE>;
             using OP_array = OP<objects::type::ARRAY>;
             using OP_func  = OP<objects::type::FUNCTION>;
+            using OP_inf   = OP<objects::type::INF_OBJ>;
 
             objects::type opertype = oper->get_type( );
             if( opertype == objects::type::REFERENCE ) {
@@ -259,6 +261,8 @@ namespace mico { namespace eval {
                 return OP_table::eval_prefix(expr, oper);
             case objects::type::ARRAY:
                 return OP_array::eval_prefix(expr, oper);
+            case objects::type::INF_OBJ:
+                return OP_inf::eval_prefix(expr, oper);
             case objects::type::BUILTIN:
             case objects::type::FUNCTION:
                 return OP_func::eval_prefix(expr, oper);
@@ -298,13 +302,16 @@ namespace mico { namespace eval {
         static
         objects::sptr obj2num_obj( objects::base *oper )
         {
+            using VT = typename NumObj::value_type;
             switch (oper->get_type( )) {
             case objects::type::BOOLEAN:
                 return get_bool_value( obj2num<bool>(oper) );
             case objects::type::INTEGER:
-                return std::make_shared<NumObj>( obj2num<std::int64_t>(oper) );
+                return NumObj::make( static_cast<VT>(obj2num<std::int64_t>
+                                                                (oper)) );
             case objects::type::FLOAT:
-                return std::make_shared<NumObj>( obj2num<double>(oper) );
+                return NumObj::make( static_cast<VT>(obj2num<double>
+                                                                (oper)) );
             default:
                 break;
             }
@@ -396,6 +403,7 @@ namespace mico { namespace eval {
             using OP_array = OP<objects::type::ARRAY>;
             using OP_func  = OP<objects::type::FUNCTION>;
             using OP_mod   = OP<objects::type::MODULE>;
+            using OP_inf   = OP<objects::type::INF_OBJ>;
 
             objects::sptr res;
             switch( opertype ) {
@@ -416,6 +424,9 @@ namespace mico { namespace eval {
                 break;
             case objects::type::ARRAY:
                 res = OP_array::eval_infix( inf, left, inf_call_unref, env);
+                break;
+            case objects::type::INF_OBJ:
+                res = OP_inf::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::MODULE:
                 res = OP_mod::eval_infix( inf, left, func_call, env);
@@ -964,6 +975,12 @@ namespace mico { namespace eval {
             return objects::cont_obj::make( );
         }
 
+        objects::sptr eval_inf( ast::node *n, environment::sptr /*env*/ )
+        {
+            auto expr = ast::cast<ast::expressions::infinite>( n );
+            return objects::infinite::make(expr->is_negative( ));
+        }
+
         objects::sptr eval_ident( ast::node *n, environment::sptr env )
         {
 
@@ -1363,6 +1380,8 @@ namespace mico { namespace eval {
                 res = eval_index( n, env ); break;
             case ast::type::IDENT:
                 res = eval_ident( n, env ); break;
+            case ast::type::INFIN:
+                res = eval_inf( n, env ); break;
             case ast::type::LET:
                 res = eval_let( n, env ); break;
             case ast::type::RETURN:

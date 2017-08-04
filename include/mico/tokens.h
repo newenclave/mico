@@ -87,6 +87,7 @@ namespace mico { namespace tokens {
         ELIPSIS,
         DOTDOT,
         MODULE,
+        INFIN,
 
         LAST_VISIBLE,
     };
@@ -173,6 +174,7 @@ namespace mico { namespace tokens {
             case type::ELIPSIS:     return "...";
             case type::DOTDOT:      return "..";
             case type::MODULE:      return "module";
+            case type::INFIN:       return "inf";
 
             /// unnamed
             case type::NONE:
