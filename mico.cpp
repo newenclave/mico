@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <thread>
 
+#include "etool/details/result.h"
+
 int run_repl( )
 {
     mico::repl::run( );
@@ -74,9 +76,7 @@ int run_file( std::string path )
             std::cerr << e << "\n";
         }
     }
-
     return 0;
-
 }
 
 int main_lex( );
