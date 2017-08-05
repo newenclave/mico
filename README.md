@@ -190,12 +190,12 @@ Every variable is a real variable and can be changed by assignmet operator `=`.
     var a = [1, 2, 3, 4, 6]
     var b = 1
     let d = 77.77 // `d` is constant
-    b = 10
-    c = 100   /// oops; error: [1:0] Identifier not found: 'c'
-    d = 88.88 /// oops; error: [1:2] Invalid left value for ASSIGN d
+    b = 10        // ok
+    c = 100       // oops; error: [1:0] Identifier not found: 'c'
+    d = 88.88     // oops; error: [1:2] Invalid left value for ASSIGN d
 
     let fun = fn( ) {
-        var a = 100 // here `a` shadows the variable `a` from the global scope
+        let a = 100 // here `a` shadows the variable `a` from the global scope
         b = 0.0     // here `b` is from the global scope
     }
     fun( )
