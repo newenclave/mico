@@ -24,5 +24,6 @@
 #include "mico/expressions/forin.h"
 #include "mico/expressions/character.h"
 #include "mico/expressions/infinite.h"
+#include "mico/expressions/mutablity.h"
 
 #endif // EXPRESSIONS_H

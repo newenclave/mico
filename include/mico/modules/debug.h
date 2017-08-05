@@ -31,8 +31,8 @@ namespace mico { namespace modules {
             using BC = builtin::common;
             auto mod_e = environment::make(env);
             auto mod = objects::module::make( mod_e, name );
-            mod_e->set( "env", BC::make( mod_e, env_show(env) ) );
-            env->set( name, mod );
+            mod_e->set_const( "env", BC::make( mod_e, env_show(env) ) );
+            env->set_const( name, mod );
         }
     };
 }}

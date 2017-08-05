@@ -73,9 +73,9 @@ namespace mico { namespace modules {
             using BC = builtin::common;
             auto mod_env = environment::make(env);
             auto mod = objects::module::make( mod_env, name );
-            mod_env->set( "puts", BC::make( mod_env, puts { } ) );
-            mod_env->set( "put",  BC::make( mod_env, put { } ) );
-            env->set( name, mod );
+            mod_env->set_const( "puts", BC::make( mod_env, puts { } ) );
+            mod_env->set_const( "put",  BC::make( mod_env, put { } ) );
+            env->set_const( name, mod );
         }
     };
 

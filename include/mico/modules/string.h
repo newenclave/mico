@@ -121,9 +121,9 @@ namespace mico { namespace modules {
             auto mod_e = environment::make(env);
             auto mod = objects::module::make( mod_e, name );
 
-            mod_e->set( "to_int",   BIC::make( mod_e, to_int { } ) );
-            mod_e->set( "to_float", BIC::make( mod_e, to_float { } ) );
-            env->set( name, mod );
+            mod_e->set_const( "to_int",   BIC::make( mod_e, to_int { } ) );
+            mod_e->set_const( "to_float", BIC::make( mod_e, to_float { } ) );
+            env->set_const( name, mod );
         }
     };
 

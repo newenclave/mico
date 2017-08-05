@@ -106,6 +106,15 @@ namespace mico {
             nuds_[token_type::IF]         = [this]( ) { return parse_if( );   };
             nuds_[token_type::FOR]        = [this]( ) { return parse_for( );  };
 
+            nuds_[token_type::MOD_MUT] =
+                    [this]( ) {
+                        return parse_mut( true );
+                    };
+            nuds_[token_type::MOD_CONST] =
+                    [this]( ) {
+                        return parse_mut( false );
+                    };
+
             nuds_[token_type::CHARACTER]  =
                     [this]( ) {
                         return parse_char( );
@@ -737,6 +746,21 @@ namespace mico {
         ast::expressions::infinite::uptr parse_inf( )
         {
             return ast::expressions::infinite::make( );
+        }
+
+        ast::expression::uptr parse_mut( bool mutablity )
+        {
+            advance( );
+
+            using mut_type = ast::expressions::mod_mut;
+            using const_type = ast::expressions::mod_const;
+            auto res = parse_expression( precedence::LOWEST );
+
+            if( mutablity ) {
+                return mut_type::make(std::move(res));
+            } else {
+                return const_type::make(std::move(res));
+            }
         }
 
         ast::expression::uptr parse_ident( )

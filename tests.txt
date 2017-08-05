@@ -489,7 +489,7 @@ let name = macro( val ) {
     let impl = macro( ) {
         1 + 1
     }
-    __concat_idents( val, 1 )
+    __I( val, 1 )
 }
 
 let fib = fn( n ) {

@@ -223,10 +223,10 @@ namespace mico {
         void init( mico::state &st, eval_call ev )
         {
             auto env = st.env( );
-            env->set( "len",        common::make( env, len { } ) );
-            env->set( "copy",       common::make( env, copy { } ) );
-            env->set( "__env",      common::make( env, env_show(env) ) );
-            env->set( "__macro",    common::make( env, macro_show(env) ) );
+            env->set_const( "len",     common::make( env, len { } ) );
+            env->set_const( "copy",    common::make( env, copy { } ) );
+            env->set_const( "__env",   common::make( env, env_show(env) ) );
+            env->set_const( "__macro", common::make( env, macro_show(env) ) );
 
             modules::io::load( env );
             modules::debug::load( env );
@@ -236,8 +236,6 @@ namespace mico {
             st.macros( ).set_built( "__str",
                                     common_macro::make( str { } ) );
             st.macros( ).set_built( "__I",
-                                    common_macro::make( random_name(ev) ) );
-            st.macros( ).set_built( "__concat_idents",
                                     common_macro::make( random_name(ev) ) );
 #endif
         }

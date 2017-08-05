@@ -126,4 +126,6 @@ HEADERS += \
     include/mico/eval/operations/slices.h \
     include/mico/expressions/infinite.h \
     include/mico/objects/infinite.h \
-    include/mico/eval/operations/infinite.h
+    include/mico/eval/operations/infinite.h \
+    include/mico/expressions/mut.h \
+    include/mico/expressions/mutablity.h

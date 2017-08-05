@@ -27,6 +27,8 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Negative index](#negative-index)
     * [Token position](#token-position)
     * [Mutability](#mutability)
+        * [mut keyword](#mut-keyword)
+        * [const keyword](#const-keyword)
     * [Intervals](#intervals)
     * [if elif else](#if-elif-else)
     * [for in](#for-in)
@@ -187,9 +189,10 @@ Arrays' values also can be changed by the operator
 ```swift
     var a = [1, 2, 3, 4, 6]
     var b = 1
-    a[4] = 5
+    let d = 77.77 // `d` is constant
     b = 10
-    c = 100 /// oops; error: [1:0] Identifier not found: 'c'
+    c = 100   /// oops; error: [1:0] Identifier not found: 'c'
+    d = 88.88 /// oops; error: [1:2] Invalid left value for ASSIGN d
 
     let fun = fn( ) {
         var a = 100 // here `a` shadows the variable `a` from the global scope
@@ -197,6 +200,28 @@ Arrays' values also can be changed by the operator
     }
     fun( )
 ```
+#### mut keyword
+All objects are also constats. It can be changed by keyword `mut`.
+```swift
+    let a = [1,2,3,4]
+    a[0] = 1000
+    // error: [2:5] Invalid left value for ASSIGN a[0]
+    // as far as the object is const
+    let a = mut [1,2,3,4]
+    a[0] = 1000     // ok
+    io.puts(a[0])   // shows `1000`
+```
+
+#### const keyword
+The `const` keyword can make an object constant.
+```swift
+    let a = mut [1,2,3,4]
+    a[0] = 1000     // ok
+    let a = const a // set const
+    a[0] = 1000
+    // error: [1:5] Invalid left value for ASSIGN a[0]
+```
+
 The operator is a `right arm` operator.
 ```swift
     var a = [1, 2, 3, 4, 5]
@@ -333,14 +358,14 @@ Key-Value syntax.
     io.puts( )
     // z:'-1' t:'00:00:00' y:'-100' x:'0'
 ```
-Containers loops always set next value variable of the loop as a reference.
+Containers loops always set next value variable of the loop as a reference if the `value` is mutable.
 It means that values in the container can be changed in the loop. And as far as loops are expressions we can easily create and change a container in the place
 
 ```swift
     // helper function. Shows a container value
     let show = fn( arr ) { for i in arr  { io.put( i, " " ) } io.puts( ) }
 
-    let r = for v in [1,2,3,4,5] {
+    let r = const for v in mut [1,2,3,4,5] {
         v = v + v * v
     }
     show( r )

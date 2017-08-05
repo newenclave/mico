@@ -148,7 +148,12 @@ namespace mico { namespace objects {
                 auto next = v->value( )->to_ast( pos );
                 res->value( ).emplace_back( ast::expression::cast( next ) );
             }
-            return ast::node::uptr( std::move( res ) );
+            if( is_mutable( ) ) {
+                auto mut = ast::expressions::mod_mut::make(std::move( res ));
+                return ast::node::uptr( std::move( mut ) );
+            } else {
+                return ast::node::uptr( std::move( res ) );
+            }
         }
 
     private:

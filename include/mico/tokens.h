@@ -68,6 +68,8 @@ namespace mico { namespace tokens {
         /// keywords
         LET,
         VAR,
+        MOD_MUT,
+        MOD_CONST,
         RETURN,
         FUNCTION,
 
@@ -156,6 +158,8 @@ namespace mico { namespace tokens {
             /// keywords
             case type::LET:         return "let";
             case type::VAR:         return "var";
+            case type::MOD_MUT:     return "mut";
+            case type::MOD_CONST:   return "const";
             case type::RETURN:      return "return";
             case type::FUNCTION:    return "fn";
 

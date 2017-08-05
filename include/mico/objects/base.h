@@ -179,7 +179,7 @@ namespace mico { namespace objects {
             return 0;
         }
     private:
-        bool mut_ = true;
+        bool mut_ = false;
     };
 
     template <type TN>

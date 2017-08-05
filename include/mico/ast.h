@@ -46,6 +46,8 @@ namespace mico { namespace ast {
         BREAK           = 24,
         CONTINUE        = 25,
         INFIN           = 26,
+        MOD_MUT         = 27,
+        MOD_CONST       = 28,
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
         QUOTE           = 50,

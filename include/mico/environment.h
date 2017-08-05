@@ -301,9 +301,14 @@ namespace mico {
 
         void set( const std::string &name, object_sptr val )
         {
-            data_[name] = val->is_mutable( )
-                    ? obj_reference::make_var( this, val )
-                    : obj_reference::make_const( this, val );
+            auto ref = obj_reference::make_var( this, val );
+            data_[name] = ref;
+        }
+
+        void set_const( const std::string &name, object_sptr val )
+        {
+            auto ref = obj_reference::make_const( this, val );
+            data_[name] = ref;
         }
 
         void keep( object_sptr val )
@@ -393,7 +398,8 @@ namespace mico {
             std::cout << "[" << (marked( ) ? cyan : light)
                       << this << none << "]\n" ;
             for( auto &d: data_ ) {
-                std::cout << space << d.first
+                char mut = d.second->is_mutable( ) ?'M' : 'C';
+                std::cout << space << mut << " " << d.first
                           << " => " << d.second->value( );
                 if( d.second->value( )->hold( ) ) {
                     std::cout << " [" << blue

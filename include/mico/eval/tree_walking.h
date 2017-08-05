@@ -757,7 +757,6 @@ namespace mico { namespace eval {
                 ident[id++] = ii->value( );
             }
 
-
             id = 0;
             for( auto &e: fori->expres( )->value( ) ) {
                 auto obj = eval_impl_tail( e.get( ), env );
@@ -793,22 +792,21 @@ namespace mico { namespace eval {
                 size_t last_id = 1;
 
                 auto val = gen->get_val( );
-                val->set_mutable( false );
+                //val->set_mutable( false );
 
                 if( ident[1].empty( ) ) {
-                    s.env( )->set(ident[0], val);
+                    s.env( )->set_const(ident[0], val);
                 } else {
-
                     auto id = gen->get_id( );
-                    id->set_mutable( false );
-
-                    s.env( )->set(ident[0], gen->get_id( ));
-                    s.env( )->set(ident[1], gen->get_val( ));
+                    //id->set_mutable( false );
+                    s.env( )->set_const( ident[0], id  );
+                    s.env( )->set_const( ident[1], val );
                     last_id = 2;
                 }
 
                 if( !ident[last_id].empty( ) ) {
-                    s.env( )->set(ident[last_id], objects::integer::make(id++));
+                    s.env( )->set( ident[last_id],
+                                   objects::integer::make(id++) );
                 }
 
                 auto next = eval_scope_node( fori->body( ).get( ), s.env( ) );
@@ -895,9 +893,13 @@ namespace mico { namespace eval {
             if( is_fail( val ) ) {
                 return val;
             }
+
             auto uval = unref(val);
-            uval->set_mutable( expr->mut( ) );
-            env->set( id, uval );
+            if( expr->mut( ) ) {
+                env->set( id, uval );
+            } else {
+                env->set_const( id, uval );
+            }
             return get_null( );
         }
 
@@ -941,6 +943,22 @@ namespace mico { namespace eval {
 
             //env->set( id, mod_obj );
             return mod_obj;
+        }
+
+        objects::sptr eval_mut( ast::node *n, environment::sptr env )
+        {
+            auto mm = ast::cast<ast::expressions::mod_mut>(n);
+            auto val = unref(eval_impl( mm->value( ).get( ), env ));
+            val->set_mutable(true);
+            return val;
+        }
+
+        objects::sptr eval_const( ast::node *n, environment::sptr env )
+        {
+            auto mm = ast::cast<ast::expressions::mod_const>(n);
+            auto val = unref(eval_impl( mm->value( ).get( ), env ));
+            val->set_mutable(false);
+            return val;
         }
 
         objects::sptr eval_return( ast::node *n, environment::sptr env )
@@ -1372,6 +1390,11 @@ namespace mico { namespace eval {
                 res = eval_let( n, env ); break;
             case ast::type::RETURN:
                 res = eval_return( n, env ); break;
+
+            case ast::type::MOD_MUT:
+                res = eval_mut( n, env ); break;
+            case ast::type::MOD_CONST:
+                res = eval_const( n, env ); break;
 
             case ast::type::BREAK:
                 res = eval_break( n, env ); break;
