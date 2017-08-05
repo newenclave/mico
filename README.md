@@ -482,7 +482,7 @@ Of course they exist. And they do what they do always. They interupt current loo
 ```
 
 ### Operators
-Mico has: +, -, ==, !=, <, >, <=, >=, %, |, &, ^, &&, ||, >>, <<, ~
+Mico has: +, -, *, /, %, ==, !=, <, >, <=, >=, |, &, ^, &&, ||, >>, <<, ~, in
 ```swift
     let bits = fn( value ) {
         let impl = fn( val, acc ) {
