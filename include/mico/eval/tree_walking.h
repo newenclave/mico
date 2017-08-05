@@ -321,40 +321,16 @@ namespace mico { namespace eval {
         objects::sptr eval_assign( ast::expressions::infix *inf,
                                    environment::sptr env )
         {
-            if(inf->left( )->get_type( ) == ast::type::IDENT) {
-                using ident_type = ast::expressions::ident;
-                auto id = static_cast<ident_type *>(inf->left( ).get( ));
-
-                auto cont_env = env->find_contains( id->value( ) );
-                if( !cont_env ) {
-                    return error( id, "Identifier not found: '",
-                                  id->value( ), "'" );
-                }
-
-                auto rght = unref( eval_impl_tail(inf->right( ).get( ), env) );
+            auto lft = eval_impl_tail( inf->left( ).get( ), env );
+            if( lft->get_type( ) == objects::type::REFERENCE ) {
+                auto cont = objects::cast_ref(lft.get( ));
+                auto rght = unref(eval_impl_tail(inf->right( ).get( ),
+                                                 env ) );
                 if( is_fail( rght ) ) {
                     return rght;
                 }
-                auto val = cont_env->get_here( id->value( ) );
-                if( val->get_type( ) == objects::type::REFERENCE ) {
-                    auto cont = objects::cast_ref(val.get( ));
-                    cont->set_value( env.get( ), unref(rght) );
-                } else {
-                    cont_env->set( id->value( ), unref(rght) );
-                }
-                return rght;
-            } else {
-                auto lft = eval_impl_tail( inf->left( ).get( ), env );
-                if( lft->get_type( ) == objects::type::REFERENCE ) {
-                    auto cont = objects::cast_ref(lft.get( ));
-                    auto rght = unref(eval_impl_tail(inf->right( ).get( ),
-                                                     env ) );
-                    if( is_fail( rght ) ) {
-                        return rght;
-                    }
-                    cont->set_value(env.get( ), rght->clone( ));
-                    return cont->value( );
-                }
+                cont->set_value(env.get( ), rght->clone( ));
+                return cont->value( );
             }
             return error( inf, "Invalid left value for ASSIGN ",
                           inf->left( ).get( ) );
@@ -816,9 +792,16 @@ namespace mico { namespace eval {
 
                 size_t last_id = 1;
 
+                auto val = gen->get_val( );
+                val->set_mutable( false );
+
                 if( ident[1].empty( ) ) {
-                    s.env( )->set(ident[0], gen->get_val( ));
+                    s.env( )->set(ident[0], val);
                 } else {
+
+                    auto id = gen->get_id( );
+                    id->set_mutable( false );
+
                     s.env( )->set(ident[0], gen->get_id( ));
                     s.env( )->set(ident[1], gen->get_val( ));
                     last_id = 2;
@@ -912,7 +895,9 @@ namespace mico { namespace eval {
             if( is_fail( val ) ) {
                 return val;
             }
-            env->set( id, unref(val) );
+            auto uval = unref(val);
+            uval->set_mutable( expr->mut( ) );
+            env->set( id, uval );
             return get_null( );
         }
 
@@ -1153,6 +1138,7 @@ namespace mico { namespace eval {
                                      objects::sptr fun,
                                      environment::sptr env )
         {
+            fun = unref(fun);
             if( fun->get_type( ) == objects::type::FUNCTION ) {
 
                 auto vfun = objects::cast_func(fun.get( ));

@@ -18,10 +18,16 @@ namespace mico { namespace ast { namespace statements {
         using expr_type        = node::uptr;
         using ident_type       = node::uptr;
 
-        impl( ident_type id, expr_type val )
+        impl( ident_type id, expr_type val, bool m = true )
             :ident_(std::move(id))
             ,expr_(std::move(val))
+            ,mut_(m)
         { }
+
+        bool mut( ) const
+        {
+            return mut_;
+        }
 
         std::string str( ) const override
         {
@@ -64,20 +70,22 @@ namespace mico { namespace ast { namespace statements {
 
         bool is_const( ) const override
         {
-            return ident_->is_const( ) && expr_->is_const( );
+            return (mut_ == false) ||
+                   (ident_->is_const( ) && expr_->is_const( ));
         }
 
         ast::node::uptr clone( ) const override
         {
             return ast::node::uptr(new this_type(
                                        node::call_clone( ident_ ),
-                                       node::call_clone( expr_ ) ) );
+                                       node::call_clone( expr_ ), mut_ ) );
         }
 
     private:
 
         ident_type ident_;
         expr_type  expr_;
+        bool       mut_ = true;
     };
 
     template <>

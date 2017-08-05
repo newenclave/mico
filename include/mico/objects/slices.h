@@ -135,7 +135,9 @@ namespace mico { namespace objects {
         impl<type::SSLICE>( objects::string::sptr obj,
                             std::size_t start, std::size_t stop )
             :slice_impl<objects::string, type::SSLICE>(obj, start, stop)
-        { }
+        {
+            set_mutable( obj->is_mutable( ) );
+        }
 
         objects::sptr at( std::int64_t id ) const override
         {
@@ -185,12 +187,16 @@ namespace mico { namespace objects {
         impl<type::ASLICE>( objects::array::sptr obj,
                             std::size_t start, std::size_t stop )
             :slice_impl<objects::array, type::ASLICE>(obj, start, stop)
-        { }
+        {
+            set_mutable( obj->is_mutable( ) );
+        }
 
         objects::sptr at( std::int64_t id ) const override
         {
             auto fixed = fix_id( id );
-            return value( )->value( )[fixed];
+            return is_mutable( )
+                 ? value( )->value( )[fixed]
+                 : value( )->value( )[fixed]->value( );
         }
 
         static

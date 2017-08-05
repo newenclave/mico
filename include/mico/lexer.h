@@ -381,7 +381,7 @@ namespace mico {
                     }
                     return std::make_pair( std::move(value), bb );
 
-                } else if( idents::is_alfa(*bb) ) {
+                } else if( idents::is_ident(*bb) ) {
                     ////////// TODO: fix COPY-PASTE ...
                     value.name    = token_type::IDENT;
                     value.literal = read_ident( bb, end  );

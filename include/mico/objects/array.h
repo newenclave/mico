@@ -74,18 +74,18 @@ namespace mico { namespace objects {
             return fix_id(id) < value_.size( );
         }
 
-        cont_sptr at( std::int64_t id )
+        objects::sptr at( std::int64_t id )
         {
             auto siz = fix_id( id );
 
             if( siz < value_.size( ) ) {
-                return value_[siz];
+                return is_mutable( ) ? value_[siz] : value_[siz]->value( );
             } else {
                 return nullptr;
             }
         }
 
-        cont_sptr at_obj( std::int64_t id )
+        objects::sptr at_obj( std::int64_t id )
         {
             return at(id);
         }

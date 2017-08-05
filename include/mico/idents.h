@@ -47,7 +47,8 @@ namespace mico {
         static
         bool is_ident( char c )
         {
-            return is_digit(c) || is_alfa(c) || (c == '_');
+            return is_digit(c) || is_alfa(c) || (c == '_')
+               || (static_cast<std::uint8_t>(c) > 127);
         }
 
     };

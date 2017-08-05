@@ -92,6 +92,16 @@ namespace mico { namespace objects {
         virtual std::shared_ptr<base> clone( ) const = 0;
         virtual ast::node::uptr to_ast( tokens::position ) const = 0;
 
+        void set_mutable( bool mut )
+        {
+            mut_ = mut;
+        }
+
+        bool is_mutable( ) const
+        {
+            return mut_;
+        }
+
         template <typename T>
         static
         std::size_t hash_combine( std::size_t seed, const T &key )
@@ -168,7 +178,8 @@ namespace mico { namespace objects {
         {
             return 0;
         }
-
+    private:
+        bool mut_ = true;
     };
 
     template <type TN>

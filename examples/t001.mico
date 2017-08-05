@@ -43,7 +43,7 @@ let reverse = fn( arr ) {
     let impl = fn( arr, id ) {
         if( id < len(arr) / 2 ) {
             // swap
-            let tmp      = arr[id]
+            var tmp      = arr[id]
             arr[id]      = arr[-id - 1]
             arr[-id - 1] = tmp
             impl( arr, id + 1 )
@@ -57,7 +57,7 @@ let reverse = fn( arr ) {
 io.puts( "fib(20)     = ", 20 | fib     )
 io.puts( "fib_rec(20) = ", 20 | fib_rec )
 
-let arr = [1,2,3,4,5,6,7]
+var arr = [1,2,3,4,5,6,7]
 
 io.put("Array:   ") show_array( arr )
 io.put("Reverse: ") show_array( reverse( arr ) )

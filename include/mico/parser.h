@@ -903,7 +903,7 @@ namespace mico {
             }
         }
 
-        ast::statements::let::uptr parse_let( )
+        ast::statements::let::uptr parse_let( bool mut )
         {
             using let_type = ast::statements::let;
 
@@ -922,11 +922,11 @@ namespace mico {
             if( is_current( tokens::type::MODULE ) ) {
                 auto expr = parse_module( id->clone( ) );
                 return let_type::uptr(new let_type( std::move(id),
-                                                    std::move(expr) ) );
+                                                    std::move(expr), mut ) );
             } else {
                 auto expr = parse_expression( precedence::LOWEST );
                 return let_type::uptr(new let_type( std::move(id),
-                                                    std::move(expr) ) );
+                                                    std::move(expr), mut ) );
             }
         }
 
@@ -1148,7 +1148,10 @@ namespace mico {
 
             switch( current( ).ident.name ) {
             case token_type::LET:
-                stmt = parse_let( );
+                stmt = parse_let( false );
+                break;
+            case token_type::VAR:
+                stmt = parse_let( true );
                 break;
             case token_type::RETURN:
                 stmt = parse_return( );

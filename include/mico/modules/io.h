@@ -70,10 +70,11 @@ namespace mico { namespace modules {
         static
         void load( environment::sptr &env, const std::string &name = "io" )
         {
+            using BC = builtin::common;
             auto mod_env = environment::make(env);
             auto mod = objects::module::make( mod_env, name );
-            mod_env->set( "puts", builtin::common::make( mod_env, puts { } ) );
-            mod_env->set( "put",  builtin::common::make( mod_env, put { } ) );
+            mod_env->set( "puts", BC::make( mod_env, puts { } ) );
+            mod_env->set( "put",  BC::make( mod_env, put { } ) );
             env->set( name, mod );
         }
     };

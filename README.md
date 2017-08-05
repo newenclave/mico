@@ -118,7 +118,7 @@ And for Windows it uses native API for encoding.
 ### Slices
 Slice is a part of an array or a string. Slice holds the object (string or array) and an interval `[left..right]`.
 The slice can be created with `index` operator `[]`. Interval includes only its left side (i.e. the intervals are `left closed, right open`).
-Full container interval can be created with the interval `[0..len(cont)]` or `[0..-1]` (see "Negative index" above)
+Full container interval can be created with the interval `cont[0..len(cont)]` or `cont[0..-1]` (see "Negative index" above)
 ```swift
     let str = "This is a string"
     let this = str[0..4]
@@ -181,26 +181,33 @@ Every token has its position.
 ```
 
 ### Mutability
+By-default all values set by `let` statement are inmutable. For making a variable, that can change its value use `var` statement
 Every variable is a real variable and can be changed by assignmet operator `=`.
 Arrays' values also can be changed by the operator
 ```swift
-    let a = [1, 2, 3, 4, 6]
-    let b = 1
+    var a = [1, 2, 3, 4, 6]
+    var b = 1
     a[4] = 5
     b = 10
     c = 100 /// oops; error: [1:0] Identifier not found: 'c'
 
     let fun = fn( ) {
-        let a = 100 // here `a` shadows the variable `a` from the global scope
+        var a = 100 // here `a` shadows the variable `a` from the global scope
         b = 0.0     // here `b` is from the global scope
     }
     fun( )
 ```
 The operator is a `right arm` operator.
 ```swift
-    let a = [1, 2, 3, 4, 5]
+    var a = [1, 2, 3, 4, 5]
     a[0] = a[1] = a[2] = a[3] = a[4] = 0
     // a == [0, 0, 0, 0, 0]
+```
+The `let` statement makes constants objects
+```swift
+    let a = [1, 2, 3, 4, 5]
+    a[0] = a[1] = a[2] = a[3] = a[4] = 0
+    // error: [2:9] Invalid left value for ASSIGN a[0]
 ```
 
 ### Intervals
@@ -344,13 +351,13 @@ The `pow` array. Let's make an array that contains functions and they make a `po
 
 ```swift
     let make_pows = fn( max ) {
-        let res = [ ]               // result is an array
+        var res = [ ]               // result is an array
         for i in 0..max {           // array starts from 0
             res = res + [ fn( c ) { // add an element to the result
                 if( i == 0 ) {
                     return 1
                 }
-                let res = 1         // internal `res`
+                var res = 1         // internal `res`
                 for j in 1..i {
                     res = res * c
                 }
@@ -411,7 +418,8 @@ Five little monkeys
 
 #### break and continue keywords
 
-Of course they exist. And they do what they do always. They interupt current loop and then `continue` makes the loop continue and `break` just breaks it (of course!).
+Of course they exist. And they do what they do always.
+They interrupt current loop and then `continue` makes the loop continue and `break` just breaks it (of course!).
 
 ```swift
     for i in [1,2,3,4,5,6,7,0,-1,-2,-3,-4] {
@@ -868,7 +876,7 @@ A module can inherit values from another module. In the case of inheritance
 all elements of the parent are available in the child. And by the child.
 ```swift
     let a = module {
-        let value = "value a"
+        var value = "value a"
         let show = fn( ) { io.puts( value ) }
         let set = fn( val ) { value = val }
     }

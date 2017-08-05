@@ -301,7 +301,9 @@ namespace mico {
 
         void set( const std::string &name, object_sptr val )
         {
-            data_[name] = obj_reference::make_var( this, val );
+            data_[name] = val->is_mutable( )
+                    ? obj_reference::make_var( this, val )
+                    : obj_reference::make_const( this, val );
         }
 
         void keep( object_sptr val )
@@ -313,7 +315,9 @@ namespace mico {
         {
             auto f = data_.find( name );
             if( f != data_.end( ) ) {
-                return f->second->value( );
+                return f->second->is_mutable( )
+                     ? f->second
+                     : f->second->value( );
             }
             return nullptr;
         }

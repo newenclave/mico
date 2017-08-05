@@ -7,6 +7,7 @@
 #include "mico/environment.h"
 
 namespace mico { namespace builtin {
+
     class common: public objects::builtin {
 
         static
@@ -48,15 +49,32 @@ namespace mico { namespace builtin {
         }
 
         static
-        objects::sptr make( environment::sptr e, call_type c )
+        objects::sptr make_mut( environment::sptr e, call_type c )
         {
             return std::make_shared<common>( e, std::move(c) );
         }
 
         static
-        objects::sptr make( environment::sptr e, init_type i, call_type c )
+        objects::sptr make_mut( environment::sptr e, init_type i, call_type c )
         {
             return std::make_shared<common>( e, std::move(i), std::move(c) );
+        }
+
+        static
+        objects::sptr make( environment::sptr e, call_type c )
+        {
+            auto res = std::make_shared<common>( e, std::move(c) );
+            res->set_mutable( true );
+            return res;
+        }
+
+        static
+        objects::sptr make( environment::sptr e, init_type i, call_type c )
+        {
+            auto res = std::make_shared<common>( e, std::move(i),
+                                                 std::move(c) );
+            res->set_mutable( true );
+            return res;
         }
 
         objects::sptr clone( ) const override

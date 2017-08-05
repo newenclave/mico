@@ -28,9 +28,10 @@ namespace mico { namespace modules {
         static
         void load( environment::sptr &env, const std::string &name = "dbg" )
         {
+            using BC = builtin::common;
             auto mod_e = environment::make(env);
             auto mod = objects::module::make( mod_e, name );
-            mod_e->set( "env", builtin::common::make( mod_e, env_show(env) ) );
+            mod_e->set( "env", BC::make( mod_e, env_show(env) ) );
             env->set( name, mod );
         }
     };

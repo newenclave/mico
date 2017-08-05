@@ -111,7 +111,7 @@ namespace mico { namespace objects {
             if(f == value_.end( )) {
                 return nullptr;
             } else {
-                return f->second;
+                return is_mutable( ) ? f->second : f->second->value( );
             }
         }
 

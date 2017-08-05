@@ -22,10 +22,10 @@ namespace mico { namespace objects {
                                value_type val, bool var )
             :my_env_(my_env)
             ,value_(val)
-            ,variable_(var)
         {
             value_->mark_in( my_env_ );
             marked_ = val->marked( );
+            set_mutable( var );
         }
 
         ~impl<type::REFERENCE>( )
@@ -63,7 +63,7 @@ namespace mico { namespace objects {
 
         bool is_const( ) const
         {
-            return !variable_;
+            return !is_mutable( );
         }
 
         void set_value( const environment * /*my_env*/, value_type val )
@@ -121,7 +121,7 @@ namespace mico { namespace objects {
         {
             auto res = std::make_shared<this_type>( my_env_,
                                                     value_->clone( ),
-                                                    variable_ );
+                                                    is_mutable( ) );
             return res;
         }
 
@@ -139,7 +139,6 @@ namespace mico { namespace objects {
         const environment  *my_env_;
         value_type          value_;
         std::size_t         marked_ = 0;
-        bool                variable_ = true;
     };
 
     using reference = impl<type::REFERENCE>;
