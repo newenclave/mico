@@ -183,9 +183,9 @@ Every token has its position.
 ```
 
 ### Mutability
-By-default all values set by `let` statement are inmutable. For making a variable, that can change its value use `var` statement
+By-default all values set by `let` statement are inmutable. For making a variable, that can change its value use `var` statement.
 Every variable is a real variable and can be changed by assignmet operator `=`.
-Arrays' values also can be changed by the operator
+
 ```swift
     var a = [1, 2, 3, 4, 6]
     var b = 1
