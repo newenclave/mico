@@ -513,6 +513,7 @@ namespace mico { namespace objects {
             using value_type = typename SliceT::sptr;
             using this_type = slice_gen<SliceT>;
 
+            explicit
             slice_gen<SliceT>( value_type &obj, std::int64_t step )
                 :object_(obj)
                 ,step_(step)

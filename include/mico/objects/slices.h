@@ -21,6 +21,7 @@ namespace mico { namespace objects {
         using sptr                   = std::shared_ptr<this_type>;
         using value_type             = typename T::sptr;
 
+        explicit
         slice_impl<T, TName>( value_type str,
                               std::size_t start, std::size_t stop )
             :obj_(str)

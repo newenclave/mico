@@ -13,6 +13,7 @@ namespace mico { namespace objects {
         static const type type_value = type::INF_OBJ;
         using sptr = std::shared_ptr<this_type>;
 
+        explicit
         impl<type::INF_OBJ>( bool negative )
             :negative_(negative)
         {
