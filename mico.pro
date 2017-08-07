@@ -130,4 +130,5 @@ HEADERS += \
     include/mico/expressions/mut.h \
     include/mico/expressions/mutablity.h \
     include/mico/objects/rstring.h \
-    include/mico/eval/operations/rstring.h
+    include/mico/eval/operations/rstring.h \
+    include/mico/eval/operations/character.h

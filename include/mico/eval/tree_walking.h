@@ -21,6 +21,7 @@
 #include "mico/eval/operations/module.h"
 #include "mico/eval/operations/slices.h"
 #include "mico/eval/operations/infinite.h"
+#include "mico/eval/operations/character.h"
 
 #include "mico/charset/encoding.h"
 
@@ -248,6 +249,7 @@ namespace mico { namespace eval {
             using OP_array = OP<objects::type::ARRAY>;
             using OP_func  = OP<objects::type::FUNCTION>;
             using OP_inf   = OP<objects::type::INF_OBJ>;
+            using OP_char  = OP<objects::type::CHARACTER>;
 
             objects::type opertype = oper->get_type( );
             if( opertype == objects::type::REFERENCE ) {
@@ -257,6 +259,8 @@ namespace mico { namespace eval {
             switch ( opertype ) {
             case objects::type::INTEGER:
                 return OP_int::eval_prefix(expr, oper);
+            case objects::type::CHARACTER:
+                return OP_char::eval_prefix(expr, oper);
             case objects::type::STRING:
                 return OP_str::eval_prefix(expr, oper);
             case objects::type::RSTRING:
@@ -389,11 +393,15 @@ namespace mico { namespace eval {
             using OP_func  = OP<objects::type::FUNCTION>;
             using OP_mod   = OP<objects::type::MODULE>;
             using OP_inf   = OP<objects::type::INF_OBJ>;
+            using OP_char  = OP<objects::type::CHARACTER>;
 
             objects::sptr res;
             switch( opertype ) {
             case objects::type::INTEGER:
                 res = OP_int::eval_infix( inf, left, inf_call_unref, env);
+                break;
+            case objects::type::CHARACTER:
+                res = OP_char::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::FLOAT:
                 res = OP_float::eval_infix( inf, left, inf_call_unref, env);

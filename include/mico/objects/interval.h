@@ -151,6 +151,7 @@ namespace mico { namespace objects {
         using rstring   = obj<objects::type::RSTRING>;
         using string    = obj<objects::type::STRING>;
         using integer   = obj<objects::type::INTEGER>;
+        using character = obj<objects::type::CHARACTER>;
         using floating  = obj<objects::type::FLOAT>;
         using boolean   = obj<objects::type::BOOLEAN>;
     }

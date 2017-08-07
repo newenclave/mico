@@ -1,5 +1,5 @@
-#ifndef MICO_EVAL_INT_OPRATIONS_H
-#define MICO_EVAL_INT_OPRATIONS_H
+#ifndef MICO_EVAL_CHAR_OPRATIONS_H
+#define MICO_EVAL_CHAR_OPRATIONS_H
 
 #include "mico/eval/operation.h"
 #include "mico/tokens.h"
@@ -11,17 +11,21 @@
 namespace mico { namespace eval { namespace operations {
 
     template <>
-    struct operation<objects::type::INTEGER> {
+    struct operation<objects::type::CHARACTER> {
 
         using float_type     = objects::impl<objects::type::FLOAT>;
-        using value_type     = objects::impl<objects::type::INTEGER>;
+        using int_type       = objects::impl<objects::type::INTEGER>;
+        using value_type     = objects::impl<objects::type::CHARACTER>;
         using error_type     = objects::impl<objects::type::FAILURE>;
         using bool_type      = objects::impl<objects::type::BOOLEAN>;
         using builtin_type   = objects::impl<objects::type::BUILTIN>;
         using function_type  = objects::impl<objects::type::FUNCTION>;
         using int_interval   = objects::intervals::integer;
+        using char_interval  = objects::intervals::character;
         using float_interval = objects::intervals::floating;
 
+
+        using symbol_type = mico::string::value_type;
         using prefix = ast::expressions::prefix;
         using infix  = ast::expressions::infix;
 
@@ -32,7 +36,7 @@ namespace mico { namespace eval { namespace operations {
         static
         objects::sptr eval_prefix( prefix *pref, objects::sptr obj )
         {
-            common::reference<objects::type::INTEGER> ref(obj);
+            common::reference<objects::type::CHARACTER> ref(obj);
 
             auto val = ref.unref( );
             auto uval = static_cast<std::uint64_t>(val->value( ));
@@ -43,7 +47,7 @@ namespace mico { namespace eval { namespace operations {
             case tokens::type::TILDA:
                 return value_type::make( ~uval );
             case tokens::type::BANG:
-                return value_type::make( uval != 0 );
+                return bool_type::make( uval != 0 );
             default:
                 break;
             }
@@ -53,111 +57,67 @@ namespace mico { namespace eval { namespace operations {
         }
 
         static
-        objects::sptr eval_float( infix *inf, double lft, double rht )
+        objects::sptr eval_int( infix *inf, symbol_type lft, std::int64_t rht )
         {
-            switch (inf->token( )) {
-            case tokens::type::DOTDOT:
-                return float_interval::make( lft, rht );
-            case tokens::type::MINUS:
-                return float_type::make( lft  - rht );
-            case tokens::type::PLUS:
-                return float_type::make( lft  + rht );
-            case tokens::type::ASTERISK:
-                return float_type::make( lft  * rht );
-            case tokens::type::SLASH:
-                if( rht != 0 ) {
-                    return float_type::make( lft  / rht );
-                } else {
-                    return error_type::make( inf->pos( ),
-                                             "Division by zero. '/'" );
-                }
-            case tokens::type::LOGIC_AND:
-                return  bool_type::make( (lft != 0.0) && (rht != 0.0) );
-            case tokens::type::LOGIC_OR:
-                return  bool_type::make( (lft != 0.0) || (rht != 0.0) );
-            case tokens::type::GT:
-                return  bool_type::make( lft  > rht );
-            case tokens::type::LT:
-                return  bool_type::make( lft  < rht );
-            case tokens::type::GT_EQ:
-                return  bool_type::make( lft >= rht );
-            case tokens::type::LT_EQ:
-                return  bool_type::make( lft <= rht );
-            case tokens::type::EQ:
-                return  bool_type::make( lft == rht );
-            case tokens::type::NOT_EQ:
-                return  bool_type::make( lft != rht );
-            default:
-                break;
-            }
-            return error_type::make(inf->pos( ), "Infix operation '",
-                                    inf->token( ), "' is not defined for "
-                                                    "float");
-        }
-
-        static
-        objects::sptr eval_int( infix *inf, std::int64_t lft, std::int64_t rht )
-        {
-            auto ulft = static_cast<std::uint64_t>(lft);
-            auto urgt = static_cast<std::uint64_t>(rht);
+            auto urgt = static_cast<symbol_type>(rht);
 
             switch (inf->token( )) {
             case tokens::type::DOTDOT:
-                return int_interval::make( lft, rht );
+                return char_interval::make( lft, urgt );
             case tokens::type::MINUS:
-                return value_type::make( lft  - rht );
+                return value_type::make( lft  - urgt );
             case tokens::type::PLUS:
-                return value_type::make( lft  + rht );
+                return value_type::make( lft  + urgt );
             case tokens::type::ASTERISK:
-                return value_type::make( lft  * rht );
+                return value_type::make( lft  * urgt );
             case tokens::type::SLASH:
                 if( rht != 0 ) {
-                    return value_type::make( lft  / rht );
+                    return value_type::make( lft  / urgt );
                 } else {
                     return error_type::make( inf->pos( ),
                                              "Division by zero. '/'" );
                 }
             case tokens::type::PERCENT:
                 if( rht != 0 ) {
-                    return value_type::make( lft  % rht );
+                    return value_type::make( lft  % urgt );
                 } else {
                     return error_type::make( inf->pos( ),
                                              "Division by zero. '%'" );
                 }
             case tokens::type::SHIFT_LEFT:
-                return  value_type::make( ulft << urgt );
+                return  value_type::make( lft << urgt );
             case tokens::type::SHIFT_RIGHT:
-                return  value_type::make( ulft >> urgt );
+                return  value_type::make( lft >> urgt );
 
             case tokens::type::GT:
-                return  bool_type::make( lft  > rht );
+                return  bool_type::make( lft  > urgt );
             case tokens::type::LT:
-                return  bool_type::make( lft  < rht );
+                return  bool_type::make( lft  < urgt );
             case tokens::type::GT_EQ:
-                return  bool_type::make( lft >= rht );
+                return  bool_type::make( lft >= urgt );
             case tokens::type::LT_EQ:
-                return  bool_type::make( lft <= rht );
+                return  bool_type::make( lft <= urgt );
             case tokens::type::EQ:
-                return  bool_type::make( lft == rht );
+                return  bool_type::make( lft == urgt );
             case tokens::type::NOT_EQ:
-                return  bool_type::make( lft != rht );
+                return  bool_type::make( lft != urgt );
             case tokens::type::LOGIC_AND:
-                return  bool_type::make( ulft && urgt );
+                return  bool_type::make( lft && urgt );
             case tokens::type::LOGIC_OR:
-                return  bool_type::make( ulft || urgt );
+                return  bool_type::make( lft || urgt );
 
             case tokens::type::BIT_AND:
-                return  value_type::make( ulft & urgt );
+                return  value_type::make( lft & urgt );
             case tokens::type::BIT_OR:
-                return  value_type::make( ulft | urgt );
+                return  value_type::make( lft | urgt );
             case tokens::type::BIT_XOR:
-                return  value_type::make( ulft ^ urgt );
+                return  value_type::make( lft ^ urgt );
             default:
                 break;
             }
             return error_type::make(inf->pos( ), "Infix operation '",
                                     inf->token( ), "' is not defined for "
-                                                    "integers");
+                                                    "characters");
         }
 
         static
@@ -180,7 +140,7 @@ namespace mico { namespace eval { namespace operations {
         objects::sptr eval_infix( infix *inf, objects::sptr obj,
                                   eval_call ev, environment::sptr env  )
         {
-            common::reference<objects::type::INTEGER> ref(obj);
+            common::reference<objects::type::CHARACTER> ref(obj);
             auto val = ref.unref( )->value( );
 
             if( (inf->token( ) == tokens::type::LOGIC_AND) && (val == 0)) {
@@ -200,14 +160,9 @@ namespace mico { namespace eval { namespace operations {
                 auto rval = objects::cast_int(right.get( ))->value( );
                 return eval_int(inf, val, rval);
             }
-            case objects::type::CHARACTER: {
-                auto rval = objects::cast_char(right.get( ))->value( );
-                return eval_int(inf, val, static_cast<std::int64_t>(rval));
-            }
             case objects::type::FLOAT: {
-                auto lval = static_cast<double>(val);
                 auto rval = objects::cast_float(right.get( ))->value( );
-                return eval_float(inf, lval, rval);
+                return eval_int(inf, val, static_cast<std::int64_t>(rval) );
             }
             case objects::type::BOOLEAN: {
                 auto rval = objects::cast_bool(right.get( ))->value( );

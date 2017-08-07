@@ -90,6 +90,11 @@ namespace mico { namespace eval { namespace operations {
                 auto rdval = static_cast<double>( rval );
                 return eval_float( inf, val, rdval );
             }
+            case objects::type::CHARACTER: {
+                auto rval = objects::cast_char(right.get( ))->value( );
+                auto rdval = static_cast<double>( rval );
+                return eval_float( inf, val, rdval );
+            }
             case objects::type::FLOAT: {
                 auto rval = objects::cast_float(right.get( ))->value( );
                 return eval_float(inf, val, rval);

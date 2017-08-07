@@ -238,7 +238,7 @@ Every variable is a real variable and can be changed by assignmet operator `=`.
     fun( )
 ```
 #### mut keyword
-All objects are also constats. It can be changed by keyword `mut`.
+All objects are also constats. It can be changed by keyword `mut`. It makes sense for arrays and tables.
 ```swift
     let a = [1,2,3,4]
     a[0] = 1000
@@ -259,13 +259,12 @@ The `const` keyword can make an object constant.
     // error: [1:5] Invalid left value for ASSIGN a[0]
 ```
 
-The keywords `mut` and `const` always make a copy of the object if mutablity of the object is different.
+The keywords `mut` and `const` always make a copy of the object if the mutablity of the object is different.
 ```swift
     let a = mut [1,2,3,4]
     let a = mut a       // returns `a` without changes
     let a = const a     // makes a copy of `a`
 ```
-
 
 The operator is a `right arm` operator.
 ```swift
