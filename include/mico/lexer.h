@@ -136,6 +136,9 @@ namespace mico {
                     case '"':
                         res.push_back('"');
                         break;
+                    case '0':
+                        res.push_back('\0');
+                        break;
                     case '\'':
                         res.push_back('\'');
                         break;
@@ -181,6 +184,9 @@ namespace mico {
                         break;
                     case '"':
                         res.push_back('"');
+                        break;
+                    case '0':
+                        res.push_back('\0');
                         break;
                     default:
                         res.push_back('\\');
