@@ -90,20 +90,41 @@ namespace mico { namespace objects {
 
         using hash_type = std::uint64_t;
 
+        enum class flags: std::uint32_t {
+            MUTABLE = 0x001,
+        };
+
         virtual ~base( ) = default;
         virtual type get_type( ) const = 0;
         virtual std::string str( ) const = 0;
         virtual std::shared_ptr<base> clone( ) const = 0;
         virtual ast::node::uptr to_ast( tokens::position ) const = 0;
 
+        void set_flags( flags vals )
+        {
+            mut_ |= static_cast<std::uint32_t>(vals);
+        }
+
+        void unset_flags( flags vals )
+        {
+            mut_ &= (~static_cast<std::uint32_t>(vals));
+        }
+
+        bool is_flags_set( flags vals ) const
+        {
+            return (mut_ & static_cast<std::uint32_t>(vals)) ==
+                           static_cast<std::uint32_t>(vals);
+        }
+
         void set_mutable( bool mut )
         {
-            mut_ = mut;
+            mut ? set_flags( flags::MUTABLE )
+                : unset_flags( flags::MUTABLE );
         }
 
         bool is_mutable( ) const
         {
-            return mut_;
+            return is_flags_set(flags::MUTABLE);
         }
 
         template <typename T>
@@ -183,7 +204,7 @@ namespace mico { namespace objects {
             return 0;
         }
     private:
-        bool mut_ = false;
+        std::uint32_t mut_ = 0;
     };
 
     template <type TN>
