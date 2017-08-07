@@ -119,7 +119,7 @@ I've written a small utf8 parser and I think it's enough for this toy language.
 And for Windows it uses native API for encoding.
 
 ### Raw strings
-Well. Raw struings are just arrays of bytes
+Well. Raw strings are just arrays of bytes
 ```swift
     let s = r"string"
     io.puts(s[1])
@@ -128,7 +128,8 @@ Well. Raw struings are just arrays of bytes
     io.puts(s, " ", len(s), " ", s[0])
     // 中國 6 228
 ```
-Unlike strings raw strings know nothing about the unicode. And this why string `中國` has length 2 and raw string has 6.
+Unlike strings raw strings know nothing about the unicode. And that why string `中國` has length 2 and the
+lenght of the raw string is 6.
 
 ### Slices
 Slice is a part of an array or a string. Slice holds the object (string or array) and an interval `[left..right]`.
@@ -352,7 +353,7 @@ For loop that accepts an array and a string it's also possible to use negative `
     io.puts( )
     // ςήαχοοจะัมี國,na,ир
 
-    // raw string are aloso itarables
+    // raw string are also itarables
     for i in r"Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί χαρακτήρες", -1 {
         io.put(i, " ")
     }
