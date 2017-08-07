@@ -103,13 +103,17 @@ Identifiers can use unicode symbols
     let кирилица = "Кирилица"
     let españa   = "Spain"
     let 中國      = 12312
+    let العربية
+        = {1: 中國}
 
     io.puts(кирилица)
     io.puts(españa)
     io.puts(中國)
+    io.puts( العربية[1])
 
     // Кирилица
     // Spain
+    // 12312
     // 12312
  ```
 
