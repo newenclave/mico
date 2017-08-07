@@ -84,3 +84,6 @@ let bits = fn( value ) {
 }
 bits(0xfffffffff) | io.puts              // => 36
 bits(0b1111111000000001111111) | io.puts // => 14
+
+let кирилица = "Кирилица"
+io.puts(кирилица)
