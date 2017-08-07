@@ -964,7 +964,7 @@ namespace mico { namespace eval {
         {
             auto mm = ast::cast<ast::expressions::mod_mut>(n);
             auto val = unref(eval_impl( mm->value( ).get( ), env ));
-            if( !val->is_mutable( ) ) {
+            if( val->is_container( val.get( ) ) && !val->is_mutable( ) ) {
                 val = val->clone( );
                 val->set_mutable(true);
             }
@@ -975,7 +975,7 @@ namespace mico { namespace eval {
         {
             auto mm = ast::cast<ast::expressions::mod_const>(n);
             auto val = unref(eval_impl( mm->value( ).get( ), env ));
-            if( val->is_mutable( ) ) {
+            if( val->is_container( val.get( ) ) && val->is_mutable( ) ) {
                 val = val->clone( );
                 val->set_mutable(false);
             }
