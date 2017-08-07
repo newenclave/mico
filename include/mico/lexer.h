@@ -135,6 +135,12 @@ namespace mico {
                         case '\\':
                             res.push_back('\\');
                             break;
+                        case '"':
+                            res.push_back('"');
+                            break;
+                        case '\'':
+                            res.push_back('\'');
+                            break;
                         case '0':
                             res.push_back('\0');
                             break;
