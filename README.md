@@ -109,7 +109,8 @@ Identifiers can use unicode symbols
     io.puts(кирилица)
     io.puts(españa)
     io.puts(中國)
-    io.puts( العربية[1])
+    io.puts(العربية
+            [1])
 
     // Кирилица
     // Spain
