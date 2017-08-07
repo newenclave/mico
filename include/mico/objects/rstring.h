@@ -52,11 +52,8 @@ namespace mico { namespace objects {
 
         hash_type hash( ) const override
         {
-            auto seed = static_cast<std::size_t>(get_type( ));
-            for( auto &a: value_ ) {
-                seed = hash_combine( seed, a );
-            }
-            return seed;
+            std::hash<std::string> h;
+            return h(value_);
         }
 
         std::size_t fix_id( std::int64_t id ) const

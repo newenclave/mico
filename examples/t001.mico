@@ -60,7 +60,7 @@ io.puts( "fib_rec(20) = ", 20 | fib_rec )
 var arr = [1,2,3,4,5,6,7]
 
 io.put("Array:   ") show_array( arr )
-io.put("Reverse: ") show_array( reverse( arr ) )
+io.put("Reverse: ") show_array( reverse( mut arr ) )
 
 let unless = macro(condition, consequence, alternative) {
     io.puts("Here the macro inlined!")
