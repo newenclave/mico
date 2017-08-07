@@ -21,12 +21,13 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * [Compile](#compile)
 * [Monkey and Mico](#monkey-and-mico)
 * [View](#view)
+    * [Identifiers](#identifiers)
+    * [Token position](#token-position)
     * [Numbers](#numbers)
     * [Strings](#strings)
     * [Raw strings](#raw-strings)
     * [Slices](#slices)
     * [Negative index](#negative-index)
-    * [Token position](#token-position)
     * [Mutability](#mutability)
         * [mut keyword](#mut-keyword)
         * [const keyword](#const-keyword)
@@ -95,6 +96,29 @@ Mico supports: integers, floats, chars, strings, arrays, tables, functions, modu
     let ival = 1..100                                // interval
     let c    = '🐒'     // character
 ```
+
+### Identifiers
+Identifiers can use unicode symbols
+```swift
+    let кирилица = "Кирилица"
+    let españa   = "Spain"
+    let 中國      = 12312
+    io.puts(кирилица)
+    io.puts(españa)
+    io.puts(中國)
+
+    // Кирилица
+    // Spain
+    // 12312
+ ```
+
+### Token position
+Every token has its position.
+```swift
+    let test_val = someUnknownCall()
+    error: [1:15] Identifier not found 'someUnknownCall'
+```
+
 ### Numbers
 Numbers can contain a gap symbol `_`. The symbol can be included both in integers and in floats.
 ```swift
@@ -187,13 +211,6 @@ Well, slices also can be created by adding a negative index
     let hello = str[0..-5]
     io.puts(sym) // Äáç¶
     io.puts(hello) // Hello, world!
-```
-
-### Token position
-Every token has its position.
-```swift
-    let test_val = someUnknownCall()
-    error: [1:15] Identifier not found 'someUnknownCall'
 ```
 
 ### Mutability
