@@ -236,6 +236,14 @@ The `const` keyword can make an object constant.
     // error: [1:5] Invalid left value for ASSIGN a[0]
 ```
 
+The keywords `mut` and `const` always make a copy of the object if mutablity of the object is different.
+```swift
+    let a = mut [1,2,3,4]
+    let a = mut a       // returns `a` without changes
+    let a = const a     // makes a copy of `a`
+```
+
+
 The operator is a `right arm` operator.
 ```swift
     var a = [1, 2, 3, 4, 5]
