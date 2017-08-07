@@ -349,17 +349,17 @@ For loop that accepts an array and a string it's also possible to use negative `
     io.puts( )
     // 10 8 6 4 2
 
-    for i in "Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί χαρακτήρες", -1 {
+    for i in "Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί عرب ٹیسٹ χαρακτήρες", -1 {
         io.put(i)
     }
     io.puts( )
-    // ςερήτκαραχ ίολλοπ จรคะลวัตีม นีจ 國中 ,cinital ,ацилириК
+    // ςερήτκαραχ ٹسیٹ برع ίολλοπ จรคะลวัตีม นีจ 國中 ,cinital ,ацилириК
 
-    for i in "Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί χαρακτήρες", -3 {
+    for i in "Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί عرب ٹیسٹ ", -3 {
         io.put(i)
     }
     io.puts( )
-    // ςήαχοοจะัมี國,na,ир
+    // یب λπรลต จ中cilали
 
     // raw string are also itarables
     for i in r"Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί χαρακτήρες", -1 {
