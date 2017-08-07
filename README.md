@@ -23,6 +23,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * [View](#view)
     * [Numbers](#numbers)
     * [Strings](#strings)
+    * [Raw strings](#raw-strings)
     * [Slices](#slices)
     * [Negative index](#negative-index)
     * [Token position](#token-position)
@@ -116,6 +117,18 @@ Numbers can contain a gap symbol `_`. The symbol can be included both in integer
 Yes. It supports the unicode. Not completely of course.
 I've written a small utf8 parser and I think it's enough for this toy language.
 And for Windows it uses native API for encoding.
+
+### Raw strings
+Well. Raw struings are just arrays of bytes
+```swift
+    let s = r"string"
+    io.puts(s[1])
+    // 116
+    let s = r"中國"
+    io.puts(s, " ", len(s), " ", s[0])
+    // 中國 6 228
+```
+Unlike strings raw strings know nothing about the unicode. And this why string `中國` has length 2 and raw string has 6.
 
 ### Slices
 Slice is a part of an array or a string. Slice holds the object (string or array) and an interval `[left..right]`.
@@ -338,6 +351,18 @@ For loop that accepts an array and a string it's also possible to use negative `
     }
     io.puts( )
     // ςήαχοοจะัมี國,na,ир
+
+    // raw string are aloso itarables
+    for i in r"Кирилица, latinic, 中國 จีน มีตัวละครจ πολλοί χαρακτήρες", -1 {
+        io.put(i, " ")
+    }
+    io.puts( )
+    // 130 207 181 206 129 207 174 206 132 207 186 206 177 206 129 207 177 206
+    // 135 207 32 175 206 191 206 187 206 187 206 191 206 128 207 32 136 184
+    // 224 163 184 224 132 184 224 176 184 224 165 184 224 167 184 224 177
+    // 184 224 149 184 224 181 184 224 161 184 224 32 153 184 224 181 184
+    // 224 136 184 224 32 139 156 229 173 184 228 32 44 99 105 110 105 116
+    // 97 108 32 44 176 208 134 209 184 208 187 208 184 208 128 209 184 208 154 208
 ```
 
 For `table` loops `step` is not available.

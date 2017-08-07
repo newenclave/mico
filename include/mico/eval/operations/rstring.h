@@ -122,7 +122,8 @@ namespace mico { namespace eval { namespace operations {
             }
 
             if( fix < str->value( ).size( ) ) {
-                return objects::integer::make( str->value( )[fix] );
+                auto val = static_cast<std::uint8_t>(str->value( )[fix]);
+                return objects::integer::make( val );
             } else {
                 return error_type::make(
                             idx->param( ).get( ), idx->param( ).get( ),
