@@ -14,6 +14,7 @@
 #include "mico/eval/operations/boolean.h"
 #include "mico/eval/operations/float.h"
 #include "mico/eval/operations/string.h"
+#include "mico/eval/operations/rstring.h"
 #include "mico/eval/operations/tables.h"
 #include "mico/eval/operations/arrays.h"
 #include "mico/eval/operations/function.h"
@@ -212,11 +213,15 @@ namespace mico { namespace eval {
             return std::make_shared<objects::floating>( state->value( ) );
         }
 
-        objects::string::sptr eval_string( ast::node *n )
+        objects::sptr eval_string( ast::node *n )
         {
             auto val = ast::cast<ast::expressions::string>(n);
-            auto int_str = charset::encoding::from_file( val->value( ) );
-            return objects::string::make( std::move(int_str) );
+            if( val->is_raw( ) ) {
+                return objects::rstring::make( val->value( ) );
+            } else {
+                auto int_str = charset::encoding::from_file( val->value( ) );
+                return objects::string::make( std::move(int_str) );
+            }
         }
 
         objects::character::sptr eval_charset( ast::node *n )
@@ -238,6 +243,7 @@ namespace mico { namespace eval {
             using OP_float = OP<objects::type::FLOAT>;
             using OP_bool  = OP<objects::type::BOOLEAN>;
             using OP_str   = OP<objects::type::STRING>;
+            using OP_rstr  = OP<objects::type::RSTRING>;
             using OP_table = OP<objects::type::TABLE>;
             using OP_array = OP<objects::type::ARRAY>;
             using OP_func  = OP<objects::type::FUNCTION>;
@@ -253,6 +259,8 @@ namespace mico { namespace eval {
                 return OP_int::eval_prefix(expr, oper);
             case objects::type::STRING:
                 return OP_str::eval_prefix(expr, oper);
+            case objects::type::RSTRING:
+                return OP_rstr::eval_prefix(expr, oper);
             case objects::type::BOOLEAN:
                 return OP_bool::eval_prefix(expr, oper);
             case objects::type::FLOAT:
@@ -375,6 +383,7 @@ namespace mico { namespace eval {
             using OP_float = OP<objects::type::FLOAT>;
             using OP_bool  = OP<objects::type::BOOLEAN>;
             using OP_str   = OP<objects::type::STRING>;
+            using OP_rstr  = OP<objects::type::RSTRING>;
             using OP_table = OP<objects::type::TABLE>;
             using OP_array = OP<objects::type::ARRAY>;
             using OP_func  = OP<objects::type::FUNCTION>;
@@ -394,6 +403,9 @@ namespace mico { namespace eval {
                 break;
             case objects::type::STRING:
                 res = OP_str::eval_infix( inf, left, inf_call_unref, env);
+                break;
+            case objects::type::RSTRING:
+                res = OP_rstr::eval_infix( inf, left, inf_call_unref, env);
                 break;
             case objects::type::TABLE:
                 res = OP_table::eval_infix( inf, left, inf_call_unref, env);
@@ -674,6 +686,9 @@ namespace mico { namespace eval {
 
             case objects::type::STRING:
                 return GEN::string::make( objects::cast_string(from), istep );
+
+            case objects::type::RSTRING:
+                return GEN::rstring::make( objects::cast_rstring(from), istep );
 
             case objects::type::TABLE:
                 return GEN::table::make( objects::cast_table(from) );
@@ -1038,28 +1053,34 @@ namespace mico { namespace eval {
                 return unref( eval_impl_tail( n, env ) );
             };
 
-            using OP_array  = operations::operation<objects::type::ARRAY>;
-            using OP_string = operations::operation<objects::type::STRING>;
-            using OP_table  = operations::operation<objects::type::TABLE>;
-            using OP_sslice = operations::operation<objects::type::SSLICE>;
-            using OP_aslice = operations::operation<objects::type::ASLICE>;
+            using OP_array   = operations::operation<objects::type::ARRAY>;
+            using OP_string  = operations::operation<objects::type::STRING>;
+            using OP_rstring = operations::operation<objects::type::RSTRING>;
+            using OP_table   = operations::operation<objects::type::TABLE>;
+            using OP_sslice  = operations::operation<objects::type::SSLICE>;
+            using OP_rslice  = operations::operation<objects::type::RSLICE>;
+            using OP_aslice  = operations::operation<objects::type::ASLICE>;
 
             switch ( val->get_type( ) ) {
             case objects::type::ARRAY:
                 return OP_array::eval_index( idx, val, idx_call, env );
             case objects::type::STRING:
                 return OP_string::eval_index( idx, val, idx_call, env );
+            case objects::type::RSTRING:
+                return OP_rstring::eval_index( idx, val, idx_call, env );
             case objects::type::TABLE:
                 return OP_table::eval_index( idx, val, idx_call, env );
             case objects::type::SSLICE:
                 return OP_sslice::eval_index( idx, val, idx_call, env );
+            case objects::type::RSLICE:
+                return OP_rslice::eval_index( idx, val, idx_call, env );
             case objects::type::ASLICE:
                 return OP_aslice::eval_index( idx, val, idx_call, env );
             }
 
             return objects::error::make( n->pos( ),
                                          "Impossible to get an index of ",
-                                         idx->param( )->get_type( ) );
+                                         idx->value( )->get_type( ) );
         }
 
         objects::slist eval_parameters( ast::expressions::call *call,

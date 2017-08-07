@@ -148,6 +148,7 @@ namespace mico { namespace objects {
             interval_type ival_;
         };
 
+        using rstring   = obj<objects::type::RSTRING>;
         using string    = obj<objects::type::STRING>;
         using integer   = obj<objects::type::INTEGER>;
         using floating  = obj<objects::type::FLOAT>;

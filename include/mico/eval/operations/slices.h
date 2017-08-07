@@ -111,8 +111,34 @@ namespace mico { namespace eval { namespace operations {
         }
     };
 
+    template <>
+    struct operation<objects::type::RSLICE> {
+
+        using index         = ast::expressions::index;
+        using error_type    = objects::impl<objects::type::FAILURE>;
+        using int_type      = objects::impl<objects::type::INTEGER>;
+        using infix         = ast::expressions::infix;
+        using parent_type   = operation_slice<objects::type::RSLICE>;
+
+        static
+        objects::sptr eval_ival_index( index *idx,
+                                       objects::rslice::sptr str,
+                                       objects::sptr id )
+        {
+            return parent_type::eval_ival_index( idx, str, id );
+        }
+
+        static
+        objects::sptr eval_index( index *idx, objects::sptr obj,
+                                  eval_call ev, environment::sptr env  )
+        {
+            return parent_type::eval_index( idx, obj, ev, env );
+        }
+    };
+
     using sslice = operation<objects::type::SSLICE>;
     using aslice = operation<objects::type::ASLICE>;
+    using rslice = operation<objects::type::RSLICE>;
 
 }}}
 

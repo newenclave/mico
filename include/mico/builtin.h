@@ -37,6 +37,9 @@ namespace mico {
             } else if( dat->get_type( ) == objects::type::ARRAY ) {
                 auto s = objects::cast_array(dat.get( ));
                 return integer::make( s->value( ).size( ));
+            } else if( dat->get_type( ) == objects::type::RSTRING ) {
+                auto s = objects::cast_rstring(dat.get( ));
+                return integer::make( s->value( ).size( ));
             } else if( dat->get_type( ) == objects::type::TABLE ) {
                 auto s = objects::cast_table(dat.get( ));
                 return integer::make( s->value( ).size( ));

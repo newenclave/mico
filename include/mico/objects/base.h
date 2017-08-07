@@ -29,24 +29,26 @@ namespace mico { namespace objects {
         INTEGER     =  2,
         FLOAT       =  3,
         STRING      =  4,
-        CHARACTER   =  5,
-        TABLE       =  6,
-        ARRAY       =  7,
-        REFERENCE   =  8,
-        RETURN      =  9,
-        FUNCTION    = 10,
-        TAIL_CALL   = 11,
-        BUILTIN     = 12,
-        FAILURE     = 13,
-        QUOTE       = 14,
-        MODULE      = 15,
-        GENERATOR   = 16,
-        INTERVAL    = 17,
-        BREAK_OBJ   = 18,
-        CONT_OBJ    = 19,
-        SSLICE      = 20,
-        ASLICE      = 21,
-        INF_OBJ     = 22,
+        RSTRING     =  5,
+        CHARACTER   =  6,
+        TABLE       =  7,
+        ARRAY       =  8,
+        REFERENCE   =  9,
+        RETURN      = 10,
+        FUNCTION    = 11,
+        TAIL_CALL   = 12,
+        BUILTIN     = 13,
+        FAILURE     = 14,
+        QUOTE       = 15,
+        MODULE      = 16,
+        GENERATOR   = 17,
+        INTERVAL    = 18,
+        BREAK_OBJ   = 19,
+        CONT_OBJ    = 20,
+        SSLICE      = 21,
+        ASLICE      = 22,
+        RSLICE      = 23,
+        INF_OBJ     = 24,
     };
 
     struct name {
@@ -59,6 +61,7 @@ namespace mico { namespace objects {
             case type::INTEGER    : return "OBJ_INTEGER";
             case type::FLOAT      : return "OBJ_FLOAT";
             case type::STRING     : return "OBJ_STRING";
+            case type::RSTRING    : return "OBJ_RSTRING";
             case type::CHARACTER  : return "OBJ_CHARACTER";
             case type::TABLE      : return "OBJ_TABLE";
             case type::ARRAY      : return "OBJ_ARRAY";
@@ -76,6 +79,7 @@ namespace mico { namespace objects {
             case type::CONT_OBJ   : return "OBJ_CONTINUE";
             case type::SSLICE     : return "OBJ_SLICE_STR";
             case type::ASLICE     : return "OBJ_SLICE_ARR";
+            case type::RSLICE     : return "OBJ_SLICE_RSTR";
             case type::INF_OBJ    : return "OBJ_INFINITE";
             }
             return "<invalid>";

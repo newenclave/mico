@@ -6,7 +6,9 @@
 #include "mico/objects/base.h"
 #include "mico/objects/character.h"
 #include "mico/objects/string.h"
+#include "mico/objects/rstring.h"
 #include "mico/objects/array.h"
+#include "mico/objects/numbers.h"
 
 #include "mico/types.h"
 
@@ -222,8 +224,62 @@ namespace mico { namespace objects {
         }
     };
 
+    template <>
+    class impl<type::RSLICE>: public slice_impl<objects::rstring, type::RSLICE>{
+        using this_type = impl<type::RSLICE>;
+    public:
+
+        using sptr       = std::shared_ptr<this_type>;
+        using slice_type = this_type;
+
+        impl<type::RSLICE>( objects::rstring::sptr obj,
+                            std::size_t start, std::size_t stop )
+            :slice_impl<objects::rstring, type::RSLICE>(obj, start, stop)
+        {
+            set_mutable( obj->is_mutable( ) );
+        }
+
+        objects::sptr at( std::int64_t id ) const override
+        {
+            auto fixed = fix_id( id );
+            auto val = static_cast<std::uint8_t>(value( )->value( )[fixed]);
+            return objects::integer::make(val);
+        }
+
+        static
+        sptr make( objects::rstring::sptr obj,
+                   std::size_t start, std::size_t stop )
+        {
+            auto val = std::make_shared<this_type>( obj, start, stop );
+            return val;
+        }
+
+        static
+        sptr make( sptr obj, std::size_t start, std::size_t stop )
+        {
+            auto val = std::make_shared<this_type>( obj->value( ),
+                                                    start, stop );
+            return val;
+        }
+
+        objects::sptr clone( ) const override
+        {
+            return make( value( ), begin( ), end( ) );
+        }
+
+        std::string make_string( ) const
+        {
+            auto &s(value( )->value( ));
+            auto b = static_cast<std::string::difference_type>(begin( ));
+            auto e = static_cast<std::string::difference_type>(end( ));
+            return std::string( s.begin( ) + b, s.begin( ) + e );
+        }
+
+    };
+
     using sslice = impl<type::SSLICE>;
     using aslice = impl<type::ASLICE>;
+    using rslice = impl<type::RSLICE>;
 
 }}
 

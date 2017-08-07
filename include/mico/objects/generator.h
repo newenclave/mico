@@ -239,12 +239,14 @@ namespace mico { namespace objects {
 
         using table = obj<type::TABLE>;
 
-        template <>
-        struct obj<type::STRING>: public generator {
+        template <type TN>
+        struct obj_str: public generator {
 
-            using this_type = obj<type::STRING>;
+            using this_type = obj_str<TN>;
+            using value_type = objects::impl<TN>;
+            using value_sptr = typename value_type::sptr;
 
-            obj<type::STRING>( objects::string::sptr &obj, std::int64_t step )
+            obj_str<TN>( value_sptr &obj, std::int64_t step )
                 :object_(obj)
                 ,step_(step)
                 ,id_(step_ < 0 ? -1 : 0)
@@ -255,11 +257,6 @@ namespace mico { namespace objects {
                 std::ostringstream oss;
                 oss << "gen(string)";
                 return oss.str( );
-            }
-
-            objects::sptr clone( ) const override
-            {
-                return make( object_ );
             }
 
             void reset( ) override
@@ -289,6 +286,39 @@ namespace mico { namespace objects {
                 return !end( ) && !is_end( id_ + step_ );
             }
 
+//            objects::sptr get_val( ) override
+//            {
+//                if( !end( ) ) {
+//                    return objects::character::make(object_->at(id_));
+//                }
+//                return nullptr;
+//            }
+
+            objects::sptr get_id( )  override
+            {
+                return objects::integer::make( id_ );
+            }
+
+        protected:
+            value_sptr   object_;
+            std::int64_t step_;
+            std::int64_t id_ = 0;
+        };
+
+        template <>
+        struct obj<type::STRING>: public obj_str<type::STRING> {
+
+            using this_type = obj<type::STRING>;
+
+            obj<type::STRING>( objects::string::sptr &obj, std::int64_t step )
+                :obj_str<type::STRING>(obj, step)
+            { }
+
+            objects::sptr clone( ) const override
+            {
+                return make( object_ );
+            }
+
             objects::sptr get_val( ) override
             {
                 if( !end( ) ) {
@@ -296,12 +326,6 @@ namespace mico { namespace objects {
                 }
                 return nullptr;
             }
-
-            objects::sptr get_id( )  override
-            {
-                return objects::integer::make( id_ );
-            }
-
             static
             sptr make( objects::string::sptr obj, std::int64_t step )
             {
@@ -314,12 +338,46 @@ namespace mico { namespace objects {
                 return std::make_shared<this_type>( obj, 1 );
             }
 
-        private:
-            objects::string::sptr object_;
-            std::int64_t          step_;
-            std::int64_t          id_ = 0;
         };
-        using string = obj<type::STRING>;
+
+        template <>
+        struct obj<type::RSTRING>: public obj_str<type::RSTRING> {
+
+            using this_type = obj<type::RSTRING>;
+
+            obj<type::RSTRING>( objects::rstring::sptr &obj, std::int64_t step )
+                :obj_str<type::RSTRING>(obj, step)
+            { }
+
+            objects::sptr clone( ) const override
+            {
+                return make( object_ );
+            }
+
+            objects::sptr get_val( ) override
+            {
+                if( !end( ) ) {
+                    return objects::integer::make( object_->at(id_) );
+                }
+                return nullptr;
+            }
+
+            static
+            sptr make( objects::rstring::sptr obj, std::int64_t step )
+            {
+                return std::make_shared<this_type>( obj, step );
+            }
+
+            static
+            sptr make( objects::rstring::sptr obj )
+            {
+                return std::make_shared<this_type>( obj, 1 );
+            }
+
+        };
+
+        using string  = obj<type::STRING>;
+        using rstring = obj<type::RSTRING>;
 
         template <objects::type NumT>
         struct numeric: public generator {
@@ -598,6 +656,7 @@ namespace mico { namespace objects {
 
         using aslice     = slice_gen<objects::aslice>;
         using sslice     = slice_gen<objects::sslice>;
+        using rslice     = slice_gen<objects::rslice>;
     }
 }}
 

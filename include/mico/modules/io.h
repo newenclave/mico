@@ -31,6 +31,10 @@ namespace mico { namespace modules {
                         auto s = objects::cast_string(p.get( ));
                         std::cout << CS::to_console(s->value( ));
 
+                    } else if(p->get_type( ) == objects::type::RSTRING ) {
+                        auto s = objects::cast_rstring(p.get( ));
+                        std::cout << s->value( );
+
                     } else if(p->get_type( ) == objects::type::INTEGER ) {
                         auto s = objects::cast_int(p.get( ));
                         std::cout << s->value( );
@@ -51,6 +55,9 @@ namespace mico { namespace modules {
                     } else if(p->get_type( ) == objects::type::SSLICE ) {
                         auto s = objects::cast_sslice(p.get( ))->make_string( );
                         std::cout << CS::to_console( s );
+                    } else if(p->get_type( ) == objects::type::RSLICE ) {
+                        auto s = objects::cast_rslice(p.get( ))->make_string( );
+                        std::cout << s;
                     } else {
                         return error::make( tokens::position( line, 0),
                                             "Invalid parameter ", count,

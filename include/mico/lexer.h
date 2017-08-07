@@ -72,6 +72,8 @@ namespace mico {
             add_token( res, "0",    tokens::type::INT_OCT );
 
             add_token( res, "\"",   tokens::type::STRING );
+            add_token( res, "r\"",  tokens::type::RSTRING );
+            add_token( res, "R\"",  tokens::type::RSTRING );
             add_token( res, "'",    tokens::type::CHARACTER );
 
             add_token( res, "\n",   tokens::type::END_OF_LINE );
@@ -359,6 +361,7 @@ namespace mico {
                         value.literal = read_ident( bb, end  );
                         return std::make_pair( std::move(value), bb );
                     case token_type::STRING:
+                    case token_type::RSTRING:
                         bb = next.iterator( );
                         value.literal = read_string( bb, end, lstate );
                         return std::make_pair( std::move(value), bb );
