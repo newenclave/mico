@@ -111,6 +111,23 @@ namespace mico {
 
         template <typename ItrT>
         static
+        std::string read_number( ItrT &begin, ItrT end )
+        {
+            std::string res;
+
+            for( ; begin != end; ++begin ) {
+                if( numeric::valid_for_hex_( *begin ) ) {
+                    res.push_back( *begin );
+                } else {
+                    break;
+                }
+            }
+
+            return res;
+        }
+
+        template <typename ItrT>
+        static
         std::string read_string( ItrT &begin, ItrT end, state *lstate, char c )
         {
             std::string res;
@@ -151,6 +168,9 @@ namespace mico {
                         }
                     }
                     begin = next;
+                    if( begin == end ) {
+                        break;
+                    }
                 } else {
                     if( *begin == '\n') {
                         lstate->line++;
@@ -162,23 +182,6 @@ namespace mico {
 
             if( begin != end ) {
                 ++begin;
-            }
-
-            return res;
-        }
-
-        template <typename ItrT>
-        static
-        std::string read_number( ItrT &begin, ItrT end )
-        {
-            std::string res;
-
-            for( ; begin != end; ++begin ) {
-                if( numeric::valid_for_hex_( *begin ) ) {
-                    res.push_back( *begin );
-                } else {
-                    break;
-                }
             }
 
             return res;

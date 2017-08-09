@@ -158,8 +158,8 @@ Well. Raw strings are just arrays of bytes
     io.puts(s, " ", len(s), " ", s[0])
     // 中國 6 228
 ```
-Unlike strings raw strings know nothing about the unicode. And that why string `中國` has length 2 and the
-lenght of the raw string is 6.
+Unlike strings raw strings know nothing about the unicode. And that is why `string` `中國` has length 2 and the
+lenght of the `raw string` is 6.
 
 ### Slices
 Slice is a part of an array or a string. Slice holds the object (string or array) and an interval `[left..right]`.
