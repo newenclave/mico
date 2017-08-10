@@ -12,6 +12,7 @@
 #include "mico/modules/io.h"
 #include "mico/modules/debug.h"
 #include "mico/modules/string.h"
+#include "mico/modules/gc.h"
 
 namespace mico {
 
@@ -234,6 +235,7 @@ namespace mico {
             modules::io::load( env );
             modules::debug::load( env );
             modules::string::load( env );
+            modules::gc::load( env );
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
             st.macros( ).set_built( "__str",
