@@ -70,6 +70,8 @@ namespace mico {
             add_token( res, "0X",   tokens::type::INT_HEX );
 
             add_token( res, "0",    tokens::type::INT_OCT );
+            add_token( res, "0o",   tokens::type::INT_OCT );
+            add_token( res, "0O",   tokens::type::INT_OCT );
 
             add_token( res, "\"",   tokens::type::STRING );
             add_token( res, "r\"",  tokens::type::RSTRING );
@@ -81,6 +83,10 @@ namespace mico {
             add_token( res, "\n\r", tokens::type::END_OF_LINE );
 
             add_token( res, "//",   tokens::type::COMMENT);
+
+            add_token( res, "λ",    tokens::type::FUNCTION );
+            add_token( res, "←",    tokens::type::LARROW );
+            add_token( res, "→",    tokens::type::RARROW );
 
             return res;
         }
@@ -351,7 +357,7 @@ namespace mico {
                     return std::make_pair( std::move(value), bb );
 
                 } else if( idents::is_ident(*bb) ) {
-                    ////////// TODO: fix COPY-PASTE ...
+                    //// TODO: fix COPY-PASTE ...
                     value.name    = token_type::IDENT;
                     value.literal = read_ident( bb, end  );
                     return std::make_pair( std::move(value), bb );

@@ -468,6 +468,14 @@ namespace mico {
             return scope;
         }
 
+        ast::expressions::list::uptr parse_scope_expr( )
+        {
+            auto scope = ast::expressions::list::make_scope( );
+            scope->set_pos( current( ).where );
+            scope->value( ).emplace_back( parse_expression(precedence::LOWEST));
+            return scope;
+        }
+
         ast::expressions::forin::uptr parse_for( )
         {
             using TD = spetial_token::scope_disable;
@@ -488,15 +496,18 @@ namespace mico {
             advance( );
             auto expr = parse_expression_list( );
 
-            if( !expect_peek( token_type::LBRACE ) ) {
-                return nullptr;
-            }
-
-            advance( );
             TD tdb( get_spec_tok( token_type::BREAK ), false );
             TD tdc( get_spec_tok( token_type::CONTINUE ), false );
 
-            auto body = parse_scope( );
+            ast::expressions::list::uptr body;
+
+            if( !expect_peek( token_type::LBRACE, false ) ) {
+                advance( );
+                body = parse_scope_expr( );
+            } else {
+                advance( );
+                body = parse_scope( );
+            }
 
             auto res = res_type::make( );
 
@@ -510,12 +521,17 @@ namespace mico {
         ast::expressions::ifelse::node parse_if_node( )
         {
             ast::expressions::ifelse::node res;
+
             auto cond = parse_expression( precedence::LOWEST );
+
             if( !cond ) {
                 return res;
             }
 
-            if( !expect_peek( token_type::LBRACE ) ) {
+            if( !expect_peek( token_type::LBRACE, false ) ) {
+                advance( );
+                res.body = parse_expression( precedence::LOWEST );
+                res.cond = std::move(cond);
                 return res;
             }
             advance( );
@@ -531,6 +547,7 @@ namespace mico {
             using if_type = ast::expressions::ifelse;
             if_type::uptr res(new if_type);
             res->set_pos( current( ).where );
+
             do {
                 advance( );
                 auto next = parse_if_node( );
@@ -541,11 +558,13 @@ namespace mico {
             } while ( expect_peek( token_type::ELIF, false ) );
 
             if( expect_peek( token_type::ELSE, false ) ) {
-                if( !expect_peek( token_type::LBRACE ) ) {
-                    return nullptr;
+                if( !expect_peek( token_type::LBRACE, false ) ) {
+                    advance( );
+                    res->alt( ) = parse_scope_expr( );
+                } else {
+                    advance( );
+                    res->alt( ) = parse_scope( );
                 }
-                advance( );
-                res->alt( ) = parse_scope( );
             }
 
             return res;
@@ -781,7 +800,7 @@ namespace mico {
                 }
             }
             res->set_pos( current( ).where );
-            return ast::expression::uptr(std::move(res));
+            return ast::expression::uptr( std::move( res ) );
         }
 
         ast::expressions::character::uptr parse_char( )
@@ -1033,19 +1052,22 @@ namespace mico {
             if( !is_current( token_type::RPAREN ) ) {
                 res->set_params( parse_ident_list( ) );
                 if( !expect_peek( token_type::RPAREN ) ) {
-                    return fn_type::uptr( );
+                    return nullptr;
                 }
             }
 
-            if( !expect_peek( token_type::LBRACE ) ) {
+            TD tdb( get_spec_tok( token_type::BREAK ),    true );
+            TD tdc( get_spec_tok( token_type::CONTINUE ), true );
+
+            if( expect_peek( token_type::RARROW, false ) ) {
+                advance( );
+                res->set_body( parse_scope_expr( ) );
+                return res;
+            } else if( !expect_peek( token_type::LBRACE ) ) {
                 return nullptr;
             }
 
             advance( );
-
-            TD tdb( get_spec_tok( token_type::BREAK ), true );
-            TD tdc( get_spec_tok( token_type::CONTINUE ), true );
-
             res->set_body( parse_scope( ) );
 
             return res;
@@ -1204,10 +1226,6 @@ namespace mico {
             case token_type::CONTINUE:
                 stmt = parse_continue( );
                 break;
-
-//            case token_type::MODULE:
-//                stmt = parse_module( );
-//                break;
 
             case token_type::SEMICOLON:
                 break;

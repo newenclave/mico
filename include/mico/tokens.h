@@ -65,6 +65,8 @@ namespace mico { namespace tokens {
         RBRACE,
         LBRACKET,
         RBRACKET,
+        LARROW,
+        RARROW,
 
         /// keywords
         LET,
@@ -156,6 +158,8 @@ namespace mico { namespace tokens {
             case type::RBRACE:      return "}";
             case type::LBRACKET:    return "[";
             case type::RBRACKET:    return "]";
+            case type::LARROW:      return "<-";
+            case type::RARROW:      return "->";
 
             /// keywords
             case type::LET:         return "let";
