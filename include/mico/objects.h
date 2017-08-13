@@ -26,7 +26,7 @@
 #include "mico/objects/break.h"
 #include "mico/objects/continue.h"
 #include "mico/objects/infinite.h"
-#include "mico/objects/type_object.h"
+#include "mico/objects/type.h"
 
 namespace mico { namespace objects {
 

@@ -16,7 +16,7 @@ namespace mico {
 
     class parser {
 
-        struct spetial_token {
+        struct special_token {
             bool disabled = false;
 
             struct scope_disable {
@@ -27,7 +27,7 @@ namespace mico {
                 scope_disable &operator = ( const scope_disable& ) = delete;
                 scope_disable &operator = ( scope_disable && )     = delete;
 
-                scope_disable( spetial_token *st, bool disable )
+                scope_disable( special_token *st, bool disable )
                     :state_(st)
                     ,old_(true)
                 {
@@ -45,7 +45,7 @@ namespace mico {
                 }
 
             private:
-                spetial_token *state_;
+                special_token *state_;
                 bool           old_;
             };
         };
@@ -63,7 +63,7 @@ namespace mico {
         using leds_map        = std::map<token_type, leds_call>;
 
         using errors_list     = std::vector<std::string>;
-        using special_map     = std::map<token_type, spetial_token>;
+        using special_map     = std::map<token_type, special_token>;
 
         using precedence      = operations::precedence;
 
@@ -400,7 +400,7 @@ namespace mico {
             return errors_;
         }
 
-        spetial_token *get_spec_tok( token_type tt )
+        special_token *get_spec_tok( token_type tt )
         {
             auto f = special_.find( tt );
             if( f != special_.end( ) ) {
@@ -478,7 +478,7 @@ namespace mico {
 
         ast::expressions::forin::uptr parse_for( )
         {
-            using TD = spetial_token::scope_disable;
+            using TD = special_token::scope_disable;
             using res_type = ast::expressions::forin;
 
             advance( );
@@ -706,7 +706,7 @@ namespace mico {
 
         ast::expressions::list::uptr parse_ident_list( )
         {
-            using TD = spetial_token::scope_disable;
+            using TD = special_token::scope_disable;
             TD tde( get_spec_tok( token_type::ELIPSIS ), false );
 
             auto res = ast::expressions::list::make_params( );
@@ -991,7 +991,7 @@ namespace mico {
 
         ast::expressions::mod::uptr parse_module( ast::node::uptr id )
         {
-            using TD = spetial_token::scope_disable;
+            using TD = special_token::scope_disable;
             using mod_type = ast::expressions::mod;
 
             if( expect_peek( token_type::IDENT, false ) ) {
@@ -1038,7 +1038,7 @@ namespace mico {
 
         ast::expressions::function::uptr parse_function( )
         {
-            using TD = spetial_token::scope_disable;
+            using TD = special_token::scope_disable;
             using fn_type = ast::expressions::function;
 
             fn_type::uptr res(new fn_type);
