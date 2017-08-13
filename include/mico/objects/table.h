@@ -157,6 +157,7 @@ namespace mico { namespace objects {
                                          v.second->value( )->clone( ) );
                 res->value( ).insert( std::make_pair(kc, vc) );
             }
+            res->set_mutable( is_mutable( ) );
             return res;
         }
 
