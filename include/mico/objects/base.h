@@ -49,6 +49,7 @@ namespace mico { namespace objects {
         ASLICE      = 22,
         RSLICE      = 23,
         INF_OBJ     = 24,
+        TYPE_OBJ    = 25,
     };
 
     struct name {
@@ -81,6 +82,7 @@ namespace mico { namespace objects {
             case type::ASLICE     : return "OBJ_SLICE_ARR";
             case type::RSLICE     : return "OBJ_SLICE_RSTR";
             case type::INF_OBJ    : return "OBJ_INFINITE";
+            case type::TYPE_OBJ   : return "OBJ_TYPE";
             }
             return "<invalid>";
         }

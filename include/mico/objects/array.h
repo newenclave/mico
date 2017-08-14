@@ -137,6 +137,7 @@ namespace mico { namespace objects {
                 auto clone = v->value( )->clone( );
                 res->push( v->env( ), clone );
             }
+            res->set_mutable( is_mutable( ) );
             return res;
         }
 

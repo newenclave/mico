@@ -808,4 +808,21 @@ for i in "Кирилица, latinic, 中國 จีน มีตัวละค�
 }
 io.puts( )
 
+int
+float
+string
+bool
+char
+function
+null
+rstring
+table
+array
+module
+ival<>
+slice<>
+quote
+ref
+type<>
+
 */
