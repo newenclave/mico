@@ -1061,18 +1061,16 @@ namespace mico {
             TD tdb( get_spec_tok( token_type::BREAK ),    true );
             TD tdc( get_spec_tok( token_type::CONTINUE ), true );
 
-            if( expect_peek( token_type::RARROW, false ) ) {
+            if( expect_peek( token_type::LBRACE, false ) ) {
+                advance( );
+                res->set_body( parse_scope( ) );
+                return res;
+            } else {
                 advance( );
                 res->set_body( parse_scope_expr( ) );
                 return res;
-            } else if( !expect_peek( token_type::LBRACE ) ) {
-                return nullptr;
             }
-
-            advance( );
-            res->set_body( parse_scope( ) );
-
-            return res;
+            //return nullptr;
         }
 
 #if !defined(DISABLE_MACRO) || !DISABLE_MACRO
