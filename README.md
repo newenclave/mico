@@ -1004,7 +1004,7 @@ Well here is `value b`. Because module `b` is the last in the inheritance tree a
 
 ### Anonymous and named
 
-All modules, by-default, are anonymous. But it's possible to add a name for modules. Here:
+All modules, by-default, are anonymous. But there is a way to add a name for them. Here:
 ```swift
     let a = module parent1 {
         let value = 100
@@ -1030,10 +1030,10 @@ But what if we want to obtain value from `parent1`? And that is exactly what the
     let c = module child: a, b { }
     let d = module: c { }
 
-    io.puts( c.value )               // ok 200
-    io.puts( c.parent2.value )       // ok 200
-    io.puts( c.parent1.value )       // ok 100
-    io.puts( d.value )               // ok 200
+    io.puts( c.value )               // 200
+    io.puts( c.parent2.value )       // 200
+    io.puts( c.parent1.value )       // 100
+    io.puts( d.value )               // 200
     io.puts( d.child.parent1.value ) // 100
 
 ```
