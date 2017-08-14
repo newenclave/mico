@@ -1016,7 +1016,7 @@ All modules, by-default, are anonymous. But there is a way to add a name for the
 
     let c = module: a, b { }
 ```
-Here `parent1` and `parent2`. And why? Well. If we call `c.value` we get `200` because of inheritance and the module `parent2` is the last in the search list.
+Here `parent1` and `parent2` are names. And why? Well. If we call `c.value` (in the example above) we get `200` because of inheritance and the module `parent2` is the last in the search list.
 But what if we want to obtain value from `parent1`? And that is exactly what the name serves for! Check this out.
 ```swift
     let a = module parent1 {
