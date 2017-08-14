@@ -50,7 +50,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Builtin Macroses](#builtin-macroses)
 * [Modules](#modules)
     * [Inheritance](#inheritance)
-    * [Anonymous](#anonymous)
+    * [Anonymous and named](#anonymous-and-named)
 * [Standart Library](#standart-library)
     * [io](#io)
     * [string](#string)
@@ -994,8 +994,6 @@ A module can have one or more parents.
 
     c.showa( )      // `value a`
     c.showb( )      // `value b`
-    io.puts(c.a.value) // `value a`
-    io.puts(c.b.value) // `value b`
 
 ```
 And what is here?
@@ -1004,56 +1002,35 @@ And what is here?
 ```
 Well here is `value a`. Because module `a` is the first in the inheritance tree.
 
-### Anonymous
+### Anonymous and named
 
-Anonymouses modules are also available. They are almoust useless because we can't obtain values from them right?
-Wrong! It can be used for the inheritance.
+All modules, by-default, are anonymous. But it's possible to add a name for modules. Here:
 ```swift
-    let new_module = fn( val ) {
-        module {
-            let val = val
-            let get = fn( ) { val }
-        }
+    let a = module parent1 {
+        let value = 100
     }
-    let a = module a: new_module(100) { }
-    let b = module b: new_module(200) { }
-    io.puts(a.get( )) // `100`
-    io.puts(b.get( )) // `200`
+
+    let b = module parent2 {
+        let value = 200
+    }
+
+    let c = module: a, b { }
 ```
-By the way we can add a name to a module without `let` expression
+Here `parent1` and `parent2`. And why? Well... If we call `c.value` we get `100` because of inheritance and the module `parent1` is the firsr in the search list.
+But what if we what to obtain value from `parent2`? And that is exactly what the name serves for! Check this out.
 ```swift
-    let new_module0 = fn( val ) {
-        module parent {
-            let val = val
-        }
+    let a = module parent1 {
+        let value = 100
     }
 
-    let new_module1 = fn( val ) {
-        let parent = module  {
-            let val = val
-        }
-        parent
+    let b = module parent2 {
+        let value = 200
     }
 
-    let a = module: new_module0(100) { }
-    let b = module: new_module1(200) { }
-    io.puts(a.parent.val) // `100`
-    io.puts(b.parent.val) // `200`
-```
-Here `new_module0` and `new_module1` are almost equal. But the code
-```swift
-    module parent { let val = val }
-```
-Doesn't change the current environment. It just makes a module with name. And as far as the module doesn't have a name in the environment it can be used as an "anonymous" module...but with name. Yeah...
-
-Also it's possible to chenge the module's name in the `let` expression.
-```swift
-    let a = module name {
-        let val = 1000
-    }
-    let b = module: a { }
-    io.puts(b.name.val) /// ok `1000`
-    io.puts(b.a.value)  /// oops `error: [6:7] Identifier not found 'a'`
+    let c = module: a, b { }
+    io.puts( c.value )          // ok 100
+    io.puts( c.parent1.value )  // ok 100
+    io.puts( c.parent2.value )  // ok 200
 ```
 
 ## Standart Library
@@ -1064,3 +1041,4 @@ Also it's possible to chenge the module's name in the `let` expression.
 
 ### dbg
 
+### gc

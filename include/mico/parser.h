@@ -996,7 +996,7 @@ namespace mico {
 
             if( expect_peek( token_type::IDENT, false ) ) {
                 id = parse_ident( );
-            } else if( !id ) {
+            } else /*if( !id )*/ {
                 id = ast::expressions::ident::make( "" );
             }
 
