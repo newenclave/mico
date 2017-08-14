@@ -1000,7 +1000,7 @@ And what is here?
 ```swift
     io.puts(c.value)
 ```
-Well here is `value a`. Because module `a` is the first in the inheritance tree.
+Well here is `value b`. Because module `b` is the last in the inheritance tree and the `value` from the module `b` shadows the `a`'s `value`.
 
 ### Anonymous and named
 
@@ -1016,8 +1016,8 @@ All modules, by-default, are anonymous. But it's possible to add a name for modu
 
     let c = module: a, b { }
 ```
-Here `parent1` and `parent2`. And why? Well... If we call `c.value` we get `100` because of inheritance and the module `parent1` is the firsr in the search list.
-But what if we what to obtain value from `parent2`? And that is exactly what the name serves for! Check this out.
+Here `parent1` and `parent2`. And why? Well. If we call `c.value` we get `200` because of inheritance and the module `parent2` is the last in the search list.
+But what if we want to obtain value from `parent1`? And that is exactly what the name serves for! Check this out.
 ```swift
     let a = module parent1 {
         let value = 100
@@ -1028,10 +1028,11 @@ But what if we what to obtain value from `parent2`? And that is exactly what the
     }
 
     let c = module: a, b { }
-    io.puts( c.value )          // ok 100
-    io.puts( c.parent1.value )  // ok 100
+    io.puts( c.value )          // ok 200
     io.puts( c.parent2.value )  // ok 200
+    io.puts( c.parent1.value )  // ok 100
 ```
+Now we can obtain anything.
 
 ## Standart Library
 

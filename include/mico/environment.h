@@ -130,7 +130,7 @@ namespace mico {
                         my_env = my_env->parent( );
                     }
                 } else if( !e->is_parent( my_env.get( ) ) ) {
-                    auto par = environment::barrier( e, my_env.get( ) );
+                    auto par = barrier( e, my_env.get( ) );
 #if CHECK_ENV_PARENTS
                     if( !e->is_parent( par ) ) {
                         throw std::logic_error( "Lock. Not a parent!" );
@@ -329,8 +329,8 @@ namespace mico {
 
         object_sptr get_parent( const std::string &name, bool here_only )
         {
-            auto b = parents_.begin( );
-            auto e = parents_.end( );
+            auto b = parents_.rbegin( );
+            auto e = parents_.rend( );
 
             while( b != e ) {
                 auto pl = b->lock( );
@@ -342,7 +342,8 @@ namespace mico {
                     }
                     ++b;
                 } else {
-                    b = parents_.erase( b );
+                    //b = parents_.erase( b );
+                    std::cout << "!!!!!!!!!!!!!!!!!!\n";
                 }
             }
             return nullptr;

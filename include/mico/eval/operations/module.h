@@ -29,7 +29,7 @@ namespace mico { namespace eval { namespace operations {
 //        }
 
         static
-        objects::sptr eval_call( infix *inf, objects::module::sptr mod,
+        objects::sptr eval_call_param( infix *inf, objects::module::sptr mod,
                                  eval_function_call ev, environment::sptr env )
         {
             using call_type = ast::expressions::call;
@@ -72,7 +72,7 @@ namespace mico { namespace eval { namespace operations {
                     }
 
                 } else if( inf->right( )->get_type( ) == ast::type::CALL ) {
-                    return eval_call( inf, mod, ev, env );
+                    return eval_call_param( inf, mod, ev, env );
                 } else {
                     return common::error_type::make( inf->right( )->pos( ),
                                                      "Bad ident for module ",
