@@ -51,6 +51,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 * [Modules](#modules)
     * [Inheritance](#inheritance)
     * [Anonymous and named](#anonymous-and-named)
+    * [Construction](#construction)
 * [Standart Library](#standart-library)
     * [io](#io)
     * [string](#string)
@@ -1038,6 +1039,24 @@ But what if we want to obtain value from `parent1`? And that is exactly what the
 
 ```
 Now we can obtain anything.
+
+### Construction
+Just an example. How can we construct a module with defined value?:
+```swift
+    let m = fn( init ) {
+        module {
+            let value = init
+        }
+    }
+    let a = module: m(1000) { }
+    let b = module: m(0.01) { }
+    let c = module: m("Hello, world!") { }
+
+    io.puts(a.value) // 1000
+    io.puts(b.value) // 0.01
+    io.puts(c.value) // Hello, world!
+
+```
 
 ## Standart Library
 
