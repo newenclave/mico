@@ -1027,10 +1027,15 @@ But what if we want to obtain value from `parent1`? And that is exactly what the
         let value = 200
     }
 
-    let c = module: a, b { }
-    io.puts( c.value )          // ok 200
-    io.puts( c.parent2.value )  // ok 200
-    io.puts( c.parent1.value )  // ok 100
+    let c = module child: a, b { }
+    let d = module: c { }
+
+    io.puts( c.value )               // ok 200
+    io.puts( c.parent2.value )       // ok 200
+    io.puts( c.parent1.value )       // ok 100
+    io.puts( d.value )               // ok 200
+    io.puts( d.child.parent1.value ) // 100
+
 ```
 Now we can obtain anything.
 
