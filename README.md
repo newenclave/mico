@@ -149,7 +149,7 @@ I've written a small utf8 parser and I think it's enough for this toy language.
 And for Windows it uses native API for encoding.
 
 ### Raw strings
-Well. Raw strings are just arrays of bytes
+Raw strings are just arrays of bytes
 ```swift
     let s = r"string"
     io.puts(s[1])
@@ -210,7 +210,7 @@ Elements of arrays or strings can be obtained by negative index. `-1` means `the
     let s = "中國"
     io.puts(s[-2]) // 中
 ```
-Well, slices also can be created by adding a negative index
+Slices also can be created by adding a negative index
 ```swift
     let str = "Hello, world!Äáç¶"
     let sym = str[-5..-1]
@@ -966,7 +966,7 @@ all elements of the parent are available in the child. And by the child.
 
     b.show( )           // `value a`
     b.set( "changed!" )
-    io.puts(b.value)       // `changed!`
+    io.puts(b.value)    // `changed!`
     a.show( )           // `changed!`
 ```
 The inheritance list is a list of the expression. Every expression returns a module object. And if doesn't...
@@ -1000,7 +1000,7 @@ And what is here?
 ```swift
     io.puts(c.value)
 ```
-Well here is `value b`. Because module `b` is the last in the inheritance tree and the `value` from the module `b` shadows the `a`'s `value`.
+Here is `value b`. Because module `b` is the last in the inheritance list and the `value` from the module `b` shadows the `a`'s `value`.
 
 ### Anonymous and named
 
