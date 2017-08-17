@@ -1260,6 +1260,7 @@ namespace mico {
             if( !file_exists( path ) ) {
                 path += ".mico";
             }
+
             auto opened = load_file( path );
             if( !opened ) {
                 error_open_file( path, opened.error( ) );
