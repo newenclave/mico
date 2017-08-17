@@ -5,6 +5,7 @@
 #include <set>
 #include <memory>
 #include <functional>
+#include <fstream>
 
 #include "mico/lexer.h"
 #include "mico/operations.h"
@@ -275,6 +276,15 @@ namespace mico {
             std::ostringstream oss;
             oss << "parser error: " << current( ).where
                 << " unexpected EOF";
+            errors_.emplace_back(oss.str( ));
+        }
+
+        void error_open_file( const std::string &path,
+                              const std::string &err )
+        {
+            std::ostringstream oss;
+            oss << "parser error: '" << path
+                << "' " << err;
             errors_.emplace_back(oss.str( ));
         }
 
@@ -1193,6 +1203,81 @@ namespace mico {
             return res;
         }
 
+        using load_result = etool::details::result< mico::file_string,
+                                                    std::string >;
+
+        static
+        bool file_exists( const std::string &path )
+        {
+            std::ifstream f(path, std::ifstream::binary);
+            return f.is_open( );
+        }
+
+        static
+        load_result load_file( const std::string &path )
+        {
+            std::ifstream f(path, std::ifstream::binary);
+
+            if( !f.is_open( ) ) {
+                return load_result::fail
+                        ( std::string("Unable to open file ") + path );
+            }
+
+            f.seekg( 0, f.end );
+            auto size = f.tellg( );
+            f.seekg( 0, f.beg );
+
+            if( !size ) {
+                return load_result::fail
+                        ( std::string("File is empty ") + path );
+            }
+
+            mico::file_string data( static_cast<std::size_t>( size ), '\0' );
+            f.read( &data[0], size );
+            return load_result::ok( data );
+        }
+
+        ast::statement::uptr parse_export( )
+        {
+            advance( );
+            std::string path;
+            std::string modname;
+            if( current( ).ident.name == token_type::IDENT ) {
+                path = current( ).ident.literal;
+            } else if( current( ).ident.name == token_type::STRING ) {
+                path = current( ).ident.literal;
+            }
+
+            if( expect_peek( token_type::TOKEN_AS, false ) ) {
+                advance( );
+                if( current( ).ident.name == token_type::IDENT ) {
+                    modname = current( ).ident.literal;
+                } else if( current( ).ident.name == token_type::STRING ) {
+                    modname = current( ).ident.literal;
+                }
+            }
+
+            if( !file_exists( path ) ) {
+                path += ".mico";
+            }
+            auto opened = load_file( path );
+            if( !opened ) {
+                error_open_file( path, opened.error( ) );
+                return nullptr;
+            }
+
+            auto res = parse( *opened );
+            if( !res.errors( ).empty( ) ) {
+                errors_.insert( errors_.end( ),
+                                res.errors( ).begin( ), res.errors( ).end( ) );
+                return nullptr;
+            }
+
+            auto prog = parse( *opened );
+
+            return ast::statement::uptr( new ast::program( std::move(prog) ) );
+        }
+
         ast::statements::expr::uptr parse_expr_stmt(  )
         {
             using expr_type = ast::statements::expr;
@@ -1217,6 +1302,9 @@ namespace mico {
                 break;
             case token_type::RETURN:
                 stmt = parse_return( );
+                break;
+            case token_type::EXPORT:
+                stmt = parse_export( );
                 break;
 
             case token_type::BREAK:
@@ -1302,7 +1390,7 @@ namespace mico {
         token_iterator  peek_;
         nuds_map        nuds_;
         leds_map        leds_;
-        special_map    special_;
+        special_map     special_;
 
         errors_list     errors_;
     };

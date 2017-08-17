@@ -294,7 +294,7 @@ namespace mico { namespace ast {
     using expression_list  = std::deque<expression::uptr>;
     using statement_list   = std::deque<statement::uptr>;
 
-    class program: public typed_node<type::PROGRAM, node> {
+    class program: public typed_node<type::PROGRAM, statement> {
 
     public:
 
@@ -303,6 +303,10 @@ namespace mico { namespace ast {
 
         using state_list = node_list;
         using error_list = std::vector<std::string>;
+
+        program(            )       = default;
+        program( program && )       = default;
+        program( const program & )  = default;
 
         const node_list &states( ) const
         {

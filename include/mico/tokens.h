@@ -94,6 +94,8 @@ namespace mico { namespace tokens {
         DOTDOT,
         MODULE,
         INFIN,
+        EXPORT,
+        TOKEN_AS,
 
         LAST_VISIBLE,
     };
@@ -187,6 +189,8 @@ namespace mico { namespace tokens {
             case type::DOTDOT:      return "..";
             case type::MODULE:      return "module";
             case type::INFIN:       return "inf";
+            case type::EXPORT:      return "export";
+            case type::TOKEN_AS:    return "as";
 
             /// unnamed
             case type::NONE:
