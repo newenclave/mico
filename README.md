@@ -585,7 +585,7 @@ It looks like `expression if condition [else alternative_expression]`
 ```
 
 #### Unless
-The `unless` keyword is a negative sibling of the operator `if`. It just reverts its condition by `not` logical opearator.
+The `unless` operator is a negative sibling of the operator `if`. It just reverts its condition by `not` logical operator.
 ```swift
     let x = 10
     let r = unless x < 0 {
