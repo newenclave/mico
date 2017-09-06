@@ -570,7 +570,7 @@ They interrupt current loop and then `continue` makes the loop continue and `bre
                 "too big!"
               }
 ```
-Also it is possible use the infix form of the operator `if`
+Also it is possible to use the infix form of the operator `if`
 ```swift
     let r = io.gets("input key: ")
     io.puts("ok" if len(r) >= 8 else "too short")
