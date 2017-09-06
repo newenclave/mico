@@ -33,6 +33,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
         * [const keyword](#const-keyword)
     * [Intervals](#intervals)
     * [if elif else](#if-elif-else)
+        *[Infix if](#infix-if)
     * [for in](#for-in)
         * [break and continue keywords](#break-and-continue-keywords)
     * [Operators](#operators)
@@ -570,6 +571,7 @@ They interrupt current loop and then `continue` makes the loop continue and `bre
                 "too big!"
               }
 ```
+#### Infix if
 Also it is possible to use the infix form of the operator `if`
 ```swift
     let r = io.gets("input key: ")
