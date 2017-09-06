@@ -72,6 +72,12 @@ namespace mico { namespace ast { namespace expressions {
             return alt_;
         }
 
+        static
+        uptr make( )
+        {
+            return uptr(new this_type);
+        }
+
         void mutate( mutator_type call ) override
         {
             for( auto &g: general_ ) {

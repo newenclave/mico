@@ -8,6 +8,7 @@ namespace mico { namespace operations {
     /// http://en.cppreference.com/w/cpp/language/operator_precedence
     enum class precedence {
         LOWEST,
+        INFIXIF,     // var = val
         ASSIGN,      // var = val
         LOGIC_OR,    // ||
         LOGIC_AND,   // &&

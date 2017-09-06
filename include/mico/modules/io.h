@@ -71,8 +71,22 @@ namespace mico { namespace modules {
             }
         };
 
+        struct input_impl {
+            objects::sptr operator ( )( objects::slist &pp,
+                                        environment::sptr e )
+            {
+                put_impl<false> pi;
+                pi(pp, e);
+                std::string line;
+                std::getline(std::cin, line);
+                return objects::string::make(line);
+            }
+        };
+
+
         using puts = put_impl<true>;
         using put  = put_impl<false>;
+        using gets = input_impl;
 
         static
         void load( environment::sptr &env, const std::string &name = "io" )
@@ -81,7 +95,9 @@ namespace mico { namespace modules {
             auto mod_env = environment::make(env);
             auto mod = objects::module::make( mod_env, name );
             mod_env->set_const( "puts", BC::make( mod_env, puts { } ) );
-            mod_env->set_const( "put",  BC::make( mod_env, put { } ) );
+            mod_env->set_const( "put",  BC::make( mod_env, put  { } ) );
+            mod_env->set_const( "gets", BC::make( mod_env, gets { } ) );
+
             env->set_const( name, mod );
         }
     };

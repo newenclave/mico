@@ -221,6 +221,11 @@ namespace mico {
                     [this]( EP e ) {
                         return parse_index(std::move(e));
                     };
+            leds_[token_type::IF] =
+                    [this]( EP e ) {
+                        return parse_if_infix( std::move(e) );
+                    };
+
         }
 
         static
@@ -230,6 +235,7 @@ namespace mico {
             using OP = operations::precedence;
 
             static const std::map<TT, OP> val = {
+                { TT::IF,           OP::INFIXIF     },
                 { TT::ASSIGN,       OP::ASSIGN      },
                 { TT::EQ,           OP::EQUALS      },
                 { TT::NOT_EQ,       OP::EQUALS      },
@@ -576,6 +582,33 @@ namespace mico {
                     res->alt( ) = parse_scope( );
                 }
             }
+
+            return res;
+        }
+
+        ast::expressions::ifelse::uptr parse_if_infix( expression_uptr left )
+        {
+            using if_type = ast::expressions::ifelse;
+            advance( );
+            ast::expressions::ifelse::node node;
+            node.cond = parse_expression( precedence::LOWEST );
+            if(!node.cond) {
+                return nullptr;
+            }
+            node.body = std::move(left);
+
+            ast::expression::uptr alt;
+            if(expect_peek( token_type::ELSE, false )) {
+                advance( );
+                alt = parse_expression( precedence::LOWEST );
+                if(!alt) {
+                    return nullptr;
+                }
+            }
+            if_type::uptr res = if_type::make( );
+            res->set_pos( current( ).where );
+            res->ifs( ).emplace_back(std::move(node));
+            res->alt( ) = std::move(alt);
 
             return res;
         }
