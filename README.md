@@ -482,14 +482,14 @@ Five little monkeys
     the_monkey_song( 5 )
 
     //🐒🐒🐒🐒🐒 little monkeys jumping on the bed
-    //One fell off and bumped his head
+    //🐒 fell off and bumped his head
     //Momma called the doctor and the doctor said
     //"No more monkeys jumping on the bed!"
     //
     // .................................
     //
     //🐒🐒 little monkeys jumping on the bed
-    //One fell off and bumped his head
+    //🐒 fell off and bumped his head
     //Momma called the doctor and the doctor said
     //"No more monkeys jumping on the bed!"
     //
