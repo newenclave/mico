@@ -87,6 +87,7 @@ namespace mico { namespace tokens {
         OP_IN,
         BREAK,
         CONTINUE,
+        UNLESS,
         IF,
         ELIF,
         ELSE,
@@ -182,6 +183,7 @@ namespace mico { namespace tokens {
             case type::OP_IN:       return "in";
             case type::BREAK:       return "break";
             case type::CONTINUE:    return "continue";
+            case type::UNLESS:      return "unless";
             case type::IF:          return "if";
             case type::ELIF:        return "elif";
             case type::ELSE:        return "else";

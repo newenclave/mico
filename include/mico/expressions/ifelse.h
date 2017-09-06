@@ -40,13 +40,17 @@ namespace mico { namespace ast { namespace expressions {
 
         using if_list = std::vector<node>;
 
+        impl<type::IFELSE>( bool unless )
+            :unless_(unless)
+        { }
+
         std::string str( ) const override
         {
             std::ostringstream oss;
 
             bool first = true;
             for( auto &f: general_ ) {
-                oss << (first ? "if " : " elif " )
+                oss << (first ? (unless_ ? "unless " : "if ") : " elif " )
                     << "(" << f.cond->str( ) << ") ";
                 oss << "{\n" << f.body->str( ) << "\n}";
                 first = false;
@@ -73,9 +77,9 @@ namespace mico { namespace ast { namespace expressions {
         }
 
         static
-        uptr make( )
+        uptr make( bool unless )
         {
-            return uptr(new this_type);
+            return uptr(new this_type(unless) );
         }
 
         void mutate( mutator_type call ) override
@@ -87,6 +91,11 @@ namespace mico { namespace ast { namespace expressions {
             if( alt_ ) {
                 ast::expression::apply_mutator( alt_, call );
             }
+        }
+
+        bool is_unless( ) const noexcept
+        {
+            return unless_;
         }
 
         bool is_const( ) const override
@@ -104,7 +113,7 @@ namespace mico { namespace ast { namespace expressions {
 
         ast::node::uptr clone( ) const override
         {
-            uptr res(new this_type);
+            uptr res(new this_type(unless_));
             for( auto &g: general_ ) {
                 node next;
                 next.cond = expression::call_clone( g.cond );
@@ -120,6 +129,7 @@ namespace mico { namespace ast { namespace expressions {
     private:
         if_list          general_;
         expression::uptr alt_;
+        bool             unless_ = false;
     };
 
     using ifelse = impl<type::IFELSE>;

@@ -105,8 +105,17 @@ namespace mico {
 
             nuds_[token_type::BOOL_TRUE]  = [this]( ) { return parse_bool( ); };
             nuds_[token_type::BOOL_FALSE] = [this]( ) { return parse_bool( ); };
-            nuds_[token_type::IF]         = [this]( ) { return parse_if( );   };
             nuds_[token_type::FOR]        = [this]( ) { return parse_for( );  };
+
+            nuds_[token_type::IF] =
+                    [this]( ) {
+                        return parse_if( false );
+                    };
+
+            nuds_[token_type::UNLESS] =
+                    [this]( ) {
+                        return parse_if( true );
+                    };
 
             nuds_[token_type::MOD_MUT] =
                     [this]( ) {
@@ -221,9 +230,15 @@ namespace mico {
                     [this]( EP e ) {
                         return parse_index(std::move(e));
                     };
+
             leds_[token_type::IF] =
                     [this]( EP e ) {
-                        return parse_if_infix( std::move(e) );
+                        return parse_if_infix( std::move(e), false );
+                    };
+
+            leds_[token_type::UNLESS] =
+                    [this]( EP e ) {
+                        return parse_if_infix( std::move(e), true );
                     };
 
         }
@@ -236,6 +251,7 @@ namespace mico {
 
             static const std::map<TT, OP> val = {
                 { TT::IF,           OP::INFIXIF     },
+                { TT::UNLESS,       OP::INFIXIF     },
                 { TT::ASSIGN,       OP::ASSIGN      },
                 { TT::EQ,           OP::EQUALS      },
                 { TT::NOT_EQ,       OP::EQUALS      },
@@ -558,10 +574,10 @@ namespace mico {
             return res;
         }
 
-        ast::expressions::ifelse::uptr parse_if( )
+        ast::expressions::ifelse::uptr parse_if( bool unless )
         {
             using if_type = ast::expressions::ifelse;
-            if_type::uptr res(new if_type);
+            auto res = if_type::make(unless);
             res->set_pos( current( ).where );
 
             do {
@@ -586,7 +602,8 @@ namespace mico {
             return res;
         }
 
-        ast::expressions::ifelse::uptr parse_if_infix( expression_uptr left )
+        ast::expressions::ifelse::uptr parse_if_infix( expression_uptr left,
+                                                       bool unless )
         {
             using if_type = ast::expressions::ifelse;
             advance( );
@@ -598,6 +615,7 @@ namespace mico {
             node.body = std::move(left);
 
             ast::expression::uptr alt;
+
             if(expect_peek( token_type::ELSE, false )) {
                 advance( );
                 alt = parse_expression( precedence::LOWEST );
@@ -605,7 +623,8 @@ namespace mico {
                     return nullptr;
                 }
             }
-            if_type::uptr res = if_type::make( );
+
+            auto res = if_type::make( unless );
             res->set_pos( current( ).where );
             res->ifs( ).emplace_back(std::move(node));
             res->alt( ) = std::move(alt);

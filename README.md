@@ -34,6 +34,7 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
     * [Intervals](#intervals)
     * [if elif else](#if-elif-else)
         *[Infix if](#infix-if)
+        *[Unless](#unless)
     * [for in](#for-in)
         * [break and continue keywords](#break-and-continue-keywords)
     * [Operators](#operators)
@@ -581,6 +582,21 @@ It looks like `expression if condition [else alternative_expression]`
 
 ```swift
     io.puts("It's true!") if x // shows the string if condition in `x` is true
+```
+
+#### Unless
+The `unless` keyword is a negative sibling of the operator `if`. It just reverts its condition by `not` logical opearator.
+```swift
+    let x = 10
+    let r = unless x < 0 {
+                "greater or equal"
+            } else {
+                "less"
+            }
+    // r == "greater or equal"
+    let r = io.gets("input key: ")
+    io.puts("fail") unless r == "valid_key" // shows "fail" if `r` is not equal to "valid_key"
+
 ```
 
 

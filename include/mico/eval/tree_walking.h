@@ -860,6 +860,7 @@ namespace mico { namespace eval {
                     return cond;
                 }
                 auto res = obj2num_obj<objects::boolean>( cond.get( ) );
+
                 if( is_null( res ) ) {
                     return error( i.cond.get( ), "Failed to convert ",
                                   cond->get_type( ), " to boolean.");
@@ -870,7 +871,10 @@ namespace mico { namespace eval {
                 }
 
                 auto bres = objects::cast_bool(res.get( ));
-                if( bres->value( ) ) {
+                bool value = ifblock->is_unless( )
+                           ? !bres->value( )
+                           : bres->value( );
+                if( value ) {
                     environment::scoped s(make_env(env));
                     auto eval_states = eval_impl( i.body.get( ), s.env( ));
                     return unref(eval_states);
