@@ -131,6 +131,9 @@ namespace mico {
             {
                 mico::con_string tmp;
                 std::getline( std::cin, tmp );
+                if(std::cin.eof( )) {
+                    break;
+                }
                 if( tmp.empty( ) ) {
 
                     auto prog = parser::parse( data );
