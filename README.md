@@ -15,6 +15,10 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 
 * C++ compiler (c++11 or later)
 * The book https://interpreterbook.com/. If you have not read it yet.
+* There is no compiler implementation here. Sorry. But I dont have a piece of time for this :(  
+* Feel free to ask me anything.
+* Now I'm a more experienced and would rewrite this code completely :)
+* thanks Thorsten Ball :)
 
 # Table of Contents
 
@@ -73,7 +77,7 @@ Or clang
 ```bash
  mico $ clang++ -O2 mico.cpp -std=c++11 -Iinclude -Ietool/include -Wall -o mico
 ```
-Or MS SDK compiler. It sould be called from the "Visual Studio Command Prompt" for example
+Or MS SDK compiler. It should be called from the "Visual Studio Command Prompt" for example
 ```bash
 mico> cl /I include /I etool/include mico.cpp
 mico> link /OUT:"mico.exe" mico.obj
