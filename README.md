@@ -7,6 +7,12 @@
 
 Monkey :monkey: the language interpreter implementation done with C++. https://interpreterbook.com/
 
+* There is no compiler implementation here. Sorry. But I dont have a piece of time for this :(
+* Feel free to ask me anything.
+* Now I'm a more experienced and would rewrite this code completely :)
+* thanks Thorsten Ball :)
+
+
 [Old README](README_old.md)
 
 ![Mico REPL Terminal](repl.png)
@@ -15,10 +21,6 @@ Monkey :monkey: the language interpreter implementation done with C++. https://i
 
 * C++ compiler (c++11 or later)
 * The book https://interpreterbook.com/. If you have not read it yet.
-* There is no compiler implementation here. Sorry. But I dont have a piece of time for this :(  
-* Feel free to ask me anything.
-* Now I'm a more experienced and would rewrite this code completely :)
-* thanks Thorsten Ball :)
 
 # Table of Contents
 
